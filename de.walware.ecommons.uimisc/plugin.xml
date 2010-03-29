@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<!--
+ ###############################################################################
+ # Copyright (c) 2005-2010 WalWare/StatET-Project (www.walware.de/goto/statet)
+ # and others. All rights reserved. This program and the accompanying materials
+ # are made available under the terms of the Eclipse Public License v1.0
+ # which accompanies this distribution, and is available at
+ # http://www.eclipse.org/legal/epl-v10.html
+ # 
+ # Contributors:
+ #     Stephan Wahlbrink - initial API and implementation
+ ###############################################################################
+-->
+
+<plugin>
+   
+   <extension
+         point="org.eclipse.ui.commands">
+      <!-- pagebook views -->
+      <command
+            id="de.walware.ecommons.base.commands.NewPage"
+            categoryId="org.eclipse.ui.category.views"
+            name="%commands_NewPage_name"
+            description="%commands_NewPage_description">
+      </command>
+      <command
+            id="de.walware.ecommons.base.commands.ClosePage"
+            categoryId="org.eclipse.ui.category.views"
+            name="%commands_ClosePage_name"
+            description="%commands_ClosePage_description">
+      </command>
+      <command
+            id="de.walware.ecommons.base.commands.CloseAllPages"
+            categoryId="org.eclipse.ui.category.views"
+            name="%commands_CloseAllPages_name"
+            description="%commands_CloseAllPages_description">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commandImages">
+      <image
+            commandId="de.walware.ecommons.base.commands.NewPage"
+            icon="icons/loctool_16/new_page.gif">
+      </image>
+      <image
+            commandId="de.walware.ecommons.base.commands.ClosePage"
+            icon="icons/loctool_16/close_page.gif"
+            disabledIcon="icons/loctool_16_d/close_page.gif">
+      </image>
+      <image
+            commandId="de.walware.ecommons.base.commands.CloseAllPages"
+            icon="icons/loctool_16/close_all_pages.gif"
+            disabledIcon="icons/loctool_16_d/close_all_pages.gif">
+      </image>
+      <image
+            commandId="org.eclipse.ui.navigate.back"
+            icon="icons/loctool_16/nav-backward.png"
+            disabledIcon="icons/loctool_16_d/nav-backward.png">
+      </image>
+      <image
+            commandId="org.eclipse.ui.navigate.forward"
+            icon="icons/loctool_16/nav-forward.png"
+            disabledIcon="icons/loctool_16_d/nav-forward.png">
+      </image>
+   </extension>
+   
+</plugin>
