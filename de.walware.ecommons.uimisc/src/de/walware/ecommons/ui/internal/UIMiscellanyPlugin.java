@@ -159,12 +159,14 @@ public class UIMiscellanyPlugin extends AbstractUIPlugin {
 		final ImageRegistryUtil util = new ImageRegistryUtil(this);
 		
 		util.register(SharedUIResources.OBJ_USER_IMAGE_ID, ImageRegistryUtil.T_OBJ, "user.png"); //$NON-NLS-1$
+		util.register(SharedUIResources.OBJ_LINE_MATCH_IMAGE_ID, ImageRegistryUtil.T_OBJ, "line_match.gif"); //$NON-NLS-1$
 		
 		util.register(SharedUIResources.OVR_DEFAULT_MARKER_IMAGE_ID, ImageRegistryUtil.T_OVR, "default_marker.gif"); //$NON-NLS-1$
 		
 		util.register(SharedUIResources.LOCTOOL_FILTER_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL, "filter_view.gif"); //$NON-NLS-1$
 		util.register(SharedUIResources.LOCTOOLD_FILTER_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL_D, "filter_view.gif"); //$NON-NLS-1$
-		util.register(SharedUIResources.LOCTOOL_SORT_ALPHA_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL, "sort_alpha.gif"); //$NON-NLS-1$
+		util.register(SharedUIResources.LOCTOOL_SORT_ALPHA_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL, "sort-alpha.png"); //$NON-NLS-1$
+		util.register(SharedUIResources.LOCTOOL_SORT_SCORE_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL, "sort-score.png"); //$NON-NLS-1$
 		util.register(SharedUIResources.LOCTOOL_EXPANDALL_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL, "expandall.gif"); //$NON-NLS-1$
 		util.register(SharedUIResources.LOCTOOL_COLLAPSEALL_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL, "collapseall.gif"); //$NON-NLS-1$
 		util.register(SharedUIResources.LOCTOOL_SCROLLLOCK_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL, "scrolllock.gif"); //$NON-NLS-1$

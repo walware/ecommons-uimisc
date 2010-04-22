@@ -42,12 +42,15 @@ public class SharedUIResources {
 	
 	public static final String OBJ_USER_IMAGE_ID = UIMiscellanyPlugin.PLUGIN_ID + "/image/obj/user"; //$NON-NLS-1$
 	
+	public static final String OBJ_LINE_MATCH_IMAGE_ID = UIMiscellanyPlugin.PLUGIN_ID + "/image/obj/line_match"; //$NON-NLS-1$
+	
 	public static final String OVR_DEFAULT_MARKER_IMAGE_ID = UIMiscellanyPlugin.PLUGIN_ID + "/image/ovr/default_marker"; //$NON-NLS-1$
 	
 	public static final String LOCTOOL_FILTER_IMAGE_ID = UIMiscellanyPlugin.PLUGIN_ID + "/image/loctool/filter_view"; //$NON-NLS-1$
 	public static final String LOCTOOLD_FILTER_IMAGE_ID = UIMiscellanyPlugin.PLUGIN_ID + "/image/loctoold/filter_view"; //$NON-NLS-1$
 	
 	public static final String LOCTOOL_SORT_ALPHA_IMAGE_ID = UIMiscellanyPlugin.PLUGIN_ID + "/image/loctool/sort.alpha"; //$NON-NLS-1$
+	public static final String LOCTOOL_SORT_SCORE_IMAGE_ID = UIMiscellanyPlugin.PLUGIN_ID + "/image/loctool/sort.score"; //$NON-NLS-1$
 	
 	public static final String LOCTOOL_EXPANDALL_IMAGE_ID = UIMiscellanyPlugin.PLUGIN_ID + "/image/loctool/expandall"; //$NON-NLS-1$
 	public static final String LOCTOOL_COLLAPSEALL_IMAGE_ID = UIMiscellanyPlugin.PLUGIN_ID + "/image/loctool/collapseall"; //$NON-NLS-1$

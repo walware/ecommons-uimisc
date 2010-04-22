@@ -14,8 +14,10 @@ package de.walware.ecommons.ui.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.LegacyActionTools;
 import org.eclipse.osgi.util.TextProcessor;
+import org.eclipse.swt.SWT;
 
 
 /**
@@ -87,6 +89,40 @@ public class MessageUtil {
 	
 	public static String processURLPart(final String url) {
 		return TextProcessor.process(url, ":@?-"); //$NON-NLS-1$
+	}
+	
+	
+	/**
+	 * Returns the modifier string for the given SWT modifier
+	 * modifier bits.
+	 *
+	 * @param stateMask	the SWT modifier bits
+	 * @return the modifier string
+	 */
+	public static String getModifierString(final int stateMask) {
+		if (stateMask != 0) {
+			final StringBuilder sb = new StringBuilder();
+			if ((stateMask & SWT.CTRL) == SWT.CTRL) {
+				sb.append(Action.findModifierString(SWT.CTRL));
+				sb.append(" + "); //$NON-NLS-1$
+			}
+			if ((stateMask & SWT.ALT) == SWT.ALT) {
+				sb.append(Action.findModifierString(SWT.ALT));
+				sb.append(" + "); //$NON-NLS-1$
+			}
+			if ((stateMask & SWT.SHIFT) == SWT.SHIFT) {
+				sb.append(Action.findModifierString(SWT.SHIFT));
+				sb.append(" + "); //$NON-NLS-1$
+			}
+			if ((stateMask & SWT.COMMAND) == SWT.COMMAND) {
+				sb.append(Action.findModifierString(SWT.COMMAND));
+				sb.append(" + "); //$NON-NLS-1$
+			}
+			if (sb.length() > 0) {
+				return sb.substring(0, sb.length()-3);
+			}
+		}
+		return ""; //$NON-NLS-1$
 	}
 	
 	
