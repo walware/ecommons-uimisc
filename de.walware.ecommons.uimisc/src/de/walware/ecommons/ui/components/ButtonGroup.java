@@ -35,6 +35,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
 import de.walware.ecommons.ConstList;
 import de.walware.ecommons.ui.SharedMessages;
@@ -47,9 +48,9 @@ import de.walware.ecommons.ui.util.LayoutUtil;
 public class ButtonGroup<ItemType> extends Composite {
 	
 	
-	private static int ADD_NEW = 1;
-	private static int ADD_COPY = 2;
-	private static int EDIT = 3;
+	protected static int ADD_NEW = 1;
+	protected static int ADD_COPY = 2;
+	protected static int EDIT = 3;
 	
 	
 	private StructuredViewer fViewer;
@@ -81,13 +82,13 @@ public class ButtonGroup<ItemType> extends Composite {
 	}
 	
 	
-	protected void addLayoutData(final Button button) {
-		if (fCachedWidthHint == 0) {
-			fCachedWidthHint = LayoutUtil.hintWidth(button);
+	protected void addLayoutData(final Control control) {
+		if (fCachedWidthHint == 0 && control instanceof Button) {
+			fCachedWidthHint = LayoutUtil.hintWidth((Button) control);
 		}
 		final GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		gd.widthHint = fCachedWidthHint;
-		button.setLayoutData(gd);
+		control.setLayoutData(gd);
 	}
 	
 	public void addAddButton() {
@@ -449,6 +450,10 @@ public class ButtonGroup<ItemType> extends Composite {
 //			});
 		}
 		updateState();
+	}
+	
+	public void setDirty(final boolean isDirty) {
+		fIsDirty = isDirty;
 	}
 	
 	public boolean isDirty() {
