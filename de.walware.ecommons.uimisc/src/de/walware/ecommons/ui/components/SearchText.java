@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import de.walware.ecommons.FastList;
 import de.walware.ecommons.ui.SharedUIResources;
 import de.walware.ecommons.ui.util.LayoutUtil;
 
@@ -47,6 +48,18 @@ import de.walware.ecommons.ui.util.LayoutUtil;
  */
 public class SearchText extends Composite {
 	// see org.eclipse.ui.dialogs.FilteredTree
+	
+	
+	public static interface Listener {
+		
+		void okPressed();
+		
+		void downPressed();
+		
+		void textChanged(boolean user);
+		
+	}
+	
 	
 	private static Boolean useNativeSearchField;
 	
@@ -70,8 +83,16 @@ public class SearchText extends Composite {
 	
 	private Text fTextControl;
 	
+	private final FastList<Listener> fListeners = new FastList<Listener>(Listener.class);
+	
+	private boolean fTypingChange = true;
+	
 	
 	public SearchText(final Composite parent) {
+		this(parent, null);
+	}
+	
+	public SearchText(final Composite parent, final String initialText) {
 		super(parent, useNativeSearchField(parent) ? SWT.NONE : SWT.BORDER);
 		final boolean nativeMode = useNativeSearchField.booleanValue();
 		
@@ -81,48 +102,46 @@ public class SearchText extends Composite {
 		layout.horizontalSpacing = 0;
 		setLayout(layout);
 		
-		fTextControl = new Text(this, (nativeMode) ?
-				(SWT.LEFT | SWT.SINGLE | SWT.BORDER | SWT.SEARCH | SWT.ICON_CANCEL) :
-				(SWT.LEFT | SWT.SINGLE));
-		fTextControl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		
-		fTextControl.getAccessible().addAccessibleListener(
-				new AccessibleAdapter() {
-					@Override
-					public void getName(final AccessibleEvent e) {
-						e.result = getAccessibleMessage();
-					}
-				});
-		fTextControl.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(final KeyEvent e) {
-				if (e.keyCode == SWT.ARROW_DOWN) {
-					downPressed();
-					e.doit = false;
-					return;
-				}
-				if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) {
-					okPressed();
-					e.doit = false;
-					return;
-				}
-			}
-		});
-		fTextControl.addModifyListener(new ModifyListener() {
-			public void modifyText(final ModifyEvent e) {
-				textChanged0();
-			}
-		});
-		
+		createText(this, nativeMode);
 		createClearTextButtonSupport(this, nativeMode);
+		
+		if (initialText != null) {
+			setText(initialText);
+			fTextControl.selectAll();
+		}
 	}
 	
-	protected String getAccessibleMessage() {
-		return fTextControl.getText();
+	
+	public void addListener(final Listener listener) {
+		fListeners.add(listener);
 	}
+	
+	public void removeListener(final Listener listener) {
+		fListeners.remove(listener);
+	}
+	
 	
 	private void textChanged0() {
-		textChanged();
+		final boolean typingChange = fTypingChange;
+		fTypingChange = true;
+		final Listener[] listeners = fListeners.toArray();
+		for (final Listener listener : listeners) {
+			listener.textChanged(typingChange);
+		}
+	}
+	
+	private void okPressed0() {
+		final Listener[] listeners = fListeners.toArray();
+		for (final Listener listener : listeners) {
+			listener.okPressed();
+		}
+	}
+	
+	private void downPressed0() {
+		final Listener[] listeners = fListeners.toArray();
+		for (final Listener listener : listeners) {
+			listener.downPressed();
+		}
 	}
 	
 	
@@ -137,6 +156,7 @@ public class SearchText extends Composite {
 	}
 	
 	public void setText(final String text) {
+		fTypingChange = false;
 		fTextControl.setText((text != null) ? text : "");
 	}
 	
@@ -153,15 +173,49 @@ public class SearchText extends Composite {
 		fTextControl.setFocus();
 	}
 	
-	protected void okPressed() {
+	/**
+	 * Create the text widget.
+	 * 
+	 * @param parent parent <code>Composite</code> of toolbar button
+	 */
+	private void createText(final Composite parent, final boolean nativeMode) {
+		fTextControl = new Text(this, (nativeMode) ?
+				(SWT.LEFT | SWT.SINGLE | SWT.BORDER | SWT.SEARCH | SWT.ICON_CANCEL) :
+				(SWT.LEFT | SWT.SINGLE));
+		fTextControl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		
+		fTextControl.getAccessible().addAccessibleListener(
+				new AccessibleAdapter() {
+					@Override
+					public void getName(final AccessibleEvent e) {
+						e.result = getAccessibleMessage();
+					}
+				});
+		fTextControl.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(final KeyEvent e) {
+				if (e.keyCode == SWT.ARROW_DOWN) {
+					downPressed0();
+					e.doit = false;
+					return;
+				}
+				if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) {
+					okPressed0();
+					e.doit = false;
+					return;
+				}
+			}
+		});
+		fTextControl.addModifyListener(new ModifyListener() {
+			public void modifyText(final ModifyEvent e) {
+				textChanged0();
+			}
+		});
 	}
 	
-	protected void downPressed() {
+	protected String getAccessibleMessage() {
+		return fTextControl.getText();
 	}
-	
-	protected void textChanged() {
-	}
-	
 	
 	/**
 	 * Create the button that clears the text.
