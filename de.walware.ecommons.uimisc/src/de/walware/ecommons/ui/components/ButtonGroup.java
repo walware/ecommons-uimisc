@@ -332,29 +332,22 @@ public class ButtonGroup<ItemType> extends Composite {
 	private void edit0(final Object element, final int command) {
 		final boolean newItem = (command == ADD_NEW || command == ADD_COPY);
 		final ItemType orgItem = (command != ADD_NEW && element != null) ? getModelItem(element) : null;
+		final Object parent = (command == ADD_NEW) ? getAddParent(element) : getParent(element);
 		
-		final ItemType editItem = edit1(((command != ADD_NEW) ? orgItem : null), newItem);
+		final ItemType editItem = edit1(((command != ADD_NEW) ? orgItem : null), newItem, parent);
 		if (editItem == null) {
 			return;
 		}
 		fIsDirty = true;
-		Object parent;
 		if (newItem) {
 			if (fDefault != null && fList.isEmpty()) {
 				fDefault.setValue(editItem);
 			}
 			final List<? super ItemType> list;
-			if (command == ADD_NEW) {
-				parent = getAddParent(element);
-			}
-			else {
-				parent = getParent(element);
-			}
 			list = getChildContainer(element);
 			list.add(editItem);
 		}
 		else {
-			parent = getParent(element);
 			if (orgItem != editItem) { // can be directly manipulated or replaced)
 				if (fDefault != null && fDefault.getValue() == orgItem) {
 					fDefault.setValue(editItem);
@@ -381,7 +374,7 @@ public class ButtonGroup<ItemType> extends Composite {
 		}
 	}
 	
-	protected ItemType edit1(final ItemType item, final boolean newItem) {
+	protected ItemType edit1(final ItemType item, final boolean newItem, final Object parent) {
 		return null;
 	}
 	

@@ -37,6 +37,8 @@ public class DatabindingSupport {
 	private Realm fRealm;
 	private DataBindingContext fDbc;
 	
+	private DirtyTracker fTracker;
+	
 	
 	public DatabindingSupport(final Control rootControl) {
 		fRealm = Realm.getDefault();
@@ -82,7 +84,7 @@ public class DatabindingSupport {
 		});
 		
 		listener.statusChanged((IStatus) validationStatus.getValue());
-		new DirtyTracker(fDbc) { // sets initial status on first change again, because initial errors are suppressed
+		fTracker = new DirtyTracker(fDbc) { // sets initial status on first change again, because initial errors are suppressed
 			@Override
 			public void handleChange() {
 				if (!isDirty()) {
@@ -91,6 +93,13 @@ public class DatabindingSupport {
 				}
 			}
 		};
+	}
+	
+	public void updateStatus() {
+		if (fTracker != null) {
+			fTracker.resetDirty();
+			fTracker.handleChange();
+		}
 	}
 	
 }
