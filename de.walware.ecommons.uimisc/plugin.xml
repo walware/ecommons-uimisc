@@ -15,9 +15,9 @@
 
 <plugin>
    
+   <!-- pagebook views -->
    <extension
          point="org.eclipse.ui.commands">
-      <!-- pagebook views -->
       <command
             id="de.walware.ecommons.base.commands.NewPage"
             categoryId="org.eclipse.ui.category.views"
@@ -63,6 +63,121 @@
             icon="icons/loctool_16/nav-forward.png"
             disabledIcon="icons/loctool_16_d/nav-forward.png">
       </image>
+   </extension>
+   
+   <!-- browser -->
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            id="de.walware.ecommons.base.commands.GoToHome"
+            categoryId="org.eclipse.ui.category.navigate"
+            name="%commands_GoToHome_name"
+            description="%commands_GoToHome_description">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            description="%contexts_PageViewerContext_description"
+            id="de.walware.ecommons.base.contexts.PageViewerContext"
+            name="%contexts_PageViewerContext_name"
+            parentId="org.eclipse.ui.contexts.window">
+      </context>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+<!--
+      <key
+            sequence="M3+ARROW_LEFT"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            contextId="de.walware.ecommons.base.contexts.PageViewerContext"
+            commandId="org.eclipse.ui.navigate.back">
+      </key>
+      <key
+            sequence="M3+ARROW_LEFT"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            platform="carbon"
+            contextId="de.walware.ecommons.base.contexts.PageViewerContext"
+            commandId="">
+      </key>
+      <key
+            sequence="M3+ARROW_RIGHT"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            contextId="de.walware.ecommons.base.contexts.PageViewerContext"
+            commandId="org.eclipse.ui.navigate.forward">
+      </key>
+      <key
+            sequence="M3+ARROW_RIGHT"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            platform="carbon"
+            contextId="de.walware.ecommons.base.contexts.PageViewerContext"
+            commandId="">
+      </key>
+-->
+      <key
+            sequence="M3+HOME"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            contextId="de.walware.ecommons.base.contexts.PageViewerContext"
+            commandId="de.walware.ecommons.base.commands.GoToHome">
+      </key>
+      <key
+            sequence="M1+T"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            contextId="de.walware.ecommons.base.contexts.PageViewerContext"
+            commandId="de.walware.ecommons.base.commands.NewPage">
+      </key>
+      <key
+            sequence="M1+F4"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            contextId="de.walware.ecommons.base.contexts.PageViewerContext"
+            commandId="de.walware.ecommons.base.commands.ClosePage">
+      </key>
+      <key
+            sequence="M1+W"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            contextId="de.walware.ecommons.base.contexts.PageViewerContext"
+            commandId="de.walware.ecommons.base.commands.ClosePage">
+      </key>
+      <key
+            sequence="M1+M2+F4"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            contextId="de.walware.ecommons.base.contexts.PageViewerContext"
+            commandId="de.walware.ecommons.base.commands.CloseAllPages">
+      </key>
+      <key
+            sequence="M1+M2+W"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            contextId="de.walware.ecommons.base.contexts.PageViewerContext"
+            commandId="de.walware.ecommons.base.commands.CloseAllPages">
+      </key>
+      <key
+            sequence="M1+F4"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            platform="carbon"
+            contextId="de.walware.ecommons.base.contexts.PageViewerContext"
+            commandId="">
+      </key>
+      <key
+            sequence="M1+M2+F4"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            platform="carbon"
+            contextId="de.walware.ecommons.base.contexts.PageViewerContext"
+            commandId="">
+      </key>
+      <key
+            sequence="M1+F4"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            platform="gtk"
+            contextId="de.walware.ecommons.base.contexts.PageViewerContext"
+            commandId="">
+      </key>
+      <key
+            sequence="M1+M2+F4"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            platform="gtk"
+            contextId="de.walware.ecommons.base.contexts.PageViewerContext"
+            commandId="">
+      </key>
    </extension>
    
 </plugin>
