@@ -65,6 +65,39 @@
       </image>
    </extension>
    
+   <!-- breadcrumbs -->
+   <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            id="de.walware.ecommons.breadcrumb.contexts.WithBreadcrumbContext"
+            name="%contexts_WithBreadcrumbContext_name"
+            description="%contexts_WithBreadcrumbContext_description">
+      </context>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            sequence="M2+M3+B"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            contextId="de.walware.ecommons.breadcrumb.contexts.WithBreadcrumbContext"
+            commandId="org.eclipse.jdt.ui.edit.text.java.gotoBreadcrumb">
+      </key>
+      <key
+            sequence="M2+M3+B"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            platform="carbon"
+            contextId="de.walware.ecommons.breadcrumb.contexts.WithBreadcrumbContext"
+            commandId="">
+      </key>
+      <key
+            sequence="COMMAND+ALT+B"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            platform="carbon"
+            contextId="de.walware.ecommons.breadcrumb.contexts.WithBreadcrumbContext"
+            commandId="org.eclipse.jdt.ui.edit.text.java.gotoBreadcrumb">
+      </key>
+   </extension>
+   
    <!-- browser -->
    <extension
          point="org.eclipse.ui.commands">
