@@ -12,14 +12,12 @@
 package de.walware.ecommons.ui.components;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.core.variables.IDynamicVariable;
 import org.eclipse.core.variables.IStringVariable;
 import org.eclipse.debug.ui.StringVariableSelectionDialog;
 import org.eclipse.swt.widgets.Shell;
-
-import de.walware.ecommons.variables.core.VariableFilter;
 
 
 /**
@@ -28,7 +26,6 @@ import de.walware.ecommons.variables.core.VariableFilter;
 public class CustomizableVariableSelectionDialog extends StringVariableSelectionDialog {
 	
 	
-	private final List<VariableFilter> fFilters = new ArrayList<VariableFilter>();
 	private final List<IStringVariable> fAdditionals = new ArrayList<IStringVariable>();
 	
 	private boolean fInitialized;
@@ -52,20 +49,11 @@ public class CustomizableVariableSelectionDialog extends StringVariableSelection
 	
 	private void initElements() {
 		final IStringVariable[] orginals = (IStringVariable[]) fElements;
-		final List<IStringVariable> filteredList = new ArrayList<IStringVariable>(fElements.length);
-		filteredList.addAll(fAdditionals);
-		
-		ITER_VAR: for (final IStringVariable variable : orginals) {
-			if (variable instanceof IDynamicVariable) {
-				for (final VariableFilter filter : fFilters) {
-					if (filter.exclude(variable)) {
-						continue ITER_VAR;
-					}
-				}
-			}
-			filteredList.add(variable);
-		}
-		super.setElements(filteredList.toArray(new IStringVariable[filteredList.size()]));
+		final List<IStringVariable> list = new ArrayList<IStringVariable>(
+				orginals.length + fAdditionals.size());
+		list.addAll(fAdditionals);
+		list.addAll(Arrays.asList(orginals));
+		super.setElements(list.toArray(new IStringVariable[list.size()]));
 	}
 	
 	@Override
@@ -75,20 +63,16 @@ public class CustomizableVariableSelectionDialog extends StringVariableSelection
 	}
 	
 	
+	public void setFilters(List<VariableFilter> filters) {
+		super.setFilters(filters.toArray(new VariableFilter[filters.size()]));
+	}
+	
 	public void addAdditional(final IStringVariable variable) {
 		fAdditionals.add(variable);
 	}
 	
-	public void addAdditionals(final List<IStringVariable> variables) {
+	public void setAdditionals(final List<IStringVariable> variables) {
 		fAdditionals.addAll(variables);
-	}
-	
-	public void addFilter(final VariableFilter filter) {
-		fFilters.add(filter);
-	}
-	
-	public void addFilters(final List<VariableFilter> filters) {
-		fFilters.addAll(filters);
 	}
 	
 }

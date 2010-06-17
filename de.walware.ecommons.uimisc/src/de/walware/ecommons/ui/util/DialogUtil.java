@@ -15,10 +15,14 @@ package de.walware.ecommons.ui.util;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import org.eclipse.core.variables.IDynamicVariable;
+import org.eclipse.debug.ui.StringVariableSelectionDialog.VariableFilter;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+
+import de.walware.ecommons.ConstList;
 
 
 /**
@@ -159,6 +163,56 @@ public class DialogUtil {
 			}
 		}
 	}
+	
+	/**
+	 * Variable filter excluding known variables, which requires interaction from the user,
+	 * including selection in the UI.
+	 */
+	public static final VariableFilter EXCLUDE_INTERACTIVE_FILTER = new VariableFilter() {
+		public boolean isFiltered(IDynamicVariable variable) {
+			final String variableName = variable.getName();
+			return (variableName.startsWith("selected_") //$NON-NLS-1$
+					|| variableName.endsWith("_prompt") ); //$NON-NLS-1$
+		}
+	};
+	
+	/**
+	 * Variable filter excluding known variables from Eclipse Development Tool for Java like JDT.
+	 */
+	public static final VariableFilter EXCLUDE_JAVA_FILTER = new VariableFilter() {
+		public boolean isFiltered(IDynamicVariable variable) {
+			final String variableName = variable.getName();
+			return (variableName.startsWith("java_") //$NON-NLS-1$
+					|| variableName.startsWith("target_home") //$NON-NLS-1$
+					|| variableName.startsWith("tptp_junit") ); //$NON-NLS-1$
+		}
+	};
+	
+	/**
+	 * Variable filter excluding known variables, which are only valid in builds.
+	 */
+	public static final VariableFilter EXCLUDE_BUILD_FILTER = new VariableFilter() {
+		public boolean isFiltered(IDynamicVariable variable) {
+			final String variableName = variable.getName();
+			return (variableName.startsWith("build_")); //$NON-NLS-1$
+		}
+	};
+	
+	
+	/**
+	 * Common set of filters for use cases, in which user interaction is possible.
+	 */
+	public static final List<VariableFilter> DEFAULT_INTERACTIVE_FILTERS = new ConstList<VariableFilter>(
+			EXCLUDE_JAVA_FILTER,
+			EXCLUDE_BUILD_FILTER );
+	
+	/**
+	 * Common set of filters for use cases, in which user interaction is not possible.
+	 */
+	public static final List<VariableFilter> DEFAULT_NON_ITERACTIVE_FILTERS = new ConstList<VariableFilter>(
+			EXCLUDE_JAVA_FILTER,
+			EXCLUDE_BUILD_FILTER,
+			EXCLUDE_INTERACTIVE_FILTER );
 	
 	
 	private DialogUtil() {}

@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.variables.IStringVariable;
 import org.eclipse.core.variables.IStringVariableManager;
 import org.eclipse.core.variables.VariablesPlugin;
+import org.eclipse.debug.ui.StringVariableSelectionDialog.VariableFilter;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.osgi.util.NLS;
@@ -60,7 +61,6 @@ import de.walware.ecommons.ui.components.WidgetToolsButton;
 import de.walware.ecommons.ui.internal.Messages;
 import de.walware.ecommons.ui.util.LayoutUtil;
 import de.walware.ecommons.ui.util.MessageUtil;
-import de.walware.ecommons.variables.core.VariableFilter;
 
 
 /**
@@ -501,10 +501,12 @@ public class ResourceInputComposite extends Composite {
 	protected void handleVariablesButton() {
 		final CustomizableVariableSelectionDialog dialog = new CustomizableVariableSelectionDialog(getShell());
 		if (fShowInsertVariableFilters != null) {
-			dialog.addFilters(fShowInsertVariableFilters);
+			for (VariableFilter filter : fShowInsertVariableFilters) {
+				dialog.addVariableFilter(filter);
+			}
 		}
 		if (fShowInsertVariableAdditionals != null) {
-			dialog.addAdditionals(fShowInsertVariableAdditionals);
+			dialog.setAdditionals(fShowInsertVariableAdditionals);
 		}
 		if (dialog.open() != Dialog.OK) {
 			return;
