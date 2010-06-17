@@ -51,17 +51,19 @@ import de.walware.ecommons.ui.SharedUIResources;
 import de.walware.ecommons.ui.actions.HandlerCollection;
 import de.walware.ecommons.ui.actions.HandlerContributionItem;
 import de.walware.ecommons.ui.actions.SimpleContributionItem;
+import de.walware.ecommons.ui.mpbv.BrowserHandler.CancelHandler;
 import de.walware.ecommons.ui.mpbv.BrowserHandler.IBrowserProvider;
 import de.walware.ecommons.ui.mpbv.BrowserHandler.NavigateBackHandler;
 import de.walware.ecommons.ui.mpbv.BrowserHandler.NavigateForwardHandler;
 import de.walware.ecommons.ui.mpbv.BrowserHandler.OpenExternalHandler;
+import de.walware.ecommons.ui.util.UIAccess;
 
 
 public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 	
 	
-	private static final String BROWSERCONTROL_MENU_ID = "browser_control";
-	private static final String BOOKMARKS_MENU_ID = "bookmarks";
+	private static final String BROWSERCONTROL_MENU_ID = "browser_control"; //$NON-NLS-1$
+	private static final String BOOKMARKS_MENU_ID = "bookmarks"; //$NON-NLS-1$
 	
 	/** Action id (local) to open current page in external browser */
 	protected static final String OPEN_EXTERNAL_ID = ".OpenExternal"; //$NON-NLS-1$
@@ -109,24 +111,6 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 		
 	}
 	
-	private class CancelHandler extends AbstractHandler {
-		
-		
-		@Override
-		public void setEnabled(final Object evaluationContext) {
-			setBaseEnabled(fCurrentBrowserPage != null);
-		}
-		
-		public Object execute(final ExecutionEvent event) throws ExecutionException {
-			if (fCurrentBrowserPage != null) {
-				final Browser browser = fCurrentBrowserPage.getBrowser();
-				browser.stop();
-			}
-			return null;
-		}
-		
-	}
-	
 	private class CreateBookmarkHandler extends AbstractHandler {
 		
 		
@@ -146,11 +130,11 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 	}
 	
 	
-	private class BrowserListener implements ProgressListener, StatusTextListener, TitleListener {
+	private class BrowserListener implements ProgressListener, TitleListener, StatusTextListener {
 		
 		public void changed(final ProgressEvent event) {
 			if (fCurrentBrowserPage != null && fCurrentBrowserPage.getBrowser() == event.widget) {
-				if (event.total == 0) {
+				if (event.total == 0 || event.total == event.current) {
 					clearProgress();
 				}
 				else if (fCurrentProgress == null) {
@@ -172,17 +156,15 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 			}
 		}
 		
-		public void changed(final StatusTextEvent event) {
-			if (fCurrentBrowserPage != null && fCurrentBrowserPage.getBrowser() == event.widget) {
-				updateStatus(event.text);
-				updateTitle();
-			}
-		}
-		
 		public void changed(final TitleEvent event) {
 			if (fCurrentBrowserPage != null && fCurrentBrowserPage.getBrowser() == event.widget) {
 				updateTitle();
 			}
+		}
+		
+		public void changed(final StatusTextEvent event) {
+			setStatus(event.text);
+			updateTitle();
 		}
 		
 	}
@@ -196,9 +178,24 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 	
 	private IProgressMonitor fCurrentProgress;
 	private int fCurrentProgressWorked;
-	private String fCurrentMessage;
+	
+	private int fStatusCounter;
+	private Image fStatusImage;
+	private String fStatusMessage;
 	
 	private BookmarkCollection fBookmarks;
+	
+	private final IBrowserProvider fBrowserInterface = new IBrowserProvider() {
+		public Browser getBrowser() {
+			if (fCurrentBrowserPage != null) {
+				return fCurrentBrowserPage.getBrowser();
+			}
+			return null;
+		}
+		public void showMessage(final int severity, final String message) {
+			setTemporaryStatus(severity, message);
+		}
+	};
 	
 	
 	public PageBookBrowserView() {
@@ -212,13 +209,6 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 	}
 	
 	protected BookmarkCollection initBookmarkCollection() {
-//		final Group root = BrowserBookmarksFactory.eINSTANCE.createGroup();
-//		final EList<Item> children = root.getChildren();
-//		final Bookmark bookmark = BrowserBookmarksFactory.eINSTANCE.createBookmark();
-//		bookmark.setName("Test");
-//		bookmark.setUrl("http://www.walware.de/goto/statet");
-//		children.add(bookmark);
-		
 		return null;
 	}
 	
@@ -233,6 +223,10 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 		return new PageBookBrowserPage(this, session);
 	}
 	
+	protected IBrowserProvider getBrowserInterface() {
+		return fBrowserInterface;
+	}
+	
 	@Override
 	protected void initActions(final IServiceLocator serviceLocator, final HandlerCollection handlers) {
 		super.initActions(serviceLocator, handlers);
@@ -241,25 +235,13 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 		
 		contextService.activateContext("de.walware.ecommons.base.contexts.PageViewerContext"); //$NON-NLS-1$
 		
-		final IBrowserProvider browserInterface = new IBrowserProvider() {
-			public Browser getBrowser() {
-				if (fCurrentBrowserPage != null) {
-					return fCurrentBrowserPage.getBrowser();
-				}
-				return null;
-			}
-			public void showMessage(final int severity, final String message) {
-				showTemporaryStatus(severity, message);
-			}
-		};
-		
-		{	final IHandler2 handler = new NavigateBackHandler(browserInterface);
+		{	final IHandler2 handler = new NavigateBackHandler(getBrowserInterface());
 			handlers.add(NAVIGATE_BACK_ID, handler);
 			addBrowserHandler(handler);
 			handlerService.activateHandler(NAVIGATE_BACK_ID, handler);
 			handlerService.activateHandler(IWorkbenchCommandConstants.NAVIGATE_BACKWARD_HISTORY, handler);
 		}
-		{	final IHandler2 handler = new NavigateForwardHandler(browserInterface);
+		{	final IHandler2 handler = new NavigateForwardHandler(getBrowserInterface());
 			handlers.add(NAVIGATE_FORWARD_ID, handler);
 			addBrowserHandler(handler);
 			handlerService.activateHandler(NAVIGATE_FORWARD_ID, handler);
@@ -275,7 +257,7 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 			addBrowserHandler(handler);
 			handlerService.activateHandler(IWorkbenchCommandConstants.FILE_REFRESH, handler);
 		}
-		final IHandler2 cancelHandler = new CancelHandler();
+		final IHandler2 cancelHandler = new CancelHandler(getBrowserInterface());
 //		handlerService.activateHandler(, cancelHandler);
 		addBrowserHandler(cancelHandler);
 		
@@ -283,7 +265,7 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 			handlers.add(CREATE_BOOKMARK_ID, handler); 
 			addBrowserHandler(handler);
 		}
-		{	final IHandler2 handler = new OpenExternalHandler(browserInterface);
+		{	final IHandler2 handler = new OpenExternalHandler(getBrowserInterface());
 			handlers.add(OPEN_EXTERNAL_ID, handler); 
 			addBrowserHandler(handler);
 		}
@@ -376,8 +358,8 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 			browserPage = (PageBookBrowserPage) page;
 			final Browser browser = browserPage.getBrowser();
 			browser.removeProgressListener(fBrowserListener);
-			browser.removeStatusTextListener(fBrowserListener);
 			browser.removeTitleListener(fBrowserListener);
+			browser.removeStatusTextListener(fBrowserListener);
 			
 			clearProgress();
 		}
@@ -385,7 +367,7 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 			browserPage = null;
 		}
 		fCurrentBrowserPage = null;
-		updateStatus(""); //$NON-NLS-1$
+		setStatus(""); //$NON-NLS-1$
 		
 		super.onPageHiding(page, session);
 	}
@@ -396,14 +378,11 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 			fCurrentBrowserPage = (PageBookBrowserPage) page;
 			final Browser browser = fCurrentBrowserPage.getBrowser();
 			browser.addProgressListener(fBrowserListener);
-			browser.addStatusTextListener(fBrowserListener);
 			browser.addTitleListener(fBrowserListener);
+			browser.addStatusTextListener(fBrowserListener);
 			
-			final int progressTotal = fCurrentBrowserPage.getCurrentProgressTotal();
-			if (progressTotal > 0) {
-				initProgress(progressTotal, fCurrentBrowserPage.getCurrentProgressWorked());
-			}
-			updateStatus(fCurrentBrowserPage.getCurrentStatusText());
+			initProgress(fCurrentBrowserPage.getCurrentProgressTotal(), fCurrentBrowserPage.getCurrentProgressWorked());
+			setStatus(fCurrentBrowserPage.getCurrentStatusText());
 		}
 		
 		super.onPageShowing(page, session);
@@ -415,13 +394,17 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 		}
 	}
 	
-	private void updateStatus(final String text) {
+	private void setStatus(final String text) {
+		fStatusCounter++;
+		fStatusImage = null;
+		fStatusMessage = (text != null && text.length() > 0) ? text : null;
+		
 		final IStatusLineManager statusLine = getViewSite().getActionBars().getStatusLineManager();
 		statusLine.setErrorMessage(null);
-		statusLine.setMessage(text);
+		statusLine.setMessage(fStatusImage, fStatusMessage);
 	}
 	
-	private void showTemporaryStatus(final int severity, final String message) {
+	void setTemporaryStatus(final int severity, String message) {
 		final IStatusLineManager statusLine = getViewSite().getActionBars().getStatusLineManager();
 		if (statusLine == null) {
 			return;
@@ -429,27 +412,35 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 		
 		boolean error = false;
 		Image image;
-		switch (severity) {
-		case IStatus.INFO:
-			image = JFaceResources.getImage(Dialog.DLG_IMG_MESSAGE_INFO);
-			break;
-		case IStatus.WARNING:
-			image = JFaceResources.getImage(Dialog.DLG_IMG_MESSAGE_WARNING);
-			break;
-		case IStatus.ERROR:
-			image = JFaceResources.getImage(Dialog.DLG_IMG_MESSAGE_ERROR);
-			error = true;
-			break;
-		default:
-			image = null;
+		if (message != null && message.length() > 0) {
+			switch (severity) {
+			case IStatus.INFO:
+				image = JFaceResources.getImage(Dialog.DLG_IMG_MESSAGE_INFO);
+				break;
+			case IStatus.WARNING:
+				image = JFaceResources.getImage(Dialog.DLG_IMG_MESSAGE_WARNING);
+				break;
+			case IStatus.ERROR:
+				image = JFaceResources.getImage(Dialog.DLG_IMG_MESSAGE_ERROR);
+				error = true;
+				break;
+			default:
+				image = null;
+			}
 		}
-		fCurrentMessage = message;
+		else {
+			image = null;
+			message = null;
+		}
+		
+		final int id = ++fStatusCounter;
 		if (error) {
 			statusLine.setErrorMessage(image, message);
 			Display.getCurrent().timerExec(5000, new Runnable() {
 				public void run() {
-					if (fCurrentMessage == message) {
+					if (fStatusCounter == id && UIAccess.isOkToUse(getPageBook())) {
 						statusLine.setErrorMessage(null);
+						statusLine.setMessage(fStatusImage, fStatusMessage);
 					}
 				}
 			});
@@ -458,9 +449,9 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 			statusLine.setMessage(image, message);
 			Display.getCurrent().timerExec(5000, new Runnable() {
 				public void run() {
-					if (fCurrentMessage == message) {
+					if (fStatusCounter == id &&  UIAccess.isOkToUse(getPageBook())) {
 						statusLine.setErrorMessage(null);
-						statusLine.setMessage(null);
+						statusLine.setMessage(fStatusImage, fStatusMessage);
 					}
 				}
 			});
@@ -468,6 +459,9 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 	}
 	
 	private void initProgress(final int total, final int worked) {
+		if (worked < 0 || worked >= total) { // includes total == 0
+			return;
+		}
 		final IStatusLineManager statusLine = getViewSite().getActionBars().getStatusLineManager();
 		statusLine.setCancelEnabled(true);
 		final IProgressMonitor monitor = statusLine.getProgressMonitor();

@@ -55,6 +55,12 @@ public class SharedMessages extends NLS {
 	public static String FindReplaceAction_name;
 	public static String FindReplaceAction_tooltip;
 	
+	public static String FindNext_name;
+	public static String FindNext_tooltip;
+	
+	public static String FindPrevious_name;
+	public static String FindPrevious_tooltip;
+	
 	public static String CollectionEditing_AddItem_label;
 	public static String CollectionEditing_CopyItem_label;
 	public static String CollectionEditing_EditItem_label;

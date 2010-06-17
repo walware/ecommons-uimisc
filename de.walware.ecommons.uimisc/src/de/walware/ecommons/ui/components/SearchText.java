@@ -227,8 +227,10 @@ public class SearchText extends Composite {
 			@Override
 			public void keyPressed(final KeyEvent e) {
 				if (e.keyCode == SWT.ESC) {
+					// allows other top level actions if field was already empty
+					final boolean alreadyClear = (fTextControl.getText().length() == 0);
 					setText(null);
-					e.doit = false;
+					e.doit = alreadyClear;
 					return;
 				}
 			}

@@ -37,6 +37,11 @@ public class SharedUIResources {
 	public static final String CLOSE_PAGE_COMMAND_ID = "de.walware.ecommons.base.commands.ClosePage"; //$NON-NLS-1$
 	public static final String CLOSE_ALL_PAGES_COMMAND_ID = "de.walware.ecommons.base.commands.CloseAllPages"; //$NON-NLS-1$
 	
+	/** equal to org.eclipse.ui.texteditor.IWorkbenchActionDefinitionIds#FIND_NEXT */
+	public static final String FIND_NEXT_COMMAND_ID = "org.eclipse.ui.edit.findNext"; //$NON-NLS-1$
+	/** equal to org.eclipse.ui.texteditor.IWorkbenchActionDefinitionIds#FIND_PREVIOUS */
+	public static final String FIND_PREVIOUS_COMMAND_ID = "org.eclipse.ui.edit.findPrevious"; //$NON-NLS-1$
+	
 	
 	public static final String PLACEHOLDER_IMAGE_ID = UIMiscellanyPlugin.PLUGIN_ID + "/image/obj/dummy"; //$NON-NLS-1$
 	
@@ -51,6 +56,8 @@ public class SharedUIResources {
 	
 	public static final String LOCTOOL_SORT_ALPHA_IMAGE_ID = UIMiscellanyPlugin.PLUGIN_ID + "/image/loctool/sort.alpha"; //$NON-NLS-1$
 	public static final String LOCTOOL_SORT_SCORE_IMAGE_ID = UIMiscellanyPlugin.PLUGIN_ID + "/image/loctool/sort.score"; //$NON-NLS-1$
+	
+	public static final String LOCTOOL_CASESENSITIVE_IMAGE_ID = UIMiscellanyPlugin.PLUGIN_ID + "/image/loctool/casesensitive"; //$NON-NLS-1$
 	
 	public static final String LOCTOOL_EXPANDALL_IMAGE_ID = UIMiscellanyPlugin.PLUGIN_ID + "/image/loctool/expandall"; //$NON-NLS-1$
 	public static final String LOCTOOL_COLLAPSEALL_IMAGE_ID = UIMiscellanyPlugin.PLUGIN_ID + "/image/loctool/collapseall"; //$NON-NLS-1$

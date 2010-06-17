@@ -99,6 +99,34 @@ public abstract class BrowserHandler extends AbstractHandler {
 		
 	}
 	
+	public static class CancelHandler extends BrowserHandler {
+		
+		
+		public CancelHandler(final Browser browser) {
+			super(browser);
+		}
+		
+		public CancelHandler(final IBrowserProvider browser) {
+			super(browser);
+		}
+		
+		
+		@Override
+		public void setEnabled(final Object evaluationContext) {
+			final Browser browser = getBrowser();
+			setBaseEnabled(UIAccess.isOkToUse(browser));
+		}
+		
+		public Object execute(final ExecutionEvent event) throws ExecutionException {
+			final Browser browser = getBrowser();
+			if (UIAccess.isOkToUse(browser)) {
+				browser.stop();
+			}
+			return null;
+		}
+		
+	}
+	
 	public static class OpenExternalHandler extends BrowserHandler {
 		
 		

@@ -165,14 +165,22 @@ public class UIMiscellanyPlugin extends AbstractUIPlugin {
 		
 		util.register(SharedUIResources.LOCTOOL_FILTER_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL, "filter_view.gif"); //$NON-NLS-1$
 		util.register(SharedUIResources.LOCTOOLD_FILTER_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL_D, "filter_view.gif"); //$NON-NLS-1$
+		
 		util.register(SharedUIResources.LOCTOOL_SORT_ALPHA_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL, "sort-alpha.png"); //$NON-NLS-1$
 		util.register(SharedUIResources.LOCTOOL_SORT_SCORE_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL, "sort-score.png"); //$NON-NLS-1$
+		
+		util.register(SharedUIResources.LOCTOOL_CASESENSITIVE_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL, "casesensitive.png"); //$NON-NLS-1$
+		
 		util.register(SharedUIResources.LOCTOOL_EXPANDALL_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL, "expandall.gif"); //$NON-NLS-1$
 		util.register(SharedUIResources.LOCTOOL_COLLAPSEALL_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL, "collapseall.gif"); //$NON-NLS-1$
+		
 		util.register(SharedUIResources.LOCTOOL_SCROLLLOCK_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL, "scrolllock.gif"); //$NON-NLS-1$
+		
 		util.register(SharedUIResources.LOCTOOL_CLEARSEARCH_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL, "clearsearch.gif"); //$NON-NLS-1$
 		util.register(SharedUIResources.LOCTOOLD_CLEARSEARCH_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL_D, "clearsearch.gif"); //$NON-NLS-1$
+		
 		util.register(SharedUIResources.LOCTOOL_SYNCHRONIZED_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL, "synced.png"); //$NON-NLS-1$
+		
 		util.register(SharedUIResources.LOCTOOL_FAVORITES_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL, "favorites.png"); //$NON-NLS-1$
 		
 		util.register(SharedUIResources.LOCTOOL_CHANGE_PAGE_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL, "change_page.png"); //$NON-NLS-1$
