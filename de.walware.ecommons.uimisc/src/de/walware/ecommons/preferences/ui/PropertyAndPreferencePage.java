@@ -21,6 +21,8 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ControlEnableState;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -37,9 +39,11 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PreferencesUtil;
+import org.eclipse.ui.statushandlers.StatusManager;
 
 import de.walware.ecommons.preferences.internal.ui.Messages;
 import de.walware.ecommons.ui.components.StatusInfo;
+import de.walware.ecommons.ui.internal.UIMiscellanyPlugin;
 import de.walware.ecommons.ui.util.LayoutUtil;
 
 
@@ -184,9 +188,9 @@ public abstract class PropertyAndPreferencePage<Block extends ConfigurationBlock
 				}
 			}
 			catch (final Exception e) {
-				// TODO
+				StatusManager.getManager().handle(new Status(IStatus.ERROR, UIMiscellanyPlugin.PLUGIN_ID, -1,
+						"An error occurred when opening the project properties page.", e));
 			}
-			
 		}
 	}
 	

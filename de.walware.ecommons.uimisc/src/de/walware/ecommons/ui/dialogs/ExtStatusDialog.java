@@ -25,6 +25,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.operation.ModalContext;
 import org.eclipse.jface.wizard.ProgressMonitorPart;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -84,6 +85,13 @@ public class ExtStatusDialog extends StatusDialog implements IRunnableContext {
 	@Override
 	protected boolean isResizable() {
 		return true;
+	}
+	
+	@Override
+	protected Point getInitialSize() {
+		final Point savedSize = super.getInitialSize();
+		final Point minSize = getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		return new Point(Math.max(savedSize.x, minSize.x), Math.max(savedSize.y, minSize.y));
 	}
 	
 	@Override
