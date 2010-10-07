@@ -252,7 +252,10 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 		
 		initActions(getSite(), fPageHandlers);
 		
-		setUrl(fSession.fUrl);
+		// check required for open in new window/page
+		if (fSession.fUrl != null && fSession.fUrl.length() > 0) {
+			setUrl(fSession.fUrl);
+		}
 		setFocus();
 	}
 	
