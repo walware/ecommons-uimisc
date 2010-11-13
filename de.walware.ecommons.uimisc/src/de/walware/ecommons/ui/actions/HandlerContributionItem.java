@@ -159,6 +159,8 @@ public final class HandlerContributionItem extends ContributionItem {
 	
 	private int mode = 0;
 	
+	private boolean visibleEnabled;
+	
 	private final UIElement callback;
 	
 	private final IBindingManagerListener bindingManagerListener = new IBindingManagerListener() {
@@ -189,6 +191,7 @@ public final class HandlerContributionItem extends ContributionItem {
 		this.tooltip = contributionParameters.tooltip;
 		this.style = contributionParameters.style;
 		this.helpContextId = contributionParameters.helpContextId;
+		this.visibleEnabled = contributionParameters.visibleEnabled;
 		
 		menuService = (IMenuService) contributionParameters.serviceLocator
 				.getService(IMenuService.class);
@@ -857,4 +860,11 @@ public final class HandlerContributionItem extends ContributionItem {
 		return false;
 	}
 	
+	public boolean isVisible() {
+		if (visibleEnabled) {
+			return super.isVisible() && isEnabled();
+		}
+		return super.isVisible();
+	}
+
 }
