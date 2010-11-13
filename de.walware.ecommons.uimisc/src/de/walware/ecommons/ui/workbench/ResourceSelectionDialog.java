@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.SelectionStatusDialog;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.eclipse.ui.views.navigator.ResourceComparator;
 
 import de.walware.ecommons.ui.components.TreeAndListGroup;
 import de.walware.ecommons.ui.internal.Messages;
@@ -132,7 +133,8 @@ public class ResourceSelectionDialog extends SelectionStatusDialog {
 				getResourceProvider(IResource.FOLDER | IResource.PROJECT | IResource.ROOT), 
 				WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(),
 				getResourceProvider(IResource.FILE), 
-				WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(), false);
+				WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(),
+				new ResourceComparator(ResourceComparator.NAME), false);
 		final GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gd.widthHint = SIZING_SELECTION_WIDGET_WIDTH;
 		gd.heightHint = SIZING_SELECTION_WIDGET_HEIGHT;

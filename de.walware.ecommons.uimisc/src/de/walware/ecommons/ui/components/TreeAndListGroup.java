@@ -24,6 +24,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -31,7 +32,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Tree;
-import org.eclipse.ui.views.navigator.ResourceComparator;
 
 
 /**
@@ -50,6 +50,7 @@ public class TreeAndListGroup implements ISelectionChangedListener {
 	private final IStructuredContentProvider fListContentProvider;
 	private final ILabelProvider fTreeLabelProvider;
 	private final ILabelProvider fListLabelProvider;
+	private final ViewerComparator fComparator;
 	
 	// widgets
 	private Composite fControl;
@@ -74,12 +75,13 @@ public class TreeAndListGroup implements ISelectionChangedListener {
 	public TreeAndListGroup(final Composite parent, final Object rootObject, 
 			final ITreeContentProvider treeContentProvider, final ILabelProvider treeLabelProvider, 
 			final IStructuredContentProvider listContentProvider, final ILabelProvider listLabelProvider,
-			final boolean allowMultiselection) {
+			final ViewerComparator comparator, final boolean allowMultiselection) {
 		fRoot = rootObject;
 		fTreeContentProvider = treeContentProvider;
 		fListContentProvider = listContentProvider;
 		fTreeLabelProvider = treeLabelProvider;
 		fListLabelProvider = listLabelProvider;
+		fComparator = comparator;
 		fAllowMultiselection = allowMultiselection;
 		
 		fControl = createControls(parent);
@@ -179,7 +181,7 @@ public class TreeAndListGroup implements ISelectionChangedListener {
 		fListViewer.getTable().setFont(parent.getFont());
 		fListViewer.setContentProvider(fListContentProvider);
 		fListViewer.setLabelProvider(fListLabelProvider);
-		fListViewer.setComparator(new ResourceComparator(ResourceComparator.NAME));
+		fListViewer.setComparator(fComparator);
 		fListViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(final SelectionChangedEvent event) {
 				notifySelectionListeners(event);
@@ -206,7 +208,7 @@ public class TreeAndListGroup implements ISelectionChangedListener {
 		fTreeViewer = new TreeViewer(tree);
 		fTreeViewer.setContentProvider(fTreeContentProvider);
 		fTreeViewer.setLabelProvider(fTreeLabelProvider);
-		fTreeViewer.setComparator(new ResourceComparator(ResourceComparator.NAME));
+		fTreeViewer.setComparator(fComparator);
 		fTreeViewer.addSelectionChangedListener(this);
 	}
 	
