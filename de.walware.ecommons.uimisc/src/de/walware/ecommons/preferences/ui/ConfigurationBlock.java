@@ -83,6 +83,17 @@ public abstract class ConfigurationBlock {
 	public void dispose() {
 	}
 	
+	/**
+	 * Returns the help context for the configuration block.
+	 * <p>
+	 * It is used by configuration block containers to set the help context automatically.</p>
+	 * 
+	 * @return the help context id or <code>null</code>, if not available
+	 */
+	protected String getHelpContext() {
+		return null;
+	}
+	
 	public void performApply() {
 		performOk();
 	}

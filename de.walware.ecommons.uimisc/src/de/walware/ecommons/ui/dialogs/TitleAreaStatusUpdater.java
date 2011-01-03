@@ -26,9 +26,14 @@ public class TitleAreaStatusUpdater implements IStatusChangeListener {
 	
 	private final TitleAreaDialog fDialog;
 	
+	private String fDefaultMessage;
 	
-	public TitleAreaStatusUpdater(final TitleAreaDialog dialog) {
+	
+	public TitleAreaStatusUpdater(final TitleAreaDialog dialog, final String defaultMessage) {
 		fDialog = dialog;
+		fDefaultMessage = defaultMessage;
+		
+		fDialog.setMessage(defaultMessage);
 	}
 	
 	
@@ -45,7 +50,7 @@ public class TitleAreaStatusUpdater implements IStatusChangeListener {
 			fDialog.setMessage(status.getMessage(), IMessageProvider.INFORMATION);
 			break;
 		case IStatus.OK:
-			fDialog.setMessage(null);
+			fDialog.setMessage(fDefaultMessage);
 			break;
 		default:
 			break;

@@ -101,7 +101,7 @@ public abstract class ConfigurationBlockPreferencePage<Block extends Configurati
 	 * @return the help context for the page or <code>null</code>
 	 */
 	protected String getHelpContext() {
-		return null;
+		return fBlock.getHelpContext();
  	}
 	
 	

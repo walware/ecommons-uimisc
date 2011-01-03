@@ -23,7 +23,7 @@ public class StatusInfo extends Status {
 	 * Applies the status to the status line of a dialog page.
 	 */
 	public static void applyToStatusLine(final DialogPage page, final IStatus status) {
-		String message= status.getMessage();
+		String message = status.getMessage();
 		switch (status.getSeverity()) {
 			case IStatus.OK:
 				page.setMessage(null, IMessageProvider.NONE);
@@ -39,11 +39,11 @@ public class StatusInfo extends Status {
 				break;			
 			default:
 				if (message.length() == 0) {
-					message= null;
+					message = null;
 				}
 				page.setMessage(null);
 				page.setErrorMessage(message);
-				break;		
+				break;
 		}
 	}
 	
