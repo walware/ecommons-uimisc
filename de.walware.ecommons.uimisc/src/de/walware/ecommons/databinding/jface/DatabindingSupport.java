@@ -13,6 +13,7 @@ package de.walware.ecommons.databinding.jface;
 
 import org.eclipse.core.databinding.AggregateValidationStatus;
 import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.observable.ObservableEvent;
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.databinding.observable.value.IValueChangeListener;
 import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
@@ -86,10 +87,10 @@ public class DatabindingSupport {
 		listener.statusChanged((IStatus) validationStatus.getValue());
 		fTracker = new DirtyTracker(fDbc) { // sets initial status on first change again, because initial errors are suppressed
 			@Override
-			public void handleChange() {
+			public void handleChange(final ObservableEvent event) {
 				if (!isDirty()) {
 					listener.statusChanged((IStatus) validationStatus.getValue());
-					super.handleChange();
+					super.handleChange(event);
 				}
 			}
 		};
@@ -98,7 +99,7 @@ public class DatabindingSupport {
 	public void updateStatus() {
 		if (fTracker != null) {
 			fTracker.resetDirty();
-			fTracker.handleChange();
+			fTracker.handleChange(null);
 		}
 	}
 	
