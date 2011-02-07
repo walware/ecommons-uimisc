@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
 import de.walware.ecommons.IStatusChangeListener;
+import de.walware.ecommons.databinding.jface.DatabindingSupport;
 import de.walware.ecommons.ui.util.LayoutUtil;
 
 
@@ -103,6 +104,15 @@ public class ExtStatusDialog extends StatusDialog implements IRunnableContext {
 		if (button != null && shell != null && !shell.isDisposed()) {
 			shell.setDefaultButton(button);
 		}
+	}
+	
+	protected void initBindings() {
+		final DatabindingSupport databinding = new DatabindingSupport(getDialogArea());
+		addBindings(databinding);
+		databinding.installStatusListener(new StatusUpdater());
+	}
+	
+	protected void addBindings(final DatabindingSupport databinding) {
 	}
 	
 	@Override
