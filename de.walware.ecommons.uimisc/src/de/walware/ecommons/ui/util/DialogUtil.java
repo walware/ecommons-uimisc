@@ -33,6 +33,8 @@ public class DialogUtil {
 	
 	public static final int HISTORY_MAX = 25;
 	
+	private static final String[] EMPTY_ARRAY_SETTING = new String[0];
+	
 	
 	public static IDialogSettings getDialogSettings(final AbstractUIPlugin plugin, final String dialogId) {
 		final String sectionName = dialogId;
@@ -83,6 +85,10 @@ public class DialogUtil {
 			}
 		}
 		return history.toArray(new String[history.size()]);
+	}
+	
+	public static String[] noNull(final String[] array) {
+		return (array != null) ? array : EMPTY_ARRAY_SETTING;
 	}
 	
 	
@@ -169,7 +175,8 @@ public class DialogUtil {
 	 * including selection in the UI.
 	 */
 	public static final VariableFilter EXCLUDE_INTERACTIVE_FILTER = new VariableFilter() {
-		public boolean isFiltered(IDynamicVariable variable) {
+		@Override
+		public boolean isFiltered(final IDynamicVariable variable) {
 			final String variableName = variable.getName();
 			return (variableName.startsWith("selected_") //$NON-NLS-1$
 					|| variableName.endsWith("_prompt") ); //$NON-NLS-1$
@@ -180,7 +187,8 @@ public class DialogUtil {
 	 * Variable filter excluding known variables from Eclipse Development Tool for Java like JDT.
 	 */
 	public static final VariableFilter EXCLUDE_JAVA_FILTER = new VariableFilter() {
-		public boolean isFiltered(IDynamicVariable variable) {
+		@Override
+		public boolean isFiltered(final IDynamicVariable variable) {
 			final String variableName = variable.getName();
 			return (variableName.startsWith("java_") //$NON-NLS-1$
 					|| variableName.startsWith("target_home") //$NON-NLS-1$
@@ -192,7 +200,8 @@ public class DialogUtil {
 	 * Variable filter excluding known variables, which are only valid in builds.
 	 */
 	public static final VariableFilter EXCLUDE_BUILD_FILTER = new VariableFilter() {
-		public boolean isFiltered(IDynamicVariable variable) {
+		@Override
+		public boolean isFiltered(final IDynamicVariable variable) {
 			final String variableName = variable.getName();
 			return (variableName.startsWith("build_")); //$NON-NLS-1$
 		}

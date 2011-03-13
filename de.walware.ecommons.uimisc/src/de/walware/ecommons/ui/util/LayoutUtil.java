@@ -125,6 +125,11 @@ public class LayoutUtil {
 		return Math.max(widthHint, button.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).x);
 	}
 	
+	public static GridData hintWidth(final GridData gd, final Button button) {
+		gd.widthHint = hintWidth(button);
+		return gd;
+	}
+	
 	public static int hintWidth(final Text text, final int numChars) {
 		return hintWidth(text, JFaceResources.DIALOG_FONT, numChars);
 	}
@@ -157,8 +162,8 @@ public class LayoutUtil {
 		return hintWidth(combo, JFaceResources.DIALOG_FONT, numChars);
 	}
 	
-	public static int hintWidth(final Combo combo, final String symbolicName, final int numChars) {
-		combo.setFont(JFaceResources.getFontRegistry().get(symbolicName));
+	public static int hintWidth(final Combo combo, final String fontName, final int numChars) {
+		combo.setFont(JFaceResources.getFontRegistry().get(fontName));
 		if (numChars == -1) {
 			return getDialogValues().defaultEntryFieldWidth;
 		}
@@ -176,6 +181,15 @@ public class LayoutUtil {
 		}
 		
 		return widthHint;
+	}
+	
+	public static GridData hintWidth(final GridData gd, final Combo combo, final int numChars) {
+		return hintWidth(gd, combo, JFaceResources.DIALOG_FONT, numChars);
+	}
+	
+	public static GridData hintWidth(final GridData gd, final Combo combo, final String fontName, final int numChars) {
+		gd.widthHint = hintWidth(combo, fontName, numChars);
+		return gd;
 	}
 	
 	public static int hintWidth(final Combo combo, final String[] items) {
