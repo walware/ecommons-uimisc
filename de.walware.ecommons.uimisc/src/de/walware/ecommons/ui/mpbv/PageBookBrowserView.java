@@ -77,6 +77,8 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 	protected static final String GOTO_HOME_ID = "de.walware.ecommons.base.commands.GoToHome";
 	/** Action id (command) to refresh the current page. */
 	protected static final String REFRESH_PAGE_ID = IWorkbenchCommandConstants.FILE_REFRESH;
+	/** Action id (command) to print the current page. */
+	protected static final String PRINT_PAGE_ID = IWorkbenchCommandConstants.FILE_REFRESH;
 	
 	
 	private class GoToHomeHandler extends AbstractHandler {
@@ -105,6 +107,24 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 			if (fCurrentBrowserPage != null) {
 				final Browser browser = fCurrentBrowserPage.getBrowser();
 				browser.refresh();
+			}
+			return null;
+		}
+		
+	}
+	
+	private class PrintHandler extends AbstractHandler {
+		
+		
+		@Override
+		public void setEnabled(final Object evaluationContext) {
+			setBaseEnabled(fCurrentBrowserPage != null);
+		}
+		
+		public Object execute(final ExecutionEvent event) throws ExecutionException {
+			if (fCurrentBrowserPage != null) {
+				final Browser browser = fCurrentBrowserPage.getBrowser();
+				browser.execute("window.print();" );
 			}
 			return null;
 		}
@@ -260,7 +280,10 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 		final IHandler2 cancelHandler = new CancelHandler(getBrowserInterface());
 //		handlerService.activateHandler(, cancelHandler);
 		addBrowserHandler(cancelHandler);
-		
+		{	final IHandler2 handler = new PrintHandler();
+			handlers.add(PRINT_PAGE_ID, handler);
+			handlerService.activateHandler(IWorkbenchCommandConstants.FILE_PRINT, handler);
+		}
 		{	final IHandler2 handler = new CreateBookmarkHandler();
 			handlers.add(CREATE_BOOKMARK_ID, handler); 
 			addBrowserHandler(handler);
