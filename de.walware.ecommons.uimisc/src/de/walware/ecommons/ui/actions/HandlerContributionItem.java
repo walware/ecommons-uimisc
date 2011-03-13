@@ -161,6 +161,8 @@ public final class HandlerContributionItem extends ContributionItem {
 	
 	private boolean visibleEnabled;
 	
+	private IServiceLocator serviceLocator;
+	
 	private final UIElement callback;
 	
 	private final IBindingManagerListener bindingManagerListener = new IBindingManagerListener() {
@@ -192,16 +194,18 @@ public final class HandlerContributionItem extends ContributionItem {
 		this.style = contributionParameters.style;
 		this.helpContextId = contributionParameters.helpContextId;
 		this.visibleEnabled = contributionParameters.visibleEnabled;
+		this.serviceLocator = contributionParameters.serviceLocator;
 		
-		menuService = (IMenuService) contributionParameters.serviceLocator
+		menuService = (IMenuService) serviceLocator
 				.getService(IMenuService.class);
-		commandService = (ICommandService) contributionParameters.serviceLocator
+		commandService = (ICommandService) serviceLocator
 				.getService(ICommandService.class);
-		handlerService = (IHandlerService) contributionParameters.serviceLocator
+		handlerService = (IHandlerService) serviceLocator
 				.getService(IHandlerService.class);
-		bindingService = (IBindingService) contributionParameters.serviceLocator
+		bindingService = (IBindingService) serviceLocator
 				.getService(IBindingService.class);
-		final IWorkbenchLocationService workbenchLocationService = (IWorkbenchLocationService) contributionParameters.serviceLocator.getService(IWorkbenchLocationService.class);
+		final IWorkbenchLocationService workbenchLocationService = (IWorkbenchLocationService) serviceLocator
+				.getService(IWorkbenchLocationService.class);
 		display = workbenchLocationService.getWorkbench().getDisplay();
 		
 		createCommand(contributionParameters.commandId,
@@ -263,7 +267,7 @@ public final class HandlerContributionItem extends ContributionItem {
 						// it's OK to not have a helpContextId
 					}
 				}
-				final IWorkbenchLocationService wls = (IWorkbenchLocationService) contributionParameters.serviceLocator
+				final IWorkbenchLocationService wls = (IWorkbenchLocationService) serviceLocator
 						.getService(IWorkbenchLocationService.class);
 				final IWorkbench workbench = wls.getWorkbench();
 				if (workbench != null && helpContextId != null) {
@@ -329,7 +333,8 @@ public final class HandlerContributionItem extends ContributionItem {
 	 * as 'read-only', do <b>not</b> execute this instance or attempt
 	 * to modify its state.
 	 * </p>
-	 * @return The parameterized command for this contribution.
+	 * @return The parameterized command for this contribution. May be
+	 *         <code>null</code>.
 	 */
 	public ParameterizedCommand getCommand() {
 		return command;
@@ -352,6 +357,29 @@ public final class HandlerContributionItem extends ContributionItem {
 			return;
 		}
 		command = ParameterizedCommand.generateCommand(cmd, parameters);
+	}
+	
+	/**
+	 * Provide info on the rendering data contained in this item.
+	 * 
+	 * @return a {@link CommandContributionItemParameter}. Valid fields are
+	 *         serviceLocator, id, style, icon, disabledIcon, hoverIcon, label,
+	 *         helpContextId, mnemonic, tooltip. The Object will never be
+	 *         <code>null</code>, although any of the fields may be
+	 *         <code>null</code>.
+	 * @since 3.7
+	 */
+	public CommandContributionItemParameter getData() {
+		CommandContributionItemParameter data = new CommandContributionItemParameter(
+				serviceLocator, getId(), null, style);
+		data.icon = icon;
+		data.disabledIcon = disabledIcon;
+		data.hoverIcon = hoverIcon;
+		data.label = label;
+		data.helpContextId = helpContextId;
+		data.mnemonic = mnemonic;
+		data.tooltip = tooltip;
+		return data;
 	}
 	
 	@Override
@@ -866,5 +894,5 @@ public final class HandlerContributionItem extends ContributionItem {
 		}
 		return super.isVisible();
 	}
-
+	
 }
