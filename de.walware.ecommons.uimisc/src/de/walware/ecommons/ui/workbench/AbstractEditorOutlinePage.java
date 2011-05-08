@@ -99,7 +99,7 @@ public abstract class AbstractEditorOutlinePage extends Page
 	private class DefaultSelectionListener implements ISelectionChangedListener {
 		
 		public void selectionChanged(final SelectionChangedEvent event) {
-			if (!fIgnoreSelection) {
+			if (fIgnoreSelection == 0) {
 				selectInEditor(event.getSelection());
 			}
 		}
@@ -132,7 +132,7 @@ public abstract class AbstractEditorOutlinePage extends Page
 		protected void init() {
 		}
 		
-		public void updateElement(UIElement element, Map parameters) {
+		public void updateElement(final UIElement element, final Map parameters) {
 			element.setChecked(isChecked());
 		}
 		
@@ -140,7 +140,7 @@ public abstract class AbstractEditorOutlinePage extends Page
 			return fIsChecked;
 		}
 		
-		public Object execute(ExecutionEvent event) throws ExecutionException {
+		public Object execute(final ExecutionEvent event) throws ExecutionException {
 			final boolean on = fIsChecked = !fIsChecked;
 			final Runnable runnable = new Runnable() {
 				public void run() {
@@ -173,7 +173,7 @@ public abstract class AbstractEditorOutlinePage extends Page
 	private final ISelectionChangedListener fSelectionListener = new SelectionChangeNotify(fSelectionListeners);
 	private final FastList<ISelectionChangedListener> fPostSelectionListeners = new FastList<ISelectionChangedListener>(ISelectionChangedListener.class);
 	private final ISelectionChangedListener fPostSelectionListener = new SelectionChangeNotify(fPostSelectionListeners);
-	private boolean fIgnoreSelection;
+	private int fIgnoreSelection;
 	
 	private final String fContextMenuID;
 	private Menu fContextMenu;
@@ -266,6 +266,22 @@ public abstract class AbstractEditorOutlinePage extends Page
 	protected void init() {
 	}
 	
+	protected void beginIgnoreSelection() {
+		fIgnoreSelection++;
+	}
+	
+	protected void endIgnoreSelection(final boolean async) {
+		if (async) {
+			Display.getCurrent().asyncExec(new Runnable() {
+				public void run() {
+					fIgnoreSelection--;
+				};
+			});
+		}
+		else {
+			fIgnoreSelection--;
+		}
+	}
 	
 	protected void initActions(final IServiceLocator serviceLocator, final HandlerCollection handlers) {
 		final TreeViewer viewer = getViewer();
@@ -280,14 +296,13 @@ public abstract class AbstractEditorOutlinePage extends Page
 				public Object execute(final ExecutionEvent event) {
 					final TreeViewer viewer = getViewer();
 					if (UIAccess.isOkToUse(viewer)) {
-						fIgnoreSelection = true;
-						final Object result = super.execute(event);
-						Display.getCurrent().asyncExec(new Runnable() {
-							public void run() {
-								fIgnoreSelection = false;
-							};
-						});
-						return result;
+						beginIgnoreSelection();
+						try {
+							return super.execute(event);
+						}
+						finally {
+							endIgnoreSelection(true);
+						}
 					}
 					return null;
 				}
@@ -340,7 +355,7 @@ public abstract class AbstractEditorOutlinePage extends Page
 	
 	
 	public void setSelection(final ISelection selection) {
-		TreeViewer viewer = getViewer();
+		final TreeViewer viewer = getViewer();
 		if (UIAccess.isOkToUse(viewer)) {
 			viewer.setSelection(selection);
 		}
