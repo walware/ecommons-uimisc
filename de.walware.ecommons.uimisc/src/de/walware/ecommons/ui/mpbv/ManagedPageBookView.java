@@ -12,6 +12,8 @@
 package de.walware.ecommons.ui.mpbv;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -52,7 +54,7 @@ import de.walware.ecommons.ui.actions.SimpleContributionItem;
 public abstract class ManagedPageBookView<S extends ISession> extends PageBookView {
 	
 	
-	protected static final String PAGE_CONTROL_MENU_ID = "page_control";
+	protected static final String PAGE_CONTROL_MENU_ID = "page_control"; //$NON-NLS-1$
 	
 	
 	private class SessionHandler implements IWorkbenchPart {
@@ -181,6 +183,7 @@ public abstract class ManagedPageBookView<S extends ISession> extends PageBookVi
 	
 	private final List<S> fSessionList = new ArrayList<S>();
 	private final Map<S, SessionHandler> fSessionMap = new HashMap<S, SessionHandler>();
+	private Comparator<S> fSessionComparator;
 	
 	private final List<S> fSessionHistory = new LinkedList<S>();
 	
@@ -192,6 +195,10 @@ public abstract class ManagedPageBookView<S extends ISession> extends PageBookVi
 	public ManagedPageBookView() {
 	}
 	
+	
+	protected void setSessionComparator(final Comparator<S> comparator) {
+		fSessionComparator = comparator;
+	}
 	
 	@Override
 	protected boolean isImportant(final IWorkbenchPart part) {
@@ -415,7 +422,13 @@ public abstract class ManagedPageBookView<S extends ISession> extends PageBookVi
 			return null;
 		}
 		final SessionHandler sessionHandler = new SessionHandler(session);
-		fSessionList.add(session);
+		if (fSessionComparator != null) {
+			final int idx = Collections.binarySearch(fSessionList, session, fSessionComparator);
+			fSessionList.add((idx >= 0) ? idx : -(idx+1), session);
+		}
+		else {
+			fSessionList.add(session);
+		}
 		fSessionMap.put(session, sessionHandler);
 		if (show) {
 			partActivated(sessionHandler);
