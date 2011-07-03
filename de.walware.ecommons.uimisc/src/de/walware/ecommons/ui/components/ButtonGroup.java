@@ -48,9 +48,10 @@ import de.walware.ecommons.ui.util.LayoutUtil;
 public class ButtonGroup<ItemType> extends Composite {
 	
 	
-	protected static int ADD_NEW = 1;
-	protected static int ADD_COPY = 2;
-	protected static int EDIT = 3;
+	public static final int ADD_NEW = 1;
+	public static final int ADD_COPY = 2;
+	public static final int ADD_ANY = ADD_NEW | ADD_COPY;
+	public static final int EDIT = 4;
 	
 	
 	private StructuredViewer fViewer;
@@ -99,7 +100,7 @@ public class ButtonGroup<ItemType> extends Composite {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				final Object item = ((IStructuredSelection) fViewer.getSelection()).getFirstElement();
-				edit0(item, ADD_NEW);
+				editElement(ADD_NEW, item);
 			}
 		});
 	}
@@ -113,7 +114,7 @@ public class ButtonGroup<ItemType> extends Composite {
 			public void widgetSelected(final SelectionEvent e) {
 				final Object item = getItemToEdit((IStructuredSelection) fViewer.getSelection());
 				if (item != null) {
-					edit0(item, ADD_COPY);
+					editElement(ADD_COPY, item);
 				}
 			}
 		});
@@ -128,7 +129,7 @@ public class ButtonGroup<ItemType> extends Composite {
 			public void widgetSelected(final SelectionEvent e) {
 				final Object item = getItemToEdit((IStructuredSelection) fViewer.getSelection());
 				if (item != null) {
-					edit0(item, EDIT);
+					editElement(EDIT, item);
 				}
 			}
 		});
@@ -219,7 +220,7 @@ public class ButtonGroup<ItemType> extends Composite {
 				public void doubleClick(final DoubleClickEvent event) {
 					final Object item = getItemToEdit((IStructuredSelection) event.getSelection());
 					if (item != null) {
-						edit0(item, EDIT);
+						editElement(EDIT, item);
 					}
 				}
 			});
@@ -329,17 +330,16 @@ public class ButtonGroup<ItemType> extends Composite {
 	}
 	
 	
-	private void edit0(final Object element, final int command) {
-		final boolean newItem = (command == ADD_NEW || command == ADD_COPY);
-		final ItemType orgItem = (command != ADD_NEW && element != null) ? getModelItem(element) : null;
-		final Object parent = (command == ADD_NEW) ? getAddParent(element) : getParent(element);
+	public void editElement(final int command, final Object element) {
+		final ItemType orgItem = ((command & ADD_NEW) == 0 && element != null) ? getModelItem(element) : null;
+		final Object parent = ((command & ADD_NEW) != 0) ? getAddParent(element) : getParent(element);
 		
-		final ItemType editItem = edit1(((command != ADD_NEW) ? orgItem : null), newItem, parent);
+		final ItemType editItem = edit1(command, ((command & ADD_NEW) == 0) ? orgItem : null, parent);
 		if (editItem == null) {
 			return;
 		}
 		fIsDirty = true;
-		if (newItem) {
+		if ((command & ADD_ANY) != 0) {
 			if (fDefault != null && fList.isEmpty()) {
 				fDefault.setValue(editItem);
 			}
@@ -360,7 +360,7 @@ public class ButtonGroup<ItemType> extends Composite {
 		final Object editElement = getViewerElement(editItem, parent);
 		refresh0(editElement);
 		if (fCheckedSet != null) {
-			if (newItem) {
+			if ((command & ADD_ANY) != 0) {
 				fCheckedSet.add(editItem);
 			}
 			else {
@@ -372,6 +372,10 @@ public class ButtonGroup<ItemType> extends Composite {
 		if (fViewer instanceof ColumnViewer) {
 			((ColumnViewer) fViewer).editElement(editElement, 0);
 		}
+	}
+	
+	protected ItemType edit1(final int command, final ItemType item, final Object parent) {
+		return edit1(item, (command & (ADD_NEW | ADD_COPY)) != 0, parent);
 	}
 	
 	protected ItemType edit1(final ItemType item, final boolean newItem, final Object parent) {
