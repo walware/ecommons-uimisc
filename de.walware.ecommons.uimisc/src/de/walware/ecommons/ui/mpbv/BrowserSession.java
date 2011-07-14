@@ -13,7 +13,7 @@ package de.walware.ecommons.ui.mpbv;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 
-import de.walware.ecommons.IntArrayMap;
+import de.walware.ecommons.collections.IntArrayMap;
 
 
 /**

@@ -44,7 +44,7 @@ import org.eclipse.ui.part.PageBookView;
 import org.eclipse.ui.part.PageSwitcher;
 import org.eclipse.ui.services.IServiceLocator;
 
-import de.walware.ecommons.ConstList;
+import de.walware.ecommons.collections.ConstList;
 import de.walware.ecommons.ui.SharedUIResources;
 import de.walware.ecommons.ui.actions.HandlerCollection;
 import de.walware.ecommons.ui.actions.HandlerContributionItem;
