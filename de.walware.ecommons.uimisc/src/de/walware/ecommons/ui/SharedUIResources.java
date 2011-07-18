@@ -85,6 +85,8 @@ public class SharedUIResources {
 	public static final String LOCTOOL_DOWN_H_IMAGE_ID = UIMiscellanyPlugin.PLUGIN_ID + "/image/loctoolh/down"; //$NON-NLS-1$
 	
 	public static final String LOCTOOL_CHANGE_PAGE_IMAGE_ID = UIMiscellanyPlugin.PLUGIN_ID + "/image/loctool/change_page"; //$NON-NLS-1$
+	public static final String LOCTOOL_PIN_PAGE_IMAGE_ID = UIMiscellanyPlugin.PLUGIN_ID + "/image/loctool/pin_page"; //$NON-NLS-1$
+	public static final String LOCTOOLD_PIN_PAGE_IMAGE_ID = UIMiscellanyPlugin.PLUGIN_ID + "/image/loctoold/pin_page"; //$NON-NLS-1$
 	
 	
 	/**

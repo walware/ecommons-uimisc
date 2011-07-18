@@ -298,8 +298,13 @@ public abstract class ManagedPageBookView<S extends ISession> extends PageBookVi
 			fSessionList.remove(session);
 			fSessionHistory.remove(session);
 			
-			if (fActiveSession == part && !fSessionHistory.isEmpty()) {
-				showPage(fSessionHistory.get(0));
+			if (fActiveSession == part) {
+				if (!fSessionHistory.isEmpty()) {
+					showPage(fSessionHistory.get(0));
+				}
+				else if (!fSessionList.isEmpty()) {
+					showPage(fSessionList.get(fSessionList.size()-1));
+				}
 			}
 			super.partClosed(part);
 		}
@@ -380,14 +385,23 @@ public abstract class ManagedPageBookView<S extends ISession> extends PageBookVi
 								handler));
 			}
 		}
-		toolBarManager.appendToGroup(PAGE_CONTROL_MENU_ID, 
+		toolBarManager.appendToGroup(PAGE_CONTROL_MENU_ID,
 				new SimpleContributionItem(
 						SharedUIResources.getImages().getDescriptor(SharedUIResources.LOCTOOL_CHANGE_PAGE_IMAGE_ID), null,
 						"Pages", null,
 						SimpleContributionItem.STYLE_PULLDOWN) {
+			{
+				setId("page_control.change_page"); //$NON-NLS-1$
+			}
 			@Override
 			protected void dropDownMenuAboutToShow(final IMenuManager manager) {
 				manager.add(new ShowPageDropdownContribution<S>(ManagedPageBookView.this));
+			}
+			@Override
+			protected void execute() throws ExecutionException {
+				if (fSessionHistory.size() >= 2) {
+					showPage(fSessionHistory.get(1));
+				}
 			}
 		});
 		{	final IHandler2 handler = handlers.get(SharedUIResources.CLOSE_PAGE_COMMAND_ID);

@@ -184,6 +184,8 @@ public class UIMiscellanyPlugin extends AbstractUIPlugin {
 		util.register(SharedUIResources.LOCTOOL_FAVORITES_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL, "favorites.png"); //$NON-NLS-1$
 		
 		util.register(SharedUIResources.LOCTOOL_CHANGE_PAGE_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL, "change_page.png"); //$NON-NLS-1$
+		util.register(SharedUIResources.LOCTOOL_PIN_PAGE_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL, "pin_page.png"); //$NON-NLS-1$
+		util.register(SharedUIResources.LOCTOOLD_PIN_PAGE_IMAGE_ID, ImageRegistryUtil.T_LOCTOOL, "pin_page.png"); //$NON-NLS-1$
 		
 		UIAccess.getDisplay().syncExec(new Runnable() {
 			public void run() {
