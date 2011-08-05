@@ -103,7 +103,7 @@ public class DialogUtil {
 	 * @param exceptions
 	 * @param enable
 	 */
-	public static void setEnabled(final Control control, final List exceptions, final boolean enable) {
+	public static void setEnabled(final Control control, final List<? extends Control> exceptions, final boolean enable) {
 		setEnabled(new Control[] { control }, exceptions, enable);
 	}
 	
@@ -118,7 +118,34 @@ public class DialogUtil {
 	 * @param exceptions
 	 * @param enable
 	 */
-	public static void setEnabled(final Control[] controls, final List exceptions, final boolean enable) {
+	public static void setEnabled(final Control[] controls, final List<? extends Control> exceptions, final boolean enable) {
+		for (final Control control : controls) {
+			if ((exceptions != null && exceptions.contains(control))) {
+				continue;
+			}
+			control.setEnabled(enable);
+			if (control instanceof Composite) {
+				final Composite c = (Composite) control;
+				final Control[] children = c.getChildren();
+				if (children.length > 0) {
+					setEnabled(children, exceptions, enable);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Recursively enables/disables all controls and their children.
+	 * {@link Control#setEnabled(boolean)}
+	 * 
+	 * See {@link org.eclipse.jface.dialogs.ControlEnableState ControlEnableState}
+	 * if saving state is required.
+	 * 
+	 * @param control list of controls
+	 * @param exceptions
+	 * @param enable
+	 */
+	public static void setEnabled(final List<? extends Control> controls, final List<? extends Control> exceptions, final boolean enable) {
 		for (final Control control : controls) {
 			if ((exceptions != null && exceptions.contains(control))) {
 				continue;
@@ -142,8 +169,8 @@ public class DialogUtil {
 	 * @param exceptions
 	 * @param enable
 	 */
-	public static void setVisible(final Control control, final List exceptions, final boolean enable) {
-		setVisible(new Control[] { control }, exceptions, enable);
+	public static void setVisible(final Control control, final List<? extends Control> exceptions, final boolean enable) {
+		setVisible(new ConstList<Control>(control), exceptions, enable);
 	}
 	
 	/**
@@ -154,7 +181,31 @@ public class DialogUtil {
 	 * @param exceptions
 	 * @param enable
 	 */
-	public static void setVisible(final Control[] controls, final List exceptions, final boolean enable) {
+	public static void setVisible(final Control[] controls, final List<? extends Control> exceptions, final boolean enable) {
+		for (final Control control : controls) {
+			if ((exceptions != null && exceptions.contains(control))) {
+				continue;
+			}
+			control.setVisible(enable);
+			if (control instanceof Composite) {
+				final Composite c = (Composite) control;
+				final Control[] children = c.getChildren();
+				if (children.length > 0) {
+					setVisible(children, exceptions, enable);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Recursively sets visible/invisible to all controls and their children.
+	 * {@link Control#setVisible(boolean)}
+	 * 
+	 * @param control list of controls
+	 * @param exceptions
+	 * @param enable
+	 */
+	public static void setVisible(final List<? extends Control> controls, final List<? extends Control> exceptions, final boolean enable) {
 		for (final Control control : controls) {
 			if ((exceptions != null && exceptions.contains(control))) {
 				continue;
