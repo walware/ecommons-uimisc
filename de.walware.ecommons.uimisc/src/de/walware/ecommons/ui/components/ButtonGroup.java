@@ -155,7 +155,7 @@ public class ButtonGroup<ItemType> extends Composite {
 		fDefaultButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				final Object item = getItemToEdit((IStructuredSelection) fViewer.getSelection());
+				final Object item = getItemForDefault((IStructuredSelection) fViewer.getSelection());
 				if (item != null) {
 					setDefault0(item);
 				}
@@ -261,7 +261,7 @@ public class ButtonGroup<ItemType> extends Composite {
 		}
 		
 		if (fDefaultButton != null) {
-			fDefaultButton.setEnabled(item != null);
+			fDefaultButton.setEnabled(getItemForDefault(selection) != null);
 		}
 		
 		if (fUpButton != null) {
@@ -287,6 +287,13 @@ public class ButtonGroup<ItemType> extends Composite {
 				return null;
 			}
 			return element;
+		}
+		return null;
+	}
+	
+	protected Object getItemForDefault(final IStructuredSelection selection) {
+		if (selection.size() == 1) {
+			return selection.getFirstElement();
 		}
 		return null;
 	}
