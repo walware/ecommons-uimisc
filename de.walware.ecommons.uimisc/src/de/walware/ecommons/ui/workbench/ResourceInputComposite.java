@@ -86,10 +86,11 @@ public class ResourceInputComposite extends Composite {
 	}
 	
 	
-	public static final int MODE_FILE = 1;
-	public static final int MODE_DIRECTORY = 2;
-	public static final int MODE_SAVE = 4;
-	public static final int MODE_OPEN = 8;
+	public static final int MODE_FILE =                     0x00000001;
+	public static final int MODE_DIRECTORY =                0x00000002;
+	public static final int MODE_SAVE =                     0x00000004;
+	public static final int MODE_OPEN =                     0x00000008;
+	public static final int MODE_WS_ONLY =                  0x00000010;
 	
 	public static final int STYLE_TEXT = 0;
 	public static final int STYLE_COMBO = 1;
@@ -105,6 +106,7 @@ public class ResourceInputComposite extends Composite {
 	private boolean fForDirectory;
 	private boolean fForFile;
 	private boolean fDoOpen;
+	private boolean fWSOnly;
 	private boolean fControlledChange;
 	private FileValidator fValidator;
 	
@@ -160,6 +162,10 @@ public class ResourceInputComposite extends Composite {
 		
 		fDoOpen = (mode & MODE_OPEN) == MODE_OPEN;
 		fValidator.setDefaultMode(fDoOpen);
+		
+		fWSOnly = (mode & MODE_WS_ONLY) == MODE_WS_ONLY;
+		fValidator.setRequireWorkspace(fWSOnly, fWSOnly);
+		
 		if (fTools != null) {
 			fTools.resetMenu();
 		}
@@ -333,7 +339,7 @@ public class ResourceInputComposite extends Composite {
 				}
 			});
 		}	
-		if (fForFile) {
+		if (fForFile && !fWSOnly) {
 			final MenuItem item = new MenuItem(menu, SWT.PUSH);
 			item.setText(both ? Messages.BrowseFilesystem_ForFile_label : Messages.BrowseFilesystem_label);
 			item.addSelectionListener(new SelectionAdapter() {
@@ -346,7 +352,7 @@ public class ResourceInputComposite extends Composite {
 				}
 			});
 		}
-		if (fForDirectory) {
+		if (fForDirectory && !fWSOnly) {
 			final MenuItem item = new MenuItem(menu, SWT.PUSH);
 			item.setText(both ? Messages.BrowseFilesystem_ForDir_label : Messages.BrowseFilesystem_label);
 			item.addSelectionListener(new SelectionAdapter() {
@@ -467,7 +473,12 @@ public class ResourceInputComposite extends Composite {
 		}
 		
 		fValidator.setExplicit(resource);
-		setText(newVariableExpression(VAR_WORKSPACE_LOC, wsPath) + appendPath, false); 
+		if (fWSOnly) {
+			setText(wsPath + appendPath, false);
+		}
+		else {
+			setText(newVariableExpression(VAR_WORKSPACE_LOC, wsPath) + appendPath, false);
+		}
 	}
 	
 	protected void handleBrowseFilesystemButton(final int mode) {
