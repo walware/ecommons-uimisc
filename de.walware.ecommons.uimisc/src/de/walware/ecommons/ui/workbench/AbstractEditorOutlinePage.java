@@ -11,6 +11,9 @@
 
 package de.walware.ecommons.ui.workbench;
 
+import static org.eclipse.ui.IWorkbenchCommandConstants.NAVIGATE_COLLAPSE_ALL;
+import static org.eclipse.ui.IWorkbenchCommandConstants.NAVIGATE_EXPAND_ALL;
+
 import java.util.Map;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -44,7 +47,6 @@ import org.eclipse.ui.ISources;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.commands.IElementUpdater;
-import org.eclipse.ui.handlers.CollapseAllHandler;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.menus.CommandContributionItemParameter;
 import org.eclipse.ui.menus.UIElement;
@@ -55,6 +57,8 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 import de.walware.ecommons.FastList;
 import de.walware.ecommons.ui.SharedUIResources;
+import de.walware.ecommons.ui.actions.CollapseAllHandler;
+import de.walware.ecommons.ui.actions.ExpandAllHandler;
 import de.walware.ecommons.ui.actions.HandlerCollection;
 import de.walware.ecommons.ui.actions.HandlerContributionItem;
 import de.walware.ecommons.ui.util.UIAccess;
@@ -307,8 +311,12 @@ public abstract class AbstractEditorOutlinePage extends Page
 					return null;
 				}
 			};
-			handlers.add(CollapseAllHandler.COMMAND_ID, handler);
-			handlerService.activateHandler(CollapseAllHandler.COMMAND_ID, handler);
+			handlers.add(NAVIGATE_COLLAPSE_ALL, handler);
+			handlerService.activateHandler(NAVIGATE_COLLAPSE_ALL, handler);
+		}
+		{	final ExpandAllHandler handler = new ExpandAllHandler(getViewer());
+			handlers.add(NAVIGATE_EXPAND_ALL, handler);
+			handlerService.activateHandler(NAVIGATE_EXPAND_ALL, handler);
 		}
 	}
 	
@@ -317,9 +325,10 @@ public abstract class AbstractEditorOutlinePage extends Page
 		final IToolBarManager toolBarManager = actionBars.getToolBarManager();
 		
 		toolBarManager.add(new Separator(SharedUIResources.VIEW_EXPAND_MENU_ID)); 
-		toolBarManager.add(new HandlerContributionItem(new CommandContributionItemParameter(
-				serviceLocator, null, CollapseAllHandler.COMMAND_ID, HandlerContributionItem.STYLE_PUSH),
-				handlers.get(CollapseAllHandler.COMMAND_ID)));
+		toolBarManager.appendToGroup(SharedUIResources.VIEW_EXPAND_MENU_ID,
+				new HandlerContributionItem(new CommandContributionItemParameter(
+						serviceLocator, null, NAVIGATE_COLLAPSE_ALL, HandlerContributionItem.STYLE_PUSH),
+						handlers.get(NAVIGATE_COLLAPSE_ALL) ));
 		toolBarManager.add(new Separator(SharedUIResources.VIEW_SORT_MENU_ID)); 
 		final Separator viewFilter = new Separator(SharedUIResources.VIEW_FILTER_MENU_ID); 
 		viewFilter.setVisible(false);

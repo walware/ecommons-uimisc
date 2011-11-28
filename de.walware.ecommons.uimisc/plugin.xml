@@ -213,4 +213,18 @@
       </key>
    </extension>
    
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            id="de.walware.ecommons.base.commands.ExpandElements"
+            name="%commands_ExpandElements_name"
+            description="%commands_ExpandElements_description">
+         <commandParameter
+               id="type"
+               name="%commands_ExpandElements_Type_name"
+               optional="true">
+         </commandParameter>
+      </command>
+   </extension>
+   
 </plugin>
