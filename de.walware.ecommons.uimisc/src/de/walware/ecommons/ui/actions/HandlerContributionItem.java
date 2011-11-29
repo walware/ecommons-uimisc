@@ -26,7 +26,7 @@ import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.ContributionItem;
-import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuListener2;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.bindings.BindingManagerEvent;
@@ -77,7 +77,7 @@ import de.walware.ecommons.ui.SharedUIResources;
  * This class may be instantiated; it is not intended to be subclassed.
  * </p>
  */
-public final class HandlerContributionItem extends ContributionItem {
+public class HandlerContributionItem extends ContributionItem {
 	
 	
 	public static final String NO_COMMAND_ID = "NO_COMMAND"; //$NON-NLS-1$
@@ -125,7 +125,7 @@ public final class HandlerContributionItem extends ContributionItem {
 	private IHandlerService handlerService;
 	private IBindingService bindingService;
 	
-	private Display display;
+	protected final Display display;
 	
 	private ParameterizedCommand command;
 	private boolean noCommandMode;
@@ -785,16 +785,7 @@ public final class HandlerContributionItem extends ContributionItem {
 					if (workbenchHelpSystem != null) {
 						workbenchHelpSystem.setHelp(menu, helpContextId);
 					}
-					menuManager.addMenuListener(new IMenuListener() {
-						public void menuAboutToShow(final IMenuManager manager) {
-							String id = getId();
-							if (dropDownMenuOverride != null) {
-								id = dropDownMenuOverride;
-							}
-							menuService.populateContributionManager(
-									menuManager, "menu:" + id); //$NON-NLS-1$
-						}
-					});
+					initDropDownMenu(menuManager);
 					
 					// position the menu below the drop down item
 					final Point point = ti.getParent().toDisplay(
@@ -808,6 +799,27 @@ public final class HandlerContributionItem extends ContributionItem {
 		}
 		
 		return false;
+	}
+	
+	protected void initDropDownMenu(final MenuManager menuManager) {
+		menuManager.addMenuListener(new IMenuListener2() {
+			public void menuAboutToShow(final IMenuManager manager) {
+				String id = getId();
+				if (dropDownMenuOverride != null) {
+					id = dropDownMenuOverride;
+				}
+				menuService.populateContributionManager(
+						menuManager, "menu:" + id); //$NON-NLS-1$
+			}
+			public void menuAboutToHide(final IMenuManager manager) {
+				display.asyncExec(new Runnable() {
+					public void run() {
+						menuService.releaseContributions(menuManager);
+						menuManager.dispose();
+					}
+				});
+			}
+		});
 	}
 	
 	private void updateIcons() {
