@@ -356,7 +356,7 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 	protected PreferenceManager fPreferenceManager;
 	
 	private DataBindingContext fDbc;
-	private final IStatusChangeListener fStatusListener;
+	private IStatusChangeListener fStatusListener;
 	
 	
 	protected ManagedConfigurationBlock(final IProject project, final IStatusChangeListener statusListener) {
@@ -367,6 +367,10 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 	
 	protected ManagedConfigurationBlock(final IProject project) {
 		this(project, null);
+	}
+	
+	protected void setStatusListener(final IStatusChangeListener listener) {
+		fStatusListener = listener;
 	}
 	
 	

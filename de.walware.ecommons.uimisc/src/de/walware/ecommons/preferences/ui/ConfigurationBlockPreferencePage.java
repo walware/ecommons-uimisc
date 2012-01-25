@@ -30,6 +30,7 @@ import org.eclipse.ui.statushandlers.StatusManager;
 
 import de.walware.ecommons.IStatusChangeListener;
 import de.walware.ecommons.preferences.internal.ui.Messages;
+import de.walware.ecommons.ui.IOverlayStatus;
 import de.walware.ecommons.ui.SharedUIResources;
 import de.walware.ecommons.ui.components.StatusInfo;
 import de.walware.ecommons.ui.util.LayoutUtil;
@@ -148,7 +149,12 @@ public abstract class ConfigurationBlockPreferencePage<Block extends Configurati
 	}
 	
 	protected void updateStatus(final IStatus status) {
-		setValid(!status.matches(IStatus.ERROR));
+		if (status instanceof IOverlayStatus) {
+			setValid(((IOverlayStatus) status).getCombinedSeverity() != IStatus.ERROR);
+		}
+		else {
+			setValid(!status.matches(IStatus.ERROR));
+		}
 		StatusInfo.applyToStatusLine(this, status);
 	}
 	
