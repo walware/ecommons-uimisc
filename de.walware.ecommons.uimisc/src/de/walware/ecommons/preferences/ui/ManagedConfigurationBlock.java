@@ -285,25 +285,58 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 				node.remove(key.getKey());
 				return;
 			}
+			final IEclipsePreferences defaultNode =
+					(fLookupOrder.length > 1 && fLookupOrder[1].getName() == DefaultScope.SCOPE) ?
+							getNode(fLookupOrder[1], key.getQualifier(), false) : null;
 			
 			final Object valueToStore = key.usage2Store(value);
 			switch (key.getStoreType()) {
 			case BOOLEAN:
+				if (defaultNode != null && defaultNode.get(key.getKey(), null) != null
+						&& ((Boolean) valueToStore).booleanValue() == defaultNode.getBoolean(key.getKey(), Preference.BOOLEAN_DEFAULT_VALUE) ) {
+					node.remove(key.getKey());
+					return;
+				}
 				node.putBoolean(key.getKey(), (Boolean) valueToStore);
 				break;
 			case INT:
+				if (defaultNode != null && defaultNode.get(key.getKey(), null) != null
+						&& ((Integer) valueToStore).intValue() == defaultNode.getInt(key.getKey(), Preference.INT_DEFAULT_VALUE) ) {
+					node.remove(key.getKey());
+					return;
+				}
 				node.putInt(key.getKey(), (Integer) valueToStore);
 				break;
 			case LONG:
+				if (defaultNode != null && defaultNode.get(key.getKey(), null) != null
+						&& ((Long) valueToStore).longValue() == defaultNode.getLong(key.getKey(), Preference.LONG_DEFAULT_VALUE) ) {
+					node.remove(key.getKey());
+					return;
+				}
 				node.putLong(key.getKey(), (Long) valueToStore);
 				break;
 			case DOUBLE:
+				if (defaultNode != null && defaultNode.get(key.getKey(), null) != null
+						&& ((Double) valueToStore).doubleValue() == defaultNode.getDouble(key.getKey(), Preference.DOUBLE_DEFAULT_VALUE) ) {
+					node.remove(key.getKey());
+					return;
+				}
 				node.putDouble(key.getKey(), (Double) valueToStore);
 				break;
 			case FLOAT:
+				if (defaultNode != null && defaultNode.get(key.getKey(), null) != null
+						&& ((Float) valueToStore).floatValue() == defaultNode.getFloat(key.getKey(), Preference.FLOAT_DEFAULT_VALUE) ) {
+					node.remove(key.getKey());
+					return;
+				}
 				node.putFloat(key.getKey(), (Float) valueToStore);
 				break;
 			default:
+				if (defaultNode != null && defaultNode.get(key.getKey(), null) != null
+						&& valueToStore.equals(defaultNode.get(key.getKey(), null)) ) {
+					node.remove(key.getKey());
+					return;
+				}
 				node.put(key.getKey(), (String) valueToStore);
 				break;
 			}
