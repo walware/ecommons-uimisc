@@ -131,7 +131,7 @@ public class ViewerUtil {
 			maxWidth = Math.max(maxWidth, tool.convertWidthInCharsToPixels(node.fName.length()) + (int) (deepth * factor));
 			final Node[] children = node.getChildren();
 			if (children != null) {
-				maxWidth = Math.max(maxWidth, measureNodes(tool, factor * 0.75f , children, deepth+1));
+				maxWidth = Math.max(maxWidth, measureNodes(tool, factor * 0.95f, children, deepth+1));
 			}
 		}
 		return maxWidth;
