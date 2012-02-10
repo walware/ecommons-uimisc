@@ -11,10 +11,12 @@
 
 package de.walware.ecommons.ui.components;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.databinding.observable.list.IObservableList;
+import org.eclipse.core.databinding.observable.IObservableCollection;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -54,8 +56,31 @@ public class ButtonGroup<ItemType> extends Composite {
 	public static final int EDIT = 4;
 	
 	
+	public static interface IActions<ItemType> {
+		
+		
+		ItemType edit(final int command, final ItemType item, final Object parent);
+		
+		void updateState(IStructuredSelection selection);
+		
+	}
+	
+	public static interface IImportExportActions<ItemType> extends IActions<ItemType> {
+		
+		void importItems();
+		
+		void exportItems(final List<? extends Object> items);
+		
+	}
+	
+	
+	private DataAdapter<ItemType> fDataAdapter;
+	
+	private IActions<ItemType> fActions;
+	
 	private StructuredViewer fViewer;
 	private boolean fTreeMode;
+	private boolean fCellMode;
 	
 	private Button fAddButton;
 	private Button fCopyButton;
@@ -67,14 +92,10 @@ public class ButtonGroup<ItemType> extends Composite {
 	private Button fUpButton;
 	private Button fDownButton;
 	
+	private Button fImportButton;
+	private Button fExportButton;
+	
 	private int fCachedWidthHint;
-	
-	// Model
-	private IObservableList fList;
-	private Set<ItemType> fCheckedSet;
-	private IObservableValue fDefault;
-	
-	private boolean fIsDirty;
 	
 	
 	public ButtonGroup(final Composite parent) {
@@ -82,6 +103,17 @@ public class ButtonGroup<ItemType> extends Composite {
 		setLayout(LayoutUtil.applyCompositeDefaults(new GridLayout(), 1));
 	}
 	
+	public ButtonGroup(final Composite parent, final IActions actions, final boolean cellMode) {
+		super(parent, SWT.NONE);
+		setLayout(LayoutUtil.applyCompositeDefaults(new GridLayout(), 1));
+		fActions = actions;
+		fCellMode = cellMode;
+	}
+	
+	
+	public DataAdapter<ItemType> getDataAdapter() {
+		return fDataAdapter;
+	}
 	
 	protected void addLayoutData(final Control control) {
 		if (fCachedWidthHint == 0 && control instanceof Button) {
@@ -95,7 +127,11 @@ public class ButtonGroup<ItemType> extends Composite {
 	public void addAddButton() {
 		fAddButton = new Button(this, SWT.PUSH);
 		addLayoutData(fAddButton);
-		fAddButton.setText(SharedMessages.CollectionEditing_AddItem_label);
+		String label = SharedMessages.CollectionEditing_AddItem_label;
+		if (!fCellMode) {
+			label += "...";
+		}
+		fAddButton.setText(label);
 		fAddButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
@@ -108,11 +144,15 @@ public class ButtonGroup<ItemType> extends Composite {
 	public void addCopyButton() {
 		fCopyButton = new Button(this, SWT.PUSH);
 		addLayoutData(fCopyButton);
-		fCopyButton.setText(SharedMessages.CollectionEditing_CopyItem_label);
+		String label = SharedMessages.CollectionEditing_CopyItem_label;
+		if (!fCellMode) {
+			label += "...";
+		}
+		fCopyButton.setText(label);
 		fCopyButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				final Object item = getItemToEdit((IStructuredSelection) fViewer.getSelection());
+				final Object item = getElementToEdit((IStructuredSelection) fViewer.getSelection());
 				if (item != null) {
 					editElement(ADD_COPY, item);
 				}
@@ -123,11 +163,15 @@ public class ButtonGroup<ItemType> extends Composite {
 	public void addEditButton() {
 		fEditButton = new Button(this, SWT.PUSH);
 		addLayoutData(fEditButton);
-		fEditButton.setText(SharedMessages.CollectionEditing_EditItem_label);
+		String label = SharedMessages.CollectionEditing_EditItem_label;
+		if (!fCellMode) {
+			label += "...";
+		}
+		fEditButton.setText(label);
 		fEditButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				final Object item = getItemToEdit((IStructuredSelection) fViewer.getSelection());
+				final Object item = getElementToEdit((IStructuredSelection) fViewer.getSelection());
 				if (item != null) {
 					editElement(EDIT, item);
 				}
@@ -142,7 +186,7 @@ public class ButtonGroup<ItemType> extends Composite {
 		fDeleteButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				final List<? extends Object> items = getItemsToDelete((IStructuredSelection) fViewer.getSelection());
+				final List<? extends Object> items = getElementsToDelete((IStructuredSelection) fViewer.getSelection());
 				delete0(items);
 			}
 		});
@@ -155,7 +199,7 @@ public class ButtonGroup<ItemType> extends Composite {
 		fDefaultButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				final Object item = getItemForDefault((IStructuredSelection) fViewer.getSelection());
+				final Object item = getElementForDefault((IStructuredSelection) fViewer.getSelection());
 				if (item != null) {
 					setDefault0(item);
 				}
@@ -171,7 +215,7 @@ public class ButtonGroup<ItemType> extends Composite {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				final IStructuredSelection selection = (IStructuredSelection) fViewer.getSelection();
-				final Object item = getItemToEdit(selection);
+				final Object item = getElementToEdit(selection);
 				if (item != null) {
 					move0(item, -1);
 				}
@@ -187,7 +231,7 @@ public class ButtonGroup<ItemType> extends Composite {
 		fDownButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				final Object item = getItemToEdit((IStructuredSelection) fViewer.getSelection());
+				final Object item = getElementToEdit((IStructuredSelection) fViewer.getSelection());
 				if (item != null) {
 					move0(item, 1);
 				}
@@ -195,11 +239,47 @@ public class ButtonGroup<ItemType> extends Composite {
 		});
 	}
 	
+	public void addImportButton() {
+		fImportButton = new Button(this, SWT.PUSH);
+		addLayoutData(fImportButton);
+		fImportButton.setText(SharedMessages.CollectionEditing_Import_label);
+		fImportButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		fImportButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				import0();
+			}
+		});
+	}
+	
+	public void addExportButton() {
+		fExportButton = new Button(this, SWT.PUSH);
+		addLayoutData(fExportButton);
+		fExportButton.setText(SharedMessages.CollectionEditing_Export_label);
+		fExportButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		fExportButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				final List<? extends Object> items = getElementsToExport((IStructuredSelection) fViewer.getSelection());
+				export0(items);
+			}
+		});
+	}
+	
+	
 	public void addSeparator() {
 		LayoutUtil.addSmallFiller(this, false);
 	}
 	
-	public void connectTo(final StructuredViewer viewer, final IObservableList list, final IObservableValue defaultValue) {
+	public void connectTo(final StructuredViewer viewer, final IObservableCollection list,
+			final IObservableValue defaultValue) {
+		connectTo(viewer, new DataAdapter.ListAdapter<ItemType>(
+				(viewer.getContentProvider() instanceof ITreeContentProvider) ?
+						(ITreeContentProvider) viewer.getContentProvider() : null,
+				list, defaultValue ));
+	}
+	
+	public void connectTo(final StructuredViewer viewer, final DataAdapter<ItemType> adapter) {
 		fViewer = viewer;
 		fTreeMode = (viewer instanceof TreeViewer);
 		if (fDeleteButton != null) {
@@ -207,7 +287,7 @@ public class ButtonGroup<ItemType> extends Composite {
 				@Override
 				public void keyPressed(final KeyEvent event) {
 					if (event.character == SWT.DEL && event.stateMask == 0 && fDeleteButton != null) {
-						final List<? extends Object> items = getItemsToDelete((IStructuredSelection) fViewer.getSelection());
+						final List<? extends Object> items = getElementsToDelete((IStructuredSelection) fViewer.getSelection());
 						if (items != null) {
 							delete0(items);
 						}
@@ -215,10 +295,10 @@ public class ButtonGroup<ItemType> extends Composite {
 				}	
 			});
 		}
-		if (fEditButton != null) {
+		if (fEditButton != null && !fCellMode) {
 			fViewer.addDoubleClickListener(new IDoubleClickListener() {
 				public void doubleClick(final DoubleClickEvent event) {
-					final Object item = getItemToEdit((IStructuredSelection) event.getSelection());
+					final Object item = getElementToEdit((IStructuredSelection) event.getSelection());
 					if (item != null) {
 						editElement(EDIT, item);
 					}
@@ -230,12 +310,12 @@ public class ButtonGroup<ItemType> extends Composite {
 				updateState();
 			}
 		});
-		fList = list;
-		fDefault = defaultValue;
+		
+		fDataAdapter = adapter;
 	}
 	
 	public void setCheckedModel(final Set<ItemType> set) {
-		fCheckedSet = set;
+		fDataAdapter.setCheckedModel(set);
 	}
 	
 	public void updateState() {
@@ -243,13 +323,13 @@ public class ButtonGroup<ItemType> extends Composite {
 		if (fAddButton != null) {
 			if (fTreeMode) {
 				fAddButton.setEnabled(selection.size() == 1
-						&& isAddAllowed(selection.getFirstElement()));
+						&& fDataAdapter.isAddAllowed(selection.getFirstElement()));
 			}
 			else {
 				fAddButton.setEnabled(true);
 			}
 		}
-		final Object item = getItemToEdit(selection);
+		final Object item = getElementToEdit(selection);
 		if (fCopyButton != null) {
 			fCopyButton.setEnabled(item != null);
 		}
@@ -257,11 +337,11 @@ public class ButtonGroup<ItemType> extends Composite {
 			fEditButton.setEnabled(item != null);
 		}
 		if (fDeleteButton != null) {
-			fDeleteButton.setEnabled(getItemsToDelete(selection) != null);
+			fDeleteButton.setEnabled(getElementsToDelete(selection) != null);
 		}
 		
 		if (fDefaultButton != null) {
-			fDefaultButton.setEnabled(getItemForDefault(selection) != null);
+			fDefaultButton.setEnabled(getElementForDefault(selection) != null);
 		}
 		
 		if (fUpButton != null) {
@@ -270,20 +350,20 @@ public class ButtonGroup<ItemType> extends Composite {
 		if (fDownButton != null) {
 			fDownButton.setEnabled(item != null);
 		}
+		
+		if (fExportButton != null) {
+			fExportButton.setEnabled(!selection.isEmpty());
+		}
+		
+		if (fActions != null) {
+			fActions.updateState(selection);
+		}
 	}
 	
-	protected boolean isAddAllowed(final Object element) {
-		return true;
-	}
-	
-	protected boolean isModifyAllowed(final Object element) {
-		return true;
-	}
-	
-	protected Object getItemToEdit(final IStructuredSelection selection) {
+	protected Object getElementToEdit(final IStructuredSelection selection) {
 		if (selection.size() == 1) {
 			final Object element = selection.getFirstElement();
-			if (!isModifyAllowed(element)) {
+			if (!fDataAdapter.isModifyAllowed(element)) {
 				return null;
 			}
 			return element;
@@ -291,18 +371,21 @@ public class ButtonGroup<ItemType> extends Composite {
 		return null;
 	}
 	
-	protected Object getItemForDefault(final IStructuredSelection selection) {
+	protected Object getElementForDefault(final IStructuredSelection selection) {
 		if (selection.size() == 1) {
-			return selection.getFirstElement();
+			final Object element = selection.getFirstElement();
+			if (fDataAdapter.isContentItem(element)) {
+				return element;
+			}
 		}
 		return null;
 	}
 	
-	protected List<? extends Object> getItemsToDelete(final IStructuredSelection selection) {
+	protected List<? extends Object> getElementsToDelete(final IStructuredSelection selection) {
 		if (!selection.isEmpty()) {
 			final Object[] elements = selection.toArray();
 			for (final Object element : elements) {
-				if (!isModifyAllowed(element)) {
+				if (!fDataAdapter.isModifyAllowed(element)) {
 					return null;
 				}
 			}
@@ -311,78 +394,63 @@ public class ButtonGroup<ItemType> extends Composite {
 		return null;
 	}
 	
-	protected List<? super ItemType> getChildContainer(final Object element) {
-		return fList;
-	}
-	
-	protected Object getAddParent(final Object element) {
-		return element;
-	}
-	
-	protected Object getParent(final Object element) {
-		if (fTreeMode) {
-			return ((ITreeContentProvider) fViewer.getContentProvider()).getParent(element);
+	protected List<? extends Object> getElementsToExport(final IStructuredSelection selection) {
+		if (!selection.isEmpty()) {
+			final List<Object> toExport = new ArrayList<Object>();
+			final Object[] elements = selection.toArray();
+			for (final Object element : elements) {
+				if (fDataAdapter.isContentItem(element)) {
+					toExport.add(element);
+				}
+				else {
+					final Object[] children = fDataAdapter.getChildren(element);
+					if (children != null) {
+						for (int i = 0; i < children.length; i++) {
+							if (fDataAdapter.isContentItem(children[i])) {
+								toExport.add(children[i]);
+							}
+						}
+					}
+				}
+			}
+			return toExport;
 		}
-		else {
-			return null;
-		}
-	}
-	
-	protected ItemType getModelItem(final Object element) {
-		return (ItemType) element;
-	}
-	
-	protected Object getViewerElement(final ItemType item, final Object parent) {
-		return item;
+		return null;
 	}
 	
 	
-	public void editElement(final int command, final Object element) {
-		final ItemType orgItem = ((command & ADD_NEW) == 0 && element != null) ? getModelItem(element) : null;
-		final Object parent = ((command & ADD_NEW) != 0) ? getAddParent(element) : getParent(element);
+	public void editElement(final int command, Object element) {
+		final ItemType orgItem = ((command & ADD_NEW) == 0 && element != null) ? fDataAdapter.getModelItem(element) : null;
+		final Object parent = ((command & ADD_NEW) != 0) ? fDataAdapter.getAddParent(element) : fDataAdapter.getParent(element);
 		
-		final ItemType editItem = edit1(command, ((command & ADD_NEW) == 0) ? orgItem : null, parent);
+		final ItemType editItem = (fActions != null) ?
+				fActions.edit(command, ((command & ADD_NEW) == 0) ? orgItem : null, parent) :
+				edit1(((command & ADD_NEW) == 0) ? orgItem : null, (command & (ADD_NEW | ADD_COPY)) != 0, parent);
 		if (editItem == null) {
 			return;
 		}
-		fIsDirty = true;
-		if ((command & ADD_ANY) != 0) {
-			if (fDefault != null && fList.isEmpty()) {
-				fDefault.setValue(editItem);
-			}
-			final List<? super ItemType> list;
-			list = getChildContainer(element);
-			list.add(editItem);
-		}
-		else {
-			if (orgItem != editItem) { // can be directly manipulated or replaced)
-				if (fDefault != null && fDefault.getValue() == orgItem) {
-					fDefault.setValue(editItem);
-				}
-				final List<? super ItemType> list = getChildContainer(element);
-				final int idx = list.indexOf(orgItem);
-				list.set(idx, editItem);
-			}
-		}
-		final Object editElement = getViewerElement(editItem, parent);
-		refresh0(editElement);
-		if (fCheckedSet != null) {
-			if ((command & ADD_ANY) != 0) {
-				fCheckedSet.add(editItem);
-			}
-			else {
-				if (fCheckedSet.remove(orgItem)) {
-					fCheckedSet.add(editItem);
-				}
-			}
-		}
-		if (fViewer instanceof ColumnViewer) {
-			((ColumnViewer) fViewer).editElement(editElement, 0);
+		element = fDataAdapter.change(((command & ADD_ANY) == 0) ? orgItem : null, editItem, 
+				parent, fDataAdapter.getContainerFor(element) );
+		refresh0(element);
+		if (/*fCellMode &&*/ fViewer instanceof ColumnViewer) {
+			((ColumnViewer) fViewer).editElement(element, 0);
 		}
 	}
 	
-	protected ItemType edit1(final int command, final ItemType item, final Object parent) {
-		return edit1(item, (command & (ADD_NEW | ADD_COPY)) != 0, parent);
+	public void apply(final ItemType oldItem, final ItemType newItem) {
+		if (newItem == null) {
+			delete0(Collections.singletonList(oldItem));
+		}
+		else {
+			final Object element = fDataAdapter.change(oldItem, newItem, null,
+					fDataAdapter.getContainerFor(fDataAdapter.getViewerElement(
+							(oldItem != null) ? oldItem : newItem, null )));
+			refresh0(element);
+		}
+	}
+	
+	public void deleteElements(final int command, final List<? extends Object> elements) {
+		delete0(elements);
 	}
 	
 	protected ItemType edit1(final ItemType item, final boolean newItem, final Object parent) {
@@ -390,51 +458,31 @@ public class ButtonGroup<ItemType> extends Composite {
 	}
 	
 	private void delete0(final List<? extends Object> elements) {
-		fIsDirty = true;
-		if (fDefault != null) {
-			final Object defaultValue = fDefault.getValue();
-			if (defaultValue != null && elements.contains(defaultValue)) {
-				fDefault.setValue(null);
-			}
-		}
-		if (fTreeMode) {
-			for (final Object element : elements) {
-				getChildContainer(element).remove(getModelItem(element));
-			}
-		}
-		else {
-			fList.removeAll(elements);
-		}
-		if (fCheckedSet != null) {
-			fCheckedSet.removeAll(elements);
-		}
+		fDataAdapter.delete(elements);
 		refresh0(null);
 	}
 	
 	private void setDefault0(final Object element) {
-		final ItemType item = getModelItem(element);
-		fIsDirty = true;
-		if (fDefault != null && item != null) {
-			fDefault.setValue(item);
-		}
+		final ItemType item = fDataAdapter.getModelItem(element);
+		fDataAdapter.setDefault(item);
 		refresh0(null);
 	}
 	
 	private void move0(final Object element, final int direction) {
-		final int oldIdx = fList.indexOf(element);
-		if (oldIdx < 0) {
-			return;
-		}
-		final int newIdx = oldIdx+direction;
-		if (newIdx < 0 || newIdx >= fList.size()) {
-			return;
-		}
-		move1(oldIdx, newIdx);
+		fDataAdapter.move(element, direction);
 		refresh0(element);
 	}
 	
-	protected void move1(final int oldIdx, final int newIdx) {
-		fList.move(oldIdx, newIdx);
+	private void import0() {
+		((IImportExportActions<?>) fDataAdapter).importItems();
+		refresh0(null);
+	}
+	
+	private void export0(final List<? extends Object> items) {
+		if (items == null || items.isEmpty()) {
+			return;
+		}
+		((IImportExportActions<?>) fActions).exportItems(items);
 	}
 	
 	public void refresh() {
@@ -442,7 +490,7 @@ public class ButtonGroup<ItemType> extends Composite {
 	}
 	
 	private void refresh0(final Object elementToSelect) {
-		fViewer.refresh();
+		refresh1();
 		if (elementToSelect != null) {
 //			Display.getCurrent().asyncExec(new Runnable() {
 //				public void run() {
@@ -456,12 +504,8 @@ public class ButtonGroup<ItemType> extends Composite {
 		updateState();
 	}
 	
-	public void setDirty(final boolean isDirty) {
-		fIsDirty = isDirty;
-	}
-	
-	public boolean isDirty() {
-		return fIsDirty;
+	protected void refresh1() {
+		fViewer.refresh();
 	}
 	
 }
