@@ -33,7 +33,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.TraverseEvent;
@@ -145,21 +144,14 @@ public abstract class BreadcrumbViewer extends StructuredViewer {
 				final int height = fContainer.getClientArea().height;
 				
 				if (fGradientBackground == null || fGradientBackground.getBounds().height != height) {
-					final Image image= createGradientImage(height, event.display);
+					final Image image = (height > 0) ?
+							createGradientImage(height, event.display) : null;
 					fContainer.setBackgroundImage(image);
 					
 					if (fGradientBackground != null) {
 						fGradientBackground.dispose();
 					}
 					fGradientBackground = image;
-				}
-			}
-		});
-		fContainer.addDisposeListener(new DisposeListener() {
-			public void widgetDisposed(final DisposeEvent e) {
-				if (fGradientBackground != null && !fGradientBackground.isDisposed()) {
-					fGradientBackground.dispose();
-					fGradientBackground = null;
 				}
 			}
 		});
@@ -171,7 +163,7 @@ public abstract class BreadcrumbViewer extends StructuredViewer {
 			columns= 1;
 		}
 		
-		final GridLayout gridLayout= new GridLayout(columns, false);
+		final GridLayout gridLayout = new GridLayout(columns, false);
 		gridLayout.marginWidth= 0;
 		gridLayout.marginHeight= 0;
 		gridLayout.verticalSpacing= 0;
@@ -185,6 +177,28 @@ public abstract class BreadcrumbViewer extends StructuredViewer {
 		});
 	}
 	
+	@Override
+	protected void handleDispose(final DisposeEvent event) {
+		if (fGradientBackground != null && !fGradientBackground.isDisposed()) {
+			fGradientBackground.dispose();
+			fGradientBackground = null;
+		}
+		
+		if (fToolTipLabelProvider != null) {
+			fToolTipLabelProvider.dispose();
+			fToolTipLabelProvider = null;
+		}
+		
+		if (fBreadcrumbItems != null) {
+			for (final BreadcrumbItem item : fBreadcrumbItems) {
+				item.dispose();
+			}
+			fBreadcrumbItems.clear();
+		}
+		
+		super.handleDispose(event);
+	}
+	
 	/**
 	 * The tool tip to use for the tool tip labels. <code>null</code> if the viewers label provider
 	 * should be used.
@@ -192,7 +206,7 @@ public abstract class BreadcrumbViewer extends StructuredViewer {
 	 * @param toolTipLabelProvider the label provider for the tool tips or <code>null</code>
 	 */
 	public void setToolTipLabelProvider(final ILabelProvider toolTipLabelProvider) {
-		fToolTipLabelProvider= toolTipLabelProvider;
+		fToolTipLabelProvider = toolTipLabelProvider;
 	}
 	
 	@Override
