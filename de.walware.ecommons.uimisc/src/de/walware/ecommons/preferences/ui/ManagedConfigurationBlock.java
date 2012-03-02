@@ -68,16 +68,17 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 	
 	protected class PreferenceManager {
 		
-		private IScopeContext[] fLookupOrder;
-		protected final Map<Preference, String> fPreferences;
+		private final IScopeContext[] fLookupOrder;
+		private final IScopeContext fInheritScope;
+		protected final Map<Preference<?>, String> fPreferences;
 		
 		/** Manager for a working copy of the preferences */
 		private final IWorkingCopyManager fManager;
 		/** Map saving the project settings, if disabled */
-		private Map<Preference, Object> fDisabledProjectSettings;
+		private Map<Preference<?>, Object> fDisabledProjectSettings;
 		
 		
-		PreferenceManager(final Map<Preference, String> prefs) {
+		PreferenceManager(final Map<Preference<?>, String> prefs) {
 			fManager = getContainer().getWorkingCopyManager();
 			fPreferences = prefs;
 			
@@ -89,11 +90,14 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 						new InstanceScope(),
 						new DefaultScope()
 				};
-			} else {
+				fInheritScope = null;
+			}
+			else {
 				fLookupOrder = new IScopeContext[] {
 						new InstanceScope(),
 						new DefaultScope()
 				};
+				fInheritScope = fLookupOrder[1];
 			}
 			
 			// testIfOptionsComplete();
@@ -117,7 +121,7 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 		 */
 		boolean hasProjectSpecificSettings(final IProject project) {
 			final IScopeContext projectContext = new ProjectScope(project);
-			for (final Preference key : fPreferences.keySet()) {
+			for (final Preference<?> key : fPreferences.keySet()) {
 				if (getInternalValue(key, projectContext, true) != null) {
 					return true;
 				}
@@ -137,8 +141,8 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 		}
 		
 		private void saveDisabledProjectSettings() {
-			fDisabledProjectSettings = new IdentityHashMap<Preference, Object>();
-			for (final Preference key : fPreferences.keySet()) {
+			fDisabledProjectSettings = new IdentityHashMap<Preference<?>, Object>();
+			for (final Preference<?> key : fPreferences.keySet()) {
 				fDisabledProjectSettings.put(key, getValue(key));
 				setInternalValue(key, null); // clear project settings
 			}
@@ -146,15 +150,15 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 		}
 		
 		private void loadDisabledProjectSettings() {
-			for (final Preference key : fPreferences.keySet()) {
+			for (final Preference<?> key : fPreferences.keySet()) {
 				// Copy values from saved disabled settings to working store
-				setValue(key, fDisabledProjectSettings.get(key));
+				setValue((Preference) key, fDisabledProjectSettings.get(key));
 			}
 			fDisabledProjectSettings = null;
 		}
 		
 		boolean processChanges(final boolean saveStore) {
-			final List<Preference> changedPrefs = new ArrayList<Preference>();
+			final List<Preference<?>> changedPrefs = new ArrayList<Preference<?>>();
 			final boolean needsBuild = getChanges(changedPrefs);
 			if (changedPrefs.isEmpty()) {
 				return true;
@@ -193,7 +197,7 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 				}
 			}
 			final Set<String> groupIds = new HashSet<String>();
-			for (final Preference pref : changedPrefs) {
+			for (final Preference<?> pref : changedPrefs) {
 				final String groupId = fPreferences.get(pref);
 				if (groupId != null) {
 					groupIds.add(groupId);
@@ -209,21 +213,27 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 		 * @param changedSettings
 		 * @return true, if rebuild is required.
 		 */
-		private boolean getChanges(final List<Preference> changedSettings) {
+		private boolean getChanges(final List<Preference<?>> changedSettings) {
 			final IScopeContext currContext = fLookupOrder[0];
 			boolean needsBuild = false;
-			for (final Preference key : fPreferences.keySet()) {
-				final String oldVal = getInternalValue(key, currContext, false);
-				final String val = getInternalValue(key, currContext, true);
-				if (val == null) {
-					if (oldVal != null) {
+			for (final Preference<?> key : fPreferences.keySet()) {
+				final String oldValue = getInternalValue(key, currContext, false);
+				final String value = getInternalValue(key, currContext, true);
+				if (value == null) {
+					if (oldValue != null) {
 						changedSettings.add(key);
-						needsBuild |= !oldVal.equals(getInternalValue(key, true));
+						needsBuild |= !oldValue.equals(getInternalValue(key, true));
 					}
 				}
-				else if (!val.equals(oldVal)) {
+				else if (!value.equals(oldValue)) {
 					changedSettings.add(key);
-					needsBuild |= oldVal != null || !val.equals(getInternalValue(key, true));
+					needsBuild |= (oldValue != null || !value.equals(getInternalValue(key, true)));
+					
+					if (fInheritScope != null
+							&& value.equals(getInternalValue(key, fInheritScope, false) )) {
+						final IEclipsePreferences node = getNode(currContext, key.getQualifier(), true);
+						node.remove(key.getKey());
+					}
 				}
 			}
 			return needsBuild;
@@ -232,16 +242,15 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 		
 		void loadDefaults() {
 			final DefaultScope defaultScope = new DefaultScope();
-			for (final Preference key : fPreferences.keySet()) {
+			for (final Preference<?> key : fPreferences.keySet()) {
 				final String defValue = getInternalValue(key, defaultScope, false);
 				setInternalValue(key, defValue);
 			}
-			
 		}
 		
 		// DEBUG
 		private void testIfOptionsComplete() {
-			for (final Preference key : fPreferences.keySet()) {
+			for (final Preference<?> key : fPreferences.keySet()) {
 				if (getInternalValue(key, false) == null) {
 					System.out.println("preference option missing: " + key + " (" + this.getClass().getName() +')');  //$NON-NLS-1$//$NON-NLS-2$
 				}
@@ -256,11 +265,12 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 			return node;
 		}
 		
-		private <T> String getInternalValue(final Preference<T> key, final IScopeContext context, final boolean useWorkingCopy) {
-			return getNode(context, key.getQualifier(), useWorkingCopy).get(key.getKey(), null);
+		private String getInternalValue(final Preference<?> key, final IScopeContext context, final boolean useWorkingCopy) {
+			final IEclipsePreferences node = getNode(context, key.getQualifier(), useWorkingCopy);
+			return node.get(key.getKey(), null);
 		}
 		
-		private <T> String getInternalValue(final Preference<T> key, final boolean ignoreTopScope) {
+		private String getInternalValue(final Preference<?> key, final boolean ignoreTopScope) {
 			for (int i = ignoreTopScope ? 1 : 0; i < fLookupOrder.length; i++) {
 				final String value = getInternalValue(key, fLookupOrder[i], true);
 				if (value != null) {
@@ -271,10 +281,12 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 		}
 		
 		private <T> void setInternalValue(final Preference<T> key, final String value) {
+			final IEclipsePreferences node = getNode(fLookupOrder[0], key.getQualifier(), true);
 			if (value != null) {
-				getNode(fLookupOrder[0], key.getQualifier(), true).put(key.getKey(), value);
-			} else {
-				getNode(fLookupOrder[0], key.getQualifier(), true).remove(key.getKey());
+				node.put(key.getKey(), value);
+			}
+			else {
+				node.remove(key.getKey());
 			}
 		}
 		
@@ -285,64 +297,30 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 				node.remove(key.getKey());
 				return;
 			}
-			final IEclipsePreferences defaultNode =
-					(fLookupOrder.length > 1 && fLookupOrder[1].getName() == DefaultScope.SCOPE) ?
-							getNode(fLookupOrder[1], key.getQualifier(), false) : null;
 			
 			final Object valueToStore = key.usage2Store(value);
 			switch (key.getStoreType()) {
 			case BOOLEAN:
-				if (defaultNode != null && defaultNode.get(key.getKey(), null) != null
-						&& ((Boolean) valueToStore).booleanValue() == defaultNode.getBoolean(key.getKey(), Preference.BOOLEAN_DEFAULT_VALUE) ) {
-					node.remove(key.getKey());
-					return;
-				}
 				node.putBoolean(key.getKey(), (Boolean) valueToStore);
 				break;
 			case INT:
-				if (defaultNode != null && defaultNode.get(key.getKey(), null) != null
-						&& ((Integer) valueToStore).intValue() == defaultNode.getInt(key.getKey(), Preference.INT_DEFAULT_VALUE) ) {
-					node.remove(key.getKey());
-					return;
-				}
 				node.putInt(key.getKey(), (Integer) valueToStore);
 				break;
 			case LONG:
-				if (defaultNode != null && defaultNode.get(key.getKey(), null) != null
-						&& ((Long) valueToStore).longValue() == defaultNode.getLong(key.getKey(), Preference.LONG_DEFAULT_VALUE) ) {
-					node.remove(key.getKey());
-					return;
-				}
 				node.putLong(key.getKey(), (Long) valueToStore);
 				break;
 			case DOUBLE:
-				if (defaultNode != null && defaultNode.get(key.getKey(), null) != null
-						&& ((Double) valueToStore).doubleValue() == defaultNode.getDouble(key.getKey(), Preference.DOUBLE_DEFAULT_VALUE) ) {
-					node.remove(key.getKey());
-					return;
-				}
 				node.putDouble(key.getKey(), (Double) valueToStore);
 				break;
 			case FLOAT:
-				if (defaultNode != null && defaultNode.get(key.getKey(), null) != null
-						&& ((Float) valueToStore).floatValue() == defaultNode.getFloat(key.getKey(), Preference.FLOAT_DEFAULT_VALUE) ) {
-					node.remove(key.getKey());
-					return;
-				}
 				node.putFloat(key.getKey(), (Float) valueToStore);
 				break;
 			default:
-				if (defaultNode != null && defaultNode.get(key.getKey(), null) != null
-						&& valueToStore.equals(defaultNode.get(key.getKey(), null)) ) {
-					node.remove(key.getKey());
-					return;
-				}
 				node.put(key.getKey(), (String) valueToStore);
 				break;
 			}
 		}
 		
-		@SuppressWarnings("unchecked")
 		private <T> T getValue(final Preference<T> key) {
 			IEclipsePreferences node = null;
 			int lookupIndex = 0;
@@ -417,7 +395,7 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 	 * @param container
 	 * @param prefs map with preference objects as key and their settings group id as optional value
 	 */
-	protected void setupPreferenceManager(final Map<Preference, String> prefs) {
+	protected void setupPreferenceManager(final Map<Preference<?>, String> prefs) {
 		new PreferenceManager(prefs);
 	}
 	
@@ -474,7 +452,7 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 			updatePreferences();
 			return fPreferenceManager.processChanges(false);
 		}
-		return false;
+		return true;
 	}
 	
 	@Override
@@ -581,9 +559,9 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 		return oldValue;
 	}
 	
-	public void setPrefValues(final Map<Preference, Object> map) {
-		for (final Entry<Preference, Object> entry : map.entrySet()) {
-			setPrefValue(entry.getKey(), entry.getValue());
+	public void setPrefValues(final Map<Preference<?>, Object> map) {
+		for (final Entry<Preference<?>, Object> entry : map.entrySet()) {
+			setPrefValue((Preference) entry.getKey(), entry.getValue());
 		}
 	}
 	
@@ -605,17 +583,17 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 	
 	
 	public IObservableValue createObservable(final Object target) {
-		return createObservable((Preference) target);
+		return createObservable((Preference<?>) target);
 	}
 	
-	public IObservableValue createObservable(final Preference pref) {
+	public IObservableValue createObservable(final Preference<?> pref) {
 		return new AbstractObservableValue() {
 			public Object getValueType() {
 				return pref.getUsageType();
 			}
 			@Override
 			protected void doSetValue(final Object value) {
-				setPrefValue(pref, value);
+				setPrefValue((Preference) pref, value);
 			}
 			@Override
 			protected Object doGetValue() {
