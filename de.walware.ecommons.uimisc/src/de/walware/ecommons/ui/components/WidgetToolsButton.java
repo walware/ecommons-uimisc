@@ -62,7 +62,7 @@ public class WidgetToolsButton extends Composite {
 	private static void updateFont() {
 		final FontRegistry fontRegistry = JFaceResources.getFontRegistry();
 		final Font dialogFont = fontRegistry.get(JFaceResources.DIALOG_FONT);
-		final int size = Math.max(dialogFont.getFontData()[0].getHeight()*3/5, 7);
+		final int size = 1 + Math.max(dialogFont.getFontData()[0].getHeight()*3/5, 6);
 		final FontDescriptor descriptor = fontRegistry.getDescriptor(JFaceResources.TEXT_FONT).setHeight(size);
 		final Font toolFont = descriptor.createFont(Display.getCurrent());
 		fontRegistry.put(FONT_SYMBOLIC_NAME, toolFont.getFontData());
@@ -72,11 +72,14 @@ public class WidgetToolsButton extends Composite {
 	private Button fButton;
 	private Menu fMenu;
 	
+	private final Control fTarget;
+	
 	
 	public WidgetToolsButton(final Control target) {
 		super(target.getParent(), SWT.NONE);
 		setLayout(new FillLayout());
-		createButton(target);
+		fTarget = target;
+		createButton();
 	}
 	
 	
@@ -89,12 +92,15 @@ public class WidgetToolsButton extends Composite {
 	@Override
 	public Point computeSize(final int hint, final int hint2, final boolean changed) {
 		final Point computeSize = super.computeSize(hint, hint2, changed);
-		final int y = Math.max(computeSize.y-2, 18);
-		final int x = Math.max(computeSize.x-2, y);
+		
+		final int x = Math.max(computeSize.x, 18);
+		final int y = Math.min(
+				Math.max(computeSize.y, 18),
+				fTarget.computeSize(SWT.DEFAULT, SWT.DEFAULT, changed).y );
 		return new Point(x, y);
 	}
 	
-	protected void createButton(final Control target) {
+	protected void createButton() {
 		fButton = new Button(this, (SWT.PUSH | SWT.CENTER));
 		updateLabels(false);
 		fButton.addSelectionListener(new SelectionAdapter() {
@@ -113,7 +119,7 @@ public class WidgetToolsButton extends Composite {
 			}
 		});
 		
-		target.addFocusListener(new FocusListener() {
+		fTarget.addFocusListener(new FocusListener() {
 			public void focusGained(final FocusEvent e) {
 				updateLabels(true);
 			}
