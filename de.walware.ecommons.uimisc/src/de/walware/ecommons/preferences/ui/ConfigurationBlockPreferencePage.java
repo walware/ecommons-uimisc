@@ -14,7 +14,6 @@ package de.walware.ecommons.preferences.ui;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
@@ -86,7 +85,7 @@ public abstract class ConfigurationBlockPreferencePage<Block extends Configurati
 		fBlockControl.setLayout(layout);
 		fBlock.createContents(fBlockControl, (IWorkbenchPreferenceContainer) getContainer(), getPreferenceStore());
 		
-		Dialog.applyDialogFont(fBlockControl);
+		applyDialogFont(fBlockControl);
 		
 		final String helpContext = getHelpContext();
 		if (helpContext != null) {
