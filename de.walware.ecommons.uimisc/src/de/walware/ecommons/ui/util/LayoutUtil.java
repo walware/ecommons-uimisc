@@ -13,6 +13,7 @@ package de.walware.ecommons.ui.util;
 
 import java.util.Collection;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.resource.JFaceResources;
@@ -31,7 +32,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
@@ -209,9 +209,10 @@ public class LayoutUtil {
 		table.setFont(JFaceResources.getFontRegistry().get(JFaceResources.DIALOG_FONT));
 		final PixelConverter converter = new PixelConverter(table);
 		int heightHint = converter.convertWidthInCharsToPixels(numChars);
-		final ScrollBar scrollBar = table.getVerticalBar();
-		if (scrollBar != null) {
-			heightHint += scrollBar.getSize().x;
+		{	final ScrollBar scrollBar = table.getVerticalBar();
+			if (scrollBar != null) {
+				heightHint += scrollBar.getSize().x;
+			}
 		}
 		if ((table.getStyle() & SWT.CHECK) == SWT.CHECK) {
 			heightHint += 16 + converter.convertHorizontalDLUsToPixels(4) +  converter.convertWidthInCharsToPixels(1);
@@ -239,25 +240,54 @@ public class LayoutUtil {
 	}
 	
 	public static int hintHeight(final List control, final int rows) {
-		return hintHeightOfStructViewer(control, rows);
+		control.setFont(JFaceResources.getFontRegistry().get(JFaceResources.DIALOG_FONT));
+		return control.getItemHeight() * rows;
 	}
 	
 	public static int hintHeight(final Tree control, final int rows) {
-		return hintHeightOfStructViewer(control, rows);
+		return hintHeight(control, rows, true);
+	}
+	
+	public static int hintHeight(final Tree control, final int rows, final boolean withScrollbar) {
+		control.setFont(JFaceResources.getFontRegistry().get(JFaceResources.DIALOG_FONT));
+		
+		int height = control.getHeaderHeight();
+		height += control.getItemHeight() * rows;
+		
+		if (!withScrollbar && Platform.getWS().equals(Platform.WS_WIN32)) {
+			final ScrollBar hBar = control.getHorizontalBar();
+			if (hBar != null) {
+				height -= hBar.getSize().y;
+			}
+		}
+		else if (Platform.getWS().equals(Platform.WS_WIN32)) {
+			height += control.getBorderWidth() * 2;
+		}
+		
+		return height;
 	}
 	
 	public static int hintHeight(final Table control, final int rows) {
-		return hintHeightOfStructViewer(control, rows);
+		return hintHeight(control, rows, true);
 	}
 	
-	private static int hintHeightOfStructViewer(final Control control, final int rows) {
+	public static int hintHeight(final Table control, final int rows, final boolean withScrollbar) {
 		control.setFont(JFaceResources.getFontRegistry().get(JFaceResources.DIALOG_FONT));
-		final PixelConverter converter = new PixelConverter(control);
-		int heightHint = converter.convertHeightInCharsToPixels(rows);
-		if ((control.getStyle() & SWT.CHECK) == SWT.CHECK) {
-			heightHint += rows * 1;
+		
+		int height = control.getHeaderHeight();
+		height += control.getItemHeight() * rows;
+		
+		if (!withScrollbar && Platform.getWS().equals(Platform.WS_WIN32)) {
+			final ScrollBar hBar = control.getHorizontalBar();
+			if (hBar != null) {
+				height -= hBar.getSize().y;
+			}
 		}
-		return heightHint;
+		else if (Platform.getWS().equals(Platform.WS_WIN32)) {
+			height += control.getBorderWidth() * 2;
+		}
+		
+		return height;
 	}
 	
 	public static int hintHeight(final Label control, final int lines) {
