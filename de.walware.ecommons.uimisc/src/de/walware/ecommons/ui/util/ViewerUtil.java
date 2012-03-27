@@ -38,6 +38,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Point;
@@ -343,7 +344,8 @@ public class ViewerUtil {
 	}
 	
 	
-	public static void addSearchTextNavigation(final TableViewer viewer, final SearchText searchText) {
+	public static void addSearchTextNavigation(final TableViewer viewer,
+			final SearchText searchText, final boolean back) {
 		final Table table = viewer.getTable();
 		searchText.addListener(new SearchText.Listener() {
 			public void textChanged(final boolean user) {
@@ -362,6 +364,19 @@ public class ViewerUtil {
 				}
 			}
 		});
+		if (back) {
+			table.addKeyListener(new org.eclipse.swt.events.KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if (e.stateMask == 0 && e.keyCode == SWT.ARROW_UP
+							&& table.getSelectionCount() == 1
+							&& table.getSelectionIndex() == 0) {
+						table.deselectAll();
+						searchText.setFocus();
+					}
+				}
+			});
+		}
 	}
 	
 	
