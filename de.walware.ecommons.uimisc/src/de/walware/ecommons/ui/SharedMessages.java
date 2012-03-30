@@ -77,6 +77,9 @@ public class SharedMessages extends NLS {
 	
 	public static String InsertVariable_label;
 	
+	public static String NavigateBack_1_tooltip;
+	public static String NavigateForward_1_tooltip;
+	
 	
 	static {
 		NLS.initializeMessages(SharedMessages.class.getName(), SharedMessages.class);
