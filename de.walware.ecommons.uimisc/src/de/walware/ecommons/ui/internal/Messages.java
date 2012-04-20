@@ -44,6 +44,11 @@ public class Messages extends NLS {
 	
 	public static String Hover_FocusAffordance_message;
 	
+	public static String Variable_error_Resource_EmptySelection_message;
+	public static String Variable_error_Resource_InvalidPath_message;
+	public static String Variable_error_Resource_NonExisting_message;
+	public static String Variable_error_Resource_LocationFailed_message;
+	
 	
 	static {
 		NLS.initializeMessages(Messages.class.getName(), Messages.class);
