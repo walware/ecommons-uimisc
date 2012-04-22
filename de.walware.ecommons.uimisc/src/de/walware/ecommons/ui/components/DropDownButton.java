@@ -16,17 +16,16 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.internal.IWorkbenchGraphicConstants;
 import org.eclipse.ui.internal.WorkbenchImages;
 
 import de.walware.ecommons.ui.util.LayoutUtil;
+import de.walware.ecommons.ui.util.MenuUtil;
 
 
 public class DropDownButton extends Composite {
@@ -87,12 +86,7 @@ public class DropDownButton extends Composite {
 	
 	private void showDropDown() {
 		final Menu menu = new Menu(this);
-		final Control c = this;
-		Point p = c.getLocation();
-		p.y = p.y + c.getSize().y;
-		p = c.getParent().toDisplay(p);
-		
-		menu.setLocation(p);
+		MenuUtil.setPullDownPosition(menu, this);
 		fillDropDownMenu(menu);
 		menu.setVisible(true);
 	}

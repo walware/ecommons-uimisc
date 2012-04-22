@@ -26,8 +26,6 @@ import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.ContributionItem;
-import org.eclipse.jface.action.IMenuListener2;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.bindings.BindingManagerEvent;
 import org.eclipse.jface.bindings.IBindingManagerListener;
@@ -65,6 +63,7 @@ import org.eclipse.ui.services.IServiceLocator;
 import org.eclipse.ui.statushandlers.StatusManager;
 
 import de.walware.ecommons.ui.SharedUIResources;
+import de.walware.ecommons.ui.util.MenuUtil;
 
 
 /**
@@ -854,29 +853,11 @@ public class HandlerContributionItem extends ContributionItem {
 	}
 	
 	protected void initDropDownMenu(final MenuManager menuManager) {
-		if (menuService != null) {
-			menuManager.addMenuListener(new IMenuListener2() {
-				@Override
-				public void menuAboutToShow(final IMenuManager manager) {
-					String id = getId();
-					if (dropDownMenuOverride != null) {
-						id = dropDownMenuOverride;
-					}
-					menuService.populateContributionManager(
-							menuManager, "menu:" + id); //$NON-NLS-1$
-				}
-				@Override
-				public void menuAboutToHide(final IMenuManager manager) {
-					display.asyncExec(new Runnable() {
-						@Override
-						public void run() {
-							menuService.releaseContributions(menuManager);
-							menuManager.dispose();
-						}
-					});
-				}
-			});
+		String id = dropDownMenuOverride;
+		if (id == null) {
+			id = getId();
 		}
+		MenuUtil.registerOneWayMenu(menuManager, id);
 	}
 	
 	private void updateIcons() {
