@@ -57,6 +57,25 @@ public abstract class ConfigurationBlock {
 		}
 	}
 	
+	protected class LinkSelectionListener extends SelectionAdapter {
+		
+		
+		public LinkSelectionListener() {
+		}
+		
+		
+		@Override
+		public void widgetSelected(final SelectionEvent e) {
+			org.eclipse.ui.dialogs.PreferencesUtil.createPreferenceDialogOn(getShell(), e.text,
+					null, getData(e));
+		}
+		
+		protected Object getData(final SelectionEvent e) {
+			return null;
+		}
+		
+	}
+	
 	
 	private Shell fShell;
 	private IWorkbenchPreferenceContainer fContainer;
@@ -120,15 +139,20 @@ public abstract class ConfigurationBlock {
 	}
 	
 	protected Link addLinkControl(final Composite composite, final String text) {
+		return addLinkControl(composite, text, new LinkSelectionListener());
+	}
+	
+	protected Link addLinkControl(final Composite composite, final String text,
+			final LinkSelectionListener listener) {
 		final Link link = new Link(composite, SWT.NONE);
 		link.setText(text);
-		link.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				org.eclipse.ui.dialogs.PreferencesUtil.createPreferenceDialogOn(getShell(), e.text, null, null);
-			}
-		});
+		link.addSelectionListener(listener);
 		return link;
+	}
+	
+	protected GridData applyLinkDefaults(final GridData gd) {
+		gd.widthHint = 300;
+		return gd;
 	}
 	
 	protected void scheduleChangeNotification(final Set<String> groupIds, final boolean directly) {

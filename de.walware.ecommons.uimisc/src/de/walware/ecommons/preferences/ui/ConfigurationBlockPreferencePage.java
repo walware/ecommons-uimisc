@@ -81,7 +81,7 @@ public abstract class ConfigurationBlockPreferencePage<Block extends Configurati
 		fBlockControl = new Composite(parent, SWT.NONE);
 		fBlockControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
-		final GridLayout layout = LayoutUtil.applyCompositeDefaults(new GridLayout(), 1);
+		final GridLayout layout = LayoutUtil.createCompositeGrid(1);
 		layout.marginRight = LayoutUtil.defaultHSpacing();
 		fBlockControl.setLayout(layout);
 		fBlock.createContents(fBlockControl, (IWorkbenchPreferenceContainer) getContainer(), getPreferenceStore());
