@@ -183,11 +183,13 @@ public class TreeAndListGroup implements ISelectionChangedListener {
 		fListViewer.setLabelProvider(fListLabelProvider);
 		fListViewer.setComparator(fComparator);
 		fListViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
 			public void selectionChanged(final SelectionChangedEvent event) {
 				notifySelectionListeners(event);
 			}
 		});
 		fListViewer.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
 			public void doubleClick(final DoubleClickEvent event) {
 				if (!event.getSelection().isEmpty()) {
 					notifyDoubleClickListeners(event);
@@ -241,6 +243,7 @@ public class TreeAndListGroup implements ISelectionChangedListener {
 		fTreeViewer.setInput(fRoot);
 	}
 	
+	@Override
 	public void selectionChanged(final SelectionChangedEvent event) {
 		final IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 		final Object selectedElement = selection.getFirstElement();

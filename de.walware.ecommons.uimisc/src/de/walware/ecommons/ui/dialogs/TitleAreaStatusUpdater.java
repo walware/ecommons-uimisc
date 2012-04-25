@@ -37,6 +37,7 @@ public class TitleAreaStatusUpdater implements IStatusChangeListener {
 	}
 	
 	
+	@Override
 	public void statusChanged(final IStatus status) {
 //			setErrorMessage(null);
 		switch (status.getSeverity()) {

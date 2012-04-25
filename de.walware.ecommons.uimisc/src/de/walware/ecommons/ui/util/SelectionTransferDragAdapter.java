@@ -32,6 +32,7 @@ public class SelectionTransferDragAdapter extends DragSourceAdapter implements T
 	}
 	
 	
+	@Override
 	public Transfer getTransfer() {
 		return LocalSelectionTransfer.getTransfer();
 	}

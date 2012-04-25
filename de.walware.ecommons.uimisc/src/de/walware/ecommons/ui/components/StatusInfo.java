@@ -38,7 +38,7 @@ public class StatusInfo extends Status {
 				page.setErrorMessage(null);
 				break;			
 			default:
-				if (message.length() == 0) {
+				if (message.isEmpty()) {
 					message = null;
 				}
 				page.setMessage(null);

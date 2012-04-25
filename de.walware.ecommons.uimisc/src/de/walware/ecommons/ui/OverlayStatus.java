@@ -27,6 +27,7 @@ public class OverlayStatus extends Status implements IOverlayStatus {
 		fCombinedSeverity = combinedSeverity;
 	}
 	
+	@Override
 	public int getCombinedSeverity() {
 		return fCombinedSeverity;
 	}

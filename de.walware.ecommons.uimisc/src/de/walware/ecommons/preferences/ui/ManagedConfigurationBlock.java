@@ -406,6 +406,7 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 		
 		final AggregateValidationStatus validationStatus = new AggregateValidationStatus(fDbc, AggregateValidationStatus.MAX_SEVERITY);
 		validationStatus.addValueChangeListener(new IValueChangeListener() {
+			@Override
 			public void handleValueChange(final ValueChangeEvent event) {
 				final IStatus currentStatus = (IStatus) event.diff.getNewValue();
 				fStatusListener.statusChanged(currentStatus);
@@ -512,6 +513,7 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 	 * @param key preference key
 	 * @return value of the preference
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T getPreferenceValue(final Preference<T> key) {
 		assert (fPreferenceManager != null);
@@ -523,6 +525,7 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 		return fPreferenceManager.getValue(key);
 	}
 	
+	@Override
 	public IEclipsePreferences[] getPreferenceNodes(final String nodeQualifier) {
 		assert (fPreferenceManager != null);
 		assert (nodeQualifier != null);
@@ -534,6 +537,7 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 		return nodes;
 	}
 	
+	@Override
 	public IScopeContext[] getPreferenceContexts() {
 		assert (fPreferenceManager != null);
 		
@@ -569,6 +573,7 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 	 * Not (yet) supported
 	 * @throws UnsupportedOperationException
 	 */
+	@Override
 	public void addPreferenceNodeListener(final String nodeQualifier, final IPreferenceChangeListener listener) {
 		throw new UnsupportedOperationException();
 	}
@@ -577,17 +582,20 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 	 * Not (yet) supported
 	 * @throws UnsupportedOperationException
 	 */
+	@Override
 	public void removePreferenceNodeListener(final String nodeQualifier, final IPreferenceChangeListener listener) {
 		throw new UnsupportedOperationException();
 	}
 	
 	
+	@Override
 	public IObservableValue createObservable(final Object target) {
 		return createObservable((Preference<?>) target);
 	}
 	
 	public IObservableValue createObservable(final Preference<?> pref) {
 		return new AbstractObservableValue() {
+			@Override
 			public Object getValueType() {
 				return pref.getUsageType();
 			}

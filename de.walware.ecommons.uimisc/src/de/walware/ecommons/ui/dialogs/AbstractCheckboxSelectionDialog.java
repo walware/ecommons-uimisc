@@ -84,6 +84,7 @@ public abstract class AbstractCheckboxSelectionDialog extends ExtStatusDialog {
 			
 			fViewer = new CheckboxTableViewer(table);
 			fViewer.addCheckStateListener(new ICheckStateListener() {
+				@Override
 				public void checkStateChanged(CheckStateChangedEvent event) {
 					updateCheckedStatus();
 				}
@@ -98,6 +99,7 @@ public abstract class AbstractCheckboxSelectionDialog extends ExtStatusDialog {
 			button.setLayoutData(gd);
 			button.setText("Select All");
 			button.addSelectionListener(new SelectionAdapter() {
+				@Override
 				public void widgetSelected(SelectionEvent e) {
 					getCheckBoxTableViewer().setAllChecked(true);
 					updateCheckedStatus();
@@ -110,6 +112,7 @@ public abstract class AbstractCheckboxSelectionDialog extends ExtStatusDialog {
 			button.setLayoutData(gd);
 			button.setText("Deselect All");
 			button.addSelectionListener(new SelectionAdapter() {
+				@Override
 				public void widgetSelected(SelectionEvent e) {
 					getCheckBoxTableViewer().setAllChecked(false);
 					updateCheckedStatus();
@@ -121,6 +124,7 @@ public abstract class AbstractCheckboxSelectionDialog extends ExtStatusDialog {
 	
 	protected abstract void configureViewer(CheckboxTableViewer viewer);
 	
+	@Override
 	protected void addBindings(final DatabindingSupport databinding) {
 		databinding.getContext().bindSet(ViewersObservables.observeCheckedElements(fViewer, null),
 				fCheckedValue);

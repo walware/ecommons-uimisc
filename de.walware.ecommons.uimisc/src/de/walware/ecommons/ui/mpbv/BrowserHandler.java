@@ -61,6 +61,7 @@ public abstract class BrowserHandler extends AbstractHandler {
 			setBaseEnabled(UIAccess.isOkToUse(browser) && browser.isBackEnabled());
 		}
 		
+		@Override
 		public Object execute(final ExecutionEvent event) throws ExecutionException {
 			final Browser browser = getBrowser();
 			if (UIAccess.isOkToUse(browser)) {
@@ -89,6 +90,7 @@ public abstract class BrowserHandler extends AbstractHandler {
 			setBaseEnabled(UIAccess.isOkToUse(browser) && browser.isForwardEnabled());
 		}
 		
+		@Override
 		public Object execute(final ExecutionEvent event) throws ExecutionException {
 			final Browser browser = getBrowser();
 			if (UIAccess.isOkToUse(browser)) {
@@ -117,6 +119,7 @@ public abstract class BrowserHandler extends AbstractHandler {
 			setBaseEnabled(UIAccess.isOkToUse(browser));
 		}
 		
+		@Override
 		public Object execute(final ExecutionEvent event) throws ExecutionException {
 			final Browser browser = getBrowser();
 			if (UIAccess.isOkToUse(browser)) {
@@ -146,6 +149,7 @@ public abstract class BrowserHandler extends AbstractHandler {
 					&& browser.getUrl().length() > 0);
 		}
 		
+		@Override
 		public Object execute(final ExecutionEvent event) throws ExecutionException {
 			final Browser browser = getBrowser();
 			if (browser != null) {
@@ -175,9 +179,11 @@ public abstract class BrowserHandler extends AbstractHandler {
 	
 	public BrowserHandler(final Browser browser) {
 		fBrowserProvider = new IBrowserProvider() {
+			@Override
 			public Browser getBrowser() {
 				return browser;
 			}
+			@Override
 			public void showMessage(final int severity, final String message) {
 			}
 		};

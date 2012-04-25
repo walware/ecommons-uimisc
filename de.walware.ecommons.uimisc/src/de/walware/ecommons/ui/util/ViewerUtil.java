@@ -85,25 +85,31 @@ public class ViewerUtil {
 	
 	public static class NodeContentProvider implements ITreeContentProvider {
 		
+		@Override
 		public Object[] getElements(final Object inputElement) {
 			return ((Node[]) inputElement);
 		}
 		
+		@Override
 		public Object getParent(final Object element) {
 			return ((Node) element).fParent;
 		}
 		
+		@Override
 		public boolean hasChildren(final Object element) {
 			return ((Node) element).fChildren != null;
 		}
 		
+		@Override
 		public Object[] getChildren(final Object parentElement) {
 			return ((Node) parentElement).fChildren;
 		}
 		
+		@Override
 		public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
 		}
 		
+		@Override
 		public void dispose() {
 		}
 		
@@ -140,6 +146,7 @@ public class ViewerUtil {
 	
 	public static void addDoubleClickExpansion(final TreeViewer viewer) {
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
 			public void doubleClick(final DoubleClickEvent event) {
 				final IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 				if (selection != null && selection.size() == 1) {
@@ -311,6 +318,7 @@ public class ViewerUtil {
 	
 	private static ColumnViewerEditorActivationStrategy createActivationStrategy(final ColumnViewer viewer) {
 		viewer.getControl().addTraverseListener(new TraverseListener() {
+			@Override
 			public void keyTraversed(final TraverseEvent e) {
 				if (e.detail == SWT.TRAVERSE_RETURN && e.stateMask == SWT.NONE) {
 					e.doit = false;

@@ -204,6 +204,7 @@ public abstract class ColumnHoverManager extends AbstractHoverInformationControl
 			}
 			
 			display.asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					ColumnHoverManager.super.presentInformation();
 				}
@@ -271,12 +272,14 @@ public abstract class ColumnHoverManager extends AbstractHoverInformationControl
 		}
 	}
 	
+	@Override
 	public boolean requestWidgetToken(final IWidgetTokenOwner owner) {
 		fTextHover = null;
 		super.hideInformationControl();
 		return true;
 	}
 	
+	@Override
 	public boolean requestWidgetToken(final IWidgetTokenOwner owner, final int priority) {
 		if (priority > WIDGET_PRIORITY) {
 			fTextHover = null;
@@ -286,6 +289,7 @@ public abstract class ColumnHoverManager extends AbstractHoverInformationControl
 		return false;
 	}
 	
+	@Override
 	public boolean setFocus(final IWidgetTokenOwner owner) {
 		final InternalAccessor accessor = getInternalAccessor();
 		if (accessor.getInformationControlReplacer() == null) {

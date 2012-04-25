@@ -44,6 +44,7 @@ public class ExtStatusDialog extends StatusDialog implements IRunnableContext {
 	
 	public class StatusUpdater implements IStatusChangeListener {
 		
+		@Override
 		public void statusChanged(final IStatus status) {
 			updateStatus(status);
 		}
@@ -147,6 +148,7 @@ public class ExtStatusDialog extends StatusDialog implements IRunnableContext {
 		fProgressComposite.setVisible(false);
 		return fProgressComposite;
 	}
+	@Override
 	public void run(final boolean fork, final boolean cancelable, final IRunnableWithProgress runnable) throws InvocationTargetException, InterruptedException {
 		if (!fWithRunnableContext) {
 			throw new UnsupportedOperationException();

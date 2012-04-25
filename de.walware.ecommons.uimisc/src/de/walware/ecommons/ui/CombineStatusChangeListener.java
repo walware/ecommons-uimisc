@@ -27,6 +27,7 @@ public class CombineStatusChangeListener implements IStatusChangeListener {
 		
 		private IStatus status = Status.OK_STATUS;
 		
+		@Override
 		public void statusChanged(final IStatus status) {
 			this.status = status;
 			update();
@@ -47,6 +48,7 @@ public class CombineStatusChangeListener implements IStatusChangeListener {
 	}
 	
 	
+	@Override
 	public void statusChanged(final IStatus status) {
 		fBaseStatus = status;
 		update();

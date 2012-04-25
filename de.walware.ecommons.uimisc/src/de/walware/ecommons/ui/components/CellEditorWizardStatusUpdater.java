@@ -35,6 +35,7 @@ public class CellEditorWizardStatusUpdater implements ICellEditorListener {
 	}
 	
 	
+	@Override
 	public void editorValueChanged(final boolean oldValidState, final boolean newValidState) {
 		if (fRestore == null) {
 			fRestore = fPage.getErrorMessage();
@@ -50,6 +51,7 @@ public class CellEditorWizardStatusUpdater implements ICellEditorListener {
 		}
 	}
 	
+	@Override
 	public void applyEditorValue() {
 		if (fRestore != null) {
 			fPage.setErrorMessage((fRestore != NO_ERROR) ? fRestore : null);
@@ -57,6 +59,7 @@ public class CellEditorWizardStatusUpdater implements ICellEditorListener {
 		}
 	}
 	
+	@Override
 	public void cancelEditor() {
 		if (fRestore != null) {
 			fPage.setErrorMessage((fRestore != NO_ERROR) ? fRestore : null);

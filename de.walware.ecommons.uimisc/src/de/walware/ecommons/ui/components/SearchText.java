@@ -207,6 +207,7 @@ public class SearchText extends Composite {
 			}
 		});
 		fTextControl.addModifyListener(new ModifyListener() {
+			@Override
 			public void modifyText(final ModifyEvent e) {
 				textChanged0();
 			}
@@ -228,7 +229,7 @@ public class SearchText extends Composite {
 			public void keyPressed(final KeyEvent e) {
 				if (e.keyCode == SWT.ESC) {
 					// allows other top level actions if field was already empty
-					final boolean alreadyClear = (fTextControl.getText().length() == 0);
+					final boolean alreadyClear = (fTextControl.getText().isEmpty());
 					setText(null);
 					e.doit = alreadyClear;
 					return;
@@ -264,6 +265,7 @@ public class SearchText extends Composite {
 					fMoveListener = new MouseMoveListener() {
 						private boolean fMouseInButton = true;
 						
+						@Override
 						public void mouseMove(final MouseEvent e) {
 							final boolean mouseInButton= isMouseInButton(e);
 							if (mouseInButton != fMouseInButton) {
@@ -294,16 +296,20 @@ public class SearchText extends Composite {
 				}
 			});
 			clearButton.addMouseTrackListener(new MouseTrackListener() {
+				@Override
 				public void mouseEnter(final MouseEvent e) {
 					clearButton.setImage(activeImage);
 				}
+				@Override
 				public void mouseExit(final MouseEvent e) {
 					clearButton.setImage(inactiveImage);
 				}
+				@Override
 				public void mouseHover(final MouseEvent e) {
 				}
 			});
 			clearButton.addDisposeListener(new DisposeListener() {
+				@Override
 				public void widgetDisposed(final DisposeEvent e) {
 					pressedImage.dispose();
 				}

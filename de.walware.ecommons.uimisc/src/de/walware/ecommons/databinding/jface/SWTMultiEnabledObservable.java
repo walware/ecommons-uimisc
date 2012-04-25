@@ -45,6 +45,7 @@ public class SWTMultiEnabledObservable extends AbstractSWTObservableValue {
 		return null;
 	}
 	
+	@Override
 	public Object getValueType() {
 		return null;
 	}

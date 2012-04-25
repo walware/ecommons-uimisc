@@ -39,17 +39,21 @@ public class ContainerContentProvider implements ITreeContentProvider {
 	}
 	
 	
+	@Override
 	public void dispose() {
 	}
 	
+	@Override
 	public Object[] getElements(final Object element) {
 		return getChildren(element);
 	}
 	
+	@Override
 	public boolean hasChildren(final Object element) {
 		return getChildren(element).length > 0;
 	}
 	
+	@Override
 	public Object[] getChildren(final Object element) {
 		if (element instanceof IWorkspace) { // Projects
 			final IProject[] allProjects = ((IWorkspace) element).getRoot().getProjects();
@@ -91,6 +95,7 @@ public class ContainerContentProvider implements ITreeContentProvider {
 		return new Object[0];
 	}
 	
+	@Override
 	public Object getParent(final Object element) {
 		if (element instanceof IResource) {
 			return ((IResource) element).getParent();
@@ -98,6 +103,7 @@ public class ContainerContentProvider implements ITreeContentProvider {
 		return null;
 	}
 	
+	@Override
 	public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
 	}
 	

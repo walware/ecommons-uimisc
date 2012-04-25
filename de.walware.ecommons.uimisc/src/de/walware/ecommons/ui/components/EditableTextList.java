@@ -94,6 +94,7 @@ public class EditableTextList implements ButtonGroup.IActions<String> {
 	}
 	
 	
+	@Override
 	public String edit(final int command, final String item, final Object parent) {
 		if (command == ButtonGroup.ADD_NEW) {
 			return ""; //$NON-NLS-1$
@@ -104,6 +105,7 @@ public class EditableTextList implements ButtonGroup.IActions<String> {
 		return null;
 	}
 	
+	@Override
 	public void updateState(final IStructuredSelection selection) {
 		fComposite.layout(false);
 	}

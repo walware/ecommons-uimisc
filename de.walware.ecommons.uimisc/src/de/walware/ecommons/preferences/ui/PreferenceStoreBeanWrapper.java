@@ -55,6 +55,7 @@ public class PreferenceStoreBeanWrapper {
 		fBeanSupport = new PropertyChangeSupport(bean);
 		
 		fStore.addPropertyChangeListener(new IPropertyChangeListener() {
+			@Override
 			public void propertyChange(final PropertyChangeEvent event) {
 				final String storeKey = event.getProperty();
 				final PrefData pref = fPreferenceMap.get(storeKey);

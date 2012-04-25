@@ -37,10 +37,12 @@ public class BrowserSession implements ISession {
 	}
 	
 	
+	@Override
 	public ImageDescriptor getImageDescriptor() {
 		return fImageDescriptor;
 	}
 	
+	@Override
 	public String getLabel() {
 		return fTitle;
 	}

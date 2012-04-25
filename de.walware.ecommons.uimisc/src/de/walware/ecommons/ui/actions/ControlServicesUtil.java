@@ -125,6 +125,7 @@ public class ControlServicesUtil {
 			fRequireDeactivation = false;
 		}
 		control.addDisposeListener(new DisposeListener() {
+			@Override
 			public void widgetDisposed(final DisposeEvent e) {
 				dispose();
 			}

@@ -74,9 +74,11 @@ public class LayoutUtil {
 	private static DialogValues getDialogValues() {
 		if (gDialogValues == null) {
 			JFaceResources.getFontRegistry().addListener(new IPropertyChangeListener() {
+				@Override
 				public void propertyChange(final PropertyChangeEvent event) {
 					if (JFaceResources.DIALOG_FONT.equals(event.getProperty())) {
 						UIAccess.getDisplay().asyncExec(new Runnable() {
+							@Override
 							public void run() {
 								gDialogValues = new DialogValues();
 							}

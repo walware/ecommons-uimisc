@@ -55,6 +55,7 @@ public abstract class AbstractSWTObservableValue extends AbstractObservableValue
 		super(realm);
 		this.widget = widget;
 		widget.addDisposeListener(new DisposeListener() {
+			@Override
 			public void widgetDisposed(final DisposeEvent e) {
 				AbstractSWTObservableValue.this.dispose();
 			}
@@ -64,6 +65,7 @@ public abstract class AbstractSWTObservableValue extends AbstractObservableValue
 	/**
 	 * @return Returns the widget.
 	 */
+	@Override
 	public Widget getWidget() {
 		return widget;
 	}

@@ -233,6 +233,7 @@ class BreadcrumbItemDropDown {
 		fDropDownMenuManager = new MenuManager();
 		fDropDownMenuManager.setRemoveAllWhenShown(true);
 		fDropDownMenuManager.addMenuListener(new IMenuListener() {
+			@Override
 			public void menuAboutToShow(final IMenuManager manager) {
 				final IStructuredSelection selection = (IStructuredSelection) fDropDownViewer.getSelection();
 				if (!selection.isEmpty()) {
@@ -345,6 +346,7 @@ class BreadcrumbItemDropDown {
 			
 			fDropDownViewer.addOpenListener(new IOpenListener() {
 				
+				@Override
 				public void open(final OpenEvent event) {
 					if (DEBUG) {
 						System.out.println("BreadcrumbItemDropDown.showMenu()$treeViewer>open"); //$NON-NLS-1$
@@ -367,6 +369,7 @@ class BreadcrumbItemDropDown {
 			
 			tree.addMouseListener(new MouseListener() {
 				
+				@Override
 				public void mouseUp(final MouseEvent e) {
 					if (DEBUG) {
 						System.out.println("BreadcrumbItemDropDown.showMenu()$treeViewer>mouseUp"); //$NON-NLS-1$
@@ -388,9 +391,11 @@ class BreadcrumbItemDropDown {
 					openElement(item.getData());
 				}
 				
+				@Override
 				public void mouseDown(final MouseEvent e) {
 				}
 				
+				@Override
 				public void mouseDoubleClick(final MouseEvent e) {
 				}
 				
@@ -399,6 +404,7 @@ class BreadcrumbItemDropDown {
 			tree.addMouseMoveListener(new MouseMoveListener() {
 				TreeItem fLastItem= null;
 				
+				@Override
 				public void mouseMove(final MouseEvent e) {
 					if (tree.equals(e.getSource())) {
 						final Object o= tree.getItem(new Point(e.x, e.y));
@@ -453,6 +459,7 @@ class BreadcrumbItemDropDown {
 			
 			tree.addKeyListener(new KeyListener() {
 				
+				@Override
 				public void keyPressed(final KeyEvent e) {
 					if (e.keyCode == SWT.ARROW_UP) {
 						final TreeItem[] selection= tree.getSelection();
@@ -469,6 +476,7 @@ class BreadcrumbItemDropDown {
 					}
 				}
 				
+				@Override
 				public void keyReleased(final KeyEvent e) {
 				}
 				
@@ -478,12 +486,15 @@ class BreadcrumbItemDropDown {
 			
 			fDropDownViewer.addTreeListener(new ITreeViewerListener() {
 				
+				@Override
 				public void treeCollapsed(final TreeExpansionEvent event) {
 				}
 				
+				@Override
 				public void treeExpanded(final TreeExpansionEvent event) {
 					tree.setRedraw(false);
 					fShell.getDisplay().asyncExec(new Runnable() {
+						@Override
 						public void run() {
 							if (fShell.isDisposed()) {
 								return;
@@ -577,6 +588,7 @@ class BreadcrumbItemDropDown {
 	 */
 	private void installCloser(final Shell shell) {
 		final Listener focusListener= new Listener() {
+			@Override
 			public void handleEvent(final Event event) {
 				final Widget focusElement= event.widget;
 				final boolean isFocusBreadcrumbTreeFocusWidget= focusElement == shell || focusElement instanceof Tree && ((Tree)focusElement).getShell() == shell;
@@ -621,10 +633,12 @@ class BreadcrumbItemDropDown {
 		
 		final ControlListener controlListener= new ControlListener() {
 			
+			@Override
 			public void controlMoved(final ControlEvent e) {
 				shell.close();
 			}
 			
+			@Override
 			public void controlResized(final ControlEvent e) {
 				shell.close();
 			}
@@ -634,6 +648,7 @@ class BreadcrumbItemDropDown {
 		
 		shell.addDisposeListener(new DisposeListener() {
 			
+			@Override
 			public void widgetDisposed(final DisposeEvent e) {
 				if (DEBUG) {
 					System.out.println("==> shell disposed"); //$NON-NLS-1$
@@ -650,9 +665,11 @@ class BreadcrumbItemDropDown {
 		});
 		shell.addShellListener(new ShellListener() {
 			
+			@Override
 			public void shellActivated(final ShellEvent e) {
 			}
 			
+			@Override
 			public void shellClosed(final ShellEvent e) {
 				if (DEBUG) {
 					System.out.println("==> shellClosed"); //$NON-NLS-1$
@@ -666,12 +683,15 @@ class BreadcrumbItemDropDown {
 				fDropDownViewer= null;
 			}
 			
+			@Override
 			public void shellDeactivated(final ShellEvent e) {
 			}
 			
+			@Override
 			public void shellDeiconified(final ShellEvent e) {
 			}
 			
+			@Override
 			public void shellIconified(final ShellEvent e) {
 			}
 			

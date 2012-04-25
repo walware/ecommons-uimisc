@@ -69,6 +69,7 @@ public class SearchContributionItem extends ContributionItem {
 	public void setSizeControl(final Composite control) {
 		fSizeControl = control;
 		fSizeControl.addListener(SWT.Resize, new Listener() {
+			@Override
 			public void handleEvent(final Event event) {
 				resize();
 			}
@@ -96,14 +97,17 @@ public class SearchContributionItem extends ContributionItem {
 	public void fill(final ToolBar parent, final int index) {
 		fControl = new SearchText(parent);
 		fControl.addListener(new SearchText.Listener() {
+			@Override
 			public void textChanged(final boolean user) {
 				if (fUpdateWhenTyping || !user) {
 					SearchContributionItem.this.search();
 				}
 			}
+			@Override
 			public void okPressed() {
 				SearchContributionItem.this.search();
 			}
+			@Override
 			public void downPressed() {
 				SearchContributionItem.this.selectFirst();
 			}
@@ -119,14 +123,17 @@ public class SearchContributionItem extends ContributionItem {
 	public Control create(final Composite parent) {
 		fControl = new SearchText(parent);
 		fControl.addListener(new SearchText.Listener() {
+			@Override
 			public void textChanged(final boolean user) {
 				if (fUpdateWhenTyping || !user) {
 					SearchContributionItem.this.search();
 				}
 			}
+			@Override
 			public void okPressed() {
 				SearchContributionItem.this.search();
 			}
+			@Override
 			public void downPressed() {
 				SearchContributionItem.this.selectFirst();
 			}

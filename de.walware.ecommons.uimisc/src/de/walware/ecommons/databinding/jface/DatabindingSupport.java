@@ -46,6 +46,7 @@ public class DatabindingSupport {
 		fDbc = new DataBindingContext(fRealm);
 		
 		rootControl.addDisposeListener(new DisposeListener() {
+			@Override
 			public void widgetDisposed(final DisposeEvent e) {
 				dispose();
 			}
@@ -78,6 +79,7 @@ public class DatabindingSupport {
 	public void installStatusListener(final IStatusChangeListener listener) {
 		final AggregateValidationStatus validationStatus = new AggregateValidationStatus(fDbc, AggregateValidationStatus.MAX_SEVERITY);
 		validationStatus.addValueChangeListener(new IValueChangeListener() {
+			@Override
 			public void handleValueChange(final ValueChangeEvent event) {
 				final IStatus status = (IStatus) event.diff.getNewValue();
 				listener.statusChanged(status);

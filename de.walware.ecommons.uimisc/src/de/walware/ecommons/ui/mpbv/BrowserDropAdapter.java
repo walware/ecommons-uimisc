@@ -45,23 +45,29 @@ public class BrowserDropAdapter implements DropTargetListener {
 		event.detail = DND.DROP_NONE;
 	}
 	
+	@Override
 	public void dragEnter(final DropTargetEvent event) {
 		validate(event);
 	}
 	
+	@Override
 	public void dragOperationChanged(final DropTargetEvent event) {
 		validate(event);
 	}
 	
+	@Override
 	public void dragOver(final DropTargetEvent event) {
 	}
 	
+	@Override
 	public void dragLeave(final DropTargetEvent event) {
 	}
 	
+	@Override
 	public void dropAccept(final DropTargetEvent event) {
 	}
 	
+	@Override
 	public void drop(final DropTargetEvent event) {
 		final String[] files = (String[]) event.data;
 		if (files == null || files.length == 0) {

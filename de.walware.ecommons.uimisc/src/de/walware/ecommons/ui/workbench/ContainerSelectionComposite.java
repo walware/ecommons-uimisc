@@ -336,12 +336,14 @@ public class ContainerSelectionComposite extends Composite {
 		fTreeViewer.setLabelProvider(WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider());
 		fTreeViewer.setSorter(new ViewerSorter());
 		fTreeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
 			public void selectionChanged(final SelectionChangedEvent event) {
 				final IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 				containerSelectionChanged((IContainer) selection.getFirstElement()); // allow null
 			}
 		});
 		fTreeViewer.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
 			public void doubleClick(final DoubleClickEvent event) {
 				final ISelection selection = event.getSelection();
 				if (selection instanceof IStructuredSelection) {

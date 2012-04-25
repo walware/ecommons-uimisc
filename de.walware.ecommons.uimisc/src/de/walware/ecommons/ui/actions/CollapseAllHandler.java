@@ -13,7 +13,6 @@ package de.walware.ecommons.ui.actions;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 
@@ -44,6 +43,7 @@ public class CollapseAllHandler extends AbstractHandler {
 	}
 	
 	
+	@Override
 	public Object execute(final ExecutionEvent event) {
 		final AbstractTreeViewer viewer = fViewer;
 		if (UIAccess.isOkToUse(viewer)) {

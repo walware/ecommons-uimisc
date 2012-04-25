@@ -56,6 +56,7 @@ public abstract class ExtensibleTextCellEditor extends CellEditor {
 		
 		private int fIgnore;
 		
+		@Override
 		public void handleEvent(final Event event) {
 			Widget control;
 			switch (event.type) {
@@ -217,6 +218,7 @@ public abstract class ExtensibleTextCellEditor extends CellEditor {
 			}
 		});
 		fText.addTraverseListener(new TraverseListener() {
+			@Override
 			public void keyTraversed(final TraverseEvent e) {
 				if (e.detail == SWT.TRAVERSE_ESCAPE
 						|| e.detail == SWT.TRAVERSE_RETURN) {
@@ -343,6 +345,7 @@ public abstract class ExtensibleTextCellEditor extends CellEditor {
 	private ModifyListener getModifyListener() {
 		if (fModifyListener == null) {
 			fModifyListener = new ModifyListener() {
+				@Override
 				public void modifyText(final ModifyEvent e) {
 					editOccured(e);
 				}

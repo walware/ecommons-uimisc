@@ -31,6 +31,7 @@ public class ColorSelectorObservableValue extends AbstractSWTObservableValue  {
 	private RGB fValue;
 	
 	private final IPropertyChangeListener fUpdateListener = new IPropertyChangeListener() {
+		@Override
 		public void propertyChange(final PropertyChangeEvent event) {
 			fValue = (RGB) event.getNewValue();
 			fireValueChange(Diffs.createValueDiff(event.getOldValue(), fValue));
@@ -56,6 +57,7 @@ public class ColorSelectorObservableValue extends AbstractSWTObservableValue  {
 	}
 	
 	
+	@Override
 	public Object getValueType() {
 		return RGB.class;
 	}

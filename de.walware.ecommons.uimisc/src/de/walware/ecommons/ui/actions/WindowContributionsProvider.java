@@ -90,6 +90,7 @@ public abstract class WindowContributionsProvider implements IWindowListener {
 		final Display display = workbench.getDisplay();
 		if (display != null) {
 			display.asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					workbench.addWindowListener(WindowContributionsProvider.this);
 					final IWorkbenchWindow[] windows = workbench.getWorkbenchWindows();
@@ -111,6 +112,7 @@ public abstract class WindowContributionsProvider implements IWindowListener {
 		final Display display = workbench.getDisplay();
 		if (display != null) {
 			display.asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					final Iterator<WindowContributions> iter = fList.iterator();
 					while (iter.hasNext()) {
@@ -124,10 +126,12 @@ public abstract class WindowContributionsProvider implements IWindowListener {
 	}
 	
 	
+	@Override
 	public void windowOpened(final IWorkbenchWindow window) {
 		init(window);
 	}
 	
+	@Override
 	public void windowClosed(final IWorkbenchWindow window) {
 		final IWorkbench workbench = PlatformUI.getWorkbench();
 		if (workbench.isClosing()) {
@@ -144,9 +148,11 @@ public abstract class WindowContributionsProvider implements IWindowListener {
 		}
 	}
 	
+	@Override
 	public void windowActivated(final IWorkbenchWindow window) {
 	}
 	
+	@Override
 	public void windowDeactivated(final IWorkbenchWindow window) {
 	}
 	

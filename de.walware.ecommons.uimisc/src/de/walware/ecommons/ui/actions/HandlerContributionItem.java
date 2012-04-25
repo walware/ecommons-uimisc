@@ -166,6 +166,7 @@ public class HandlerContributionItem extends ContributionItem {
 	private final UIElement callback;
 	
 	private final IBindingManagerListener bindingManagerListener = new IBindingManagerListener() {
+		@Override
 		public void bindingManagerChanged(final BindingManagerEvent event) {
 			if (event.isActiveBindingsChanged()
 					&& event.isActiveBindingsChangedFor(getCommand())) {
@@ -298,6 +299,7 @@ public class HandlerContributionItem extends ContributionItem {
 	private IHandlerListener getHandlerListener() {
 		if (commandListener == null) {
 			commandListener = new IHandlerListener() {
+				@Override
 				public void handlerChanged(final HandlerEvent commandEvent) {
 					if (commandEvent.isHandledChanged()
 							|| commandEvent.isEnabledChanged()
@@ -315,6 +317,7 @@ public class HandlerContributionItem extends ContributionItem {
 			dropDownMenuOverride = null;
 		}
 		final Runnable update = new Runnable() {
+			@Override
 			public void run() {
 				update(null);
 			}
@@ -712,6 +715,7 @@ public class HandlerContributionItem extends ContributionItem {
 	private Listener getItemListener() {
 		if (menuItemListener == null) {
 			menuItemListener = new Listener() {
+				@Override
 				public void handleEvent(final Event event) {
 					switch (event.type) {
 					case SWT.Dispose:
@@ -803,6 +807,7 @@ public class HandlerContributionItem extends ContributionItem {
 	
 	protected void initDropDownMenu(final MenuManager menuManager) {
 		menuManager.addMenuListener(new IMenuListener2() {
+			@Override
 			public void menuAboutToShow(final IMenuManager manager) {
 				String id = getId();
 				if (dropDownMenuOverride != null) {
@@ -811,8 +816,10 @@ public class HandlerContributionItem extends ContributionItem {
 				menuService.populateContributionManager(
 						menuManager, "menu:" + id); //$NON-NLS-1$
 			}
+			@Override
 			public void menuAboutToHide(final IMenuManager manager) {
 				display.asyncExec(new Runnable() {
+					@Override
 					public void run() {
 						menuService.releaseContributions(menuManager);
 						menuManager.dispose();
@@ -900,6 +907,7 @@ public class HandlerContributionItem extends ContributionItem {
 		return false;
 	}
 	
+	@Override
 	public boolean isVisible() {
 		if (visibleEnabled) {
 			return super.isVisible() && isEnabled();

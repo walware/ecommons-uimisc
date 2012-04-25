@@ -85,6 +85,7 @@ public abstract class AbstractEditorOutlinePage extends Page
 		}
 		
 		
+		@Override
 		public void selectionChanged(final SelectionChangedEvent event) {
 			fCurrentEvent = event;
 			final ISelectionChangedListener[] listeners = fSelectionListeners.toArray();
@@ -94,6 +95,7 @@ public abstract class AbstractEditorOutlinePage extends Page
 			}
 		}
 		
+		@Override
 		public void run() {
 			fCurrentListener.selectionChanged(fCurrentEvent);
 		}
@@ -102,6 +104,7 @@ public abstract class AbstractEditorOutlinePage extends Page
 	
 	private class DefaultSelectionListener implements ISelectionChangedListener {
 		
+		@Override
 		public void selectionChanged(final SelectionChangedEvent event) {
 			if (fIgnoreSelection == 0) {
 				selectInEditor(event.getSelection());
@@ -136,6 +139,7 @@ public abstract class AbstractEditorOutlinePage extends Page
 		protected void init() {
 		}
 		
+		@Override
 		public void updateElement(final UIElement element, final Map parameters) {
 			element.setChecked(isChecked());
 		}
@@ -144,9 +148,11 @@ public abstract class AbstractEditorOutlinePage extends Page
 			return fIsChecked;
 		}
 		
+		@Override
 		public Object execute(final ExecutionEvent event) throws ExecutionException {
 			final boolean on = fIsChecked = !fIsChecked;
 			final Runnable runnable = new Runnable() {
+				@Override
 				public void run() {
 					apply(on);
 					getDialogSettings().put(fSettingsKey, on); 
@@ -210,6 +216,7 @@ public abstract class AbstractEditorOutlinePage extends Page
 		fTreeViewer = viewer;
 		
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
 			public void selectionChanged(final SelectionChangedEvent event) {
 				fCurrentSelection = event.getSelection();
 			}
@@ -217,6 +224,7 @@ public abstract class AbstractEditorOutlinePage extends Page
 		final IPageSite site = getSite();
 		initActions(site, fHandlers);
 		fSelectionListeners.add(new ISelectionChangedListener() {
+			@Override
 			public void selectionChanged(final SelectionChangedEvent event) {
 				if (getControl().isVisible()) {
 					final EvaluationContext evaluationContext = new EvaluationContext(null, event.getSelection());
@@ -240,6 +248,7 @@ public abstract class AbstractEditorOutlinePage extends Page
 		final MenuManager menuManager = new MenuManager(fContextMenuID, fContextMenuID);
 		menuManager.setRemoveAllWhenShown(true);
 		menuManager.addMenuListener(new IMenuListener() {
+			@Override
 			public void menuAboutToShow(final IMenuManager m) {
 				contextMenuAboutToShow(m);
 			}
@@ -277,6 +286,7 @@ public abstract class AbstractEditorOutlinePage extends Page
 	protected void endIgnoreSelection(final boolean async) {
 		if (async) {
 			Display.getCurrent().asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					fIgnoreSelection--;
 				};
@@ -363,6 +373,7 @@ public abstract class AbstractEditorOutlinePage extends Page
 	}
 	
 	
+	@Override
 	public void setSelection(final ISelection selection) {
 		final TreeViewer viewer = getViewer();
 		if (UIAccess.isOkToUse(viewer)) {
@@ -370,6 +381,7 @@ public abstract class AbstractEditorOutlinePage extends Page
 		}
 	}
 	
+	@Override
 	public ISelection getSelection() {
 		final ISelection selection = fCurrentSelection;
 		if (selection != null) {
@@ -382,23 +394,28 @@ public abstract class AbstractEditorOutlinePage extends Page
 	}
 	
 	
+	@Override
 	public void addSelectionChangedListener(final ISelectionChangedListener listener) {
 		fSelectionListeners.add(listener);
 	}
 	
+	@Override
 	public void removeSelectionChangedListener(final ISelectionChangedListener listener) {
 		fSelectionListeners.remove(listener);
 	}
 	
+	@Override
 	public void addPostSelectionChangedListener(final ISelectionChangedListener listener) {
 		fPostSelectionListeners.add(listener);
 	}
 	
+	@Override
 	public void removePostSelectionChangedListener(final ISelectionChangedListener listener) {
 		fPostSelectionListeners.remove(listener);
 	}
 	
 	
+	@Override
 	public Object getAdapter(final Class required) {
 		return null;
 	}

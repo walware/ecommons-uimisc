@@ -105,6 +105,7 @@ public class DNDUtil {
 		}
 		
 		control.addDisposeListener(new DisposeListener() {
+			@Override
 			public void widgetDisposed(final DisposeEvent e) {
 				e.widget.removeDisposeListener(this);
 				dropTarget.dispose();

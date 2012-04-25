@@ -66,10 +66,12 @@ public abstract class AbstractBreadcrumb implements IBreadcrumb {
 	}
 	
 	
+	@Override
 	public ISelectionProvider getSelectionProvider() {
 		return fBreadcrumbViewer;
 	}
 	
+	@Override
 	public void setInput(final Object element) {
 		if (element == null) {
 			return;
@@ -84,15 +86,18 @@ public abstract class AbstractBreadcrumb implements IBreadcrumb {
 		fBreadcrumbViewer.setInput(element);
 	}
 	
+	@Override
 	public void activate() {
 		fBreadcrumbViewer.setSelection(new StructuredSelection(fBreadcrumbViewer.getInput()));
 		fBreadcrumbViewer.setFocus();
 	}
 	
+	@Override
 	public boolean isActive() {
 		return fIsActive;
 	}
 	
+	@Override
 	public Control createContent(final Composite parent) {
 		assert (fComposite == null);
 		
@@ -101,6 +106,7 @@ public abstract class AbstractBreadcrumb implements IBreadcrumb {
 		fComposite.setLayout(gridLayout);
 		
 		fDisplayFocusListener = new Listener() {
+			@Override
 			public void handleEvent(final Event event) {
 				if (isBreadcrumbEvent(event)) {
 					if (fHasFocus) {
@@ -131,11 +137,13 @@ public abstract class AbstractBreadcrumb implements IBreadcrumb {
 		fBreadcrumbViewer.getControl().setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		
 		fBreadcrumbViewer.addOpenListener(new IOpenListener() {
+			@Override
 			public void open(final OpenEvent event) {
 				doRevealOrOpen(event.getSelection());
 			}
 		});
 		fBreadcrumbViewer.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
 			public void doubleClick(final DoubleClickEvent event) {
 				final Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
 				if (element == null) {
@@ -184,6 +192,7 @@ public abstract class AbstractBreadcrumb implements IBreadcrumb {
 //		});
 		
 		fPropertyChangeListener = new IPropertyChangeListener() {
+			@Override
 			public void propertyChange(final PropertyChangeEvent event) {
 				if (ACTIVE_TAB_BG_END.equals(event.getProperty())) {
 					if (fComposite.isFocusControl()) {
@@ -201,6 +210,7 @@ public abstract class AbstractBreadcrumb implements IBreadcrumb {
 //	}
 	
 	
+	@Override
 	public void dispose() {
 		if (isServiceLocatorReady(false)) {
 			fBreadcrumbServiceState = -1;
@@ -294,6 +304,7 @@ public abstract class AbstractBreadcrumb implements IBreadcrumb {
 		deinstallDisplayListeners();
 		
 		fDisplayKeyListener = new Listener() {
+			@Override
 			public void handleEvent(final Event event) {
 				if (event.keyCode != SWT.ESC) {
 					return;
@@ -357,6 +368,7 @@ public abstract class AbstractBreadcrumb implements IBreadcrumb {
 			final IServiceLocator pageServices = getParentServiceLocator();
 			final IServiceLocatorCreator serviceCreator = (IServiceLocatorCreator) pageServices.getService(IServiceLocatorCreator.class);
 			fBreadcrumbServices = (ServiceLocator) serviceCreator.createServiceLocator(pageServices, null, new IDisposable() {
+				@Override
 				public void dispose() {
 					fBreadcrumbServiceState = -1;
 					fBreadcrumbServices = null;

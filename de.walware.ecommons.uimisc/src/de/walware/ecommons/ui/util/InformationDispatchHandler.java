@@ -53,6 +53,7 @@ public class InformationDispatchHandler extends AbstractHandler {
 	}
 	
 	
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		if (fTokenOwner != null) {
 			if (fTokenOwner.moveFocusToWidgetToken()) {

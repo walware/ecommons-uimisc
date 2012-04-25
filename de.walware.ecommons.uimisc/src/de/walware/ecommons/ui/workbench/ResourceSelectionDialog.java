@@ -144,6 +144,7 @@ public class ResourceSelectionDialog extends SelectionStatusDialog {
 		fTextField.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		
 		fSelectionGroup.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
 			public void selectionChanged(final SelectionChangedEvent event) {
 				final IResource selection = (IResource) 
 						((IStructuredSelection) event.getSelection()).getFirstElement();
@@ -154,11 +155,13 @@ public class ResourceSelectionDialog extends SelectionStatusDialog {
 			}
 		});
 		fSelectionGroup.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
 			public void doubleClick(final DoubleClickEvent event) {
 				okPressed();
 			}
 		});
 		fTextField.addModifyListener(new ModifyListener() {
+			@Override
 			public void modifyText(final ModifyEvent e) {
 				if (!fIgnoreTextFieldModifications) {
 					setResource(fTextField.getText());

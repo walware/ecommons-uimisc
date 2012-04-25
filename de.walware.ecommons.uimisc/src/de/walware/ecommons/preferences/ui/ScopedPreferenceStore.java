@@ -145,6 +145,7 @@ public class ScopedPreferenceStore extends EventManager implements
 	 */
 	private INodeChangeListener getNodeChangeListener() {
 		return new IEclipsePreferences.INodeChangeListener() {
+			@Override
 			public void added(final NodeChangeEvent event) {
 				if (nodeQualifier.equals(event.getChild().name())
 						&& isListenerAttached()) {
@@ -153,6 +154,7 @@ public class ScopedPreferenceStore extends EventManager implements
 				}
 			}
 			
+			@Override
 			public void removed(final NodeChangeEvent event) {
 				// Do nothing as there are no events from removed node
 			}
@@ -165,6 +167,7 @@ public class ScopedPreferenceStore extends EventManager implements
 	private void initializePreferencesListener() {
 		if (searchContexts == null && preferencesListener == null) {
 			preferencesListener = new IEclipsePreferences.IPreferenceChangeListener() {
+				@Override
 				public void preferenceChange(final PreferenceChangeEvent event) {
 					
 					if (silentRunning) {
@@ -190,6 +193,7 @@ public class ScopedPreferenceStore extends EventManager implements
 			for (int i = 0; i < searchContexts.length; i++) {
 				final int idxSearchContext = i;
 				searchPreferencesListeners[idxSearchContext] = new IEclipsePreferences.IPreferenceChangeListener() {
+					@Override
 					public void preferenceChange(final PreferenceChangeEvent event) {
 						
 						if (silentRunning) {
@@ -287,6 +291,7 @@ public class ScopedPreferenceStore extends EventManager implements
 		return defaultContext.getNode(defaultQualifier);
 	}
 	
+	@Override
 	public void addPropertyChangeListener(final IPropertyChangeListener listener) {
 		initializePreferencesListener();// Create the preferences listener if it
 		// does not exist
@@ -374,6 +379,7 @@ public class ScopedPreferenceStore extends EventManager implements
 		}
 	}
 	
+	@Override
 	public boolean contains(final String name) {
 		if (name == null) {
 			return false;
@@ -382,6 +388,7 @@ public class ScopedPreferenceStore extends EventManager implements
 				getPreferenceNodes(true))) != null;
 	}
 	
+	@Override
 	public void firePropertyChangeEvent(final String name, final Object oldValue,
 			final Object newValue) {
 		// important: create intermediate array to protect against listeners
@@ -396,6 +403,7 @@ public class ScopedPreferenceStore extends EventManager implements
 			final IPropertyChangeListener listener = (IPropertyChangeListener) list[i];
 			SafeRunner.run(new SafeRunnable(JFaceResources
 					.getString("PreferenceStore.changeError")) { //$NON-NLS-1$
+						@Override
 						public void run() {
 							listener.propertyChange(event);
 						}
@@ -403,37 +411,45 @@ public class ScopedPreferenceStore extends EventManager implements
 		}
 	}
 	
+	@Override
 	public boolean getBoolean(final String name) {
 		final String value = internalGet(name);
 		return value == null ? BOOLEAN_DEFAULT_DEFAULT : Boolean.valueOf(value)
 				.booleanValue();
 	}
 	
+	@Override
 	public boolean getDefaultBoolean(final String name) {
 		return getDefaultPreferences()
 				.getBoolean(name, BOOLEAN_DEFAULT_DEFAULT);
 	}
 	
+	@Override
 	public double getDefaultDouble(final String name) {
 		return getDefaultPreferences().getDouble(name, DOUBLE_DEFAULT_DEFAULT);
 	}
 	
+	@Override
 	public float getDefaultFloat(final String name) {
 		return getDefaultPreferences().getFloat(name, FLOAT_DEFAULT_DEFAULT);
 	}
 	
+	@Override
 	public int getDefaultInt(final String name) {
 		return getDefaultPreferences().getInt(name, INT_DEFAULT_DEFAULT);
 	}
 	
+	@Override
 	public long getDefaultLong(final String name) {
 		return getDefaultPreferences().getLong(name, LONG_DEFAULT_DEFAULT);
 	}
 	
+	@Override
 	public String getDefaultString(final String name) {
 		return getDefaultPreferences().get(name, STRING_DEFAULT_DEFAULT);
 	}
 	
+	@Override
 	public double getDouble(final String name) {
 		final String value = internalGet(name);
 		if (value == null) {
@@ -460,6 +476,7 @@ public class ScopedPreferenceStore extends EventManager implements
 				getPreferenceNodes(true));
 	}
 	
+	@Override
 	public float getFloat(final String name) {
 		final String value = internalGet(name);
 		if (value == null) {
@@ -472,6 +489,7 @@ public class ScopedPreferenceStore extends EventManager implements
 		}
 	}
 	
+	@Override
 	public int getInt(final String name) {
 		final String value = internalGet(name);
 		if (value == null) {
@@ -484,6 +502,7 @@ public class ScopedPreferenceStore extends EventManager implements
 		}
 	}
 	
+	@Override
 	public long getLong(final String name) {
 		final String value = internalGet(name);
 		if (value == null) {
@@ -496,11 +515,13 @@ public class ScopedPreferenceStore extends EventManager implements
 		}
 	}
 	
+	@Override
 	public String getString(final String name) {
 		final String value = internalGet(name);
 		return value == null ? STRING_DEFAULT_DEFAULT : value;
 	}
 	
+	@Override
 	public boolean isDefault(final String name) {
 		if (name == null) {
 			return false;
@@ -509,10 +530,12 @@ public class ScopedPreferenceStore extends EventManager implements
 				getPreferenceNodes(false))) == null;
 	}
 	
+	@Override
 	public boolean needsSaving() {
 		return dirty;
 	}
 	
+	@Override
 	public void putValue(final String name, final String value) {
 		try {
 			// Do not notify listeners
@@ -525,6 +548,7 @@ public class ScopedPreferenceStore extends EventManager implements
 		}
 	}
 	
+	@Override
 	public void removePropertyChangeListener(final IPropertyChangeListener listener) {
 		removeListenerObject(listener);
 		if (!isListenerAttached()) {
@@ -532,6 +556,7 @@ public class ScopedPreferenceStore extends EventManager implements
 		}
 	}
 	
+	@Override
 	public void setDefault(final String name, final double value) {
 		getDefaultPreferences().putDouble(name, value);
 	}
@@ -542,26 +567,32 @@ public class ScopedPreferenceStore extends EventManager implements
 	 * @see org.eclipse.jface.preference.IPreferenceStore#setDefault(java.lang.String,
 	 *      float)
 	 */
+	@Override
 	public void setDefault(final String name, final float value) {
 		getDefaultPreferences().putFloat(name, value);
 	}
 	
+	@Override
 	public void setDefault(final String name, final int value) {
 		getDefaultPreferences().putInt(name, value);
 	}
 	
+	@Override
 	public void setDefault(final String name, final long value) {
 		getDefaultPreferences().putLong(name, value);
 	}
 	
+	@Override
 	public void setDefault(final String name, final String defaultObject) {
 		getDefaultPreferences().put(name, defaultObject);
 	}
 	
+	@Override
 	public void setDefault(final String name, final boolean value) {
 		getDefaultPreferences().putBoolean(name, value);
 	}
 	
+	@Override
 	public void setToDefault(final String name) {
 		final String oldValue = getString(name);
 		final String defaultValue = getDefaultString(name);
@@ -578,6 +609,7 @@ public class ScopedPreferenceStore extends EventManager implements
 		
 	}
 	
+	@Override
 	public void setValue(final String name, final double value) {
 		final double oldValue = getDouble(name);
 		if (oldValue == value) {
@@ -597,6 +629,7 @@ public class ScopedPreferenceStore extends EventManager implements
 		}
 	}
 	
+	@Override
 	public void setValue(final String name, final float value) {
 		final float oldValue = getFloat(name);
 		if (oldValue == value) {
@@ -616,6 +649,7 @@ public class ScopedPreferenceStore extends EventManager implements
 		}
 	}
 	
+	@Override
 	public void setValue(final String name, final int value) {
 		final int oldValue = getInt(name);
 		if (oldValue == value) {
@@ -635,6 +669,7 @@ public class ScopedPreferenceStore extends EventManager implements
 		}
 	}
 	
+	@Override
 	public void setValue(final String name, final long value) {
 		final long oldValue = getLong(name);
 		if (oldValue == value) {
@@ -654,6 +689,7 @@ public class ScopedPreferenceStore extends EventManager implements
 		}
 	}
 	
+	@Override
 	public void setValue(final String name, final String value) {
 		// Do not turn on silent running here as Strings are propagated
 		if (value == null || getDefaultString(name).equals(value)) {
@@ -664,6 +700,7 @@ public class ScopedPreferenceStore extends EventManager implements
 		dirty = true;
 	}
 	
+	@Override
 	public void setValue(final String name, final boolean value) {
 		final boolean oldValue = getBoolean(name);
 		if (oldValue == value) {
@@ -683,6 +720,7 @@ public class ScopedPreferenceStore extends EventManager implements
 		}
 	}
 	
+	@Override
 	public void save() throws IOException {
 		try {
 			getStorePreferences().flush();

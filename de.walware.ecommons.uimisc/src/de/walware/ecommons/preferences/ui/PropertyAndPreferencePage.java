@@ -127,8 +127,10 @@ public abstract class PropertyAndPreferencePage<Block extends ConfigurationBlock
 				fUseProjectSettings.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 				fUseProjectSettings.setText(Messages.PropertyAndPreference_UseProjectSettings_label);
 				fUseProjectSettings.addSelectionListener(new SelectionListener() {
+					@Override
 					public void widgetDefaultSelected(final SelectionEvent e) {
 					}
+					@Override
 					public void widgetSelected(final SelectionEvent e) {
 						doEnableProjectSpecificSettings(fUseProjectSettings.getSelection());
 					};
@@ -277,10 +279,12 @@ public abstract class PropertyAndPreferencePage<Block extends ConfigurationBlock
 	
 /* PropertyPage Implementation ************************************************/
 	
+	@Override
 	public IAdaptable getElement() {
 		return fProject;
 	}
 	
+	@Override
 	public void setElement(final IAdaptable element) {
 		fProject = (IProject) element.getAdapter(IResource.class);
 	}

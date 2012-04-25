@@ -57,6 +57,7 @@ public class TogglePreferenceEnablementHandler extends AbstractHandler implement
 	}
 	
 	
+	@Override
 	public void preferenceChange(final PreferenceChangeEvent event) {
 		if (fPreferenceKey.getKey().equals(event.getKey())) {
 			final Boolean newValue = fPrefAccess.getPreferenceValue(fPreferenceKey);
@@ -80,10 +81,12 @@ public class TogglePreferenceEnablementHandler extends AbstractHandler implement
 		super.dispose();
 	}
 	
+	@Override
 	public void updateElement(final UIElement element, final Map parameters) {
 		element.setChecked(fPreferenceIsEnabled);
 	}
 	
+	@Override
 	public Object execute(final ExecutionEvent arg0) throws ExecutionException {
 		PreferencesUtil.setPrefValue(fPrefAccess.getPreferenceContexts()[0], fPreferenceKey, !fPreferenceIsEnabled);
 		return null;

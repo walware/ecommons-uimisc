@@ -44,6 +44,7 @@ public class ShortedLabel {
 	public ShortedLabel(final Composite parent, final int style) {
 		fLabel = new Label(parent, style);
 		fLabel.addListener(SWT.Resize, new Listener() {
+			@Override
 			public void handleEvent(final Event event) {
 				updateShortening();
 			}
@@ -104,7 +105,7 @@ public class ShortedLabel {
 		}
 		
 		public String shorten(final String text) {
-			if (text == null || text.length() == 0) {
+			if (text == null || text.isEmpty()) {
 				return text;
 			}
 			

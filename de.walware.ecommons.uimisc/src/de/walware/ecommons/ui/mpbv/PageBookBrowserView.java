@@ -88,6 +88,7 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 		public void setEnabled(final Object evaluationContext) {
 		}
 		
+		@Override
 		public Object execute(final ExecutionEvent event) throws ExecutionException {
 			openUrl(getHomePageUrl(), getCurrentSession());
 			return null;
@@ -103,6 +104,7 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 			setBaseEnabled(fCurrentBrowserPage != null);
 		}
 		
+		@Override
 		public Object execute(final ExecutionEvent event) throws ExecutionException {
 			if (fCurrentBrowserPage != null) {
 				final Browser browser = fCurrentBrowserPage.getBrowser();
@@ -121,6 +123,7 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 			setBaseEnabled(fCurrentBrowserPage != null);
 		}
 		
+		@Override
 		public Object execute(final ExecutionEvent event) throws ExecutionException {
 			if (fCurrentBrowserPage != null) {
 				final Browser browser = fCurrentBrowserPage.getBrowser();
@@ -134,6 +137,7 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 	private class CreateBookmarkHandler extends AbstractHandler {
 		
 		
+		@Override
 		public Object execute(final ExecutionEvent event) throws ExecutionException {
 			BrowserBookmark bookmark = createBookmark();
 			final EditBookmarkDialog dialog = new EditBookmarkDialog(getSite().getShell(), bookmark);
@@ -152,6 +156,7 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 	
 	private class BrowserListener implements ProgressListener, TitleListener, StatusTextListener {
 		
+		@Override
 		public void changed(final ProgressEvent event) {
 			if (fCurrentBrowserPage != null && fCurrentBrowserPage.getBrowser() == event.widget) {
 				if (event.total == 0 || event.total == event.current) {
@@ -169,6 +174,7 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 			}
 		}
 		
+		@Override
 		public void completed(final ProgressEvent event) {
 			if (fCurrentBrowserPage != null && fCurrentBrowserPage.getBrowser() == event.widget) {
 				clearProgress();
@@ -176,12 +182,14 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 			}
 		}
 		
+		@Override
 		public void changed(final TitleEvent event) {
 			if (fCurrentBrowserPage != null && fCurrentBrowserPage.getBrowser() == event.widget) {
 				updateTitle();
 			}
 		}
 		
+		@Override
 		public void changed(final StatusTextEvent event) {
 			setStatus(event.text);
 			updateTitle();
@@ -206,12 +214,14 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 	private BookmarkCollection fBookmarks;
 	
 	private final IBrowserProvider fBrowserInterface = new IBrowserProvider() {
+		@Override
 		public Browser getBrowser() {
 			if (fCurrentBrowserPage != null) {
 				return fCurrentBrowserPage.getBrowser();
 			}
 			return null;
 		}
+		@Override
 		public void showMessage(final int severity, final String message) {
 			setTemporaryStatus(severity, message);
 		}
@@ -460,6 +470,7 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 		if (error) {
 			statusLine.setErrorMessage(image, message);
 			Display.getCurrent().timerExec(5000, new Runnable() {
+				@Override
 				public void run() {
 					if (fStatusCounter == id && UIAccess.isOkToUse(getPageBook())) {
 						statusLine.setErrorMessage(null);
@@ -471,6 +482,7 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 		else {
 			statusLine.setMessage(image, message);
 			Display.getCurrent().timerExec(5000, new Runnable() {
+				@Override
 				public void run() {
 					if (fStatusCounter == id &&  UIAccess.isOkToUse(getPageBook())) {
 						statusLine.setErrorMessage(null);
@@ -494,6 +506,7 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 		fCurrentProgress.worked(worked);
 		
 		Display.getCurrent().timerExec(200, new Runnable() {
+			@Override
 			public void run() {
 				if (monitor == fCurrentProgress) {
 					if (monitor.isCanceled()) {

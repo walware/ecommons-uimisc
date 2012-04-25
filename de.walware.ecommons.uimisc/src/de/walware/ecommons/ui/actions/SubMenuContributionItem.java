@@ -86,6 +86,7 @@ public abstract class SubMenuContributionItem extends ContributionItem implement
 	protected abstract void fillMenu(final Menu menu);
 	
 	
+	@Override
 	public void menuShown(final MenuEvent e) {
 		if (!fIsMenuInitialized) {
 			fIsMenuInitialized = true;
@@ -93,6 +94,7 @@ public abstract class SubMenuContributionItem extends ContributionItem implement
 		}
 	}
 	
+	@Override
 	public void menuHidden(final MenuEvent e) {
 	}
 	

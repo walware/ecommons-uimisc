@@ -58,6 +58,7 @@ public abstract class ConfigurationBlockPreferencePage<Block extends Configurati
 	
 	protected abstract Block createConfigurationBlock() throws CoreException;
 	
+	@Override
 	public void init(final IWorkbench workbench) {
 		try {
 			fBlock = createConfigurationBlock();
@@ -136,6 +137,7 @@ public abstract class ConfigurationBlockPreferencePage<Block extends Configurati
 	 */
 	protected IStatusChangeListener createStatusChangedListener() {
 		return new IStatusChangeListener() {
+			@Override
 			public void statusChanged(final IStatus status) {
 				fBlockStatus = status;
 				updateStatus();

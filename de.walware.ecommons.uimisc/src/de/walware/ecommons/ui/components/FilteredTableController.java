@@ -55,7 +55,7 @@ public class FilteredTableController {
 			}
 			
 			List<Object> filteredList;
-			if (text.length() == 0) {
+			if (text.isEmpty()) {
 				filteredList = new ArrayList<Object>(input);
 			}
 			else {
@@ -72,6 +72,7 @@ public class FilteredTableController {
 			
 			fLastText = text;
 			fViewer.getTable().getDisplay().syncExec(new Runnable() {
+				@Override
 				public void run() {
 					fFilteredInput = array;
 					if (!UIAccess.isOkToUse(fViewer)) {
@@ -85,13 +86,16 @@ public class FilteredTableController {
 			return Status.OK_STATUS;
 		}
 		
+		@Override
 		public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
 		}
 		
+		@Override
 		public Object[] getElements(final Object inputElement) {
 			return (fFilteredInput != null) ? fFilteredInput : new Object[0];
 		}
 		
+		@Override
 		public void dispose() {
 		}
 		
@@ -141,14 +145,17 @@ public class FilteredTableController {
 		fViewer.setInput(this);
 		
 		fFilteredText.addDisposeListener(new DisposeListener() {
+			@Override
 			public void widgetDisposed(final DisposeEvent e) {
 				fRefreshJob.cancel();
 			}
 		});
 		fFilteredText.addListener(new SearchText.Listener() {
+			@Override
 			public void textChanged(final boolean user) {
 				FilteredTableController.this.textChanged(!user);
 			}
+			@Override
 			public void downPressed() {
 				FilteredTableController.this.textChanged(true);
 				final Table table = fViewer.getTable();
@@ -162,6 +169,7 @@ public class FilteredTableController {
 					}
 				}
 			}
+			@Override
 			public void okPressed() {
 				FilteredTableController.this.textChanged(true);
 			}

@@ -27,6 +27,7 @@ public class SWTTextNullableObservableValue extends AbstractSWTObservableValue {
 	private boolean fUpdating = false;
 	
 	private final ModifyListener fListener = new ModifyListener() {
+		@Override
 		public void modifyText(final ModifyEvent e) {
 			if (!fUpdating) {
 				final Object oldValue = fValue;
@@ -53,6 +54,7 @@ public class SWTTextNullableObservableValue extends AbstractSWTObservableValue {
 		super.dispose();
 	}
 	
+	@Override
 	public Object getValueType() {
 		return String.class;
 	}
@@ -60,7 +62,7 @@ public class SWTTextNullableObservableValue extends AbstractSWTObservableValue {
 	@Override
 	protected Object doGetValue() {
 		final String text = fTextWidget.getText();
-		if (text.trim().length() == 0) {
+		if (text.trim().isEmpty()) {
 			return (fValue = null);
 		}
 		else {

@@ -48,6 +48,7 @@ public class SettingsUpdater implements ChangeListener {
 		setInterestingGroups(groupIds);
 		PreferencesUtil.getSettingsChangeNotifier().addChangeListener(this);
 		fDisposeListener = new DisposeListener() {
+			@Override
 			public void widgetDisposed(final DisposeEvent e) {
 				dispose();
 			}
@@ -60,6 +61,7 @@ public class SettingsUpdater implements ChangeListener {
 		fInterestingGroupIds = groupIds;
 	}
 	
+	@Override
 	public void settingsChanged(final Set<String> groupIds) {
 		if (fInterestingGroupIds == null) {
 			runUpdate(groupIds);
@@ -76,6 +78,7 @@ public class SettingsUpdater implements ChangeListener {
 	private void runUpdate(final Set<String> groupIds) {
 		final HashMap<String, Object> options = new HashMap<String, Object>();
 		UIAccess.getDisplay().syncExec(new Runnable() {
+			@Override
 			public void run() {
 				if (UIAccess.isOkToUse(fControl)) {
 					fHandler.handleSettingsChanged(groupIds, options);

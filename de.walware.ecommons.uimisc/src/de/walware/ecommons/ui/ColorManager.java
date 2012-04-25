@@ -38,6 +38,7 @@ public class ColorManager implements IDisposable {
 	private final boolean fAutoDisposeOnDisplayDispose;
 	
 	private final Listener fDisposeListener = new Listener() {
+		@Override
 		public void handleEvent(final Event event) {
 			dispose(event.display);
 		}
@@ -65,10 +66,12 @@ public class ColorManager implements IDisposable {
 	}
 	
 	
+	@Override
 	public void dispose() {
 		for (final Display display : fDisplayTable.keySet()) {
 			final Display ref = display;
 			display.asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					dispose(ref);
 				}

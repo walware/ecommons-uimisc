@@ -40,6 +40,7 @@ public class RadioGroupObservable extends AbstractSWTObservableValue implements 
 	}
 	
 	
+	@Override
 	public Object getValueType() {
 		return Integer.class;
 	}
@@ -62,9 +63,11 @@ public class RadioGroupObservable extends AbstractSWTObservableValue implements 
 	}
 	
 	
+	@Override
 	public void widgetDefaultSelected(final SelectionEvent e) {
 	}
 	
+	@Override
 	public void widgetSelected(final SelectionEvent e) {
 		if (((Button) e.widget).getSelection()) {
 			for (int i = 0; i < fButtons.length; i++) {

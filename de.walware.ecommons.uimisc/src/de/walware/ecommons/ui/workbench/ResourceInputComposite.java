@@ -282,6 +282,7 @@ public class ResourceInputComposite extends Composite {
 		final Control inputField = getTextControl();
 		inputField.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		addModifyListener(new ModifyListener() {
+			@Override
 			public void modifyText(final ModifyEvent e) {
 				if (!fControlledChange) {
 					fValidator.setExplicit(getText());

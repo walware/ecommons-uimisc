@@ -43,6 +43,7 @@ public class ColumnWidgetTokenOwner implements IWidgetTokenOwner, IWidgetTokenOw
 		return fViewer.getControl();
 	}
 	
+	@Override
 	public boolean requestWidgetToken(final IWidgetTokenKeeper requester) {
 		if (getControl() != null) {
 			if (fWidgetTokenKeeper != null) {
@@ -62,6 +63,7 @@ public class ColumnWidgetTokenOwner implements IWidgetTokenOwner, IWidgetTokenOw
 		return false;
 	}
 	
+	@Override
 	public boolean requestWidgetToken(final IWidgetTokenKeeper requester, final int priority) {
 		if (getControl() != null) {
 			if (fWidgetTokenKeeper != null) {
@@ -90,6 +92,7 @@ public class ColumnWidgetTokenOwner implements IWidgetTokenOwner, IWidgetTokenOw
 		return false;
 	}
 	
+	@Override
 	public void releaseWidgetToken(final IWidgetTokenKeeper tokenKeeper) {
 		if (fWidgetTokenKeeper == tokenKeeper) {
 			fWidgetTokenKeeper = null;

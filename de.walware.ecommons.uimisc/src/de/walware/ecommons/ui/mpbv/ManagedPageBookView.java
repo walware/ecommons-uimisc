@@ -72,6 +72,7 @@ public abstract class ManagedPageBookView<S extends ISession> extends PageBookVi
 			return ManagedPageBookView.this;
 		}
 		
+		@Override
 		public IWorkbenchPartSite getSite() {
 			return null;
 		}
@@ -81,33 +82,42 @@ public abstract class ManagedPageBookView<S extends ISession> extends PageBookVi
 		}
 		
 		
+		@Override
 		public String getTitle() {
 			return ""; //$NON-NLS-1$
 		}
 		
+		@Override
 		public Image getTitleImage() {
 			return null;
 		}
 		
+		@Override
 		public String getTitleToolTip() {
 			return ""; //$NON-NLS-1$
 		}
 		
+		@Override
 		public void addPropertyListener(final IPropertyListener listener) {
 		}
 		
+		@Override
 		public void removePropertyListener(final IPropertyListener listener) {
 		}
 		
+		@Override
 		public void createPartControl(final Composite parent) {
 		}
 		
+		@Override
 		public void setFocus() {
 		}
 		
+		@Override
 		public void dispose() {
 		}
 		
+		@Override
 		public Object getAdapter(final Class adapter) {
 			return null;
 		}
@@ -134,6 +144,7 @@ public abstract class ManagedPageBookView<S extends ISession> extends PageBookVi
 		public void setEnabled(final Object evaluationContext) {
 		}
 		
+		@Override
 		public Object execute(final ExecutionEvent event) throws ExecutionException {
 			newPage(null, true);
 			return null;
@@ -151,6 +162,7 @@ public abstract class ManagedPageBookView<S extends ISession> extends PageBookVi
 			setBaseEnabled(!fSessionList.isEmpty());
 		}
 		
+		@Override
 		public Object execute(final ExecutionEvent event) throws ExecutionException {
 			final S session = getCurrentSession();
 			if (session != null) {
@@ -169,6 +181,7 @@ public abstract class ManagedPageBookView<S extends ISession> extends PageBookVi
 			setBaseEnabled(!fSessionList.isEmpty());
 		}
 		
+		@Override
 		public Object execute(final ExecutionEvent event) throws ExecutionException {
 			fSessionHistory.clear();
 			final List<S> sessions = getSessions();

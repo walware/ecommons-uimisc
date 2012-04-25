@@ -45,6 +45,7 @@ public abstract class OverlayStoreConfigurationBlock extends ConfigurationBlock 
 		fOverlayStore.load();
 		fOverlayStore.start();
 		fOverlayStore.addPropertyChangeListener(new IPropertyChangeListener() {
+			@Override
 			public void propertyChange(final PropertyChangeEvent event) {
 				if (!fInLoading) {
 					fIsDirty = true;

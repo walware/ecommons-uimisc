@@ -44,6 +44,7 @@ public class ExpandAllHandler extends AbstractHandler {
 	}
 	
 	
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		final AbstractTreeViewer viewer = fViewer;
 		if (UIAccess.isOkToUse(viewer)) {

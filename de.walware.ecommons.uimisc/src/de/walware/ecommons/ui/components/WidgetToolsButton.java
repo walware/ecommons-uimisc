@@ -48,6 +48,7 @@ public class WidgetToolsButton extends Composite {
 		final FontRegistry fontRegistry = JFaceResources.getFontRegistry();
 		if (!fontRegistry.hasValueFor(FONT_SYMBOLIC_NAME)) {
 			fontRegistry.addListener(new IPropertyChangeListener() {
+				@Override
 				public void propertyChange(final PropertyChangeEvent event) {
 					if (event.getProperty().equals(JFaceResources.DIALOG_FONT)) {
 						updateFont();
@@ -110,8 +111,10 @@ public class WidgetToolsButton extends Composite {
 			}
 		});
 		fButton.addKeyListener(new KeyListener() {
+			@Override
 			public void keyPressed(final KeyEvent e) {
 			}
+			@Override
 			public void keyReleased(final KeyEvent e) {
 				if (e.character == '+') {
 					showMenu();
@@ -120,15 +123,18 @@ public class WidgetToolsButton extends Composite {
 		});
 		
 		fTarget.addFocusListener(new FocusListener() {
+			@Override
 			public void focusGained(final FocusEvent e) {
 				updateLabels(true);
 			}
+			@Override
 			public void focusLost(final FocusEvent e) {
 				updateLabels(false);
 			}
 		});
 		
 		fButton.addDisposeListener(new DisposeListener() {
+			@Override
 			public void widgetDisposed(final DisposeEvent e) {
 				disposeMenu();
 			}

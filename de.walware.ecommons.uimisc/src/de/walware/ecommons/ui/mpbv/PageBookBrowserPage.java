@@ -178,6 +178,7 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 			fSearchTextItem.resize();
 		}
 		
+		@Override
 		public void widgetDisposed(final DisposeEvent e) {
 			if (fSearchBar != null) {
 				fSearchBarManager.dispose();
@@ -282,6 +283,7 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 		final String browserType = fBrowser.getBrowserType();
 		if (browserType.equals("mozilla") || browserType.equals("webkit")) { //$NON-NLS-1$ //$NON-NLS-2$
 			{	final IHandler2 handler = new AbstractHandler() {
+					@Override
 					public Object execute(final ExecutionEvent event) throws ExecutionException {
 						if (!UIAccess.isOkToUse(fBrowser)) {
 							return null;
@@ -297,6 +299,7 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 				handlerService.activateHandler(IWorkbenchCommandConstants.EDIT_FIND_AND_REPLACE, handler);
 			}
 			{	final IHandler2 handler = new AbstractHandler() {
+					@Override
 					public Object execute(final ExecutionEvent arg0) {
 						PageBookBrowserPage.this.search(true);
 						return null;
@@ -306,6 +309,7 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 				handlerService.activateHandler("org.eclipse.ui.navigate.next", handler); //$NON-NLS-1$
 			}
 			{	final IHandler2 handler = new AbstractHandler() {
+					@Override
 					public Object execute(final ExecutionEvent arg0) {
 						PageBookBrowserPage.this.search(false);
 						return null;
@@ -322,7 +326,7 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 			return;
 		}
 		final String text = fSearchBar.getText();
-		if (text == null || text.length() == 0) {
+		if (text == null || text.isEmpty()) {
 			return;
 		}
 		final boolean caseSensitive = fSearchBar.isCaseSensitiveEnabled();
@@ -392,7 +396,7 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 		if (fBrowser == null) {
 			return;
 		}
-		if (url == null || url.length() == 0) {
+		if (url == null || url.isEmpty()) {
 			url = "about:blank"; //$NON-NLS-1$
 		}
 		if (url.startsWith("html:///")) { //$NON-NLS-1$
@@ -424,6 +428,7 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 	}
 	
 	
+	@Override
 	public void changed(final ProgressEvent event) {
 		if (event.total == 0) {
 			fProgressTotal = 0;
@@ -435,6 +440,7 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 		}
 	}
 	
+	@Override
 	public void changing(final LocationEvent event) {
 		if (event.top) {
 			fSession.fImageDescriptor = null;
@@ -456,6 +462,7 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 			event.doit = false;
 			if (file.length() > 0) {
 				UIAccess.getDisplay().asyncExec(new Runnable() {
+					@Override
 					public void run() {
 						Program.launch(file);
 					}
@@ -475,6 +482,7 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 		}
 	}
 	
+	@Override
 	public void changed(final LocationEvent event) {
 		if (!event.top) {
 			return;
@@ -486,11 +494,13 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 		fSession.fUrl = location;
 	}
 	
+	@Override
 	public void completed(final ProgressEvent event) {
 		fProgressTotal = 0;
 		fProgressWorked = 0;
 	}
 	
+	@Override
 	public void changed(final TitleEvent event) {
 		String title = event.title;
 		if (title == null) {
@@ -505,6 +515,7 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 		fSession.fTitle = title;
 	}
 	
+	@Override
 	public void changed(final StatusTextEvent event) {
 		fBrowserStatusText = event.text;
 	}
@@ -514,6 +525,7 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 	}
 	
 	
+	@Override
 	public void open(final WindowEvent event) {
 		final PageBookBrowserPage page = (PageBookBrowserPage) fView.newPage(new BrowserSession(), true);
 		if (page != null) {
@@ -521,6 +533,7 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 		}
 	}
 	
+	@Override
 	public void close(final WindowEvent event) {
 		fView.closePage(fSession);
 	}

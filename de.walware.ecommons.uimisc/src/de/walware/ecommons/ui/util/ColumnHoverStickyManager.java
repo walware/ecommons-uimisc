@@ -87,14 +87,17 @@ public class ColumnHoverStickyManager extends InformationControlReplacer impleme
 		private Display fDisplay;
 		
 		
+		@Override
 		public void setSubjectControl(final Control control) {
 			fSubjectControl= control;
 		}
 		
+		@Override
 		public void setInformationControl(final IInformationControl control) {
 			// NOTE: we use getCurrentInformationControl2() from the outer class
 		}
 		
+		@Override
 		public void start(final Rectangle informationArea) {
 			if (fIsActive) {
 				return;
@@ -119,6 +122,7 @@ public class ColumnHoverStickyManager extends InformationControlReplacer impleme
 			}
 		}
 		
+		@Override
 		public void stop() {
 			if (!fIsActive) {
 				return;
@@ -143,39 +147,49 @@ public class ColumnHoverStickyManager extends InformationControlReplacer impleme
 			fDisplay= null;
 		}
 		
-		 public void controlResized(final ControlEvent e) {
+		 @Override
+		public void controlResized(final ControlEvent e) {
 			 hideInformationControl();
 		}
 		 
-		 public void controlMoved(final ControlEvent e) {
+		 @Override
+		public void controlMoved(final ControlEvent e) {
 			 hideInformationControl();
 		}
 		 
-		 public void mouseDown(final MouseEvent e) {
+		 @Override
+		public void mouseDown(final MouseEvent e) {
 			 hideInformationControl();
 		}
 		
+		@Override
 		public void mouseUp(final MouseEvent e) {
 		}
 		
+		@Override
 		public void mouseDoubleClick(final MouseEvent e) {
 			hideInformationControl();
 		}
 		
+		@Override
 		public void viewportChanged(final int topIndex) {
 			hideInformationControl();
 		}
 		
+		@Override
 		public void keyPressed(final KeyEvent e) {
 			hideInformationControl();
 		}
 		
+		@Override
 		public void keyReleased(final KeyEvent e) {
 		}
 		
+		@Override
 		public void focusGained(final FocusEvent e) {
 		}
 		
+		@Override
 		public void focusLost(final FocusEvent e) {
 			if (DEBUG) {
 				System.out.println("StickyHoverManager.Closer.focusLost(): " + e); //$NON-NLS-1$
@@ -183,12 +197,14 @@ public class ColumnHoverStickyManager extends InformationControlReplacer impleme
 			final Display d= fSubjectControl.getDisplay();
 			d.asyncExec(new Runnable() {
 				// Without the asyncExec, mouse clicks to the workbench window are swallowed.
+				@Override
 				public void run() {
 					hideInformationControl();
 				}
 			});
 		}
 		
+		@Override
 		public void handleEvent(final Event event) {
 			if (event.type == SWT.MouseMove) {
 				if (!(event.widget instanceof Control) || event.widget.isDisposed()) {
@@ -296,6 +312,7 @@ public class ColumnHoverStickyManager extends InformationControlReplacer impleme
 		super.replaceInformationControl(informationPresenterControlCreator, contentBounds, information, subjectArea, takeFocus);
 	}
 	
+	@Override
 	public boolean requestWidgetToken(final IWidgetTokenOwner owner) {
 		hideInformationControl();
 		if (DEBUG) {
@@ -304,6 +321,7 @@ public class ColumnHoverStickyManager extends InformationControlReplacer impleme
 		return true;
 	}
 	
+	@Override
 	public boolean requestWidgetToken(final IWidgetTokenOwner owner, final int priority) {
 		if (getCurrentInformationControl2() != null) {
 			if (getCurrentInformationControl2().isFocusControl()) {
@@ -330,6 +348,7 @@ public class ColumnHoverStickyManager extends InformationControlReplacer impleme
 		return true;
 	}
 	
+	@Override
 	public boolean setFocus(final IWidgetTokenOwner owner) {
 		final IInformationControl iControl= getCurrentInformationControl2();
 		if (iControl instanceof IInformationControlExtension5) {

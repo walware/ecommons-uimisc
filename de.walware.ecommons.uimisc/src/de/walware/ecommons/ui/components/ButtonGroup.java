@@ -297,6 +297,7 @@ public class ButtonGroup<ItemType> extends Composite {
 		}
 		if (fEditButton != null && !fCellMode) {
 			fViewer.addDoubleClickListener(new IDoubleClickListener() {
+				@Override
 				public void doubleClick(final DoubleClickEvent event) {
 					final Object item = getElementToEdit((IStructuredSelection) event.getSelection());
 					if (item != null) {
@@ -306,6 +307,7 @@ public class ButtonGroup<ItemType> extends Composite {
 			});
 		}
 		fViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
 			public void selectionChanged(final SelectionChangedEvent event) {
 				updateState();
 			}

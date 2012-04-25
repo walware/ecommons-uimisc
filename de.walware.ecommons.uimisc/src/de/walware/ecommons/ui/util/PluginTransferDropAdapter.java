@@ -28,10 +28,12 @@ public class PluginTransferDropAdapter extends PluginDropAdapter implements Tran
 	}
 	
 	
+	@Override
 	public Transfer getTransfer() {
 		return PluginTransfer.getInstance();
 	}
 	
+	@Override
 	public boolean isEnabled(final DropTargetEvent event) {
 		return PluginTransfer.getInstance().isSupportedType(event.currentDataType);
 	}

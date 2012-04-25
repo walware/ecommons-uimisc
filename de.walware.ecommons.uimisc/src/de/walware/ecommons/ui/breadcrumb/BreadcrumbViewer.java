@@ -133,6 +133,7 @@ public abstract class BreadcrumbViewer extends StructuredViewer {
 		final GridData layoutData= new GridData(SWT.FILL, SWT.TOP, true, false);
 		fContainer.setLayoutData(layoutData);
 		fContainer.addTraverseListener(new TraverseListener() {
+			@Override
 			public void keyTraversed(final TraverseEvent e) {
 				e.doit= true;
 			}
@@ -140,6 +141,7 @@ public abstract class BreadcrumbViewer extends StructuredViewer {
 		fContainer.setBackgroundMode(SWT.INHERIT_DEFAULT);
 		
 		fContainer.addListener(SWT.Resize, new Listener() {
+			@Override
 			public void handleEvent(final Event event) {
 				final int height = fContainer.getClientArea().height;
 				
@@ -171,6 +173,7 @@ public abstract class BreadcrumbViewer extends StructuredViewer {
 		fContainer.setLayout(gridLayout);
 		
 		fContainer.addListener(SWT.Resize, new Listener() {
+			@Override
 			public void handleEvent(final Event event) {
 				refresh();
 			}

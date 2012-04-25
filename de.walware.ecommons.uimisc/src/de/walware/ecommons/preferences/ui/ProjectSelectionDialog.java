@@ -48,11 +48,14 @@ public class ProjectSelectionDialog extends SelectionStatusDialog {
 	
 	private static class ContentProvider implements IStructuredContentProvider {
 		
+		@Override
 		public Object[] getElements(final Object inputElement) {
 			return ((Set) inputElement).toArray();
 		}
+		@Override
 		public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
 		}
+		@Override
 		public void dispose() {
 		}
 	}
@@ -123,11 +126,13 @@ public class ProjectSelectionDialog extends SelectionStatusDialog {
 		
 		fTableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 		fTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
 			public void selectionChanged(final SelectionChangedEvent event) {
 				doSelectionChanged(((IStructuredSelection) event.getSelection()).toArray());
 			}
 		});
 		fTableViewer.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
 			public void doubleClick(final DoubleClickEvent event) {
 				okPressed();
 			}
@@ -145,9 +150,11 @@ public class ProjectSelectionDialog extends SelectionStatusDialog {
 		checkbox.setText(Messages.ProjectSelectionDialog_filter); 
 		checkbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, true, false));
 		checkbox.addSelectionListener(new SelectionListener() {
+			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				updateFilter(((Button) e.widget).getSelection());
 			}
+			@Override
 			public void widgetDefaultSelected(final SelectionEvent e) {
 				updateFilter(((Button) e.widget).getSelection());
 			}
