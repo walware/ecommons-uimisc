@@ -112,6 +112,11 @@ public class HandlerContributionItem extends ContributionItem {
 	 */
 	public static final int MODE_FORCE_TEXT = 1;
 	
+	private static final int MODE_NO_COMMAND = 1 << 28;
+	
+	private static final int MODE_CALLBACK_CALL = 1 << 24;
+	private static final int MODE_CALLBACK_EXPL = 1 << 25;
+	
 	
 	private LocalResourceManager localResourceManager;
 	
@@ -128,7 +133,6 @@ public class HandlerContributionItem extends ContributionItem {
 	protected final Display display;
 	
 	private ParameterizedCommand command;
-	private boolean noCommandMode;
 	private IHandler2 commandHandler;
 	
 	private ImageDescriptor icon;
@@ -197,8 +201,10 @@ public class HandlerContributionItem extends ContributionItem {
 		this.visibleEnabled = contributionParameters.visibleEnabled;
 		this.serviceLocator = contributionParameters.serviceLocator;
 		
-		menuService = (IMenuService) serviceLocator
-				.getService(IMenuService.class);
+		try {
+			menuService = (IMenuService) serviceLocator
+					.getService(IMenuService.class);
+		} catch (NullPointerException e) {}
 		commandService = (ICommandService) serviceLocator
 				.getService(ICommandService.class);
 		handlerService = (IHandlerService) serviceLocator
@@ -218,32 +224,68 @@ public class HandlerContributionItem extends ContributionItem {
 			
 			@Override
 			public void setChecked(final boolean checked) {
-				HandlerContributionItem.this.setChecked(checked);
+				mode |= MODE_CALLBACK_CALL;
+				try {
+					HandlerContributionItem.this.setChecked(checked);
+				}
+				finally {
+					mode &= ~MODE_CALLBACK_CALL;
+				}
 			}
 			
 			@Override
 			public void setDisabledIcon(final ImageDescriptor desc) {
-				HandlerContributionItem.this.setDisabledIcon(desc);
+				mode |= MODE_CALLBACK_CALL;
+				try {
+					HandlerContributionItem.this.setDisabledIcon(desc);
+				}
+				finally {
+					mode &= ~MODE_CALLBACK_CALL;
+				}
 			}
 			
 			@Override
 			public void setHoverIcon(final ImageDescriptor desc) {
-				HandlerContributionItem.this.setHoverIcon(desc);
+				mode |= MODE_CALLBACK_CALL;
+				try {
+					HandlerContributionItem.this.setHoverIcon(desc);
+				}
+				finally {
+					mode &= ~MODE_CALLBACK_CALL;
+				}
 			}
 			
 			@Override
 			public void setIcon(final ImageDescriptor desc) {
-				HandlerContributionItem.this.setIcon(desc);
+				mode |= MODE_CALLBACK_CALL;
+				try {
+					HandlerContributionItem.this.setIcon(desc);
+				}
+				finally {
+					mode &= ~MODE_CALLBACK_CALL;
+				}
 			}
 			
 			@Override
 			public void setText(final String text) {
-				HandlerContributionItem.this.setText(text);
+				mode |= MODE_CALLBACK_CALL;
+				try {
+					HandlerContributionItem.this.setText(text);
+				}
+				finally {
+					mode &= ~MODE_CALLBACK_CALL;
+				}
 			}
 			
 			@Override
 			public void setTooltip(final String text) {
-				HandlerContributionItem.this.setTooltip(text);
+				mode |= MODE_CALLBACK_CALL;
+				try {
+					HandlerContributionItem.this.setTooltip(text);
+				}
+				finally {
+					mode &= ~MODE_CALLBACK_CALL;
+				}
 			}
 			
 			@Override
@@ -251,7 +293,7 @@ public class HandlerContributionItem extends ContributionItem {
 				dropDownMenuOverride = id;
 			}
 		};
-		if (command != null || noCommandMode) {
+		if (command != null || (mode & MODE_NO_COMMAND) != 0) {
 			commandHandler.addHandlerListener(getHandlerListener());
 		}
 		if (command != null) {
@@ -282,6 +324,10 @@ public class HandlerContributionItem extends ContributionItem {
 		}
 	}
 	
+	
+	protected IServiceLocator getServiceLocator() {
+		return this.serviceLocator;
+	}
 	
 	private void setImages(final IServiceLocator locator, final String iconStyle) {
 		if (icon == null && command != null) {
@@ -350,7 +396,7 @@ public class HandlerContributionItem extends ContributionItem {
 			return;
 		}
 		if (commandId == NO_COMMAND_ID) {
-			noCommandMode = true;
+			mode |= MODE_NO_COMMAND;
 			return;
 		}
 		final Command cmd = commandService.getCommand(commandId);
@@ -387,7 +433,7 @@ public class HandlerContributionItem extends ContributionItem {
 	
 	@Override
 	public void fill(final Menu parent, final int index) {
-		if (command == null && !noCommandMode) {
+		if (command == null && (mode & MODE_NO_COMMAND) == 0) {
 			return;
 		}
 		if (widget != null || parent == null) {
@@ -422,7 +468,7 @@ public class HandlerContributionItem extends ContributionItem {
 	
 	@Override
 	public void fill(final ToolBar parent, final int index) {
-		if (command == null && !noCommandMode) {
+		if (command == null && (mode & MODE_NO_COMMAND) == 0) {
 			return;
 		}
 		if (widget != null || parent == null) {
@@ -450,7 +496,7 @@ public class HandlerContributionItem extends ContributionItem {
 	
 	@Override
 	public void fill(final Composite parent) {
-		if (command == null && !noCommandMode) {
+		if (command == null && (mode & MODE_NO_COMMAND) == 0) {
 			return;
 		}
 		if (widget != null || parent == null) {
@@ -486,6 +532,20 @@ public class HandlerContributionItem extends ContributionItem {
 	@Override
 	public void update(final String id) {
 		if (widget != null) {
+			if ((mode & MODE_CALLBACK_EXPL) == MODE_CALLBACK_EXPL) {
+				return;
+			}
+			if ((mode & (MODE_NO_COMMAND | MODE_CALLBACK_CALL)) == (MODE_NO_COMMAND)
+					&& commandHandler instanceof IElementUpdater) {
+				mode |= MODE_CALLBACK_EXPL;
+				try {
+					((IElementUpdater) commandHandler).updateElement(callback, Collections.EMPTY_MAP);
+				}
+				finally {
+					mode &= ~MODE_CALLBACK_EXPL;
+				}
+			}
+			
 			if (widget instanceof MenuItem) {
 				updateMenuItem();
 			} else if (widget instanceof ToolItem) {
@@ -541,10 +601,6 @@ public class HandlerContributionItem extends ContributionItem {
 		if (item.getEnabled() != shouldBeEnabled) {
 			item.setEnabled(shouldBeEnabled);
 		}
-		
-		if (noCommandMode && commandHandler instanceof IElementUpdater) {
-			((IElementUpdater) commandHandler).updateElement(callback, Collections.EMPTY_MAP);
-		}
 	}
 	
 	private void updateToolItem() {
@@ -584,10 +640,6 @@ public class HandlerContributionItem extends ContributionItem {
 		if (item.getEnabled() != shouldBeEnabled) {
 			item.setEnabled(shouldBeEnabled);
 		}
-		
-		if (noCommandMode && commandHandler instanceof IElementUpdater) {
-			((IElementUpdater) commandHandler).updateElement(callback, Collections.EMPTY_MAP);
-		}
 	}
 	
 	private void updateButton() {
@@ -625,10 +677,6 @@ public class HandlerContributionItem extends ContributionItem {
 		
 		if (item.getEnabled() != shouldBeEnabled) {
 			item.setEnabled(shouldBeEnabled);
-		}
-		
-		if (noCommandMode && commandHandler instanceof IElementUpdater) {
-			((IElementUpdater) commandHandler).updateElement(callback, Collections.EMPTY_MAP);
 		}
 	}
 	
@@ -806,27 +854,29 @@ public class HandlerContributionItem extends ContributionItem {
 	}
 	
 	protected void initDropDownMenu(final MenuManager menuManager) {
-		menuManager.addMenuListener(new IMenuListener2() {
-			@Override
-			public void menuAboutToShow(final IMenuManager manager) {
-				String id = getId();
-				if (dropDownMenuOverride != null) {
-					id = dropDownMenuOverride;
-				}
-				menuService.populateContributionManager(
-						menuManager, "menu:" + id); //$NON-NLS-1$
-			}
-			@Override
-			public void menuAboutToHide(final IMenuManager manager) {
-				display.asyncExec(new Runnable() {
-					@Override
-					public void run() {
-						menuService.releaseContributions(menuManager);
-						menuManager.dispose();
+		if (menuService != null) {
+			menuManager.addMenuListener(new IMenuListener2() {
+				@Override
+				public void menuAboutToShow(final IMenuManager manager) {
+					String id = getId();
+					if (dropDownMenuOverride != null) {
+						id = dropDownMenuOverride;
 					}
-				});
-			}
-		});
+					menuService.populateContributionManager(
+							menuManager, "menu:" + id); //$NON-NLS-1$
+				}
+				@Override
+				public void menuAboutToHide(final IMenuManager manager) {
+					display.asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							menuService.releaseContributions(menuManager);
+							menuManager.dispose();
+						}
+					});
+				}
+			});
+		}
 	}
 	
 	private void updateIcons() {
@@ -901,7 +951,7 @@ public class HandlerContributionItem extends ContributionItem {
 	@Override
 	public boolean isEnabled() {
 		if (commandHandler != null) {
-			commandHandler.setEnabled(menuService.getCurrentState());
+			commandHandler.setEnabled((menuService != null) ? menuService.getCurrentState() : null);
 			return commandHandler.isEnabled();
 		}
 		return false;
