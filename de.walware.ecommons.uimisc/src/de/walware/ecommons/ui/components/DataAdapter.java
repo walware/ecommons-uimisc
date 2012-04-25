@@ -165,6 +165,10 @@ public class DataAdapter<ItemType> {
 		return isContentItem(element);
 	}
 	
+	public boolean isDeleteAllowed(final Object element) {
+		return isModifyAllowed(element);
+	}
+	
 	public ItemType getModelItem(final Object element) {
 		return (ItemType) element;
 	}

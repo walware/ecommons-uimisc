@@ -59,9 +59,9 @@ public class EditableTextList implements ButtonGroup.IActions<String> {
 		fButtonGroup = new ButtonGroup<String>(composite, this, true);
 		fButtonGroup.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, true));
 		
-		fButtonGroup.addAddButton();
-		fButtonGroup.addEditButton();
-		fButtonGroup.addDeleteButton();
+		fButtonGroup.addAddButton(null);
+		fButtonGroup.addEditButton(null);
+		fButtonGroup.addDeleteButton(null);
 		
 		return composite;
 	}

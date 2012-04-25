@@ -111,12 +111,12 @@ public class ManageBookmarksDialog extends TrayDialog {
 			}
 		};
 		fButtons.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
-		fButtons.addAddButton();
-		fButtons.addEditButton();
-		fButtons.addDeleteButton();
+		fButtons.addAddButton(null);
+		fButtons.addEditButton(null);
+		fButtons.addDeleteButton(null);
 		fButtons.addSeparator();
-		fButtons.addUpButton();
-		fButtons.addDownButton();
+		fButtons.addUpButton(null);
+		fButtons.addDownButton(null);
 		
 		final WritableList writableList = new WritableList(fBookmarks, BrowserBookmark.class);
 		fTableViewer.setContentProvider(new ObservableListContentProvider());
