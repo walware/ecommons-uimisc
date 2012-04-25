@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.DialogPage;
 import org.eclipse.jface.dialogs.IMessageProvider;
+import org.eclipse.jface.dialogs.TitleAreaDialog;
 
 
 public class StatusInfo extends Status {
@@ -44,6 +45,41 @@ public class StatusInfo extends Status {
 				page.setMessage(null);
 				page.setErrorMessage(message);
 				break;
+		}
+	}
+	
+	/**
+	 * Applies the status to the status line of a title area dialog.
+	 */
+	public static void applyToStatusLine(final TitleAreaDialog page, final IStatus status) {
+		String message = status.getMessage();
+		switch (status.getSeverity()) {
+		case IStatus.OK:
+			if (message.equals("OK") || message.equals(OK_STATUS.getMessage())) { //$NON-NLS-1$
+				page.setMessage(null, IMessageProvider.NONE);
+			}
+			else {
+				page.setMessage(message, IMessageProvider.NONE);
+			}
+			page.setMessage(!status.getMessage().equals("OK") ? status.getMessage() : null,
+					IMessageProvider.NONE );
+			page.setErrorMessage(null);
+			break;
+		case IStatus.WARNING:
+			page.setMessage(message, IMessageProvider.WARNING);
+			page.setErrorMessage(null);
+			break;				
+		case IStatus.INFO:
+			page.setMessage(message, IMessageProvider.INFORMATION);
+			page.setErrorMessage(null);
+			break;			
+		default:
+			if (message.length() == 0) {
+				message = null;
+			}
+			page.setMessage(null);
+			page.setErrorMessage(message);
+			break;
 		}
 	}
 	

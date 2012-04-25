@@ -50,17 +50,19 @@ import org.eclipse.swt.widgets.Scrollable;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Tree;
 
+import de.walware.ecommons.ui.components.SearchText;
+
 
 /**
- * 
+ * Utility class for JFace viewers
  */
 public class ViewerUtil {
 	
 	public static class Node {
 		
-		private String fName;
+		private final String fName;
 		private Node fParent;
-		private Node[] fChildren;
+		private final Node[] fChildren;
 		
 		public Node(final String name, final Node[] children) {
 			fName = name;
@@ -338,6 +340,28 @@ public class ViewerUtil {
 			}
 		};
 		
+	}
+	
+	
+	public static void addSearchTextNavigation(final TableViewer viewer, final SearchText searchText) {
+		final Table table = viewer.getTable();
+		searchText.addListener(new SearchText.Listener() {
+			public void textChanged(final boolean user) {
+			}
+			public void okPressed() {
+			}
+			public void downPressed() {
+				table.setFocus();
+				if (table.getItemCount() > 0) {
+					if (table.getSelectionIndex() < 0) {
+						table.select(0);
+					}
+					else {
+						table.showSelection();
+					}
+				}
+			}
+		});
 	}
 	
 	

@@ -11,6 +11,8 @@
 
 package de.walware.ecommons.ui.util;
 
+import java.util.Collection;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.resource.JFaceResources;
@@ -23,6 +25,7 @@ import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -216,7 +219,7 @@ public class LayoutUtil {
 		return heightHint;
 	}
 	
-	public static int hintWidth(final Table table, final String[] items) {
+	public static int hintWidth(final Table table, final Collection<String> items) {
 		int max = 0;
 		for (final String s : items) {
 			max = Math.max(max, s.length());
@@ -268,6 +271,13 @@ public class LayoutUtil {
 	}
 	
 	
+	public static GridData createGD(final Button button) {
+		final GridData gd = new GridData(SWT.FILL, SWT.FILL, false, false);
+		gd.widthHint = hintWidth(button);
+		return gd;
+	}
+	
+	
 	public static GridLayout applyDialogDefaults(final GridLayout gl, final int numColumns) {
 		final DialogValues dialogValues = getDialogValues();
 		gl.numColumns = numColumns;
@@ -278,9 +288,15 @@ public class LayoutUtil {
 		return gl;
 	}
 	
+	@Deprecated
 	public static GridLayout applyCompositeDefaults(final GridLayout gl, final int numColumns) {
-		final DialogValues dialogValues = getDialogValues();
 		gl.numColumns = numColumns;
+		applyCompositeDefaults(gl);
+		return gl;
+	}
+	
+	public static GridLayout applyCompositeDefaults(final GridLayout gl) {
+		final DialogValues dialogValues = getDialogValues();
 		gl.marginWidth = 0;
 		gl.marginHeight = 0;
 		gl.horizontalSpacing = dialogValues.defaultHSpacing;
@@ -288,9 +304,27 @@ public class LayoutUtil {
 		return gl;
 	}
 	
+	public static GridLayout createCompositeGrid(final int numColumns) {
+		final GridLayout gl = new GridLayout(numColumns, false);
+		applyCompositeDefaults(gl);
+		return gl;
+	}
+	
+	public static GridLayout createCompositeGrid(final int numColumns, final boolean equalWidth) {
+		final GridLayout gl = new GridLayout(numColumns, equalWidth);
+		applyCompositeDefaults(gl);
+		return gl;
+	}
+	
+	@Deprecated
 	public static GridLayout applyGroupDefaults(final GridLayout gl, final int numColumns) {
-		final DialogValues dialogValues = getDialogValues();
 		gl.numColumns = numColumns;
+		applyGroupDefaults(gl);
+		return gl;
+	}
+	
+	public static GridLayout applyGroupDefaults(final GridLayout gl) {
+		final DialogValues dialogValues = getDialogValues();
 		gl.marginWidth = dialogValues.defaultHSpacing;
 		gl.marginHeight = dialogValues.defaultVSpacing;
 		gl.horizontalSpacing = dialogValues.defaultHSpacing;
@@ -298,9 +332,20 @@ public class LayoutUtil {
 		return gl;
 	}
 	
-	public static GridLayout applyContentDefaults(final GridLayout gl, final int numColumns) {
+	public static GridLayout createGroupGrid(final int numColumns) {
+		final GridLayout gl = new GridLayout(numColumns, false);
+		applyGroupDefaults(gl);
+		return gl;
+	}
+	
+	public static GridLayout createGroupGrid(final int numColumns, final boolean equalWidth) {
+		final GridLayout gl = new GridLayout(numColumns, equalWidth);
+		applyGroupDefaults(gl);
+		return gl;
+	}
+	
+	public static GridLayout applyContentDefaults(final GridLayout gl) {
 		final DialogValues dialogValues = getDialogValues();
-		gl.numColumns = numColumns;
 		gl.marginWidth = dialogValues.defaultHSpacing;
 		gl.marginHeight = dialogValues.defaultVSpacing;
 		gl.horizontalSpacing = dialogValues.defaultHSpacing;
@@ -308,14 +353,53 @@ public class LayoutUtil {
 		return gl;
 	}
 	
+	public static GridLayout createContentGrid(final int numColumns) {
+		final GridLayout gl = new GridLayout(numColumns, false);
+		applyContentDefaults(gl);
+		return gl;
+	}
+	
+	public static GridLayout createContentGrid(final int numColumns, final boolean equalWidth) {
+		final GridLayout gl = new GridLayout(numColumns, equalWidth);
+		applyContentDefaults(gl);
+		return gl;
+	}
+	
+	@Deprecated
 	public static GridLayout applyTabDefaults(final GridLayout gl, final int numColumns) {
-		final DialogValues dialogValues = getDialogValues();
 		gl.numColumns = numColumns;
+		applyTabDefaults(gl);
+		return gl;
+	}
+	
+	public static GridLayout applyTabDefaults(final GridLayout gl) {
+		final DialogValues dialogValues = getDialogValues();
 		gl.marginWidth = dialogValues.defaultHSpacing;
 		gl.marginHeight = dialogValues.defaultVSpacing;
 		gl.horizontalSpacing = dialogValues.defaultHSpacing;
 		gl.verticalSpacing = dialogValues.defaultVSpacing;
 		return gl;
+	}
+	
+	public static GridLayout createTabGrid(final int numColumns) {
+		final GridLayout gl = new GridLayout(numColumns, false);
+		applyTabDefaults(gl);
+		return gl;
+	}
+	
+	public static GridLayout createTabGrid(final int numColumns, final boolean equalWidth) {
+		final GridLayout gl = new GridLayout(numColumns, equalWidth);
+		applyTabDefaults(gl);
+		return gl;
+	}
+	
+	public static FillLayout applyTabDefaults(final FillLayout fl) {
+		final DialogValues dialogValues = getDialogValues();
+		fl.marginWidth = dialogValues.defaultHSpacing;
+		fl.marginHeight = dialogValues.defaultVSpacing;
+		fl.spacing = (fl.type == SWT.HORIZONTAL) ?
+				dialogValues.defaultHSpacing : dialogValues.defaultVSpacing;
+		return fl;
 	}
 	
 	public static GridLayout applySashDefaults(final GridLayout gl, final int numColumns) {
@@ -327,6 +411,7 @@ public class LayoutUtil {
 		return gl;
 	}
 	
+	
 	public static void addGDDummy(final Composite composite) {
 		addGDDummy(composite, false);
 	}
@@ -334,6 +419,11 @@ public class LayoutUtil {
 		final Label dummy = new Label(composite, SWT.NONE);
 		dummy.setVisible(false);
 		dummy.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, grab, false));
+	}
+	public static void addGDDummy(final Composite composite, final boolean grab, final int span) {
+		final Label dummy = new Label(composite, SWT.NONE);
+		dummy.setVisible(false);
+		dummy.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, grab, false, span, 1));
 	}
 	
 	public static void addSmallFiller(final Composite composite, final boolean grab) {
