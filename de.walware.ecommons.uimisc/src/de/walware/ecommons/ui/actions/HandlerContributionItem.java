@@ -164,6 +164,17 @@ public class HandlerContributionItem extends ContributionItem {
 	
 	private boolean visibleEnabled;
 	
+	// items contributed
+	private String contributedLabel;
+	
+	private String contributedTooltip;
+	
+	private ImageDescriptor contributedIcon;
+	
+	private ImageDescriptor contributedDisabledIcon;
+	
+	private ImageDescriptor contributedHoverIcon;
+	
 	private IServiceLocator serviceLocator;
 	
 	private final UIElement callback;
@@ -189,12 +200,12 @@ public class HandlerContributionItem extends ContributionItem {
 			final CommandContributionItemParameter contributionParameters, final IHandler2 handler) {
 		super(contributionParameters.id);
 		
-		this.icon = contributionParameters.icon;
-		this.disabledIcon = contributionParameters.disabledIcon;
-		this.hoverIcon = contributionParameters.hoverIcon;
-		this.label = contributionParameters.label;
+		this.contributedIcon = this.icon = contributionParameters.icon;
+		this.contributedTooltip = this.tooltip = contributionParameters.tooltip;
+		this.contributedDisabledIcon = this.disabledIcon = contributionParameters.disabledIcon;
+		this.contributedHoverIcon = this.hoverIcon = contributionParameters.hoverIcon;
+		this.contributedLabel = this.label = contributionParameters.label;
 		this.mnemonic = contributionParameters.mnemonic;
-		this.tooltip = contributionParameters.tooltip;
 		this.style = contributionParameters.style;
 		this.helpContextId = contributionParameters.helpContextId;
 		this.visibleEnabled = contributionParameters.visibleEnabled;
@@ -218,107 +229,139 @@ public class HandlerContributionItem extends ContributionItem {
 				contributionParameters.parameters);
 		commandHandler = handler;
 		
-		callback = new UIElement(
+		callback = (handler instanceof IElementUpdater) ? new UIElement(
 				contributionParameters.serviceLocator) {
+			
+			private boolean beginCallback() {
+				if ((mode & MODE_NO_COMMAND) != 0) {
+					mode |= MODE_CALLBACK_CALL;
+					return true;
+				}
+				if (command.getCommand().getHandler() == commandHandler) {
+					mode |= MODE_CALLBACK_CALL;
+					return true;
+				}
+				return false;
+			}
+			
+			private void endCallback() {
+				mode &= ~MODE_CALLBACK_CALL;
+			}
 			
 			@Override
 			public void setChecked(final boolean checked) {
-				mode |= MODE_CALLBACK_CALL;
-				try {
-					HandlerContributionItem.this.setChecked(checked);
-				}
-				finally {
-					mode &= ~MODE_CALLBACK_CALL;
+				if (beginCallback()) {
+					try {
+						HandlerContributionItem.this.setChecked(checked);
+					}
+					finally {
+						endCallback();
+					}
 				}
 			}
 			
 			@Override
 			public void setDisabledIcon(final ImageDescriptor desc) {
-				mode |= MODE_CALLBACK_CALL;
-				try {
-					HandlerContributionItem.this.setDisabledIcon(desc);
-				}
-				finally {
-					mode &= ~MODE_CALLBACK_CALL;
+				if (beginCallback()) {
+					try {
+						HandlerContributionItem.this.setDisabledIcon(desc);
+					}
+					finally {
+						endCallback();
+					}
 				}
 			}
 			
 			@Override
 			public void setHoverIcon(final ImageDescriptor desc) {
-				mode |= MODE_CALLBACK_CALL;
-				try {
-					HandlerContributionItem.this.setHoverIcon(desc);
-				}
-				finally {
-					mode &= ~MODE_CALLBACK_CALL;
+				if (beginCallback()) {
+					try {
+						HandlerContributionItem.this.setHoverIcon(desc);
+					}
+					finally {
+						endCallback();
+					}
 				}
 			}
 			
 			@Override
 			public void setIcon(final ImageDescriptor desc) {
-				mode |= MODE_CALLBACK_CALL;
-				try {
-					HandlerContributionItem.this.setIcon(desc);
-				}
-				finally {
-					mode &= ~MODE_CALLBACK_CALL;
+				if (beginCallback()) {
+					try {
+						HandlerContributionItem.this.setIcon(desc);
+					}
+					finally {
+						endCallback();
+					}
 				}
 			}
 			
 			@Override
 			public void setText(final String text) {
-				mode |= MODE_CALLBACK_CALL;
-				try {
-					HandlerContributionItem.this.setText(text);
-				}
-				finally {
-					mode &= ~MODE_CALLBACK_CALL;
+				if (beginCallback()) {
+					try {
+						HandlerContributionItem.this.setText(text);
+					}
+					finally {
+						endCallback();
+					}
 				}
 			}
 			
 			@Override
 			public void setTooltip(final String text) {
-				mode |= MODE_CALLBACK_CALL;
-				try {
-					HandlerContributionItem.this.setTooltip(text);
-				}
-				finally {
-					mode &= ~MODE_CALLBACK_CALL;
+				if (beginCallback()) {
+					try {
+						HandlerContributionItem.this.setTooltip(text);
+					}
+					finally {
+						endCallback();
+					}
 				}
 			}
 			
 			@Override
 			public void setDropDownId(final String id) {
-				dropDownMenuOverride = id;
+				if (beginCallback()) {
+					try {
+						HandlerContributionItem.this.dropDownMenuOverride = id;
+					}
+					finally {
+						endCallback();
+					}
+				}
 			}
-		};
+		} : null;
 		if (command != null || (mode & MODE_NO_COMMAND) != 0) {
 			commandHandler.addHandlerListener(getHandlerListener());
 		}
 		if (command != null) {
-			try {
-				elementRef = commandService.registerElementForCommand(command, callback);
-				setImages(contributionParameters.serviceLocator,
-						contributionParameters.iconStyle);
-				
-				if (contributionParameters.helpContextId == null) {
-					try {
-						this.helpContextId = commandService
-								.getHelpContextId(contributionParameters.commandId);
-					} catch (final NotDefinedException e) {
-						// it's OK to not have a helpContextId
-					}
+			if (callback != null) {
+				try {
+					elementRef = commandService.registerElementForCommand(command, callback);
 				}
-				final IWorkbenchLocationService wls = (IWorkbenchLocationService) serviceLocator
-						.getService(IWorkbenchLocationService.class);
-				final IWorkbench workbench = wls.getWorkbench();
-				if (workbench != null && helpContextId != null) {
-					this.workbenchHelpSystem = workbench.getHelpSystem();
+				catch (final NotDefinedException e) {
+					StatusManager.getManager().handle(new Status(IStatus.ERROR, SharedUIResources.PLUGIN_ID,
+							"Unable to register menu item \"" + getId() + "\", command \"" + contributionParameters.commandId + "\" not defined")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				}
 			}
-			catch (final NotDefinedException e) {
-				StatusManager.getManager().handle(new Status(IStatus.ERROR, SharedUIResources.PLUGIN_ID,
-						"Unable to register menu item \"" + getId() + "\", command \"" + contributionParameters.commandId + "\" not defined")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			
+			setImages(contributionParameters.serviceLocator,
+					contributionParameters.iconStyle);
+			
+			if (contributionParameters.helpContextId == null) {
+				try {
+					this.helpContextId = commandService
+							.getHelpContextId(contributionParameters.commandId);
+				} catch (final NotDefinedException e) {
+					// it's OK to not have a helpContextId
+				}
+			}
+			final IWorkbenchLocationService wls = (IWorkbenchLocationService) serviceLocator
+					.getService(IWorkbenchLocationService.class);
+			final IWorkbench workbench = wls.getWorkbench();
+			if (workbench != null && helpContextId != null) {
+				this.workbenchHelpSystem = workbench.getHelpSystem();
 			}
 		}
 	}
@@ -338,6 +381,16 @@ public class HandlerContributionItem extends ContributionItem {
 					ICommandImageService.TYPE_DISABLED, iconStyle);
 			hoverIcon = service.getImageDescriptor(command.getId(),
 					ICommandImageService.TYPE_HOVER, iconStyle);
+			
+			if (contributedIcon == null) {
+				contributedIcon = icon;
+			}
+			if (contributedDisabledIcon == null) {
+				contributedDisabledIcon = disabledIcon;
+			}
+			if (contributedHoverIcon == null) {
+				contributedHoverIcon = hoverIcon;
+			}
 		}
 	}
 	
@@ -420,13 +473,13 @@ public class HandlerContributionItem extends ContributionItem {
 	public CommandContributionItemParameter getData() {
 		CommandContributionItemParameter data = new CommandContributionItemParameter(
 				serviceLocator, getId(), null, style);
-		data.icon = icon;
-		data.disabledIcon = disabledIcon;
-		data.hoverIcon = hoverIcon;
-		data.label = label;
+		data.icon = contributedIcon;
+		data.disabledIcon = contributedDisabledIcon;
+		data.hoverIcon = contributedHoverIcon;
+		data.label = contributedLabel;
 		data.helpContextId = helpContextId;
 		data.mnemonic = mnemonic;
-		data.tooltip = tooltip;
+		data.tooltip = contributedTooltip;
 		return data;
 	}
 	
@@ -535,9 +588,14 @@ public class HandlerContributionItem extends ContributionItem {
 				return;
 			}
 			if ((mode & (MODE_NO_COMMAND | MODE_CALLBACK_CALL)) == (MODE_NO_COMMAND)
-					&& commandHandler instanceof IElementUpdater) {
+					&& callback != null) {
 				mode |= MODE_CALLBACK_EXPL;
 				try {
+					label = contributedLabel;
+					tooltip = contributedTooltip;
+					icon = contributedIcon;
+					disabledIcon = contributedDisabledIcon;
+					hoverIcon = contributedHoverIcon;
 					((IElementUpdater) commandHandler).updateElement(callback, Collections.EMPTY_MAP);
 				}
 				finally {
