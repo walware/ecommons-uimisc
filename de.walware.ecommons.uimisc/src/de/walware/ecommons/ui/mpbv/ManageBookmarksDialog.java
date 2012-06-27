@@ -23,7 +23,6 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -82,7 +81,7 @@ public class ManageBookmarksDialog extends TrayDialog {
 	protected Control createDialogArea(final Composite parent) {
 		final Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		composite.setLayout(LayoutUtil.applyDialogDefaults(new GridLayout(), 2));
+		composite.setLayout(LayoutUtil.createDialogGrid(2));
 		
 		{	fTableViewer = new TableViewer(composite);
 			fTableViewer.setUseHashlookup(true);

@@ -208,16 +208,16 @@ public class LayoutUtil {
 	public static int hintWidth(final Table table, final int numChars) {
 		table.setFont(JFaceResources.getFontRegistry().get(JFaceResources.DIALOG_FONT));
 		final PixelConverter converter = new PixelConverter(table);
-		int heightHint = converter.convertWidthInCharsToPixels(numChars);
+		int width = converter.convertWidthInCharsToPixels(numChars);
 		{	final ScrollBar scrollBar = table.getVerticalBar();
 			if (scrollBar != null) {
-				heightHint += scrollBar.getSize().x;
+				width += scrollBar.getSize().x;
 			}
 		}
 		if ((table.getStyle() & SWT.CHECK) == SWT.CHECK) {
-			heightHint += 16 + converter.convertHorizontalDLUsToPixels(4) +  converter.convertWidthInCharsToPixels(1);
+			width += 16 + converter.convertHorizontalDLUsToPixels(4) +  converter.convertWidthInCharsToPixels(1);
 		}
-		return heightHint;
+		return width;
 	}
 	
 	public static int hintWidth(final Table table, final Collection<String> items) {
@@ -237,6 +237,13 @@ public class LayoutUtil {
 			}
 		}
 		return hintWidth(table, max);
+	}
+	
+	public static int hintColWidth(final Table table, final int numChars) {
+		table.setFont(JFaceResources.getFontRegistry().get(JFaceResources.DIALOG_FONT));
+		final PixelConverter converter = new PixelConverter(table);
+		int width = converter.convertWidthInCharsToPixels(numChars);
+		return width;
 	}
 	
 	public static int hintHeight(final List control, final int rows) {
@@ -308,9 +315,21 @@ public class LayoutUtil {
 	}
 	
 	
-	public static GridLayout applyDialogDefaults(final GridLayout gl, final int numColumns) {
-		final DialogValues dialogValues = getDialogValues();
+	public static GridLayout createDialogGrid(final int numColumns) {
+		final GridLayout gl = new GridLayout(numColumns, false);
 		gl.numColumns = numColumns;
+		applyDialogDefaults(gl);
+		return gl;
+	}
+	
+	public static GridLayout applyDialogDefaults(final GridLayout gl, final int numColumns) {
+		gl.numColumns = numColumns;
+		applyDialogDefaults(gl);
+		return gl;
+	}
+	
+	public static GridLayout applyDialogDefaults(final GridLayout gl) {
+		final DialogValues dialogValues = getDialogValues();
 		gl.marginWidth = dialogValues.defaultHMargin;
 		gl.marginHeight = dialogValues.defaultVMargin;
 		gl.horizontalSpacing = dialogValues.defaultHSpacing;

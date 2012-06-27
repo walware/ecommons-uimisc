@@ -14,7 +14,6 @@ package de.walware.ecommons.ui.mpbv;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -57,7 +56,7 @@ class EditBookmarkDialog extends Dialog {
 	protected Control createDialogArea(final Composite parent) {
 		final Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		composite.setLayout(LayoutUtil.applyDialogDefaults(new GridLayout(), 2));
+		composite.setLayout(LayoutUtil.createDialogGrid(2));
 		
 		{	final Label label = new Label(composite, SWT.NONE);
 			label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
