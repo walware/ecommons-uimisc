@@ -21,8 +21,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.IWorkbenchGraphicConstants;
-import org.eclipse.ui.internal.WorkbenchImages;
 
 import de.walware.ecommons.ui.util.LayoutUtil;
 import de.walware.ecommons.ui.util.MenuUtil;
@@ -43,8 +43,7 @@ public class DropDownButton extends Composite {
 	
 	
 	private void create() {
-		final GridLayout layout = new GridLayout();
-		LayoutUtil.applyCompositeDefaults(layout, 2);
+		final GridLayout layout = LayoutUtil.createCompositeGrid(2);
 		layout.horizontalSpacing = 0;
 		layout.verticalSpacing = 0;
 		setLayout(layout);
@@ -52,7 +51,8 @@ public class DropDownButton extends Composite {
 		fMainButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		fDownButton = new Button(this, SWT.PUSH);
 		fDownButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
-		fDownButton.setImage(WorkbenchImages.getImage(IWorkbenchGraphicConstants.IMG_LCL_BUTTON_MENU));
+		fDownButton.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(
+				IWorkbenchGraphicConstants.IMG_LCL_BUTTON_MENU ));
 		fDownButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
@@ -64,6 +64,12 @@ public class DropDownButton extends Composite {
 	
 	public void setText(final String string) {
 		fMainButton.setText(string);
+	}
+	
+	@Override
+	public void setEnabled(boolean enabled) {
+		fMainButton.setEnabled(enabled);
+		fDownButton.setEnabled(enabled);
 	}
 	
 	@Override
