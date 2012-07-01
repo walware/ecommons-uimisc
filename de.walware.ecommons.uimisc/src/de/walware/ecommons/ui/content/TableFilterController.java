@@ -14,6 +14,7 @@
 package de.walware.ecommons.ui.content;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -375,7 +376,7 @@ public class TableFilterController {
 	 */
 	private final RefreshJob fRefreshJob;
 	
-	private List<?> fInput;
+	private List<?> fInput = Collections.emptyList();
 	
 	private int fInputId;
 	
@@ -463,6 +464,9 @@ public class TableFilterController {
 	}
 	
 	public void setInput(final List<?> input) {
+		if (input == null) {
+			throw new NullPointerException("input");
+		}
 		synchronized (this) {
 			fInput = input;
 			fInputId++;
