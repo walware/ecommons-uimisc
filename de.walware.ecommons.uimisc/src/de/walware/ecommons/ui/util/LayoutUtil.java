@@ -139,6 +139,11 @@ public class LayoutUtil {
 		return hintWidth(text, JFaceResources.DIALOG_FONT, numChars);
 	}
 	
+	public static GridData hintWidth(final GridData gd, final Text text, final int numChars) {
+		gd.widthHint = hintWidth(text, JFaceResources.DIALOG_FONT, numChars);
+		return gd;
+	}
+	
 	public static int hintWidth(final Text text, final String symbolicName, final int numChars) {
 		if (symbolicName != null) {
 			text.setFont(JFaceResources.getFontRegistry().get(symbolicName));
