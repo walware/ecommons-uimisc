@@ -344,14 +344,17 @@ public class ViewerUtil {
 	}
 	
 	
-	public static void addSearchTextNavigation(final TableViewer viewer,
+	public static void installSearchTextNavigation(final TableViewer viewer,
 			final SearchText searchText, final boolean back) {
 		final Table table = viewer.getTable();
 		searchText.addListener(new SearchText.Listener() {
+			@Override
 			public void textChanged(final boolean user) {
 			}
+			@Override
 			public void okPressed() {
 			}
+			@Override
 			public void downPressed() {
 				table.setFocus();
 				if (table.getItemCount() > 0) {
@@ -367,7 +370,7 @@ public class ViewerUtil {
 		if (back) {
 			table.addKeyListener(new org.eclipse.swt.events.KeyAdapter() {
 				@Override
-				public void keyPressed(KeyEvent e) {
+				public void keyPressed(final KeyEvent e) {
 					if (e.stateMask == 0 && e.keyCode == SWT.ARROW_UP
 							&& table.getSelectionCount() == 1
 							&& table.getSelectionIndex() == 0) {

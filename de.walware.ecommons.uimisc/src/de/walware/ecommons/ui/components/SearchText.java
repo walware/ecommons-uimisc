@@ -89,20 +89,19 @@ public class SearchText extends Composite {
 	
 	
 	public SearchText(final Composite parent) {
-		this(parent, null);
+		this(parent, null, SWT.NONE);
 	}
 	
-	public SearchText(final Composite parent, final String initialText) {
+	public SearchText(final Composite parent, final String initialText, final int textStyle) {
 		super(parent, useNativeSearchField(parent) ? SWT.NONE : SWT.BORDER);
 		final boolean nativeMode = useNativeSearchField.booleanValue();
 		
 		setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
-		final GridLayout layout = LayoutUtil.applyCompositeDefaults(new GridLayout(),
-				(nativeMode) ? 1 : 2);
+		final GridLayout layout = LayoutUtil.createCompositeGrid((nativeMode) ? 1 : 2);
 		layout.horizontalSpacing = 0;
 		setLayout(layout);
 		
-		createText(this, nativeMode);
+		createText(this, nativeMode, textStyle);
 		createClearTextButtonSupport(this, nativeMode);
 		
 		if (initialText != null) {
@@ -177,11 +176,16 @@ public class SearchText extends Composite {
 	 * Create the text widget.
 	 * 
 	 * @param parent parent <code>Composite</code> of toolbar button
+	 * @param style additional SWT style for text constant
 	 */
-	private void createText(final Composite parent, final boolean nativeMode) {
-		fTextControl = new Text(this, (nativeMode) ?
-				(SWT.LEFT | SWT.SINGLE | SWT.BORDER | SWT.SEARCH | SWT.ICON_CANCEL) :
-				(SWT.LEFT | SWT.SINGLE));
+	private void createText(final Composite parent, final boolean nativeMode, int style) {
+		if (nativeMode) {
+			style |= (SWT.LEFT | SWT.SINGLE | SWT.BORDER | SWT.SEARCH | SWT.ICON_CANCEL);
+		}
+		else {
+			style |= (SWT.LEFT | SWT.SINGLE);
+		}
+		fTextControl = new Text(this, style);
 		fTextControl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		
 		fTextControl.getAccessible().addAccessibleListener(

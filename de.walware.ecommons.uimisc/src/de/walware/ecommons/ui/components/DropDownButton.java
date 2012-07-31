@@ -13,18 +13,24 @@
 package de.walware.ecommons.ui.components;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.MenuListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.IWorkbenchGraphicConstants;
 
-import de.walware.ecommons.ui.util.LayoutUtil;
+import de.walware.ecommons.FastList;
 import de.walware.ecommons.ui.util.MenuUtil;
 
 
@@ -34,31 +40,67 @@ public class DropDownButton extends Composite {
 	private Button fMainButton;
 	private Button fDownButton;
 	
+	private Menu fMenu;
+	
+	private final FastList<MenuListener> fMenuListener = new FastList<MenuListener>(MenuListener.class);
+	
 	
 	public DropDownButton(final Composite parent) {
+		this(parent, SWT.NONE);
+	}
+	
+	public DropDownButton(final Composite parent, final int buttonStyle) {
 		super(parent, SWT.NONE);
 		
-		create();
+		addDisposeListener(new DisposeListener() {
+			@Override
+			public void widgetDisposed(final DisposeEvent e) {
+				if (fMenu != null) {
+					fMenu.dispose();
+					fMenu = null;
+				}
+			}
+		});
+		create(buttonStyle);
 	}
 	
 	
-	private void create() {
-		final GridLayout layout = LayoutUtil.createCompositeGrid(2);
-		layout.horizontalSpacing = 0;
-		layout.verticalSpacing = 0;
-		setLayout(layout);
-		fMainButton = new Button(this, SWT.PUSH);
-		fMainButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		fDownButton = new Button(this, SWT.PUSH);
-		fDownButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+	private void create(final int style) {
+		fDownButton = new Button(this, SWT.PUSH | style);
 		fDownButton.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(
 				IWorkbenchGraphicConstants.IMG_LCL_BUTTON_MENU ));
 		fDownButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				showDropDown();
+				final Menu menu = getDropDownMenu();
+				MenuUtil.setPullDownPosition(menu, DropDownButton.this);
+				menu.setVisible(true);
 			}
 		});
+		
+		fMainButton = new Button(this, SWT.PUSH | style);
+		
+		setTabList(new Control[] { fMainButton, fDownButton });
+		
+		addListener(SWT.Resize, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				Rectangle clientArea = getClientArea();
+				Point size = fDownButton.computeSize(SWT.DEFAULT, clientArea.height);
+				fDownButton.setBounds(clientArea.width - size.x, clientArea.y, size.x, clientArea.height);
+				fMainButton.setBounds(clientArea.x, clientArea.y, clientArea.width - size.x + 1, clientArea.height);
+			}
+		});
+	}
+	
+	@Override
+	public Point computeSize(int wHint, int hHint, boolean changed) {
+		final Point downSize = fDownButton.computeSize(SWT.DEFAULT, hHint);
+		final Point mainSize = (wHint == SWT.DEFAULT) ?
+				fMainButton.computeSize(wHint, hHint) :
+				fMainButton.computeSize(Math.max(0, wHint - downSize.x), hHint);
+		Rectangle trim = super.computeTrim(0, 0, mainSize.x + downSize.x - 1, Math.max(mainSize.y, downSize.y));
+		return new Point (trim.width, trim.height);
 	}
 	
 	
@@ -67,7 +109,7 @@ public class DropDownButton extends Composite {
 	}
 	
 	@Override
-	public void setEnabled(boolean enabled) {
+	public void setEnabled(final boolean enabled) {
 		fMainButton.setEnabled(enabled);
 		fDownButton.setEnabled(enabled);
 	}
@@ -89,15 +131,54 @@ public class DropDownButton extends Composite {
 		fMainButton.removeSelectionListener(listener);
 	}
 	
-	
-	private void showDropDown() {
-		final Menu menu = new Menu(this);
-		MenuUtil.setPullDownPosition(menu, this);
-		fillDropDownMenu(menu);
-		menu.setVisible(true);
+	public void addMenuListener(final MenuListener listener) {
+		fMenuListener.add(listener);
+		if (fMenu != null) {
+			fMenuListener.add(listener);
+		}
 	}
 	
-	protected void fillDropDownMenu(final Menu menu) {
+	public void removeMenuListener(final MenuListener listener) {
+		fMenuListener.remove(listener);
+		if (fMenu != null) {
+			fMenuListener.remove(listener);
+		}
+	}
+	
+	
+	public Menu getDropDownMenu() {
+		Menu menu = fMenu;
+		if (menu == null) {
+			menu = createDropDownMenu();
+			final Listener listener = new Listener() {
+				@Override
+				public void handleEvent(Event event) {
+					switch (event.type) {
+						
+					case SWT.Dispose:
+						if (fMenu == event.widget) {
+							fMenu = null;
+						}
+						return;
+					
+					default:
+						return;
+					}
+				}
+			};
+			menu.addListener(SWT.Dispose, listener);
+			final MenuListener[] listeners = fMenuListener.toArray();
+			for (int i = 0; i < listeners.length; i++) {
+				menu.addMenuListener(listeners[i]);
+			}
+			
+			fMenu = menu;
+		}
+		return menu;
+	}
+	
+	protected Menu createDropDownMenu() {
+		return new Menu(this);
 	}
 	
 }

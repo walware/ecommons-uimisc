@@ -242,7 +242,7 @@ public class LayoutUtil {
 	public static int hintColWidth(final Table table, final int numChars) {
 		table.setFont(JFaceResources.getFontRegistry().get(JFaceResources.DIALOG_FONT));
 		final PixelConverter converter = new PixelConverter(table);
-		int width = converter.convertWidthInCharsToPixels(numChars);
+		final int width = converter.convertWidthInCharsToPixels(numChars);
 		return width;
 	}
 	
@@ -475,6 +475,12 @@ public class LayoutUtil {
 		dummy.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, grab, false, span, 1));
 	}
 	
+	/**
+	 * Adds a small vertical space (filler) to the given composite
+	 * 
+	 * @param composite The composite to add the filler to
+	 * @param grab Whether the filler should grap vertical space
+	 */
 	public static void addSmallFiller(final Composite composite, final boolean grab) {
 		final Label filler = new Label(composite, SWT.NONE);
 		final Layout layout = composite.getLayout();
