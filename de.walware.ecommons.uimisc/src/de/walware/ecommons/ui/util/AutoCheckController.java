@@ -15,14 +15,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.IHandler2;
 import org.eclipse.core.databinding.observable.set.WritableSet;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
-import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Widget;
+import org.eclipse.ui.IWorkbenchCommandConstants;
+import org.eclipse.ui.services.IServiceLocator;
+
+import de.walware.ecommons.ui.actions.ControlServicesUtil;
 
 
 /**
@@ -31,11 +38,11 @@ import org.eclipse.swt.widgets.Widget;
 public class AutoCheckController implements Listener {
 	
 	
-	private final TableViewer fViewer;
+	private final CheckboxTableViewer fViewer;
 	
 	private final WritableSet fSet;
 	
-	private int fLast;
+	private int fIgnoreTime;
 	
 	
 	public AutoCheckController(final CheckboxTableViewer viewer, final WritableSet set) {
@@ -52,24 +59,23 @@ public class AutoCheckController implements Listener {
 	
 	@Override
 	public void handleEvent(final Event event) {
-		if (event.item == null) {
-			return;
-		}
 		if (event.type == SWT.Selection) {
-			if (event.detail == SWT.CHECK) {
-				fLast = event.time;
+			if (event.item == null) {
+				return;
 			}
-			else if (event.detail == 0 && event.time != fLast) {
+			if (event.detail == SWT.CHECK) {
+				fIgnoreTime = event.time;
+			}
+			else if (event.detail == 0 && event.time != fIgnoreTime
+					&& ((event.stateMask & SWT.BUTTON_MASK) == 0
+							|| (event.stateMask & SWT.BUTTON_MASK) == SWT.BUTTON1 )) {
 				event.display.asyncExec(new Runnable() {
-					int time = event.time;
-					Widget item = event.item;
-					int stateMask = event.stateMask;
 					@Override
 					public void run() {
-						if (time == fLast) {
+						if (event.time == fIgnoreTime) {
 							return;
 						}
-						if ((stateMask & SWT.MOD2) != 0) {
+						if ((event.stateMask & SWT.MOD2) != 0) {
 							final TableItem[] selection = fViewer.getTable().getSelection();
 							final List<Object> list = new ArrayList<Object>();
 							for (final TableItem item : selection) {
@@ -83,14 +89,14 @@ public class AutoCheckController implements Listener {
 								fSet.addAll(list);
 							}
 						}
-						else if ((stateMask & SWT.MOD1) != 0) {
-							final Object element = item.getData();
+						else if ((event.stateMask & SWT.MOD1) != 0) {
+							final Object element = event.item.getData();
 							if (element != null) {
 								fSet.add(element);
 							}
 						}
 						else {
-							final Object element = item.getData();
+							final Object element = event.item.getData();
 							if (element != null) {
 								fSet.retainAll(Collections.singleton(element));
 								if (fSet.isEmpty()) {
@@ -101,7 +107,28 @@ public class AutoCheckController implements Listener {
 					}
 				});
 			}
+			return;
 		}
+	}
+	
+	
+	public void addActions(final IServiceLocator serviceLocator) {
+		final ControlServicesUtil servicesUtil = new ControlServicesUtil(serviceLocator,
+				fViewer.getClass().getName()+'#'+hashCode(), fViewer.getControl() );
+		servicesUtil.addControl(fViewer.getControl());
+		
+		servicesUtil.activateHandler(IWorkbenchCommandConstants.EDIT_SELECT_ALL, createSelectAllHandler());
+	}
+	
+	public IHandler2 createSelectAllHandler() {
+		return new AbstractHandler() {
+			@Override
+			public Object execute(final ExecutionEvent event) throws ExecutionException {
+				fViewer.getTable().selectAll();
+				fSet.addAll(((IStructuredSelection) fViewer.getSelection()).toList());
+				return null;
+			}
+		};
 	}
 	
 }
