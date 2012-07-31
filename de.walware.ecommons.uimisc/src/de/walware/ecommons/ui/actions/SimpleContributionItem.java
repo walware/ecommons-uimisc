@@ -16,7 +16,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.ContributionItem;
-import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuListener2;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.resource.DeviceResourceException;
@@ -39,6 +39,7 @@ import org.eclipse.ui.menus.CommandContributionItemParameter;
 import org.eclipse.ui.statushandlers.StatusManager;
 
 import de.walware.ecommons.ui.SharedUIResources;
+import de.walware.ecommons.ui.util.MenuUtil;
 
 
 /**
@@ -465,12 +466,7 @@ public abstract class SimpleContributionItem extends ContributionItem {
 					if (workbenchHelpSystem != null) {
 						workbenchHelpSystem.setHelp(menu, helpContextId);
 					}
-					menuManager.addMenuListener(new IMenuListener() {
-						@Override
-						public void menuAboutToShow(final IMenuManager manager) {
-							dropDownMenuAboutToShow(manager);
-						}
-					});
+					initDropDownMenu(menuManager);
 					
 					// position the menu below the drop down item
 					final Point point = ti.getParent().toDisplay(
@@ -484,6 +480,25 @@ public abstract class SimpleContributionItem extends ContributionItem {
 		}
 		
 		return false;
+	}
+	
+	protected void initDropDownMenu(final MenuManager menuManager) {
+		final Menu menu = menuManager.getMenu();
+		menuManager.addMenuListener(new IMenuListener2() {
+			@Override
+			public void menuAboutToShow(final IMenuManager manager) {
+				dropDownMenuAboutToShow(manager);
+			}
+			@Override
+			public void menuAboutToHide(IMenuManager manager) {
+				menu.getDisplay().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						menuManager.dispose();
+					}
+				});
+			}
+		});
 	}
 	
 	private void updateIcons() {
