@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Patrick Chuong (Texas Instruments) - Bug 292411
- *     Stephan Wahlbrink - sync
+ *     Stephan Wahlbrink - sync, IDisposable
  *******************************************************************************/
 
 package de.walware.ecommons.ui.util;
@@ -20,11 +20,13 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
+import de.walware.ecommons.IDisposable;
+
 
 /**
  * A registry that maps <code>ImageDescriptors</code> to <code>Image</code>.
  */
-public class ImageDescriptorRegistry {
+public class ImageDescriptorRegistry implements IDisposable {
 	
 	
 	private final Map<ImageDescriptor, Image> fRegistry = new HashMap<ImageDescriptor, Image>();
