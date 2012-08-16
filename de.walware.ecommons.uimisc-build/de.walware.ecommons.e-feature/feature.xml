@@ -2,7 +2,7 @@
 <feature
       id="de.walware.ecommons.e"
       label="Commons - E-Miscellany"
-      version="1.2.1.qualifier"
+      version="1.2.2.qualifier"
       provider-name="WalWare.de"
       license-feature="de.walware.opensource.license"
       license-feature-version="1.0.0">
@@ -12,7 +12,7 @@
    </description>
 
    <copyright>
-      Copyright (c) Stephan Wahlbrink and others 2003-2011. All rights reserved.
+      Copyright (c) Stephan Wahlbrink and others 2003-2012. All rights reserved.
    </copyright>
 
    <license>
