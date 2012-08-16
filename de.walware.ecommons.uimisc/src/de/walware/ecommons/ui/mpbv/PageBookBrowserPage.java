@@ -240,7 +240,12 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 	
 	@Override
 	public void createControl(final Composite parent) {
-		fComposite = new Composite(parent, SWT.NONE);
+		fComposite = new Composite(parent, SWT.NONE) {
+			@Override
+			public boolean setFocus() {
+				return setDefaultFocus();
+			}
+		};
 		fComposite.setLayout(LayoutUtil.applySashDefaults(new GridLayout(), 1));
 		
 		{	final Control control = createAddressBar(fComposite);
@@ -257,7 +262,6 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 		if (fSession.fUrl != null && fSession.fUrl.length() > 0) {
 			setUrl(fSession.fUrl);
 		}
-		setFocus();
 	}
 	
 	private Control createBrowser(final Composite parent) {
@@ -380,15 +384,19 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 	
 	@Override
 	public void setFocus() {
-		fBrowser.setFocus();
+		setDefaultFocus();
+	}
+	
+	protected boolean setDefaultFocus() {
+		return setFocusToBrowser();
 	}
 	
 	public boolean isBrowserFocusControl() {
 		return (UIAccess.isOkToUse(fBrowser) && fBrowser.isFocusControl());
 	}
 	
-	public void setFocusToBrowser() {
-		fBrowser.setFocus();
+	public boolean setFocusToBrowser() {
+		return fBrowser.setFocus();
 	}
 	
 	
