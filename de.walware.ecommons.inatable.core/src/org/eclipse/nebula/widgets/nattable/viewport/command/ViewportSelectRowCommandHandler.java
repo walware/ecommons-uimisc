@@ -35,7 +35,8 @@ public class ViewportSelectRowCommandHandler extends AbstractLayerCommandHandler
 	@Override
 	protected boolean doCommand(ViewportSelectRowCommand command) {
 		viewportLayer.doCommand(new SelectRowsCommand(viewportLayer,
-				0, command.getRowPositions(), 0, command.getSelectionFlags()));
+				0, command.getRowPositions(),
+				command.getRowPositionToReveal(), command.getSelectionFlags() ));
 		return true;
 	}
 

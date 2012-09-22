@@ -11,10 +11,14 @@
 // ~Selection
 package org.eclipse.nebula.widgets.nattable.viewport.action;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportSelectRowCommand;
 
@@ -31,9 +35,24 @@ public class ViewportSelectRowAction implements IMouseAction {
 
 	@Override
 	public void run(NatTable natTable, MouseEvent event) {
-		natTable.doCommand(new ViewportSelectRowCommand(natTable,
-				natTable.getRowPositionByY(event.y),
-				event.stateMask & (SWT.SHIFT | SWT.CONTROL) ));
+		int colPosition = natTable.getColumnPositionByX(event.x);
+		int rowPosition = natTable.getRowPositionByY(event.y);
+		ILayerCell cell = natTable.getCellByPosition(colPosition, rowPosition);
+		if (cell.isSpannedCell()) {
+			int span = cell.getRowSpan();
+			int position = cell.getOriginRowPosition();
+			List<Integer> positions = new ArrayList<Integer>(span);
+			for (int i = 0; i < span; i++, position++) {
+				positions.add(position);
+			}
+			natTable.doCommand(new ViewportSelectRowCommand(natTable, positions,
+					event.stateMask & (SWT.SHIFT | SWT.CONTROL), rowPosition ));
+		}
+		else {
+			natTable.doCommand(new ViewportSelectRowCommand(natTable, rowPosition,
+					event.stateMask & (SWT.SHIFT | SWT.CONTROL) ));
+		}
+		
 	}
 
 }

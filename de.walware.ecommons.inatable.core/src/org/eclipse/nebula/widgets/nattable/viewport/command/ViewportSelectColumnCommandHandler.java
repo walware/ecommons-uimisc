@@ -22,7 +22,7 @@ public class ViewportSelectColumnCommandHandler extends AbstractLayerCommandHand
 	private final AbstractLayer viewportLayer;
 
 
-	public ViewportSelectColumnCommandHandler(final AbstractLayer viewportLayer) {
+	public ViewportSelectColumnCommandHandler(AbstractLayer viewportLayer) {
 		this.viewportLayer = viewportLayer;
 	}
 
@@ -31,10 +31,12 @@ public class ViewportSelectColumnCommandHandler extends AbstractLayerCommandHand
 		return ViewportSelectColumnCommand.class;
 	}
 
+
 	@Override
 	protected boolean doCommand(ViewportSelectColumnCommand command) {
 		viewportLayer.doCommand(new SelectColumnsCommand(viewportLayer,
-				command.getColumnPositions(), 0, command.getSelectionFlags() ));
+				command.getColumnPositions(), 0,
+				command.getSelectionFlags(), command.getColumnPositionToReveal() ));
 		return true;
 	}
 

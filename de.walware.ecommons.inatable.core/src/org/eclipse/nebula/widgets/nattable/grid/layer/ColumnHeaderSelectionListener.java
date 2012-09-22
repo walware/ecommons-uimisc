@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.grid.layer;
 
 import org.eclipse.nebula.widgets.nattable.grid.layer.event.ColumnHeaderSelectionEvent;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.selection.event.ColumnSelectionEvent;
@@ -19,10 +20,11 @@ import org.eclipse.nebula.widgets.nattable.selection.event.ColumnSelectionEvent;
  * Marks the ColumnHeader as selected in response to a {@link ColumnSelectionEvent}
  */
 public class ColumnHeaderSelectionListener implements ILayerListener {
-	
-	private ColumnHeaderLayer columnHeaderLayer;
-	
-	public ColumnHeaderSelectionListener(ColumnHeaderLayer columnHeaderLayer) {
+
+	private ILayer columnHeaderLayer;
+
+
+	public ColumnHeaderSelectionListener(ILayer columnHeaderLayer) {
 		this.columnHeaderLayer = columnHeaderLayer;
 	}
 
@@ -33,4 +35,5 @@ public class ColumnHeaderSelectionListener implements ILayerListener {
 			columnHeaderLayer.fireLayerEvent(colHeaderSelectionEvent);
 		}
 	}
+
 }

@@ -11,10 +11,12 @@
 // ~Selection
 package org.eclipse.nebula.widgets.nattable.viewport.command;
 
+import static org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.NO_SELECTION;
+
 import java.util.Collection;
-import java.util.Collections;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractMultiColumnCommand;
+import org.eclipse.nebula.widgets.nattable.coordinate.ColumnPositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 
@@ -27,23 +29,32 @@ public class ViewportSelectColumnCommand extends AbstractMultiColumnCommand {
 
 	private final int selectionFlags;
 
+	private ColumnPositionCoordinate columnPositionToReveal;
+
 
 	public ViewportSelectColumnCommand(final ILayer layer, int columnPosition,
 			int selectionFlags) {
-		this(layer, Collections.singleton(columnPosition), selectionFlags);
+		super(layer, columnPosition);
+		
+		this.selectionFlags = selectionFlags;
+		this.columnPositionToReveal = new ColumnPositionCoordinate(layer, columnPosition);
 	}
 
 	public ViewportSelectColumnCommand(final ILayer layer, final Collection<Integer> columnPositions,
-			int selectionFlags) {
+			int selectionFlags, int columnPositionToReveal) {
 		super(layer, columnPositions);
 		
 		this.selectionFlags = selectionFlags;
+		if (columnPositionToReveal != NO_SELECTION) {
+			this.columnPositionToReveal = new ColumnPositionCoordinate(layer, columnPositionToReveal);
+		}
 	}
 
 	protected ViewportSelectColumnCommand(ViewportSelectColumnCommand command) {
 		super(command);
 		
 		this.selectionFlags = command.selectionFlags;
+		this.columnPositionToReveal = command.columnPositionToReveal;
 	}
 
 	public ViewportSelectColumnCommand cloneCommand() {
@@ -53,6 +64,14 @@ public class ViewportSelectColumnCommand extends AbstractMultiColumnCommand {
 
 	public int getSelectionFlags() {
 		return selectionFlags;
+	}
+
+	public int getColumnPositionToReveal() {
+		if (columnPositionToReveal != null) {
+			return columnPositionToReveal.columnPosition;
+		} else {
+			return NO_SELECTION;
+		}
 	}
 
 }

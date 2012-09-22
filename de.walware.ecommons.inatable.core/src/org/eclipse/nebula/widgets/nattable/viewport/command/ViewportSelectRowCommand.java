@@ -11,9 +11,12 @@
 // ~Selection
 package org.eclipse.nebula.widgets.nattable.viewport.command;
 
+import static org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.NO_SELECTION;
+
 import java.util.Collection;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractMultiRowCommand;
+import org.eclipse.nebula.widgets.nattable.coordinate.RowPositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 
@@ -26,19 +29,25 @@ public class ViewportSelectRowCommand extends AbstractMultiRowCommand {
 
 	private final int selectionFlags;
 
+	private RowPositionCoordinate rowPositionToReveal;
+
 
 	public ViewportSelectRowCommand(final ILayer layer, final int rowPosition,
 			final int selectionFlags) {
 		super(layer, rowPosition);
 		
 		this.selectionFlags = selectionFlags;
+		this.rowPositionToReveal = new RowPositionCoordinate(layer, rowPosition);
 	}
 
 	public ViewportSelectRowCommand(final ILayer layer, final Collection<Integer> rowPositions,
-			int selectionFlags) {
+			int selectionFlags, int rowPositionToReveal) {
 		super(layer, rowPositions);
 		
 		this.selectionFlags = selectionFlags;
+		if (rowPositionToReveal != NO_SELECTION) {
+			this.rowPositionToReveal = new RowPositionCoordinate(layer, rowPositionToReveal);
+		}
 	}
 
 	protected ViewportSelectRowCommand(ViewportSelectRowCommand command) {
@@ -54,6 +63,14 @@ public class ViewportSelectRowCommand extends AbstractMultiRowCommand {
 
 	public int getSelectionFlags() {
 		return selectionFlags;
+	}
+	
+	public int getRowPositionToReveal() {
+		if (rowPositionToReveal != null) {
+			return rowPositionToReveal.rowPosition;
+		} else {
+			return NO_SELECTION;
+		}
 	}
 
 }
