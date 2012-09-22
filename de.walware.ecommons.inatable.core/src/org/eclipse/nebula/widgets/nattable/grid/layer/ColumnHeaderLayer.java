@@ -14,7 +14,6 @@ import org.eclipse.nebula.widgets.nattable.columnRename.DisplayColumnRenameDialo
 import org.eclipse.nebula.widgets.nattable.columnRename.RenameColumnHeaderCommandHandler;
 import org.eclipse.nebula.widgets.nattable.columnRename.RenameColumnHelper;
 import org.eclipse.nebula.widgets.nattable.columnRename.event.RenameColumnHeaderEvent;
-import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
