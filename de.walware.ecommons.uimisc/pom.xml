@@ -7,13 +7,13 @@
 	<parent>
 		<groupId>de.walware.ecommons</groupId>
 		<artifactId>ecommons-uimisc</artifactId>
-		<version>1.2-SNAPSHOT</version>
+		<version>1.3-SNAPSHOT</version>
 		<relativePath>../de.walware.ecommons.uimisc-build</relativePath>
 	</parent>
 	
 	<groupId>de.walware.ecommons</groupId>
 	<artifactId>de.walware.ecommons.uimisc</artifactId>
-	<version>1.2.2-SNAPSHOT</version>
+	<version>1.3.0-SNAPSHOT</version>
 	<packaging>eclipse-plugin</packaging>
 	
 </project>
