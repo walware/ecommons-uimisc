@@ -575,6 +575,16 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 		return session;
 	}
 	
+	public BrowserSession findBrowserSession(final String url) {
+		final List<BrowserSession> sessions = getSessions();
+		for (final BrowserSession session : sessions) {
+			if (url.equals(session.getUrl())) {
+				return session;
+			}
+		}
+		return null;
+	}
+	
 	protected PageBookBrowserPage getCurrentBrowserPage() {
 		return fCurrentBrowserPage;
 	}
