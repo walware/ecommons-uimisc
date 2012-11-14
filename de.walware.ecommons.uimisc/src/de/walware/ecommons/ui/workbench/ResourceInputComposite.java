@@ -119,6 +119,10 @@ public class ResourceInputComposite extends Composite {
 	private List<VariableFilter> fShowInsertVariableFilters;
 	private List<IStringVariable> fShowInsertVariableAdditionals;
 	
+	private String fDefaultFilesystemPath;
+	private String[] fFileFilters;
+	private String[] fFileFilterNames;
+	
 	
 	public ResourceInputComposite(final Composite parent, final int style,
 			final int mode, final String resourceLabel) {
@@ -190,7 +194,7 @@ public class ResourceInputComposite extends Composite {
 		if (fShowInsertVariableAdditionals != null) {
 			for (final IStringVariable variable : fShowInsertVariableAdditionals) {
 				final String name = variable.getName();
-				final Pattern pattern = Pattern.compile("\\Q${"+name+"\\E[\\}\\:]");
+				final Pattern pattern = Pattern.compile("\\Q${"+name+"\\E[\\}\\:]");  //$NON-NLS-1$//$NON-NLS-2$
 				fValidator.setOnPattern(pattern, -1);
 			}
 		}
@@ -198,13 +202,55 @@ public class ResourceInputComposite extends Composite {
 		if (fShowInsertVariableAdditionals != null) {
 			for (final IStringVariable variable : fShowInsertVariableAdditionals) {
 				final String name = variable.getName();
-				final Pattern pattern = Pattern.compile("\\Q${"+name+"\\E[\\}\\:]");
+				final Pattern pattern = Pattern.compile("\\Q${"+name+"\\E[\\}\\:]"); //$NON-NLS-1$ //$NON-NLS-2$
 				fValidator.setOnPattern(pattern, IStatus.OK);
 			}
 		}
 		if (fTools != null) {
 			fTools.resetMenu();
 		}
+	}
+	
+	/**
+	 * Sets the default filesystem path for file and directory selection dialogs, used if
+	 * no resource is specified.
+	 * 
+	 * @param path the filesystem path
+	 */
+	public void setDefaultFilesystemPath(final String path) {
+		fDefaultFilesystemPath = (path != null && !path.isEmpty()) ? path : null;
+	}
+	
+	/**
+	 * Sets the file filters for file selection dialogs.
+	 * 
+	 * A filter is a string array with:<br/>
+	 *     [0] = filter, e.g. "*.txt"<br/>
+	 *     [1] = name, e.g. "Text Files"
+	 * 
+	 * @param filters list of filters 
+	 */
+	public void setFileFilters(final List<String[]> filters) {
+		String[] extensions0;
+		String[] names;
+		if (filters != null) {
+			int n = filters.size() + 1;
+			extensions0 = new String[n];
+			names = new String[n];
+			for (int i = 0; i < n - 1; i++) {
+				String[] strings = filters.get(i);
+				extensions0[i] = strings[0];
+				names[i] = strings[1] + " ("+strings[0]+")"; //$NON-NLS-1$ //$NON-NLS-2$
+			}
+			extensions0[n - 1] = "*.*"; //$NON-NLS-1$
+			names[n - 1] = Messages.ChooseResource_AllFiles_name + " (*.*)"; //$NON-NLS-1$
+		}
+		else {
+			extensions0 = null;
+			names = null;
+		}
+		fFileFilters = extensions0;
+		fFileFilterNames = names;
 	}
 	
 	
@@ -252,17 +298,17 @@ public class ResourceInputComposite extends Composite {
 	
 	private void createContent() {
 		Composite content;
-		final GridLayout layout = new GridLayout();
+		final GridLayout layout;
 		if ((fStyle & STYLE_GROUP) == STYLE_GROUP) {
 			this.setLayout(new FillLayout());
 			final Group group = new Group(this, SWT.NONE);
 			group.setText(fResourceLabel + ':');
 			content = group;
-			LayoutUtil.applyGroupDefaults(layout, 2);
+			layout = LayoutUtil.createGroupGrid(2);
 		}
 		else {
 			content = this;
-			LayoutUtil.applyCompositeDefaults(layout, 2);
+			layout = LayoutUtil.createCompositeGrid(2);
 		}
 		layout.horizontalSpacing = 0;
 		content.setLayout(layout);
@@ -488,6 +534,9 @@ public class ResourceInputComposite extends Composite {
 			if (fValidator.isLocalFile()) {
 				path = URIUtil.toPath(fValidator.getFileStore().toURI()).toOSString();
 			}
+			else if (getText().isEmpty()) {
+				path = fDefaultFilesystemPath;
+			}
 		}
 		catch (final Exception e) {
 		}
@@ -501,6 +550,10 @@ public class ResourceInputComposite extends Composite {
 			final FileDialog dialog = new FileDialog(getShell(), (fDoOpen) ? SWT.OPEN: SWT.SAVE);
 			dialog.setText(MessageUtil.removeMnemonics(getTaskLabel()));
 			dialog.setFilterPath(path);
+			if (fFileFilters != null) {
+				dialog.setFilterExtensions(fFileFilters);
+				dialog.setFilterNames(fFileFilterNames);
+			}
 			path = dialog.open();
 		}
 		if (path == null) {

@@ -29,6 +29,7 @@ public class Messages extends NLS {
 	public static String BrowseWorkspace_ForDir_label;
 	
 	public static String ChooseResource_Task_description;
+	public static String ChooseResource_AllFiles_name;
 	public static String ResourceSelectionDialog_title;
 	public static String ResourceSelectionDialog_message;
 	
