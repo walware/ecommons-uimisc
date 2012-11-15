@@ -13,7 +13,7 @@
 		<module>targetplatform</module>
 		
 		<module>../de.walware.ecommons.uimisc</module>
-		<module>../de.walware.ecommons.intable.core</module>
+		<module>../de.walware.ecommons.inatable.core</module>
 	</modules>
 	
 	<properties>
