@@ -436,6 +436,15 @@ public class TableFilterController {
 		}
 	}
 	
+	protected boolean isUpToDate() {
+		if (fUpdate == 0 && fRefreshJob.getState() == Job.NONE) {
+			synchronized (this) {
+				return (!fRefreshJob.fDisplayScheduled);
+			}
+		}
+		return false;
+	}
+	
 	
 	/**
 	 * Get the tree viewer of the receiver.
@@ -465,7 +474,7 @@ public class TableFilterController {
 	
 	public void setInput(final List<?> input) {
 		if (input == null) {
-			throw new NullPointerException("input");
+			throw new NullPointerException("input"); //$NON-NLS-1$
 		}
 		synchronized (this) {
 			fInput = input;
@@ -495,9 +504,9 @@ public class TableFilterController {
 		}
 	}
 	
-	public void setSelection(final Object pkg) {
+	public void setSelection(final Object element) {
 		if (fUpdate == 0 && fRefreshJob.fActiveInput != null) {
-			int idx = fRefreshJob.fActiveInput.indexOf(pkg);
+			int idx = fRefreshJob.fActiveInput.indexOf(element);
 			if (idx < 0) {
 				return;
 			}
@@ -509,6 +518,44 @@ public class TableFilterController {
 			fViewer.getTable().showSelection();
 			fViewer.getTable().notifyListeners(SWT.Selection, new Event());
 		}
+	}
+	
+	public void setSelection(final List<?> elements) {
+		if (fUpdate == 0 && fRefreshJob.fActiveInput != null) {
+			int[] idxs = new int[elements.size()];
+			int i = 0;
+			for (Object element : elements) {
+				int idx = fRefreshJob.fActiveInput.indexOf(element);
+				if (idx < 0) {
+					continue;
+				}
+				idx = fRefreshJob.model2active(idx);
+				if (idx < 0) {
+					continue;
+				}
+				idxs[i++] = idx;
+			}
+			if (i != idxs.length) {
+				idxs = Arrays.copyOf(idxs, i);
+			}
+			fViewer.getTable().setSelection(idxs);
+			fViewer.getTable().showSelection();
+			fViewer.getTable().notifyListeners(SWT.Selection, new Event());
+		}
+	}
+	
+	public void schedule(final Runnable runnable) {
+		if (isUpToDate()) {
+			runnable.run();
+			return;
+		}
+		addListener(new Listener() {
+			@Override
+			public void inputUpdated(boolean newInput) {
+				removeListener(this);
+				runnable.run();
+			}
+		});
 	}
 	
 }
