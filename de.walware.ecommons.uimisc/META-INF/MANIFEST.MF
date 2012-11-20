@@ -31,6 +31,7 @@ Import-Package: com.ibm.icu.text;version="4.4.2",
  org.eclipse.ui.views.navigator;resolution:=optional
 Export-Package: de.walware.ecommons.databinding.jface,
  de.walware.ecommons.preferences.ui,
+ de.walware.ecommons.ts.ui;version="1.1.0",
  de.walware.ecommons.ui,
  de.walware.ecommons.ui.actions,
  de.walware.ecommons.ui.breadcrumb,
