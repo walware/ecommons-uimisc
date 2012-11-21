@@ -11,22 +11,16 @@
 
 package de.walware.ecommons.ui.util;
 
-import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.viewers.IPostSelectionProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 
-import de.walware.ecommons.FastList;
 
-
-public class PostSelectionProviderProxy implements IPostSelectionProvider {
+public class PostSelectionProviderProxy extends AbstractPostSelectionProvider {
 	
 	
-	private final FastList<ISelectionChangedListener> fSelectionListeners = new FastList<ISelectionChangedListener>(ISelectionChangedListener.class);
-	private final FastList<ISelectionChangedListener> fPostSelectionListeners = new FastList<ISelectionChangedListener>(ISelectionChangedListener.class);
-	
-	private final IPostSelectionProvider fSelectionProvider;
+	protected final IPostSelectionProvider fSelectionProvider;
 	
 	
 	public PostSelectionProviderProxy(final IPostSelectionProvider selectionProvider) {
@@ -60,56 +54,8 @@ public class PostSelectionProviderProxy implements IPostSelectionProvider {
 	}
 	
 	
-	@Override
-	public void addSelectionChangedListener(final ISelectionChangedListener listener) {
-		fSelectionListeners.add(listener);
-	}
-	
-	@Override
-	public void removeSelectionChangedListener(final ISelectionChangedListener listener) {
-		fSelectionListeners.remove(listener);
-	}
-	
-	
-	@Override
-	public void addPostSelectionChangedListener(final ISelectionChangedListener listener) {
-		fPostSelectionListeners.add(listener);
-	}
-	
-	@Override
-	public void removePostSelectionChangedListener(final ISelectionChangedListener listener) {
-		fPostSelectionListeners.remove(listener);
-	}
-	
-	
 	protected ISelection getSelection(final ISelection originalSelection) {
 		return originalSelection;
-	}
-	
-	protected void fireSelectionChanged(final SelectionChangedEvent event) {
-		final ISelectionChangedListener[] listeners = fSelectionListeners.toArray();
-		for (int i = 0; i < listeners.length; i++) {
-			final ISelectionChangedListener l = listeners[i];
-			SafeRunnable.run(new SafeRunnable() {
-				@Override
-				public void run() {
-					l.selectionChanged(event);
-				}
-			});
-		}
-	}
-	
-	protected void firePostSelectionChanged(final SelectionChangedEvent event) {
-		final ISelectionChangedListener[] listeners = fPostSelectionListeners.toArray();
-		for (int i = 0; i < listeners.length; i++) {
-			final ISelectionChangedListener l = listeners[i];
-			SafeRunnable.run(new SafeRunnable() {
-				@Override
-				public void run() {
-					l.selectionChanged(event);
-				}
-			});
-		}
 	}
 	
 }
