@@ -32,7 +32,7 @@ import de.walware.ecommons.ui.SharedUIResources;
 /**
  * 
  */
-public class DatabindingSupport {
+public class DataBindingSupport {
 	
 	
 	private Realm fRealm;
@@ -41,9 +41,9 @@ public class DatabindingSupport {
 	private DirtyTracker fTracker;
 	
 	
-	public DatabindingSupport(final Control rootControl) {
+	public DataBindingSupport(final Control rootControl) {
 		fRealm = Realm.getDefault();
-		fDbc = new DataBindingContext(fRealm);
+		fDbc = createContext(fRealm);
 		
 		rootControl.addDisposeListener(new DisposeListener() {
 			@Override
@@ -53,6 +53,10 @@ public class DatabindingSupport {
 		});
 	}
 	
+	
+	protected DataBindingContext createContext(Realm realm) {
+		return new DataBindingContext(realm);
+	}
 	
 	public DataBindingContext getContext() {
 		return fDbc;

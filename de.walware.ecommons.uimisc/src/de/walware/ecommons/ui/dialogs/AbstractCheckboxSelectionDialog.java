@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 
-import de.walware.ecommons.databinding.jface.DatabindingSupport;
+import de.walware.ecommons.databinding.jface.DataBindingSupport;
 import de.walware.ecommons.ui.util.LayoutUtil;
 
 
@@ -40,7 +40,7 @@ public abstract class AbstractCheckboxSelectionDialog extends ExtStatusDialog {
 	
 	private CheckboxTableViewer fViewer;
 	
-	private WritableSet fCheckedValue;
+	private final WritableSet fCheckedValue;
 	
 	
 	/**
@@ -67,12 +67,12 @@ public abstract class AbstractCheckboxSelectionDialog extends ExtStatusDialog {
 		return fViewer;
 	}
 	
-	protected Composite createCheckboxComposite(Composite parent, String message) {
+	protected Composite createCheckboxComposite(final Composite parent, final String message) {
 		final Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(LayoutUtil.applyCompositeDefaults(new GridLayout(), 3));
 		
 		if (message != null)
-		{	Label label = new Label(composite, SWT.NONE);
+		{	final Label label = new Label(composite, SWT.NONE);
 			label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 3, 1));
 			label.setText(message);
 		}
@@ -85,7 +85,7 @@ public abstract class AbstractCheckboxSelectionDialog extends ExtStatusDialog {
 			fViewer = new CheckboxTableViewer(table);
 			fViewer.addCheckStateListener(new ICheckStateListener() {
 				@Override
-				public void checkStateChanged(CheckStateChangedEvent event) {
+				public void checkStateChanged(final CheckStateChangedEvent event) {
 					updateCheckedStatus();
 				}
 			});
@@ -94,26 +94,26 @@ public abstract class AbstractCheckboxSelectionDialog extends ExtStatusDialog {
 		}
 		
 		{	final Button button = new Button(composite, SWT.PUSH);
-			GridData gd = new GridData(SWT.FILL, SWT.CENTER, false, false);
+			final GridData gd = new GridData(SWT.FILL, SWT.CENTER, false, false);
 			gd.widthHint = LayoutUtil.hintWidth(button);
 			button.setLayoutData(gd);
 			button.setText("Select All");
 			button.addSelectionListener(new SelectionAdapter() {
 				@Override
-				public void widgetSelected(SelectionEvent e) {
+				public void widgetSelected(final SelectionEvent e) {
 					getCheckBoxTableViewer().setAllChecked(true);
 					updateCheckedStatus();
 				}
 			});
 		}
 		{	final Button button = new Button(composite, SWT.PUSH);
-			GridData gd = new GridData(SWT.FILL, SWT.CENTER, false, false);
+			final GridData gd = new GridData(SWT.FILL, SWT.CENTER, false, false);
 			gd.widthHint = LayoutUtil.hintWidth(button);
 			button.setLayoutData(gd);
 			button.setText("Deselect All");
 			button.addSelectionListener(new SelectionAdapter() {
 				@Override
-				public void widgetSelected(SelectionEvent e) {
+				public void widgetSelected(final SelectionEvent e) {
 					getCheckBoxTableViewer().setAllChecked(false);
 					updateCheckedStatus();
 				}
@@ -125,8 +125,8 @@ public abstract class AbstractCheckboxSelectionDialog extends ExtStatusDialog {
 	protected abstract void configureViewer(CheckboxTableViewer viewer);
 	
 	@Override
-	protected void addBindings(final DatabindingSupport databinding) {
-		databinding.getContext().bindSet(ViewersObservables.observeCheckedElements(fViewer, null),
+	protected void addBindings(final DataBindingSupport db) {
+		db.getContext().bindSet(ViewersObservables.observeCheckedElements(fViewer, null),
 				fCheckedValue);
 	}
 	

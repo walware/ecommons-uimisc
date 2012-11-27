@@ -20,8 +20,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.core.databinding.AggregateValidationStatus;
-import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.databinding.observable.masterdetail.IObservableFactory;
 import org.eclipse.core.databinding.observable.value.AbstractObservableValue;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
@@ -37,10 +35,14 @@ import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.preferences.IWorkbenchPreferenceContainer;
 import org.eclipse.ui.preferences.IWorkingCopyManager;
 import org.osgi.service.prefs.BackingStoreException;
 
 import de.walware.ecommons.IStatusChangeListener;
+import de.walware.ecommons.databinding.jface.DataBindingSupport;
 import de.walware.ecommons.io.BuildUtil;
 import de.walware.ecommons.preferences.IPreferenceAccess;
 import de.walware.ecommons.preferences.Preference;
@@ -53,7 +55,7 @@ import de.walware.ecommons.preferences.SettingsChangeNotifier;
  * <li>Connected databinding context:<ul>
  *     <li>use {@link #initBindings()} to create dbc</li>
  *     <li>use {@link #createObservable(Object)} to create observables for model</li>
- *     <li>override {@link #addBindings(DataBindingContext, Realm)}) to register bindings</li>
+ *     <li>override {@link #addBindings(DataBindingSupport)}) to register bindings</li>
  *   </ul></li>
  *   <li>optional project scope</li>
  *   <li>change settings groups ({@link SettingsChangeNotifier})</li>
@@ -366,8 +368,10 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 	protected IProject fProject;
 	protected PreferenceManager fPreferenceManager;
 	
-	private DataBindingContext fDbc;
+	private DataBindingSupport fDataBinding;
 	private IStatusChangeListener fStatusListener;
+	
+	private Composite fPageComposite;
 	
 	
 	protected ManagedConfigurationBlock(final IProject project, final IStatusChangeListener statusListener) {
@@ -389,6 +393,13 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 		return fProject;
 	}
 	
+	@Override
+	public void createContents(final Composite pageComposite,
+			final IWorkbenchPreferenceContainer container, final IPreferenceStore preferenceStore) {
+		fPageComposite = pageComposite;
+		super.createContents(pageComposite, container, preferenceStore);
+	}
+	
 	/**
 	 * initialize preference management
 	 * 
@@ -400,11 +411,11 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 	}
 	
 	protected void initBindings() {
-		final Realm realm = Realm.getDefault();
-		fDbc = new DataBindingContext(realm);
-		addBindings(fDbc, realm);
+		fDataBinding = new DataBindingSupport(fPageComposite);
+		addBindings(fDataBinding);
 		
-		final AggregateValidationStatus validationStatus = new AggregateValidationStatus(fDbc, AggregateValidationStatus.MAX_SEVERITY);
+		final AggregateValidationStatus validationStatus = new AggregateValidationStatus(
+				fDataBinding.getContext(), AggregateValidationStatus.MAX_SEVERITY);
 		validationStatus.addValueChangeListener(new IValueChangeListener() {
 			@Override
 			public void handleValueChange(final ValueChangeEvent event) {
@@ -425,11 +436,11 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 //		};
 	}
 	
-	protected DataBindingContext getDbc() {
-		return fDbc;
+	protected DataBindingSupport getDataBinding() {
+		return fDataBinding;
 	}
 	
-	protected void addBindings(final DataBindingContext dbc, final Realm realm) {
+	protected void addBindings(final DataBindingSupport db) {
 	}
 	
 	/**
@@ -464,16 +475,6 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 		}
 	}
 	
-	@Override
-	public void dispose() {
-		super.dispose();
-		
-		if (fDbc != null) {
-			fDbc.dispose();
-			fDbc = null;
-		}
-	}
-	
 	
 /* */
 	
@@ -499,8 +500,8 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 	}
 	
 	protected void updateControls() {
-		if (fDbc != null) {
-			fDbc.updateTargets();
+		if (fDataBinding != null) {
+			fDataBinding.getContext().updateTargets();
 		}
 	}
 	

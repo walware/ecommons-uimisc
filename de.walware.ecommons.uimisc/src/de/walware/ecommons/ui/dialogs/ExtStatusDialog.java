@@ -35,7 +35,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
 import de.walware.ecommons.IStatusChangeListener;
-import de.walware.ecommons.databinding.jface.DatabindingSupport;
+import de.walware.ecommons.databinding.jface.DataBindingSupport;
 import de.walware.ecommons.ui.util.LayoutUtil;
 
 
@@ -64,6 +64,8 @@ public class ExtStatusDialog extends StatusDialog implements IRunnableContext {
 	private ControlEnableState fProgressLastContentEnableState;
 	private Control[] fProgressLastButtonControls;
 	private boolean[] fProgressLastButtonEnableStates;
+	
+	protected DataBindingSupport fDataBinding;
 	
 	
 	/**
@@ -108,12 +110,17 @@ public class ExtStatusDialog extends StatusDialog implements IRunnableContext {
 	}
 	
 	protected void initBindings() {
-		final DatabindingSupport databinding = new DatabindingSupport(getDialogArea());
+		final DataBindingSupport databinding = new DataBindingSupport(getDialogArea());
 		addBindings(databinding);
 		databinding.installStatusListener(new StatusUpdater());
+		fDataBinding = databinding;
 	}
 	
-	protected void addBindings(final DatabindingSupport databinding) {
+	protected void addBindings(final DataBindingSupport db) {
+	}
+	
+	protected DataBindingSupport getDataBinding() {
+		return fDataBinding;
 	}
 	
 	@Override
