@@ -9,28 +9,12 @@
  *     Stephan Wahlbrink - initial API and implementation
  *******************************************************************************/
 
-package de.walware.ecommons.ui.util;
-
-import org.eclipse.jface.viewers.ITreeSelection;
-import org.eclipse.jface.viewers.TreePath;
+package de.walware.ecommons.ui.content;
 
 
-public class TreeSelectionProxy extends StructuredSelectionProxy implements ITreeSelection {
+public interface IElementSourceProvider {
 	
 	
-	public TreeSelectionProxy(final ITreeSelection selection) {
-		super(selection);
-	}
-	
-	
-	@Override
-	public TreePath[] getPathsFor(final Object element) {
-		return ((ITreeSelection) fSelection).getPathsFor(element);
-	}
-	
-	@Override
-	public TreePath[] getPaths() {
-		return ((ITreeSelection) fSelection).getPaths();
-	}
+	Object getElementSource();
 	
 }

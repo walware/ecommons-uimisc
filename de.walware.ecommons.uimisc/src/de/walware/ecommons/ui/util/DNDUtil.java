@@ -21,8 +21,6 @@ import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Control;
 
 import de.walware.ecommons.ui.internal.Messages;
@@ -103,14 +101,6 @@ public class DNDUtil {
 		for (final DropTargetListener listener : listeners) {
 			dropTarget.addDropListener(listener);
 		}
-		
-		control.addDisposeListener(new DisposeListener() {
-			@Override
-			public void widgetDisposed(final DisposeEvent e) {
-				e.widget.removeDisposeListener(this);
-				dropTarget.dispose();
-			}
-		});
 	}
 	
 	

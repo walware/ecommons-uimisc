@@ -7,6 +7,7 @@
  * 
  * Contributors:
  *     IBM Corporation - initial API and implementation (TextCellEditor)
+ *     Tom Eicher <eclipse@tom.eicher.name> - fix minimum width
  *     Stephan Wahlbrink - initial API and implementation
  *******************************************************************************/
 
@@ -188,9 +189,6 @@ public abstract class ExtensibleTextCellEditor extends CellEditor {
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * Method declared on CellEditor.
-	 */
 	@Override
 	protected Control createControl(final Composite parent) {
 		final Control control = createCustomControl(parent);
@@ -272,9 +270,6 @@ public abstract class ExtensibleTextCellEditor extends CellEditor {
 		return fText.getText();
 	}
 	
-	/* (non-Javadoc)
-	 * Method declared on CellEditor.
-	 */
 	@Override
 	protected void doSetFocus() {
 		if (fText != null) {
@@ -318,10 +313,6 @@ public abstract class ExtensibleTextCellEditor extends CellEditor {
 		final Object typedValue = value;
 		final boolean oldValidState = isValueValid();
 		final boolean newValidState = isCorrect(typedValue);
-		if (typedValue == null && newValidState) {
-			Assert.isTrue(false,
-					"Validator isn't limiting the cell editor's type range");//$NON-NLS-1$
-		}
 		if (!newValidState) {
 			// try to insert the current value into the error message.
 			setErrorMessage(MessageFormat.format(getErrorMessage(),
@@ -336,7 +327,9 @@ public abstract class ExtensibleTextCellEditor extends CellEditor {
 	 */
 	@Override
 	public LayoutData getLayoutData() {
-		return new LayoutData();
+		LayoutData layoutData = new LayoutData();
+		layoutData.minimumWidth = 10;
+		return layoutData;
 	}
 	
 	/**
@@ -380,7 +373,7 @@ public abstract class ExtensibleTextCellEditor extends CellEditor {
 		}
 		return fText.getSelectionCount() > 0;
 	}
-
+	
 	/**
 	 * The <code>TextCellEditor</code>  implementation of this 
 	 * <code>CellEditor</code> method returns <code>true</code> if 

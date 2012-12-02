@@ -211,7 +211,14 @@ public class LayoutUtil {
 	}
 	
 	public static int hintWidth(final Table table, final int numChars) {
-		table.setFont(JFaceResources.getFontRegistry().get(JFaceResources.DIALOG_FONT));
+		return hintWidth(table, JFaceResources.DIALOG_FONT, false, numChars);
+	}
+	
+	public static int hintWidth(final Table table, String fontName,
+			boolean icon, final int numChars) {
+		if (fontName != null) {
+			table.setFont(JFaceResources.getFontRegistry().get(fontName));
+		}
 		final PixelConverter converter = new PixelConverter(table);
 		int width = converter.convertWidthInCharsToPixels(numChars);
 		{	final ScrollBar scrollBar = table.getVerticalBar();
@@ -221,6 +228,9 @@ public class LayoutUtil {
 		}
 		if ((table.getStyle() & SWT.CHECK) == SWT.CHECK) {
 			width += 16 + converter.convertHorizontalDLUsToPixels(4) +  converter.convertWidthInCharsToPixels(1);
+		}
+		if (icon) {
+			width += 16 + converter.convertHorizontalDLUsToPixels(4);
 		}
 		return width;
 	}

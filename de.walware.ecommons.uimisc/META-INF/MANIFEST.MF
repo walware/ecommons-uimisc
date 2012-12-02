@@ -40,4 +40,5 @@ Export-Package: de.walware.ecommons.databinding.jface,
  de.walware.ecommons.ui.dialogs,
  de.walware.ecommons.ui.mpbv,
  de.walware.ecommons.ui.util,
- de.walware.ecommons.ui.workbench
+ de.walware.ecommons.ui.workbench,
+ de.walware.ecommons.workbench.ui

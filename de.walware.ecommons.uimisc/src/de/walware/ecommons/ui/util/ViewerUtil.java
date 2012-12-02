@@ -13,6 +13,7 @@ package de.walware.ecommons.ui.util;
 
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
+import org.eclipse.jface.util.Policy;
 import org.eclipse.jface.viewers.CellNavigationStrategy;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLayoutData;
@@ -24,6 +25,7 @@ import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.FocusCellOwnerDrawHighlighter;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -36,6 +38,7 @@ import org.eclipse.jface.viewers.TreeViewerEditor;
 import org.eclipse.jface.viewers.TreeViewerFocusCellManager;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.jface.viewers.ViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.KeyEvent;
@@ -46,10 +49,13 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Scrollable;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 
 import de.walware.ecommons.ui.components.SearchText;
 
@@ -193,34 +199,19 @@ public class ViewerUtil {
 		
 		public TableViewerColumn addColumn(final String title, final int style, final ColumnLayoutData layoutData) {
 			final TableViewerColumn column = new TableViewerColumn(viewer, style);
-			column.getColumn().setText(title);
+			if (title != null) {
+				column.getColumn().setText(title);
+			}
 			layout.setColumnData(column.getColumn(), layoutData);
 			return column;
 		}
 		
-	}
-	
-	public static class CheckTableComposite extends Composite {
-		
-		public CheckboxTableViewer viewer;
-		public Table table;
-		public TableColumnLayout layout;
-		
-		public CheckTableComposite(final Composite parent, final int tableStyle) {
-			super(parent, SWT.NONE);
-			
-			layout = new TableColumnLayout();
-			setLayout(layout);
-			table = new Table(this, tableStyle | SWT.CHECK);
-			viewer = new CheckboxTableViewer(table);
-		}
-		
-		
-		public TableViewerColumn addColumn(final String title, final int style, final ColumnLayoutData layoutData) {
-			final TableViewerColumn column = new TableViewerColumn(viewer, style);
-			column.getColumn().setText(title);
-			layout.setColumnData(column.getColumn(), layoutData);
-			return column;
+		public ViewerColumn getViewerColumn(final int index) {
+			final TableColumn column = table.getColumn(index);
+			if (column == null) {
+				return null;
+			}
+			return (TableViewerColumn) column.getData(Policy.JFACE + ".columnViewer"); //$NON-NLS-1$
 		}
 		
 	}
@@ -246,6 +237,14 @@ public class ViewerUtil {
 			column.getColumn().setText(title);
 			layout.setColumnData(column.getColumn(), layoutData);
 			return column;
+		}
+		
+		public ViewerColumn getViewerColumn(final int index) {
+			final TableColumn column = table.getColumn(index);
+			if (column == null) {
+				return null;
+			}
+			return (TableViewerColumn) column.getData(Policy.JFACE + ".columnViewer"); //$NON-NLS-1$
 		}
 		
 	}
@@ -279,6 +278,14 @@ public class ViewerUtil {
 			return column;
 		}
 		
+		public TreeViewerColumn getViewerColumn(final int index) {
+			final TreeColumn column = tree.getColumn(index);
+			if (column == null) {
+				return null;
+			}
+			return (TreeViewerColumn) column.getData(Policy.JFACE + ".columnViewer"); //$NON-NLS-1$
+		}
+		
 	}
 	
 	public static void installDefaultEditBehaviour(final TableViewer tableViewer) {
@@ -286,7 +293,7 @@ public class ViewerUtil {
 			@Override
 			public ViewerCell findSelectedCell(final ColumnViewer viewer, final ViewerCell currentSelectedCell, final Event event) {
 				final ViewerCell cell = super.findSelectedCell(viewer, currentSelectedCell, event);
-				if(cell != null ) {
+				if (cell != null ) {
 					tableViewer.getTable().showColumn(tableViewer.getTable().getColumn(cell.getColumnIndex()));
 				}
 				return cell;
@@ -300,12 +307,31 @@ public class ViewerUtil {
 					| ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR | ColumnViewerEditor.KEYBOARD_ACTIVATION);
 	}
 	
+	public static void installDefaultEditBehaviour2(final TableViewer tableViewer) {
+		Listener listener = new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				switch (event.type) {
+				case SWT.KeyDown:
+					if (event.keyCode == SWT.CR || event.keyCode == SWT.KEYPAD_CR || event.keyCode == SWT.F2) {
+						final IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+						if (selection.size() >= 1) {
+							tableViewer.editElement(selection.getFirstElement(), 0);
+						}
+					}
+					break;
+				}
+			}
+		};
+		tableViewer.getControl().addListener(SWT.KeyDown, listener);
+	}
+	
 	public static void installDefaultEditBehaviour(final TreeViewer treeViewer) {
 		final CellNavigationStrategy naviStrat = new CellNavigationStrategy() {
 			@Override
 			public ViewerCell findSelectedCell(final ColumnViewer viewer, final ViewerCell currentSelectedCell, final Event event) {
 				final ViewerCell cell = super.findSelectedCell(viewer, currentSelectedCell, event);
-				if(cell != null ) {
+				if (cell != null ) {
 					treeViewer.getTree().showColumn(treeViewer.getTree().getColumn(cell.getColumnIndex()));
 				}
 				return cell;
@@ -380,6 +406,21 @@ public class ViewerUtil {
 				}
 			});
 		}
+	}
+	
+	
+	public static void setSelectionProvider(final Control control, final ISelectionProvider selectionProvider) {
+		control.setData(Policy.JFACE + ".selectionProvider", selectionProvider); //$NON-NLS-1$
+	}
+	
+	public static ISelectionProvider getSelectionProvider(final Control control) {
+		if (control != null) {
+			Object data = control.getData(Policy.JFACE + ".selectionProvider"); //$NON-NLS-1$
+			if (data instanceof ISelectionProvider) {
+				return (ISelectionProvider) data;
+			}
+		}
+		return null;
 	}
 	
 	
