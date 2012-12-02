@@ -33,6 +33,8 @@ public class ImageDescriptorRegistry implements IDisposable {
 	
 	private final Display fDisplay;
 	
+	private boolean fDisposed;
+	
 	
 	/**
 	 * Creates a new image descriptor registry for the current or default display, respectively.
@@ -69,7 +71,7 @@ public class ImageDescriptorRegistry implements IDisposable {
 		}
 		synchronized (fRegistry) {
 			Image result = fRegistry.get(descriptor);
-			if (result == null) {
+			if (result == null && !fDisposed) {
 				result = descriptor.createImage();
 				if (result != null) {
 					fRegistry.put(descriptor, result);
@@ -98,6 +100,7 @@ public class ImageDescriptorRegistry implements IDisposable {
 	 */	
 	public void dispose() {
 		synchronized (fRegistry) {
+			fDisposed = true;
 			for (final Image image : fRegistry.values()) {
 				image.dispose();
 			}

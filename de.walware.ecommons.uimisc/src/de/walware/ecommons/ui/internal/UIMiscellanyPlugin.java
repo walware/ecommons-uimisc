@@ -32,6 +32,7 @@ import de.walware.ecommons.ICommonStatusConstants;
 import de.walware.ecommons.IDisposable;
 import de.walware.ecommons.ui.ColorManager;
 import de.walware.ecommons.ui.SharedUIResources;
+import de.walware.ecommons.ui.util.ImageDescriptorRegistry;
 import de.walware.ecommons.ui.util.ImageRegistryUtil;
 import de.walware.ecommons.ui.util.UIAccess;
 
@@ -60,7 +61,7 @@ public class UIMiscellanyPlugin extends AbstractUIPlugin {
 	private final List<IDisposable> fDisposables = new ArrayList<IDisposable>();
 	
 	private ColorManager fColorManager;
-	private ImageRegistry fImageRegistry;
+	private ImageDescriptorRegistry fImageDescriptorRegistry;
 	
 	
 	/**
@@ -88,14 +89,12 @@ public class UIMiscellanyPlugin extends AbstractUIPlugin {
 	public void stop(final BundleContext context) throws Exception {
 		try {
 			final ColorManager colorManager;
-			final ImageRegistry imageRegistry;
 			synchronized (this) {
 				fStarted = false;
 				
 				colorManager = fColorManager;
 				fColorManager = null;
-				imageRegistry = fImageRegistry;
-				fImageRegistry = null;
+				fImageDescriptorRegistry = null;
 			}
 			
 			final Display display = UIAccess.getDisplay();
@@ -103,16 +102,9 @@ public class UIMiscellanyPlugin extends AbstractUIPlugin {
 				display.asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						
 						if (colorManager != null) {
 							try {
 								colorManager.dispose();
-							}
-							catch (final Exception e) {}
-						}
-						if (imageRegistry != null) {
-							try {
-								imageRegistry.dispose();
 							}
 							catch (final Exception e) {}
 						}
@@ -156,7 +148,6 @@ public class UIMiscellanyPlugin extends AbstractUIPlugin {
 		if (!fStarted) {
 			throw new IllegalStateException("Plug-in is not started.");
 		}
-		fImageRegistry = reg;
 		final ImageRegistryUtil util = new ImageRegistryUtil(this);
 		
 		util.register(SharedUIResources.OBJ_USER_IMAGE_ID, ImageRegistryUtil.T_OBJ, "user.png"); //$NON-NLS-1$
@@ -371,6 +362,17 @@ public class UIMiscellanyPlugin extends AbstractUIPlugin {
 			fColorManager = new ColorManager();
 		}
 		return fColorManager;
+	}
+	
+	public synchronized ImageDescriptorRegistry getImageDescriptorRegistry() {
+		if (fImageDescriptorRegistry == null) {
+			if (!fStarted) {
+				throw new IllegalStateException("Plug-in is not started.");
+			}
+			fImageDescriptorRegistry = new ImageDescriptorRegistry();
+			fDisposables.add(fImageDescriptorRegistry);
+		}
+		return fImageDescriptorRegistry;
 	}
 	
 }

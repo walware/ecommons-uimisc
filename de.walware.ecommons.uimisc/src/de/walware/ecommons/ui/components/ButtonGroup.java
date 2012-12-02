@@ -29,6 +29,8 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -73,7 +75,7 @@ public class ButtonGroup<ItemType> extends Composite {
 	}
 	
 	
-	public static class SelectionHandler extends SelectionAdapter {
+	public static class SelectionHandler extends SelectionAdapter implements DisposeListener {
 		
 		
 		private ButtonGroup<?> fGroup;
@@ -87,6 +89,10 @@ public class ButtonGroup<ItemType> extends Composite {
 		
 		protected ButtonGroup<?> getGroup() {
 			return fGroup;
+		}
+		
+		protected Control getControl() {
+			return fControl;
 		}
 		
 		protected void setEnabled(final boolean enabled) {
@@ -107,6 +113,10 @@ public class ButtonGroup<ItemType> extends Composite {
 		
 		public boolean run(final IStructuredSelection selection) {
 			return false;
+		}
+		
+		@Override
+		public void widgetDisposed(final DisposeEvent e) {
 		}
 		
 	}
@@ -436,6 +446,7 @@ public class ButtonGroup<ItemType> extends Composite {
 		handler.fControl = control;
 		addLayoutData(control);
 		
+		control.addDisposeListener(handler);
 		if (control instanceof Button) {
 			((Button) control).addSelectionListener(handler);
 		}

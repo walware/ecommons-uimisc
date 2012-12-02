@@ -27,10 +27,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.internal.IWorkbenchGraphicConstants;
 
 import de.walware.ecommons.FastList;
+import de.walware.ecommons.ui.internal.AccessibleArrowImage;
 import de.walware.ecommons.ui.util.MenuUtil;
 
 
@@ -67,8 +66,9 @@ public class DropDownButton extends Composite {
 	
 	private void create(final int style) {
 		fDownButton = new Button(this, SWT.PUSH | style);
-		fDownButton.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(
-				IWorkbenchGraphicConstants.IMG_LCL_BUTTON_MENU ));
+		final AccessibleArrowImage image = new AccessibleArrowImage(SWT.DOWN, SWT.DEFAULT,
+				fDownButton.getForeground().getRGB(), fDownButton.getBackground().getRGB() );
+		fDownButton.setImage(image.createImage());
 		fDownButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {

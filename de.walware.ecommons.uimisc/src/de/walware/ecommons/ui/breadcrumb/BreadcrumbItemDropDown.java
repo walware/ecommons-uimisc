@@ -18,7 +18,6 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
-import org.eclipse.jface.resource.CompositeImageDescriptor;
 import org.eclipse.jface.util.Geometry;
 import org.eclipse.jface.util.OpenStrategy;
 import org.eclipse.jface.viewers.IOpenListener;
@@ -45,12 +44,7 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.events.ShellListener;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -67,6 +61,8 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 
+import de.walware.ecommons.ui.internal.AccessibleArrowImage;
+
 
 /**
  * The part of the breadcrumb item with the drop down menu.
@@ -75,95 +71,10 @@ class BreadcrumbItemDropDown {
 	
 	/**
 	 * Tells whether this class is in debug mode.
-	 *
-	 * @since 3.5
 	 */
 	private static boolean DEBUG= "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.jdt.ui/debug/BreadcrumbItemDropDown")); //$NON-NLS-1$//$NON-NLS-2$
 	
 	private static final boolean IS_MAC_WORKAROUND= "carbon".equals(SWT.getPlatform()); //$NON-NLS-1$
-	
-	/**
-	 * An arrow image descriptor. The images color is related to the list
-	 * fore- and background color. This makes the arrow visible even in high contrast
-	 * mode. If <code>ltr</code> is true the arrow points to the right, otherwise it
-	 * points to the left.
-	 */
-	private final class AccessibelArrowImage extends CompositeImageDescriptor {
-		
-		private final static int ARROW_SIZE= 5;
-		
-		private final boolean fLTR;
-		
-		public AccessibelArrowImage(final boolean ltr) {
-			fLTR= ltr;
-		}
-		
-		@Override
-		protected void drawCompositeImage(final int width, final int height) {
-			final Display display= fParentComposite.getDisplay();
-			
-			final Image image= new Image(display, ARROW_SIZE, ARROW_SIZE * 2);
-			
-			final GC gc= new GC(image);
-			
-			final Color triangle= createColor(SWT.COLOR_LIST_FOREGROUND, SWT.COLOR_LIST_BACKGROUND, 20, display);
-			final Color aliasing= createColor(SWT.COLOR_LIST_FOREGROUND, SWT.COLOR_LIST_BACKGROUND, 30, display);
-			gc.setBackground(triangle);
-			
-			if (fLTR) {
-				gc.fillPolygon(new int[] { mirror(0), 0, mirror(ARROW_SIZE), ARROW_SIZE, mirror(0), ARROW_SIZE * 2 });
-			} else {
-				gc.fillPolygon(new int[] { ARROW_SIZE, 0, 0, ARROW_SIZE, ARROW_SIZE, ARROW_SIZE * 2 });
-			}
-			
-			gc.setForeground(aliasing);
-			gc.drawLine(mirror(0), 1, mirror(ARROW_SIZE - 1), ARROW_SIZE);
-			gc.drawLine(mirror(ARROW_SIZE - 1), ARROW_SIZE, mirror(0), ARROW_SIZE * 2 - 1);
-			
-			gc.dispose();
-			triangle.dispose();
-			aliasing.dispose();
-			
-			final ImageData imageData= image.getImageData();
-			for (int y= 1; y < ARROW_SIZE; y++) {
-				for (int x= 0; x < y; x++) {
-					imageData.setAlpha(mirror(x), y, 255);
-				}
-			}
-			for (int y= 0; y < ARROW_SIZE; y++) {
-				for (int x= 0; x <= y; x++) {
-					imageData.setAlpha(mirror(x), ARROW_SIZE * 2 - y - 1, 255);
-				}
-			}
-			
-			final int offset= fLTR ? 0 : -1;
-			drawImage(imageData, (width / 2) - (ARROW_SIZE / 2) + offset, (height / 2) - ARROW_SIZE - 1);
-			
-			image.dispose();
-		}
-		
-		private int mirror(final int x) {
-			if (fLTR) {
-				return x;
-			}
-			
-			return ARROW_SIZE - x - 1;
-		}
-		
-		@Override
-		protected Point getSize() {
-			return new Point(10, 16);
-		}
-		
-		private Color createColor(final int color1, final int color2, final int ratio, final Display display) {
-			final RGB rgb1= display.getSystemColor(color1).getRGB();
-			final RGB rgb2= display.getSystemColor(color2).getRGB();
-			
-			final RGB blend= BreadcrumbViewer.blend(rgb2, rgb1, ratio);
-			
-			return new Color(display, blend);
-		}
-	}
 	
 	private static final int DROP_DOWN_HIGHT= 300;
 	private static final int DROP_DOWN_WIDTH= 500;
@@ -215,7 +126,10 @@ class BreadcrumbItemDropDown {
 			}
 		};
 		
-		showDropDownMenuAction.setImageDescriptor(new AccessibelArrowImage(isLTR()));
+		showDropDownMenuAction.setImageDescriptor(new AccessibleArrowImage(
+				isLTR() ? SWT.RIGHT : SWT.LEFT, AccessibleArrowImage.DEFAULT_SIZE, 
+				composite.getDisplay().getSystemColor(SWT.COLOR_LIST_FOREGROUND).getRGB(),
+				composite.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND).getRGB() ));
 		showDropDownMenuAction.setToolTipText(BreadcrumbMessages.BreadcrumbItemDropDown_showDropDownMenu_action_tooltip);
 		manager.add(showDropDownMenuAction);
 		
