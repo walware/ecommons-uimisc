@@ -13,47 +13,43 @@ package de.walware.ecommons.databinding.jface;
 
 import org.eclipse.core.databinding.observable.Diffs;
 import org.eclipse.core.databinding.observable.Realm;
+import org.eclipse.core.databinding.observable.value.ValueDiff;
 
-import de.walware.ecommons.ui.components.IIntValueListener;
-import de.walware.ecommons.ui.components.IIntValueWidget;
-import de.walware.ecommons.ui.components.IntValueEvent;
+import de.walware.ecommons.ui.components.IObjValueListener;
+import de.walware.ecommons.ui.components.IObjValueWidget;
+import de.walware.ecommons.ui.components.ObjValueEvent;
 
 
-public class IntValueObservable extends AbstractSWTObservableValue implements IIntValueListener {
+public class ObjValueObservable<T> extends AbstractSWTObservableValue implements IObjValueListener<T> {
 	
 	
-	private final IIntValueWidget fWidget;
+	private final IObjValueWidget<T> fWidget;
 	
 	private final int fValueIdx;
 	
 	
-	public IntValueObservable(final IIntValueWidget widget, final int idx) {
-		this(Realm.getDefault(), widget, idx);
+	public ObjValueObservable(final Realm realm, final IObjValueWidget<T> widget) {
+		this(realm, widget, 0);
 	}
 	
-	public IntValueObservable(final Realm realm, final IIntValueWidget widget, final int idx) {
+	public ObjValueObservable(final Realm realm, final IObjValueWidget<T> widget, final int idx) {
 		super(realm, widget.getControl());
 		
 		fWidget = widget;
+		
 		fValueIdx = idx;
 		
 		fWidget.addValueListener(this);
 	}
 	
 	
-	@Override
 	public Object getValueType() {
-		return Integer.TYPE;
+		return fWidget.getValueType();
 	}
 	
 	@Override
 	protected void doSetValue(final Object value) {
-		final int newValue = ((Integer) value).intValue();
-		final int oldValue = fWidget.getValue(fValueIdx);
-		if (newValue != oldValue) {
-			fWidget.setValue(fValueIdx, newValue);
-			fireValueChange(Diffs.createValueDiff(oldValue, newValue));
-		}
+		fWidget.setValue(fValueIdx,(T) value);
 	}
 	
 	@Override
@@ -62,12 +58,16 @@ public class IntValueObservable extends AbstractSWTObservableValue implements II
 	}
 	
 	@Override
-	public void valueAboutToChange(final IntValueEvent event) {
+	public void valueAboutToChange(final ObjValueEvent<T> event) {
 	}
 	
 	@Override
-	public void valueChanged(final IntValueEvent event) {
-		setValue(event.newValue);
+	public void valueChanged(final ObjValueEvent<T> event) {
+		if (event.valueIdx != fValueIdx) {
+			return;
+		}
+		final ValueDiff diff = Diffs.createValueDiff(event.oldValue, event.newValue);
+		fireValueChange(diff);
 	}
 	
 }

@@ -45,7 +45,7 @@ import de.walware.ecommons.ui.internal.UIMiscellanyPlugin;
  * 
  * By default it has two knobs to adjust an interval (range).
  */
-public class WaScale extends Composite {
+public class WaScale extends Composite implements IIntValueWidget {
 	
 	
 	private static class StyleData {
@@ -415,6 +415,11 @@ public class WaScale extends Composite {
 			}
 			return gDefaultStyleData;
 		}
+	}
+	
+	@Override
+	public Control getControl() {
+		return this;
 	}
 	
 	protected void initKnobs() {
