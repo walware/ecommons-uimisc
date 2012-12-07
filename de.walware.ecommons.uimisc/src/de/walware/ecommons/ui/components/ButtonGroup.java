@@ -36,7 +36,6 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -352,7 +351,7 @@ public class ButtonGroup<ItemType> extends Composite {
 		@Override
 		protected Object getElement(final IStructuredSelection selection) {
 			final Object element = super.getElement(selection);
-			return (element != null && getGroup().getDataAdapter().isModifyAllowed(element)) ?
+			return (element != null && getGroup().getDataAdapter().isMoveAllowed(element, fDirection)) ?
 					element : null;
 		}
 		
@@ -417,12 +416,12 @@ public class ButtonGroup<ItemType> extends Composite {
 	
 	public ButtonGroup(final Composite parent) {
 		super(parent, SWT.NONE);
-		setLayout(LayoutUtil.applyCompositeDefaults(new GridLayout(), 1));
+		setLayout(LayoutUtil.createCompositeGrid(1));
 	}
 	
 	public ButtonGroup(final Composite parent, final IActions<ItemType> actions, final boolean cellMode) {
 		super(parent, SWT.NONE);
-		setLayout(LayoutUtil.applyCompositeDefaults(new GridLayout(), 1));
+		setLayout(LayoutUtil.createCompositeGrid(1));
 		fActions = actions;
 		fCellMode = cellMode;
 	}
@@ -458,7 +457,7 @@ public class ButtonGroup<ItemType> extends Composite {
 		final Button button = new Button(this, SWT.PUSH);
 		String label = SharedMessages.CollectionEditing_AddItem_label;
 		if (!fCellMode) {
-			label += "...";
+			label += "..."; //$NON-NLS-1$
 		}
 		button.setText(label);
 		if (handler == null) {
@@ -471,7 +470,7 @@ public class ButtonGroup<ItemType> extends Composite {
 		final Button button = new Button(this, SWT.PUSH);
 		String label = SharedMessages.CollectionEditing_CopyItem_label;
 		if (!fCellMode) {
-			label += "...";
+			label += "..."; //$NON-NLS-1$
 		}
 		button.setText(label);
 		if (handler == null) {
@@ -484,7 +483,7 @@ public class ButtonGroup<ItemType> extends Composite {
 		final Button button = new Button(this, SWT.PUSH);
 		String label = SharedMessages.CollectionEditing_EditItem_label;
 		if (!fCellMode) {
-			label += "...";
+			label += "..."; //$NON-NLS-1$
 		}
 		button.setText(label);
 		if (handler == null) {
@@ -571,7 +570,7 @@ public class ButtonGroup<ItemType> extends Composite {
 				public void keyPressed(final KeyEvent event) {
 					if (event.character == SWT.DEL && event.stateMask == 0 && fDeleteHandler != null) {
 						fDeleteHandler.run((IStructuredSelection) fViewer.getSelection());
-					} 
+					}
 				}	
 			});
 		}
@@ -653,6 +652,10 @@ public class ButtonGroup<ItemType> extends Composite {
 		setDefault0(element);
 	}
 	
+	/**
+	 * @deprecated implement {@link IActions#edit(int, Object, Object)}
+	 */
+	@Deprecated
 	protected ItemType edit1(final ItemType item, final boolean newItem, final Object parent) {
 		return null;
 	}

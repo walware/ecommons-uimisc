@@ -48,6 +48,19 @@ public class DataAdapter<ItemType> {
 		}
 		
 		@Override
+		public boolean isMoveAllowed(final Object element, final int direction) {
+			if (!super.isMoveAllowed(element, direction)) {
+				return false;
+			}
+			if (fList instanceof List) {
+				final int oldIdx = ((List) fList).indexOf(element);
+				final int newIdx = oldIdx + direction;
+				return (oldIdx >= 0 && newIdx >= 0 & newIdx < fList.size());
+			}
+			return false;
+		}
+		
+		@Override
 		public Object change(final ItemType oldItem, final ItemType newItem,
 				final Object parent, final Object container ) {
 			final Collection list = (Collection) container;
@@ -95,11 +108,8 @@ public class DataAdapter<ItemType> {
 		@Override
 		public void move(final Object item, final int direction) {
 			final int oldIdx = ((IObservableList) fList).indexOf(item);
-			if (oldIdx < 0) {
-				return;
-			}
-			final int newIdx = oldIdx+direction;
-			if (newIdx < 0 || newIdx >= fList.size()) {
+			final int newIdx = oldIdx + direction;
+			if (oldIdx < 0 || newIdx < 0 || newIdx >= fList.size()) {
 				return;
 			}
 			moveByIdx(oldIdx, newIdx);
@@ -163,6 +173,10 @@ public class DataAdapter<ItemType> {
 	
 	public boolean isModifyAllowed(final Object element) {
 		return isContentItem(element);
+	}
+	
+	public boolean isMoveAllowed(final Object element, final int direction) {
+		return isModifyAllowed(element);
 	}
 	
 	public boolean isDeleteAllowed(final Object element) {
