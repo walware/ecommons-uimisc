@@ -260,10 +260,12 @@ public class History<E> {
 //		for (final IHandler2 handler : fHandler) {
 //			handler.setEnabled(null);
 //		}
-		final ICommandService commandService = (ICommandService) fServiceLocator.getService(
-				ICommandService.class);
-		commandService.refreshElements(NAVIGATE_BACKWARD_HISTORY, null);
-		commandService.refreshElements(NAVIGATE_FORWARD_HISTORY, null);
+		if (fServiceLocator != null) {
+			final ICommandService commandService = (ICommandService) fServiceLocator.getService(
+					ICommandService.class);
+			commandService.refreshElements(NAVIGATE_BACKWARD_HISTORY, null);
+			commandService.refreshElements(NAVIGATE_FORWARD_HISTORY, null);
+		}
 	}
 	
 }

@@ -42,6 +42,9 @@ public class NestedServiceLocator implements Listener {
 				clear();
 			}
 		});
+		if (fLocator == null) {
+			throw new RuntimeException("Could not create nested service locator.");
+		}
 		if (expression != null) {
 			fLocator.registerService(IHandlerService.class, new NestableHandlerService(
 					(IHandlerService) parent.getService(IHandlerService.class), expression ));
