@@ -19,15 +19,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.eclipse.core.databinding.AggregateValidationStatus;
 import org.eclipse.core.databinding.observable.masterdetail.IObservableFactory;
 import org.eclipse.core.databinding.observable.value.AbstractObservableValue;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.core.databinding.observable.value.IValueChangeListener;
-import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
@@ -89,15 +85,15 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 			if (fProject != null) {
 				fLookupOrder = new IScopeContext[] {
 						new ProjectScope(fProject),
-						new InstanceScope(),
-						new DefaultScope()
+						InstanceScope.INSTANCE,
+						DefaultScope.INSTANCE
 				};
 				fInheritScope = null;
 			}
 			else {
 				fLookupOrder = new IScopeContext[] {
-						new InstanceScope(),
-						new DefaultScope()
+						InstanceScope.INSTANCE,
+						DefaultScope.INSTANCE
 				};
 				fInheritScope = fLookupOrder[1];
 			}
@@ -243,7 +239,7 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 		
 		
 		void loadDefaults() {
-			final DefaultScope defaultScope = new DefaultScope();
+			final IScopeContext defaultScope = DefaultScope.INSTANCE;
 			for (final Preference<?> key : fPreferences.keySet()) {
 				final String defValue = getInternalValue(key, defaultScope, false);
 				setInternalValue(key, defValue);
@@ -414,26 +410,7 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 		fDataBinding = new DataBindingSupport(fPageComposite);
 		addBindings(fDataBinding);
 		
-		final AggregateValidationStatus validationStatus = new AggregateValidationStatus(
-				fDataBinding.getContext(), AggregateValidationStatus.MAX_SEVERITY);
-		validationStatus.addValueChangeListener(new IValueChangeListener() {
-			@Override
-			public void handleValueChange(final ValueChangeEvent event) {
-				final IStatus currentStatus = (IStatus) event.diff.getNewValue();
-				fStatusListener.statusChanged(currentStatus);
-			}
-		});
-		
-//		updateStatus((IStatus) validationStatus.getValue());
-//		new DirtyTracker(fDbc) { // sets initial status on first change again, because initial errors are suppressed
-//			@Override
-//			public void handleChange() {
-//				if (!isDirty()) {
-//					updateStatus((IStatus) validationStatus.getValue());
-//					super.handleChange();
-//				}
-//			}
-//		};
+		fDataBinding.installStatusListener(fStatusListener);
 	}
 	
 	protected DataBindingSupport getDataBinding() {

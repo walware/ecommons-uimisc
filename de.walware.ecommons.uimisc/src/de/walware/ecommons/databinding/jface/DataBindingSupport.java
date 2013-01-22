@@ -34,11 +34,17 @@ import de.walware.ecommons.ui.SharedUIResources;
  */
 public class DataBindingSupport {
 	
+	private static final int STARTED = 1;
+	private static final int DISPOSING = 2;
+	private static final int DISPOSED = 3;
+	
 	
 	private Realm fRealm;
 	private DataBindingContext fDbc;
 	
 	private DirtyTracker fTracker;
+	
+	private int fState;
 	
 	
 	public DataBindingSupport(final Control rootControl) {
@@ -51,10 +57,12 @@ public class DataBindingSupport {
 				dispose();
 			}
 		});
+		
+		fState = STARTED;
 	}
 	
 	
-	protected DataBindingContext createContext(Realm realm) {
+	protected DataBindingContext createContext(final Realm realm) {
 		return new DataBindingContext(realm);
 	}
 	
@@ -68,6 +76,7 @@ public class DataBindingSupport {
 	
 	private void dispose() {
 		if (fDbc != null) {
+			fState = DISPOSING;
 			try {
 				fDbc.dispose();
 			}
@@ -75,18 +84,24 @@ public class DataBindingSupport {
 				StatusManager.getManager().handle(new Status(IStatus.ERROR, SharedUIResources.PLUGIN_ID,
 						"An error occurend when dispose databinding", e)); //$NON-NLS-1$
 			}
+			fState = DISPOSED;
 			fDbc = null;
 			fRealm = null;
 		}
 	}
 	
 	public void installStatusListener(final IStatusChangeListener listener) {
+		if (fState > STARTED) {
+			throw new IllegalStateException();
+		}
 		final AggregateValidationStatus validationStatus = new AggregateValidationStatus(fDbc, AggregateValidationStatus.MAX_SEVERITY);
 		validationStatus.addValueChangeListener(new IValueChangeListener() {
 			@Override
 			public void handleValueChange(final ValueChangeEvent event) {
-				final IStatus status = (IStatus) event.diff.getNewValue();
-				listener.statusChanged(status);
+				if (fState == STARTED) {
+					final IStatus status = (IStatus) event.diff.getNewValue();
+					listener.statusChanged(status);
+				}
 			}
 		});
 		
@@ -95,7 +110,9 @@ public class DataBindingSupport {
 			@Override
 			public void handleChange(final ObservableEvent event) {
 				if (!isDirty()) {
-					listener.statusChanged((IStatus) validationStatus.getValue());
+					if (fState == STARTED) {
+						listener.statusChanged((IStatus) validationStatus.getValue());
+					}
 					super.handleChange(event);
 				}
 			}

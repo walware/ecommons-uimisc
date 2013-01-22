@@ -24,7 +24,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -49,8 +48,9 @@ public abstract class AbstractCheckboxSelectionDialog extends ExtStatusDialog {
 	 * @param shell
 	 * @param checkedElements optional collection of initially checked elements
 	 */
-	public AbstractCheckboxSelectionDialog(final Shell shell, final Collection<?> checkedElements) {
-		super(shell);
+	public AbstractCheckboxSelectionDialog(final Shell shell, final int options,
+			final Collection<?> checkedElements ) {
+		super(shell, options);
 		setShellStyle(getShellStyle() | SWT.RESIZE);
 		
 		fCheckedValue = (checkedElements != null) ? new WritableSet() : new WritableSet(checkedElements, null);
@@ -69,7 +69,7 @@ public abstract class AbstractCheckboxSelectionDialog extends ExtStatusDialog {
 	
 	protected Composite createCheckboxComposite(final Composite parent, final String message) {
 		final Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(LayoutUtil.applyCompositeDefaults(new GridLayout(), 3));
+		composite.setLayout(LayoutUtil.createCompositeGrid(3));
 		
 		if (message != null)
 		{	final Label label = new Label(composite, SWT.NONE);

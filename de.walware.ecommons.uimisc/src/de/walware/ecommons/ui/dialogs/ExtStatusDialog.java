@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ControlEnableState;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -42,6 +43,11 @@ import de.walware.ecommons.ui.util.LayoutUtil;
 public class ExtStatusDialog extends StatusDialog implements IRunnableContext {
 	
 	
+	protected final static int WITH_RUNNABLE_CONTEXT = 1 << 0;
+	protected final static int WITH_DATABINDING_CONTEXT = 1 << 1;
+	protected final static int SHOW_INITIAL_STATUS = 1 << 2;
+	
+	
 	public class StatusUpdater implements IStatusChangeListener {
 		
 		@Override
@@ -52,7 +58,7 @@ public class ExtStatusDialog extends StatusDialog implements IRunnableContext {
 	}
 	
 	
-	private final boolean fWithRunnableContext;
+	private final int fOptions;
 	
 	private Composite fProgressComposite;
 	private ProgressMonitorPart fProgressMonitorPart;
@@ -72,7 +78,7 @@ public class ExtStatusDialog extends StatusDialog implements IRunnableContext {
 	 * @see StatusDialog#StatusDialog(Shell)
 	 */
 	public ExtStatusDialog(final Shell parent) {
-		this(parent, false);
+		this(parent, 0);
 	}
 	
 	/**
@@ -80,9 +86,9 @@ public class ExtStatusDialog extends StatusDialog implements IRunnableContext {
 	 * 
 	 * @param withRunnableContext create elements to provide {@link IRunnableContext}
 	 */
-	public ExtStatusDialog(final Shell parent, final boolean withRunnableContext) {
+	public ExtStatusDialog(final Shell parent, final int options) {
 		super(parent);
-		fWithRunnableContext = withRunnableContext;
+		fOptions = options;
 	}
 	
 	
@@ -107,12 +113,21 @@ public class ExtStatusDialog extends StatusDialog implements IRunnableContext {
 		if (button != null && shell != null && !shell.isDisposed()) {
 			shell.setDefaultButton(button);
 		}
+		
+		if ((fOptions & WITH_DATABINDING_CONTEXT) != 0) {
+			initBindings();
+		}
 	}
 	
 	protected void initBindings() {
 		final DataBindingSupport databinding = new DataBindingSupport(getDialogArea());
 		addBindings(databinding);
 		databinding.installStatusListener(new StatusUpdater());
+		if ((fOptions & SHOW_INITIAL_STATUS) == 0) {
+			final IStatus status = getStatus();
+			updateStatus(Status.OK_STATUS);
+			updateButtonsEnableState(status);
+		}
 		fDataBinding = databinding;
 	}
 	
@@ -129,7 +144,7 @@ public class ExtStatusDialog extends StatusDialog implements IRunnableContext {
 		final GridLayout layout = (GridLayout) composite.getLayout();
 		layout.verticalSpacing = 0;
 		
-		if (fWithRunnableContext) {
+		if ((fOptions & WITH_RUNNABLE_CONTEXT) != 0) {
 			final Composite monitorComposite = createMonitorComposite(composite);
 			final Control[] children = composite.getChildren();
 			layout.numColumns = 3;
@@ -143,7 +158,7 @@ public class ExtStatusDialog extends StatusDialog implements IRunnableContext {
 	
 	private Composite createMonitorComposite(final Composite parent) {
 		fProgressComposite = new Composite(parent, SWT.NULL);
-		final GridLayout layout = LayoutUtil.applyCompositeDefaults(new GridLayout(), 2);
+		final GridLayout layout = LayoutUtil.createCompositeGrid(2);
 		layout.marginLeft = LayoutUtil.defaultHMargin();
 		fProgressComposite.setLayout(layout);
 		
@@ -157,7 +172,7 @@ public class ExtStatusDialog extends StatusDialog implements IRunnableContext {
 	}
 	@Override
 	public void run(final boolean fork, final boolean cancelable, final IRunnableWithProgress runnable) throws InvocationTargetException, InterruptedException {
-		if (!fWithRunnableContext) {
+		if ((fOptions & WITH_RUNNABLE_CONTEXT) == 0) {
 			throw new UnsupportedOperationException();
 		}
 		if (getShell() != null && getShell().isVisible()) {
