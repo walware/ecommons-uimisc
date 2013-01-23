@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import de.walware.ecommons.ui.components.ButtonGroup;
 import de.walware.ecommons.ui.util.LayoutUtil;
+import de.walware.ecommons.ui.util.ViewerUtil;
 
 
 public class ManageBookmarksDialog extends TrayDialog {
@@ -121,6 +122,7 @@ public class ManageBookmarksDialog extends TrayDialog {
 		fTableViewer.setContentProvider(new ObservableListContentProvider());
 		fTableViewer.setInput(writableList);
 		fButtons.connectTo(fTableViewer, writableList, null);
+		ViewerUtil.scheduleStandardSelection(fTableViewer);
 		
 		applyDialogFont(composite);
 		return composite;

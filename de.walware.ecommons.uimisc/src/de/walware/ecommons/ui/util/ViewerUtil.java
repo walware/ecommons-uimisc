@@ -25,13 +25,17 @@ import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.FocusCellOwnerDrawHighlighter;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TableViewerEditor;
 import org.eclipse.jface.viewers.TableViewerFocusCellManager;
+import org.eclipse.jface.viewers.TreePath;
+import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.TreeViewerEditor;
@@ -54,8 +58,10 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Scrollable;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
 
 import de.walware.ecommons.ui.components.SearchText;
 
@@ -308,9 +314,9 @@ public class ViewerUtil {
 	}
 	
 	public static void installDefaultEditBehaviour2(final TableViewer tableViewer) {
-		Listener listener = new Listener() {
+		final Listener listener = new Listener() {
 			@Override
-			public void handleEvent(Event event) {
+			public void handleEvent(final Event event) {
 				switch (event.type) {
 				case SWT.KeyDown:
 					if (event.keyCode == SWT.CR || event.keyCode == SWT.KEYPAD_CR || event.keyCode == SWT.F2) {
@@ -415,12 +421,51 @@ public class ViewerUtil {
 	
 	public static ISelectionProvider getSelectionProvider(final Control control) {
 		if (control != null) {
-			Object data = control.getData(Policy.JFACE + ".selectionProvider"); //$NON-NLS-1$
+			final Object data = control.getData(Policy.JFACE + ".selectionProvider"); //$NON-NLS-1$
 			if (data instanceof ISelectionProvider) {
 				return (ISelectionProvider) data;
 			}
 		}
 		return null;
+	}
+	
+	
+	public static void scheduleStandardSelection(final TableViewer viewer) {
+		viewer.getControl().getDisplay().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				final ISelection selection = viewer.getSelection();
+				if (selection.isEmpty()) {
+					if (viewer.getTable().getItemCount() > 0) {
+						final TableItem item = viewer.getTable().getItem(0);
+						viewer.setSelection(new StructuredSelection(item.getData()));
+					}
+					else {
+						viewer.setSelection(new StructuredSelection());
+					}
+				}
+			}
+		});
+	}
+	
+	public static void scheduleStandardSelection(final TreeViewer viewer) {
+		viewer.getControl().getDisplay().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				final ISelection selection = viewer.getSelection();
+				if (selection.isEmpty()) {
+					if (viewer.getTree().getItemCount() > 0) {
+						final TreeItem item = viewer.getTree().getItem(0);
+						viewer.setSelection(new TreeSelection(new TreePath(
+								new Object[] { item.getData() } )));
+						viewer.setExpandedState(item.getData(), true);
+					}
+					else {
+						viewer.setSelection(new StructuredSelection());
+					}
+				}
+			}
+		});
 	}
 	
 	
