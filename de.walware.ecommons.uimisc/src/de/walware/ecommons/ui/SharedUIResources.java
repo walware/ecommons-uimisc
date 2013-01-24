@@ -92,6 +92,9 @@ public class SharedUIResources {
 	public static final String LOCTOOLD_PIN_PAGE_IMAGE_ID = UIMiscellanyPlugin.PLUGIN_ID + "/image/loctoold/pin_page"; //$NON-NLS-1$
 	
 	
+	public static final String GRAPHICS_BACKGROUND_COLOR_ID = "graphics.background"; //$NON-NLS-1$
+	
+	
 	/**
 	 * A shared color manager.
 	 * 

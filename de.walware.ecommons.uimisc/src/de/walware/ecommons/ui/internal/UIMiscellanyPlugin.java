@@ -359,9 +359,28 @@ public class UIMiscellanyPlugin extends AbstractUIPlugin {
 			if (!fStarted) {
 				throw new IllegalStateException("Plug-in is not started.");
 			}
-			fColorManager = new ColorManager();
+			fColorManager = createColorManager();
 		}
 		return fColorManager;
+	}
+	
+	private ColorManager createColorManager() {
+		final ColorManager manager = new ColorManager();
+		final Display display = Display.getDefault();
+		final Runnable runnable = new Runnable() {
+			@Override
+			public void run() {
+				final Color color = display.getSystemColor(SWT.COLOR_GRAY);
+				manager.bindColor(SharedUIResources.GRAPHICS_BACKGROUND_COLOR_ID, color.getRGB());
+			}
+		};
+		if (display.getThread() == Thread.currentThread()) {
+			runnable.run();
+		}
+		else {
+			display.asyncExec(runnable);
+		}
+		return manager;
 	}
 	
 	public synchronized ImageDescriptorRegistry getImageDescriptorRegistry() {

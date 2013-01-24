@@ -18,8 +18,13 @@ import java.util.List;
 import org.eclipse.core.variables.IDynamicVariable;
 import org.eclipse.debug.ui.StringVariableSelectionDialog.VariableFilter;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.util.Geometry;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import de.walware.ecommons.collections.ConstList;
@@ -220,6 +225,33 @@ public class DialogUtil {
 			}
 		}
 	}
+	
+	public static Monitor getClosestMonitor(final Display toSearch, final Rectangle rectangle) {
+		int closest = Integer.MAX_VALUE;
+		
+		final Point toFind= Geometry.centerPoint(rectangle);
+		final Monitor[] monitors = toSearch.getMonitors();
+		Monitor result = monitors[0];
+		
+		for (int idx = 0; idx < monitors.length; idx++) {
+			final Monitor current = monitors[idx];
+			
+			final Rectangle clientArea = current.getClientArea();
+			
+			if (clientArea.contains(toFind)) {
+				return current;
+			}
+			
+			final int distance = Geometry.distanceSquared(Geometry.centerPoint(clientArea), toFind);
+			if (distance < closest) {
+				closest = distance;
+				result = current;
+			}
+		}
+		
+		return result;
+	}
+	
 	
 	/**
 	 * Variable filter excluding known variables, which requires interaction from the user,

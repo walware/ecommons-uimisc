@@ -12,12 +12,13 @@
 package de.walware.ecommons.ui.components;
 
 import org.eclipse.swt.events.TypedEvent;
-import org.eclipse.swt.widgets.Control;
 
 
 public class ObjValueEvent<T> extends TypedEvent {
 	
 	private static final long serialVersionUID = 7509242153124380586L;
+	
+	public static final int DEFAULT_SELECTION = 1 << 0;
 	
 	
 	public final int valueIdx;
@@ -26,17 +27,22 @@ public class ObjValueEvent<T> extends TypedEvent {
 	
 	public T newValue;
 	
+	public final int flags;
 	
-	public ObjValueEvent(final Control source, final int time, final int idx, final T oldValue, final T newValue) {
+	
+	public ObjValueEvent(final IObjValueWidget<T> source, final int time, final int idx,
+			final T oldValue, final T newValue, final int flags) {
 		super(source);
 		
-		display = source.getDisplay();
-		widget = source;
+		display = source.getControl().getDisplay();
+		widget = source.getControl();
 		this.time = time;
 		
 		valueIdx = idx;
 		this.oldValue = oldValue;
 		this.newValue = newValue;
+		
+		this.flags = flags;
 	}
 	
 	
