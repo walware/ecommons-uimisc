@@ -180,10 +180,11 @@ public class LayoutUtil {
 		final PixelConverter converter = new PixelConverter(combo);
 		int widthHint = converter.convertWidthInCharsToPixels(numChars+1);
 		
-		final Rectangle trim = combo.computeTrim(0, 0, 0, 0);
-		widthHint += trim.x + trim.width;
-		
-		if (trim.width == 0 && (combo.getStyle() & SWT.DROP_DOWN) == SWT.DROP_DOWN) {
+		final Rectangle trim = combo.computeTrim(0, 0, widthHint, 0);
+		if (trim.width > widthHint) {
+			widthHint = trim.width;
+		}
+		else if ((combo.getStyle() & SWT.DROP_DOWN) == SWT.DROP_DOWN) {
 			final Button button = new Button(combo.getParent(), SWT.ARROW | SWT.DOWN);
 			widthHint += button.computeSize(SWT.DEFAULT, SWT.DEFAULT).x + 2;
 			button.dispose();
@@ -210,12 +211,34 @@ public class LayoutUtil {
 		return hintWidth(combo, JFaceResources.DIALOG_FONT, max);
 	}
 	
+	public static int hintWidth(final Combo combo, final java.util.List<Object> input,
+			final ILabelProvider labelProvider) {
+		combo.setFont(JFaceResources.getFontRegistry().get(JFaceResources.DIALOG_FONT));
+		final GC gc = new GC(combo);
+		int widthHint = 0;
+		for (final Object o : input) {
+			final String s = labelProvider.getText(o);
+			if (s != null) {
+				widthHint = Math.max(widthHint, gc.stringExtent(s).x);
+			}
+		}
+		gc.dispose();
+		
+		final Rectangle trim = combo.computeTrim(0, 0, widthHint, 0);
+		if (trim.width > widthHint) {
+			widthHint = trim.width;
+		}
+		
+		return widthHint;
+	}
+	
+	
 	public static int hintWidth(final Table table, final int numChars) {
 		return hintWidth(table, JFaceResources.DIALOG_FONT, false, numChars);
 	}
 	
-	public static int hintWidth(final Table table, String fontName,
-			boolean icon, final int numChars) {
+	public static int hintWidth(final Table table, final String fontName,
+			final boolean icon, final int numChars) {
 		if (fontName != null) {
 			table.setFont(JFaceResources.getFontRegistry().get(fontName));
 		}
