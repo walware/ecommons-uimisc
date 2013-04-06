@@ -47,7 +47,6 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Widget;
-import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.commands.ICommandImageService;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.commands.IElementReference;
@@ -332,37 +331,10 @@ public class HandlerContributionItem extends ContributionItem {
 				}
 			}
 		} : null;
-		if (command != null || (mode & MODE_NO_COMMAND) != 0) {
-			commandHandler.addHandlerListener(getHandlerListener());
-		}
+		establishReferences();
 		if (command != null) {
-			if (callback != null) {
-				try {
-					elementRef = commandService.registerElementForCommand(command, callback);
-				}
-				catch (final NotDefinedException e) {
-					StatusManager.getManager().handle(new Status(IStatus.ERROR, SharedUIResources.PLUGIN_ID,
-							"Unable to register menu item \"" + getId() + "\", command \"" + contributionParameters.commandId + "\" not defined")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				}
-			}
-			
 			setImages(contributionParameters.serviceLocator,
 					contributionParameters.iconStyle);
-			
-			if (contributionParameters.helpContextId == null) {
-				try {
-					this.helpContextId = commandService
-							.getHelpContextId(contributionParameters.commandId);
-				} catch (final NotDefinedException e) {
-					// it's OK to not have a helpContextId
-				}
-			}
-			final IWorkbenchLocationService wls = (IWorkbenchLocationService) serviceLocator
-					.getService(IWorkbenchLocationService.class);
-			final IWorkbench workbench = wls.getWorkbench();
-			if (workbench != null && helpContextId != null) {
-				this.workbenchHelpSystem = workbench.getHelpSystem();
-			}
 		}
 	}
 	
@@ -477,9 +449,9 @@ public class HandlerContributionItem extends ContributionItem {
 		data.disabledIcon = contributedDisabledIcon;
 		data.hoverIcon = contributedHoverIcon;
 		data.label = contributedLabel;
+		data.tooltip = contributedTooltip;
 		data.helpContextId = helpContextId;
 		data.mnemonic = mnemonic;
-		data.tooltip = contributedTooltip;
 		return data;
 	}
 	
@@ -515,7 +487,7 @@ public class HandlerContributionItem extends ContributionItem {
 		update(null);
 		updateIcons();
 		
-		bindingService.addBindingManagerListener(bindingManagerListener);
+		establishReferences();
 	}
 	
 	@Override
@@ -543,7 +515,7 @@ public class HandlerContributionItem extends ContributionItem {
 		update(null);
 		updateIcons();
 		
-		bindingService.addBindingManagerListener(bindingManagerListener);
+		establishReferences();
 	}
 	
 	@Override
@@ -573,7 +545,7 @@ public class HandlerContributionItem extends ContributionItem {
 		update(null);
 		updateIcons();
 		
-		bindingService.addBindingManagerListener(bindingManagerListener);
+		establishReferences();
 	}
 	
 	@Override
@@ -775,6 +747,7 @@ public class HandlerContributionItem extends ContributionItem {
 	
 	private void handleWidgetDispose(final Event event) {
 		if (event.widget == widget) {
+			disconnectReferences();
 			widget.removeListener(SWT.Selection, getItemListener());
 			widget.removeListener(SWT.Dispose, getItemListener());
 			widget = null;
@@ -782,12 +755,25 @@ public class HandlerContributionItem extends ContributionItem {
 		}
 	}
 	
-	@Override
-	public void dispose() {
-		if (widget != null) {
-			widget.dispose();
-			widget = null;
+	private void establishReferences() {
+		if (command != null || (mode & MODE_NO_COMMAND) != 0) {
+			commandHandler.addHandlerListener(getHandlerListener());
 		}
+		if (command != null) {
+			if (callback != null) {
+				try {
+					elementRef = commandService.registerElementForCommand(command, callback);
+				}
+				catch (final NotDefinedException e) {
+					StatusManager.getManager().handle(new Status(IStatus.ERROR, SharedUIResources.PLUGIN_ID,
+							"Unable to register menu item \"" + getId() + "\", command \"" + command.getId() + "\" not defined")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				}
+			}
+		}
+		bindingService.addBindingManagerListener(bindingManagerListener);
+	}
+	
+	private void disconnectReferences() {
 		if (elementRef != null) {
 			commandService.unregisterElement(elementRef);
 			elementRef = null;
@@ -799,6 +785,16 @@ public class HandlerContributionItem extends ContributionItem {
 		if (bindingService != null) {
 			bindingService.removeBindingManagerListener(bindingManagerListener);
 		}
+	}
+	
+	@Override
+	public void dispose() {
+		if (widget != null) {
+			widget.dispose();
+			widget = null;
+		}
+		
+		disconnectReferences();
 		
 		command = null;
 		commandHandler = null;

@@ -17,6 +17,7 @@ import org.eclipse.jface.internal.text.InternalAccessor;
 import org.eclipse.jface.text.AbstractHoverInformationControlManager;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
+import org.eclipse.jface.text.IInformationControlExtension5;
 import org.eclipse.jface.text.IWidgetTokenKeeper;
 import org.eclipse.jface.text.IWidgetTokenKeeperExtension;
 import org.eclipse.jface.text.IWidgetTokenOwner;
@@ -301,6 +302,9 @@ public abstract class ColumnHoverManager extends AbstractHoverInformationControl
 				accessor.replaceInformationControl(true);
 //			}
 			return true;
+		}
+		if (iControl instanceof IInformationControlExtension5) {
+			return true; // The iControl didn't return an information presenter control creator, so let's stop here.
 		}
 		
 		return false;
