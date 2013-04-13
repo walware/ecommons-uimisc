@@ -31,16 +31,15 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import de.walware.ecommons.FastList;
 import de.walware.ecommons.ui.SharedUIResources;
-import de.walware.ecommons.ui.util.LayoutUtil;
 
 
 /**
@@ -81,7 +80,22 @@ public class SearchText extends Composite {
 	}
 	
 	
+	private class SWTListener implements org.eclipse.swt.widgets.Listener {
+		
+		@Override
+		public void handleEvent(final Event event) {
+			switch (event.type) {
+			case SWT.Resize:
+				updateLayout();
+				return;
+			}
+		}
+		
+	}
+	
+	
 	private Text fTextControl;
+	private Label fClearButton;
 	
 	private final FastList<Listener> fListeners = new FastList<Listener>(Listener.class);
 	
@@ -97,9 +111,6 @@ public class SearchText extends Composite {
 		final boolean nativeMode = useNativeSearchField.booleanValue();
 		
 		setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
-		final GridLayout layout = LayoutUtil.createCompositeGrid((nativeMode) ? 1 : 2);
-		layout.horizontalSpacing = 0;
-		setLayout(layout);
 		
 		createText(this, nativeMode, textStyle);
 		createClearTextButtonSupport(this, nativeMode);
@@ -108,6 +119,9 @@ public class SearchText extends Composite {
 			setText(initialText);
 			fTextControl.selectAll();
 		}
+		
+		final SWTListener swtListener = new SWTListener();
+		addListener(SWT.Resize, swtListener);
 	}
 	
 	
@@ -186,7 +200,6 @@ public class SearchText extends Composite {
 			style |= (SWT.LEFT | SWT.SINGLE);
 		}
 		fTextControl = new Text(this, style);
-		fTextControl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		
 		fTextControl.getAccessible().addAccessibleListener(
 				new AccessibleAdapter() {
@@ -255,17 +268,17 @@ public class SearchText extends Composite {
 			final Image inactiveImage = SharedUIResources.getImages().get(SharedUIResources.LOCTOOLD_CLEARSEARCH_IMAGE_ID);
 			final Image pressedImage = new Image(Display.getCurrent(), activeImage, SWT.IMAGE_GRAY);
 			
-			final Label clearButton = new Label(parent, SWT.NONE);
-			clearButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, true));
-			clearButton.setImage(inactiveImage);
-			clearButton.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
-			clearButton.setToolTipText("Clear");
-			clearButton.addMouseListener(new MouseAdapter() {
+			fClearButton = new Label(parent, SWT.NONE);
+			fClearButton.setImage(inactiveImage);
+			fClearButton.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+			fClearButton.setToolTipText("Clear");
+			fClearButton.setSize(fClearButton.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+			fClearButton.addMouseListener(new MouseAdapter() {
 				private MouseMoveListener fMoveListener;
 				
 				@Override
 				public void mouseDown(final MouseEvent e) {
-					clearButton.setImage(pressedImage);
+					fClearButton.setImage(pressedImage);
 					fMoveListener = new MouseMoveListener() {
 						private boolean fMouseInButton = true;
 						
@@ -274,20 +287,20 @@ public class SearchText extends Composite {
 							final boolean mouseInButton= isMouseInButton(e);
 							if (mouseInButton != fMouseInButton) {
 								fMouseInButton = mouseInButton;
-								clearButton.setImage(mouseInButton ? pressedImage : inactiveImage);
+								fClearButton.setImage(mouseInButton ? pressedImage : inactiveImage);
 							}
 						}
 					};
-					clearButton.addMouseMoveListener(fMoveListener);
+					fClearButton.addMouseMoveListener(fMoveListener);
 				}
 				
 				@Override
 				public void mouseUp(final MouseEvent e) {
 					if (fMoveListener != null) {
-						clearButton.removeMouseMoveListener(fMoveListener);
+						fClearButton.removeMouseMoveListener(fMoveListener);
 						fMoveListener = null;
 						final boolean mouseInButton= isMouseInButton(e);
-						clearButton.setImage(mouseInButton ? activeImage : inactiveImage);
+						fClearButton.setImage(mouseInButton ? activeImage : inactiveImage);
 						if (mouseInButton) {
 							clearText();
 						}
@@ -295,43 +308,77 @@ public class SearchText extends Composite {
 				}
 				
 				private boolean isMouseInButton(final MouseEvent e) {
-					final Point buttonSize = clearButton.getSize();
+					final Point buttonSize = fClearButton.getSize();
 					return 0 <= e.x && e.x < buttonSize.x && 0 <= e.y && e.y < buttonSize.y;
 				}
 			});
-			clearButton.addMouseTrackListener(new MouseTrackListener() {
+			fClearButton.addMouseTrackListener(new MouseTrackListener() {
 				@Override
 				public void mouseEnter(final MouseEvent e) {
-					clearButton.setImage(activeImage);
+					fClearButton.setImage(activeImage);
 				}
 				@Override
 				public void mouseExit(final MouseEvent e) {
-					clearButton.setImage(inactiveImage);
+					fClearButton.setImage(inactiveImage);
 				}
 				@Override
 				public void mouseHover(final MouseEvent e) {
 				}
 			});
-			clearButton.addDisposeListener(new DisposeListener() {
+			fClearButton.addDisposeListener(new DisposeListener() {
 				@Override
 				public void widgetDisposed(final DisposeEvent e) {
 					pressedImage.dispose();
 				}
 			});
-			clearButton.getAccessible().addAccessibleListener(
+			fClearButton.getAccessible().addAccessibleListener(
 				new AccessibleAdapter() {
 					@Override
 					public void getName(final AccessibleEvent e) {
 						e.result = "Clear filter field";
 					}
 			});
-			clearButton.getAccessible().addAccessibleControlListener(
+			fClearButton.getAccessible().addAccessibleControlListener(
 				new AccessibleControlAdapter() {
 					@Override
 					public void getRole(final AccessibleControlEvent e) {
 						e.detail = ACC.ROLE_PUSHBUTTON;
 					}
 			});
+		}
+	}
+	
+	@Override
+	public Point computeSize(final int wHint, final int hHint, final boolean changed) {
+		if (fClearButton != null) {
+			final Point buttonSize = fClearButton.getSize();
+			final Point textSize = fTextControl.computeSize(
+					(wHint != SWT.DEFAULT) ? (wHint - buttonSize.x) : SWT.DEFAULT,
+					hHint, changed );
+			final Rectangle trim = computeTrim(0, 0,
+					textSize.x + buttonSize.x, Math.max(textSize.y, buttonSize.y) );
+			return new Point(trim.width, trim.height);
+		}
+		else {
+			final Point textSize = fTextControl.computeSize(wHint, hHint, changed);
+			final Rectangle trim = computeTrim(0, 0, textSize.x, textSize.y);
+			return new Point(trim.width, trim.height);
+		}
+	}
+	
+	private void updateLayout() {
+		final Rectangle clientArea = getClientArea();
+		if (fClearButton != null) {
+			final Point buttonSize = fClearButton.getSize();
+			final Point textSize = fTextControl.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+			fTextControl.setBounds(clientArea.x,
+					clientArea.y + (clientArea.height - textSize.y) / 2,
+					clientArea.width - buttonSize.y, textSize.y );
+			fClearButton.setLocation(clientArea.width - buttonSize.y,
+					clientArea.y + (clientArea.height - buttonSize.y) / 2 );
+		}
+		else {
+			fTextControl.setBounds(clientArea);
 		}
 	}
 	

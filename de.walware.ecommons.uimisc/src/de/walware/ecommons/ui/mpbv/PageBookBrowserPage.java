@@ -125,7 +125,7 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 			
 			fSearchBarManager.add(new Separator());
 			
-			fSearchTextItem = new SearchContributionItem("search.text", false) { //$NON-NLS-1$
+			fSearchTextItem = new SearchContributionItem("search.text", SWT.NONE) { //$NON-NLS-1$
 				@Override
 				public void fill(final ToolBar parent, final int index) {
 					super.fill(parent, index);
@@ -175,7 +175,6 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 			fSearchBarManager.add(caseItem);
 			
 			fSearchBarManager.update(true);
-			fSearchTextItem.resize();
 		}
 		
 		@Override

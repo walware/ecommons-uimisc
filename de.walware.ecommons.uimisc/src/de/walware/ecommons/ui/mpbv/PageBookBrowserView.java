@@ -260,10 +260,11 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 	@Override
 	protected void initActions(final IServiceLocator serviceLocator, final HandlerCollection handlers) {
 		super.initActions(serviceLocator, handlers);
-		final IContextService contextService = (IContextService) serviceLocator.getService(IContextService.class);
-		final IHandlerService handlerService = (IHandlerService) serviceLocator.getService(IHandlerService.class);
 		
-		contextService.activateContext("de.walware.ecommons.base.contexts.PageViewerContext"); //$NON-NLS-1$
+		((IContextService) serviceLocator.getService(IContextService.class))
+				.activateContext("de.walware.ecommons.base.contexts.PageViewerContext"); //$NON-NLS-1$
+		
+		final IHandlerService handlerService = (IHandlerService) serviceLocator.getService(IHandlerService.class);
 		
 		{	final IHandler2 handler = new NavigateBackHandler(getBrowserInterface());
 			handlers.add(NAVIGATE_BACK_ID, handler);

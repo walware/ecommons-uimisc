@@ -11,7 +11,10 @@
 
 package de.walware.ecommons.workbench.ui;
 
+import org.eclipse.core.commands.common.NotDefinedException;
+import org.eclipse.core.commands.contexts.Context;
 import org.eclipse.core.expressions.IEvaluationContext;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.bindings.TriggerSequence;
 import org.eclipse.jface.bindings.keys.KeySequence;
 import org.eclipse.jface.viewers.ISelection;
@@ -21,13 +24,18 @@ import org.eclipse.ui.ISources;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.keys.IBindingService;
+import org.eclipse.ui.services.IServiceLocator;
 
 
 /**
  * Util methods for Eclipse workbench
  */
 public class WorkbenchUIUtil {
+	
+	
+	public static final boolean IS_E4 = (Platform.getBundle("org.eclipse.e4.ui.workbench") != null); //$NON-NLS-1$
 	
 	
 	public static ISelection getCurrentSelection(final Object context) {
@@ -90,6 +98,26 @@ public class WorkbenchUIUtil {
 			}
 		}
 		return null;
+	}
+	
+	public static void activateContext(final IServiceLocator serviceLocator, String contextId) {
+		final IContextService contextService = (IContextService) serviceLocator
+				.getService(IContextService.class);
+		try {
+			do {
+				final Context context = contextService.getContext(contextId);
+				if (context == null || !context.isDefined()) {
+					break;
+				}
+				contextService.activateContext(contextId);
+				
+				contextId = context.getParentId();
+			} while (contextId != null
+					&& !contextId.equals(IContextService.CONTEXT_ID_DIALOG)
+					&& !contextId.equals(IContextService.CONTEXT_ID_DIALOG_AND_WINDOW)
+					&& !contextId.equals(IContextService.CONTEXT_ID_WINDOW) );
+		}
+		catch (final NotDefinedException e) {}
 	}
 	
 	

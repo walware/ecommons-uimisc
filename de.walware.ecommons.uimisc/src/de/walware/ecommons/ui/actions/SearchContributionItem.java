@@ -13,9 +13,11 @@ package de.walware.ecommons.ui.actions;
 
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.ToolBar;
@@ -26,10 +28,30 @@ import org.eclipse.swt.widgets.TreeItem;
 import de.walware.ecommons.ui.components.SearchText;
 import de.walware.ecommons.ui.util.LayoutUtil;
 import de.walware.ecommons.ui.util.UIAccess;
+import de.walware.ecommons.workbench.ui.WorkbenchUIUtil;
 
 
 public class SearchContributionItem extends ContributionItem {
 	
+	
+	public static final int VIEW_TOOLBAR = 0x10000000;
+	
+	
+	private class SWTListener implements Listener {
+		
+		@Override
+		public void handleEvent(final Event event) {
+			switch (event.type) {
+			case SWT.Resize:
+				scheduleSizeCheck();
+				return;
+			}
+		}
+		
+	}
+	
+	
+	private final int fOptions;
 	
 	private SearchText fControl;
 	private ToolItem fTextItem;
@@ -41,9 +63,23 @@ public class SearchContributionItem extends ContributionItem {
 	
 	private final boolean fUpdateWhenTyping;
 	
+	private final Runnable fSizeCheckRunnable = new Runnable() {
+		@Override
+		public void run() {
+			fSizeCheckScheduled = false;
+			resize();
+		}
+	};
+	private boolean fSizeCheckScheduled;
 	
-	public SearchContributionItem(final String id, final boolean updateWhenTyping) {
+	
+	public SearchContributionItem(final String id, final int options) {
+		this(id, options, false);
+	}
+	
+	public SearchContributionItem(final String id, final int options, final boolean updateWhenTyping) {
 		super(id);
+		fOptions = options;
 		fUpdateWhenTyping = updateWhenTyping;
 	}
 	
@@ -84,12 +120,52 @@ public class SearchContributionItem extends ContributionItem {
 				return;
 			}
 			final ToolBar toolBar = fTextItem.getParent();
+			final Composite toolBarParent = toolBar.getParent();
 			final int toolBarWidth = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+			final int currentWidth = fTextItem.getWidth();
 			final int minWidth = LayoutUtil.hintWidth(fControl.getTextControl(), 8);
-			fTextItem.setWidth(Math.min(310,
-					Math.max(minWidth, viewWidth - toolBarWidth + fTextItem.getWidth() - 26)));
-			toolBar.layout(new Control[] { fControl, fControl.getTextControl() });
-			toolBar.getParent().layout(true, true);
+			
+			int corr = toolBarWidth - currentWidth;
+			if ((fOptions & VIEW_TOOLBAR) != 0) {
+				if (WorkbenchUIUtil.IS_E4) {
+					// E-4.2 View Toolbar (=> space for view menu)
+					final Layout layout = toolBarParent.getLayout();
+					if (layout instanceof RowLayout && ((RowLayout) layout).type == SWT.HORIZONTAL) {
+						final Control[] children = toolBarParent.getChildren();
+						for (int i = 0; i < children.length; i++) {
+							if (children[i] != toolBar) {
+								corr += children[i].getSize().x;
+							}
+						}
+						corr += (children.length - 1) * ((RowLayout) layout).spacing;
+					}
+				}
+				else {
+					corr += 18;
+				}
+			}
+			corr += 16; // 2 required
+			
+			final int width = Math.min(310, Math.max(minWidth, viewWidth - corr));
+			if (width == currentWidth) {
+				return;
+			}
+			
+//			scheduleSizeCheck();
+			
+			fTextItem.setWidth(width);
+			toolBar.layout(new Control[] { fControl });
+			toolBarParent.layout(true, true);
+			if (WorkbenchUIUtil.IS_E4) {
+				toolBarParent.pack(true);
+			}
+		}
+	}
+	
+	private void scheduleSizeCheck() {
+		if (!fSizeCheckScheduled && fTextItem != null && !fTextItem.isDisposed()) {
+			fSizeCheckScheduled = true;
+			fTextItem.getDisplay().asyncExec(fSizeCheckRunnable);
 		}
 	}
 	
@@ -112,6 +188,8 @@ public class SearchContributionItem extends ContributionItem {
 				SearchContributionItem.this.selectFirst();
 			}
 		});
+		final Listener swtListener = new SWTListener();
+		fControl.addListener(SWT.Resize, swtListener);
 		fControl.setToolTipText(fToolTipText);
 		
 		fTextItem = new ToolItem(parent, SWT.SEPARATOR, index);
@@ -138,6 +216,8 @@ public class SearchContributionItem extends ContributionItem {
 				SearchContributionItem.this.selectFirst();
 			}
 		});
+		final Listener swtListener = new SWTListener();
+		fControl.addListener(SWT.Resize, swtListener);
 		fControl.setToolTipText(fToolTipText);
 		return fControl;
 	}

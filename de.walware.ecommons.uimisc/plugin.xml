@@ -111,10 +111,9 @@
    <extension
          point="org.eclipse.ui.contexts">
       <context
-            description="%contexts_PageViewerContext_description"
             id="de.walware.ecommons.base.contexts.PageViewerContext"
             name="%contexts_PageViewerContext_name"
-            parentId="org.eclipse.ui.contexts.window">
+            description="%contexts_PageViewerContext_description">
       </context>
    </extension>
    <extension

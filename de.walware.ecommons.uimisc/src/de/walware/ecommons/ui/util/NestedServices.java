@@ -1,0 +1,178 @@
+/*******************************************************************************
+ * Copyright (c) 2012-2013 WalWare/StatET-Project (www.walware.de/goto/statet)
+ * and others. All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Stephan Wahlbrink - initial API and implementation
+ *******************************************************************************/
+
+package de.walware.ecommons.ui.util;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.contexts.IContextService;
+import org.eclipse.ui.handlers.IHandlerService;
+import org.eclipse.ui.internal.contexts.NestableContextService;
+import org.eclipse.ui.internal.handlers.NestableHandlerService;
+import org.eclipse.ui.internal.services.IServiceLocatorCreator;
+import org.eclipse.ui.internal.services.IWorkbenchLocationService;
+import org.eclipse.ui.internal.services.ServiceLocator;
+import org.eclipse.ui.internal.services.WorkbenchLocationService;
+import org.eclipse.ui.services.IDisposable;
+import org.eclipse.ui.services.IServiceLocator;
+import org.eclipse.ui.services.IServiceScopes;
+
+
+/**
+ * Util to create a nested service locator with nested services, e.g. for dialogs.
+ * 
+ * Workaround for E-bug #142226
+ */
+public class NestedServices implements Listener {
+	
+	
+	public static class Dialog extends NestedServices {
+		
+		public Dialog(final Shell shell) {
+			super("Dialog", PlatformUI.getWorkbench());
+			
+			registerService(IWorkbenchLocationService.class, new WorkbenchLocationService(
+					IServiceScopes.DIALOG_SCOPE,
+					PlatformUI.getWorkbench(), null, null, null, null, 1 ));
+			
+			initializeDefaultServices();
+			
+			final IContextService contextService = (IContextService) getLocator()
+					.getService(IContextService.class);
+			contextService.registerShell(shell, IContextService.TYPE_DIALOG);
+			
+			bindTo(shell);
+		}
+		
+	}
+	
+	
+	private final String fName;
+	
+	private IServiceLocator fParentServiceLocator;
+	private ServiceLocator fServiceLocator;
+	
+	private boolean fIsActivated;
+	
+	
+	public NestedServices(final IServiceLocator parent, final String name) {
+		this(name, parent);
+		
+		initializeDefaultServices();
+	}
+	
+	protected NestedServices(final String name, final IServiceLocator parent) {
+		fName = name;
+		final IServiceLocatorCreator slc = (IServiceLocatorCreator) parent
+				.getService(IServiceLocatorCreator.class);
+		fServiceLocator = (ServiceLocator) slc.createServiceLocator(parent, null,
+				new IDisposable() {
+					@Override
+					public void dispose() {
+						clear();
+					}
+				});
+		if (fServiceLocator == null) {
+			throw new RuntimeException("Could not create nested service locator.");
+		}
+		
+		fParentServiceLocator = parent;
+	}
+	
+	
+	protected <T> void registerService(final Class<T> api, final T service) {
+		fServiceLocator.registerService(api, service);
+	}
+	
+	protected void initializeDefaultServices() {
+		registerService(IContextService.class, new NestableContextService(
+				(IContextService) fParentServiceLocator.getService(IContextService.class), null ));
+		registerService(IHandlerService.class, new NestableHandlerService(
+				(IHandlerService) fParentServiceLocator.getService(IHandlerService.class), null ));
+		fParentServiceLocator = null;
+	}
+	
+	public void dispose() {
+		if (fServiceLocator != null) {
+			fServiceLocator.dispose();
+			clear();
+		}
+	}
+	
+	private void clear() {
+		if (fServiceLocator != null) {
+			fServiceLocator = null;
+		}
+	}
+	
+	
+	public IServiceLocator getLocator() {
+		return fServiceLocator;
+	}
+	
+	
+	public void bindTo(final Control control) {
+		control.addListener(SWT.Activate, this);
+		control.addListener(SWT.Deactivate, this);
+		control.addListener(SWT.Dispose, this);
+	}
+	
+	@Override
+	@SuppressWarnings("restriction")
+	public void handleEvent(final Event event) {
+		switch (event.type) {
+		case SWT.Activate:
+		case SWT.FocusIn:
+			if (fServiceLocator != null && !fIsActivated) {
+				activate(event);
+			}
+			break;
+		case SWT.Deactivate:
+		case SWT.FocusOut:
+			if (fServiceLocator != null && fIsActivated) {
+				deactivate(event);
+			}
+			break;
+		case SWT.Dispose:
+			dispose();
+			break;
+		default:
+			break;
+		}
+	}
+	
+	
+	protected void activate(final Event event) {
+		fIsActivated = true;
+		fServiceLocator.activate();
+	}
+	
+	protected void deactivate(final Event event) {
+		fIsActivated = false;
+		fServiceLocator.deactivate();
+	}
+	
+	
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder("NestedServices");
+		sb.append(" '").append(fName).append("'");
+		if (fServiceLocator == null) {
+			sb.append(" (disposed)");
+		}
+		return sb.toString();
+	}
+	
+}
