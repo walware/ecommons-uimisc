@@ -11,6 +11,7 @@
 
 package de.walware.ecommons.ui.util;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
@@ -20,7 +21,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.internal.contexts.NestableContextService;
-import org.eclipse.ui.internal.handlers.NestableHandlerService;
+import org.eclipse.ui.internal.handlers.LegacyHandlerService;
 import org.eclipse.ui.internal.services.IServiceLocatorCreator;
 import org.eclipse.ui.internal.services.IWorkbenchLocationService;
 import org.eclipse.ui.internal.services.ServiceLocator;
@@ -61,7 +62,7 @@ public class NestedServices implements Listener {
 	
 	private final String fName;
 	
-	private IServiceLocator fParentServiceLocator;
+	private IEclipseContext fContext;
 	private ServiceLocator fServiceLocator;
 	
 	private boolean fIsActivated;
@@ -77,18 +78,19 @@ public class NestedServices implements Listener {
 		fName = name;
 		final IServiceLocatorCreator slc = (IServiceLocatorCreator) parent
 				.getService(IServiceLocatorCreator.class);
+		final IEclipseContext parentContext = (IEclipseContext) parent
+				.getService(IEclipseContext.class);
+		fContext = parentContext.createChild(name);
 		fServiceLocator = (ServiceLocator) slc.createServiceLocator(parent, null,
 				new IDisposable() {
 					@Override
 					public void dispose() {
 						clear();
 					}
-				});
+				}, fContext);
 		if (fServiceLocator == null) {
 			throw new RuntimeException("Could not create nested service locator.");
 		}
-		
-		fParentServiceLocator = parent;
 	}
 	
 	
@@ -98,10 +100,9 @@ public class NestedServices implements Listener {
 	
 	protected void initializeDefaultServices() {
 		registerService(IContextService.class, new NestableContextService(
-				(IContextService) fParentServiceLocator.getService(IContextService.class), null ));
-		registerService(IHandlerService.class, new NestableHandlerService(
-				(IHandlerService) fParentServiceLocator.getService(IHandlerService.class), null ));
-		fParentServiceLocator = null;
+				fContext.getParent().get(IContextService.class), null ));
+		registerService(IHandlerService.class, new LegacyHandlerService(
+				fContext, null ));
 	}
 	
 	public void dispose() {
@@ -114,12 +115,18 @@ public class NestedServices implements Listener {
 	private void clear() {
 		if (fServiceLocator != null) {
 			fServiceLocator = null;
+			fContext.dispose();
+			fContext = null;
 		}
 	}
 	
 	
 	public IServiceLocator getLocator() {
 		return fServiceLocator;
+	}
+	
+	public IEclipseContext getContext() {
+		return fContext;
 	}
 	
 	
@@ -156,12 +163,22 @@ public class NestedServices implements Listener {
 	
 	protected void activate(final Event event) {
 		fIsActivated = true;
-		fServiceLocator.activate();
+		fContext.activate();
+		event.display.asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (fServiceLocator != null && fIsActivated) {
+					fContext.processWaiting();
+					fServiceLocator.activate();
+				}
+			}
+		});
 	}
 	
 	protected void deactivate(final Event event) {
 		fIsActivated = false;
 		fServiceLocator.deactivate();
+		fContext.deactivate();
 	}
 	
 	
