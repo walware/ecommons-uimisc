@@ -75,6 +75,7 @@ public class History<E> {
 			final int pos = getPosition(fRelPos);
 			if (pos >= 0 && pos < fList.size()) {
 				final String label = getLabel(fList.get(pos));
+				setBaseEnabled(true);
 				element.setText(label);
 				element.setTooltip(NLS.bind((fRelPos <= 0) ?
 						SharedMessages.NavigateBack_1_tooltip :
@@ -82,6 +83,7 @@ public class History<E> {
 						label ));
 			}
 			else {
+				setBaseEnabled(false);
 				element.setText(null);
 				element.setTooltip(null);
 			}
