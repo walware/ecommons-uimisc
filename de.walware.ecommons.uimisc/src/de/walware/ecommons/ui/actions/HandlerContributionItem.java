@@ -331,7 +331,7 @@ public class HandlerContributionItem extends ContributionItem {
 				}
 			}
 		} : null;
-		establishReferences();
+		
 		if (command != null) {
 			setImages(contributionParameters.serviceLocator,
 					contributionParameters.iconStyle);
