@@ -226,6 +226,37 @@ public class SelectionLayer extends AbstractTransformIndexLayer {
 	public PositionCoordinate getSelectionAnchor() {
 		return selectionAnchor;
 	}
+	
+	public void setSelectionAnchor(final long columnPosition, final long rowPosition,
+			final boolean revealCell) {
+		final long previousColumnPosition = this.selectionAnchor.columnPosition;
+		final long previousRowPosition = this.selectionAnchor.rowPosition;
+		
+		if (columnPosition == NO_SELECTION || rowPosition == NO_SELECTION) {
+			this.selectionAnchor.columnPosition = NO_SELECTION;
+			this.selectionAnchor.rowPosition = NO_SELECTION;
+			
+			resetLastSelection();
+			
+			if (previousColumnPosition != NO_SELECTION && previousRowPosition != NO_SELECTION) {
+//				?
+//				fireLayerEvent(new CellSelectionEvent(this, columnPosition, rowPosition, false));
+			}
+			return;
+		}
+		
+		if (columnPosition < 0 || columnPosition >= getColumnCount()
+				|| rowPosition < 0 || rowPosition >= getRowCount() ) {
+			throw new IndexOutOfBoundsException();
+		}
+		
+		this.selectionAnchor.columnPosition = columnPosition;
+		this.selectionAnchor.rowPosition = rowPosition;
+		
+		resetLastSelection();
+		
+		fireLayerEvent(new CellSelectionEvent(this, columnPosition, rowPosition, revealCell));
+	}
 
 	// Last selected
 
