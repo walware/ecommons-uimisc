@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -53,9 +53,15 @@ public class ColumnReorderCommand implements ILayerCommand {
 	}
 	
 	public boolean convertToTargetLayer(ILayer targetLayer) {
-		fromColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(fromColumnPositionCoordinate, targetLayer);
-		toColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(toColumnPositionCoordinate, targetLayer);
-		return fromColumnPositionCoordinate != null && toColumnPositionCoordinate != null;
+		ColumnPositionCoordinate targetFromColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(fromColumnPositionCoordinate, targetLayer);
+		ColumnPositionCoordinate targetToColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(toColumnPositionCoordinate, targetLayer);
+		if (targetFromColumnPositionCoordinate != null && targetToColumnPositionCoordinate != null) {
+			fromColumnPositionCoordinate = targetFromColumnPositionCoordinate;
+			toColumnPositionCoordinate = targetToColumnPositionCoordinate;
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public ColumnReorderCommand cloneCommand() {

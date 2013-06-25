@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,9 +9,6 @@
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
-
-import static org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.RANGE_SELECTION;
-import static org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.RETAIN_SELECTION;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,16 +73,16 @@ public class SelectRowGroupCommandHandler<T> extends AbstractLayerCommandHandler
 	private Set<Range> internalSelectRow(int columnPosition, int rowPosition, int rowCount, int selectionFlags, boolean moveAnchorToTopOfGroup) {
 		Set<Range> changedRowRanges = new HashSet<Range>();
 		
-		if ((selectionFlags & (RETAIN_SELECTION | RANGE_SELECTION)) == 0) {
+		if ((selectionFlags & (SelectionFlags.RETAIN_SELECTION | SelectionFlags.RANGE_SELECTION)) == 0) {
 			changedRowRanges.addAll(selectionLayer.getSelectedRowPositions());
 			selectionLayer.clear();
 			selectionLayer.selectCell(0, rowPosition, selectionFlags);
 			selectionLayer.selectRegion(0, rowPosition, selectionLayer.getColumnCount(), rowCount);
 			
 			changedRowRanges.add(new Range(rowPosition, rowPosition + rowCount));
-		} else if ((selectionFlags & (RETAIN_SELECTION | RANGE_SELECTION)) == RETAIN_SELECTION) {
+		} else if ((selectionFlags & (SelectionFlags.RETAIN_SELECTION | SelectionFlags.RANGE_SELECTION)) == SelectionFlags.RETAIN_SELECTION) {
 			changedRowRanges.add(selectRowWithCtrlKey(columnPosition, rowPosition, rowCount));
-		} else if ((selectionFlags & (RETAIN_SELECTION | RANGE_SELECTION)) == RANGE_SELECTION) {
+		} else if ((selectionFlags & (SelectionFlags.RETAIN_SELECTION | SelectionFlags.RANGE_SELECTION)) == SelectionFlags.RANGE_SELECTION) {
 			changedRowRanges.add(selectRowWithShiftKey(columnPosition, rowPosition, rowCount));
 		}
 		if (moveAnchorToTopOfGroup) {
@@ -118,7 +115,7 @@ public class SelectRowGroupCommandHandler<T> extends AbstractLayerCommandHandler
 			selectionLayer.selectRegion(0, rowPosition, selectionLayer.getColumnCount(), rowCount);
 		}
 		
-		return new Range(rowPosition, rowPosition + 1);
+		return new Range(rowPosition);
 	}
 
 	private Range selectRowWithShiftKey(int columnPosition, int rowPosition, int rowCount) {
@@ -136,7 +133,7 @@ public class SelectRowGroupCommandHandler<T> extends AbstractLayerCommandHandler
 				}
 			}
 		}
-		return new Range(rowPosition, rowPosition + 1);
+		return new Range(rowPosition);
 	}
 
 }

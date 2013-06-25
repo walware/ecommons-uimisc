@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,8 +8,11 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
-// ~
+// ~(ListenerList)
 package org.eclipse.nebula.widgets.nattable.layer;
+
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,17 +31,18 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
+import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
 import org.eclipse.nebula.widgets.nattable.internal.LayerListenerList;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCellDim;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEventHandler;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.GridLineCellLayerPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
-import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 
@@ -47,21 +51,72 @@ import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
  * Base layer implementation with common methods for managing listeners and caching, etc.
  */
 public abstract class AbstractLayer implements ILayer {
-
+	
+	
+	private ILayerDim h;
+	private ILayerDim v;
+	
 	private String regionName;
 	protected ILayerPainter layerPainter;
 	private IClientAreaProvider clientAreaProvider = IClientAreaProvider.DEFAULT;
 	private IConfigLabelAccumulator configLabelAccumulator;
-
+	
 	private final Map<Class<? extends ILayerCommand>, ILayerCommandHandler<? extends ILayerCommand>> commandHandlers = new LinkedHashMap<Class<? extends ILayerCommand>, ILayerCommandHandler<? extends ILayerCommand>>();
 	private final Map<Class<? extends ILayerEvent>, ILayerEventHandler<? extends ILayerEvent>> eventHandlers = new HashMap<Class<? extends ILayerEvent>, ILayerEventHandler<? extends ILayerEvent>>();
 	
 	private final List<IPersistable> persistables = new LinkedList<IPersistable>();
 	private final LayerListenerList listeners = new LayerListenerList();
 	private final Collection<IConfiguration> configurations = new ArrayList<IConfiguration>();
-
+	
+	
+	protected AbstractLayer() {
+		updateDims();
+		
+		this.layerPainter = createPainter();
+	}
+	
+	
+	protected void updateDims() {
+		setDim(HORIZONTAL, new HorizontalLayerDim<ILayer>(this));
+		setDim(VERTICAL, new VerticalLayerDim<ILayer>(this));
+	}
+	
+	protected void setDim(final Orientation orientation, final ILayerDim dim) {
+		if (orientation == null) {
+			throw new NullPointerException("orientation"); //$NON-NLS-1$
+		}
+		if (dim == null) {
+			throw new NullPointerException("dim"); //$NON-NLS-1$
+		}
+		if (dim.getOrientation() != orientation) {
+			throw new IllegalArgumentException("wrong orientation"); //$NON-NLS-1$
+		}
+		
+		if (orientation == HORIZONTAL) {
+			this.h = dim;
+		}
+		else {
+			this.v = dim;
+		}
+	}
+	
+	@Override
+	public ILayerDim getDim(final Orientation orientation) {
+		if (orientation == null) {
+			throw new NullPointerException("orientation"); //$NON-NLS-1$
+		}
+		
+		return (orientation == HORIZONTAL) ? this.h : this.v;
+	}
+	
+	
+	protected ILayerPainter createPainter() {
+		return null;
+	}
+	
+	
 	// Dispose
-
+	
 	public void dispose() {
 	}
 	
@@ -180,7 +235,7 @@ public abstract class AbstractLayer implements ILayer {
 	}
 	
 	// Events
-
+	
 	public void addLayerListener(ILayerListener listener) {
 		listeners.add(listener);
 	}
@@ -188,7 +243,7 @@ public abstract class AbstractLayer implements ILayer {
 	public void removeLayerListener(ILayerListener listener) {
 		listeners.remove(listener);
 	}
-
+	
 	/**
 	 * Handle layer event notification. Convert it to your context
 	 * and propagate <i>UP</i>.
@@ -267,49 +322,44 @@ public abstract class AbstractLayer implements ILayer {
 			return null;
 		}
 		
-		return new LayerCell(this, columnPosition, rowPosition);
+		return new LayerCell(this,
+				new LayerCellDim(HORIZONTAL, getColumnIndexByPosition(columnPosition),
+						columnPosition ),
+				new LayerCellDim(VERTICAL, getRowIndexByPosition(rowPosition),
+						rowPosition ));
 	}
 	
 	public Rectangle getBoundsByPosition(int columnPosition, int rowPosition) {
 		ILayerCell cell = getCellByPosition(columnPosition, rowPosition);
-		ILayer cellLayer = cell.getLayer();
 		
 		int xOffset = -1;
 		int yOffset = -1;
 		int width = 0;
 		int height = 0;
-		{	int column = cell.getOriginColumnPosition();
-			int end = column + cell.getColumnSpan();
-			for (; column < end; column++) {
-				int columnOffset = cellLayer.getStartXOfColumnPosition(column);
-				if (columnOffset >= 0) {
-					xOffset = columnOffset;
-					break;
-				}
-			}
-			for (; column < end; column++) {
-				width += cellLayer.getColumnWidthByPosition(column);
+		{	final ILayerDim dim = cell.getLayer().getDim(HORIZONTAL);
+			int cellPosition = cell.getColumnPosition();
+			final int start = cell.getOriginColumnPosition();
+			final int end = start + cell.getColumnSpan();
+			
+			xOffset = dim.getPositionStart(cellPosition, cell.getOriginColumnPosition());
+			
+			for (int position = cell.getOriginColumnPosition(); position < end; position++) {
+				width += dim.getPositionSize(cellPosition, position);
 			}
 		}
-		{	int row = cell.getOriginRowPosition();
-			int end = row + cell.getRowSpan();
-			for (; row < end; row++) {
-				int rowOffset = cellLayer.getStartYOfRowPosition(row);
-				if (rowOffset >= 0) {
-					yOffset = rowOffset;
-					break;
-				}
-			}
-			for (; row < end; row++) {
-				height += cellLayer.getRowHeightByPosition(row);
+		{	final ILayerDim dim = cell.getLayer().getDim(VERTICAL);
+			int cellPosition = cell.getRowPosition();
+			final int start = cell.getOriginRowPosition();
+			final int end = start + cell.getRowSpan();
+			
+			yOffset = dim.getPositionStart(cellPosition, cell.getOriginRowPosition());
+			
+			for (int position = cell.getOriginRowPosition(); position < end; position++) {
+				height += dim.getPositionSize(cellPosition, position);
 			}
 		}
 		
-		return (xOffset >= 0 && yOffset >= 0) ? new Rectangle(xOffset, yOffset, width, height) : null;
-	}
-	
-	public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
-		return DisplayMode.NORMAL;
+		return new Rectangle(xOffset, yOffset, width, height);
 	}
 	
 	public ICellPainter getCellPainter(int columnPosition, int rowPosition, ILayerCell cell, IConfigRegistry configRegistry) {

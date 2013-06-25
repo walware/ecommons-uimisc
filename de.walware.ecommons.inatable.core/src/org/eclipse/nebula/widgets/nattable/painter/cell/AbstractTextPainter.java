@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -50,6 +50,8 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 	private static final String NEW_LINE_SEPARATOR = System.getProperty("line.separator"); //$NON-NLS-1$
 
 	private static final int DEFAULT_SPACING = 3;
+	
+	public static final int DEFAULT_DRAW_STYLES = SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
 
 
 	private static final class TemporaryMapKey {
@@ -91,7 +93,8 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 	protected final int spacing;
 
 	//can only grow but will not calculate the minimal length
-	protected final boolean calculate;
+	protected final boolean calculateByTextLength;
+	protected final boolean calculateByTextHeight;
 
 	protected final int swtDrawStyle;
 	
@@ -114,7 +117,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 	/**
 	 * @param wrapText split text over multiple lines
 	 * @param paintBg skips painting the background if is FALSE
-	 * @param spacing
+	 * @param spacing The space between text and cell border
 	 */
 	public AbstractTextPainter(boolean wrapText, boolean paintBg, int spacing) {
 		this(wrapText, paintBg, spacing, false);
@@ -123,24 +126,33 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 	/**
 	 * @param wrapText split text over multiple lines
 	 * @param paintBg skips painting the background if is FALSE
-	 * @param spacing
-	 * @param calculate tells the text painter to calculate the cell border
-	 * 			If wrapText is <code>true</code> the needed row height is calculated 
-	 * 			to show the whole cell content.
-	 * 			If wrapText is <code>false</code> the needed column width is calculated
-	 * 			to show the whole cell content. 
+	 * @param spacing The space between text and cell border
+	 * @param calculate tells the text painter to calculate the cell borders regarding the content
 	 */
 	public AbstractTextPainter(boolean wrapText, boolean paintBg, int spacing, boolean calculate) {
-		this(wrapText, paintBg, spacing, calculate, SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER);
+		this(wrapText, paintBg, spacing, calculate, calculate, DEFAULT_DRAW_STYLES);
 	}
 
-	public AbstractTextPainter(boolean wrapText, boolean paintBg, int spacing, boolean calculate,
+	/**
+	 * @param wrapText split text over multiple lines
+	 * @param paintBg skips painting the background if is FALSE
+	 * @param spacing The space between text and cell border
+	 * @param calculateByTextLength tells the text painter to calculate the cell border by containing
+	 * 			text length. For horizontal text rendering, this means the width of the cell is calculated
+	 * 			by content, for vertical text rendering the height is calculated
+	 * @param calculateByTextHeight tells the text painter to calculate the cell border by containing
+	 * 			text height. For horizontal text rendering, this means the height of the cell is calculated
+	 * 			by content, for vertical text rendering the width is calculated
+	 */
+	public AbstractTextPainter(boolean wrapText, boolean paintBg, int spacing, 
+			boolean calculateByTextLength, boolean calculateByTextHeight,
 			int swtDrawStyle) {
 		this.wrapText = wrapText;
 		this.paintBg = paintBg;
 		this.paintFg = true;
 		this.spacing = (spacing >= 0) ? spacing : DEFAULT_SPACING;
-		this.calculate = calculate;
+		this.calculateByTextLength = calculateByTextLength;
+		this.calculateByTextHeight = calculateByTextHeight;
 		if (wrapText) {
 			swtDrawStyle |= SWT.DRAW_DELIMITER;
 		}
@@ -265,7 +277,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 
 		//take the whole width of the text
 		int textLength = getWidthFromCache(gc, text);
-		if (calculate && wrapText) {
+		if (calculateByTextLength && wrapText) {
 			if (availableLength < textLength) {
 				//calculate length by finding the longest word in text
 				textLength = availableLength;
@@ -295,7 +307,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 			
 //			setNewMinLength(cell, textLength + calculatePadding(cell, availableLength));
 		}
-		else if (calculate && !wrapText){
+		else if (calculateByTextLength && !wrapText){
 			output.append(modifyTextToDisplay(text, gc, textLength));
 			
 			//add padding and spacing to textLength because they are needed for correct sizing
@@ -303,7 +315,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 			//PaddingDecorator
 //			setNewMinLength(cell, textLength + (2*spacing));
 		}
-		else if (!calculate && wrapText) {
+		else if (!calculateByTextLength && wrapText) {
 			String[] lines = NEW_LINE_PATTERN.split(text);
 			for (String line : lines) {
 				if (output.length() > 0) {
@@ -322,7 +334,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 			}
 			
 		}
-		else if (!calculate && !wrapText) {
+		else if (!calculateByTextLength && !wrapText) {
 			output.append(modifyTextToDisplay(text, gc, availableLength));
 		}
 		
@@ -490,7 +502,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 
 	/**
 	 * Set if the text should be rendered strikethrough or not.
-	 * @param underline <code>true</code> if the text should be printed strikethrough,
+	 * @param strikethrough <code>true</code> if the text should be printed strikethrough,
 	 * 			<code>false</code> if not
 	 */
 	public void setStrikethrough(boolean strikethrough) {

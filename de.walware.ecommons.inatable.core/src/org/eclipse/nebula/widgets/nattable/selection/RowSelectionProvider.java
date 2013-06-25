@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,7 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
-// ~Selection
+// ~
 package org.eclipse.nebula.widgets.nattable.selection;
 
 import java.util.ArrayList;
@@ -33,38 +33,103 @@ import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.selection.event.ISelectionEvent;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 
+
+/**
+ * Implementation of ISelectionProvider to add support for JFace selection handling.
+ * 
+ * @param <T> The type of objects provided by the IRowDataProvider
+ */
 public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListener {
 	
+	/**
+	 * The SelectionLayer this ISelectionProvider is connected to
+	 */
 	private SelectionLayer selectionLayer;
+	/**
+	 * The IRowDataProvider needed to access the selected row data
+	 */
 	private final IRowDataProvider<T> rowDataProvider;
+	/**
+	 * Flag to determine if only fully selected rows should be used to populate the selection
+	 * or if any selection should be populated. Default is to only populate fully selected rows.
+	 */
 	private final boolean fullySelectedRowsOnly;
+	/**
+	 * Flag to configure whether only SelectionChangedEvents should be fired if the row selection
+	 * changes or even if you just select another column.
+	 */
+	private final boolean handleSameRowSelection;
+	/**
+	 * Collection of ISelectionChangedListeners to this ISelectionProvider
+	 */
 	private Set<ISelectionChangedListener> listeners = new HashSet<ISelectionChangedListener>();
+	/**
+	 * Locally stored previous selection which is used to determine if a SelectionChangedEvent
+	 * should be fired. It is used to avoid firing events if the same row is selected again (default).
+	 * If handleSameRowSelection is set to <code>true</code>, this value is not evaluated at runtime.
+	 */
 	private ISelection previousSelection;
-
+	
+	
+	/**
+	 * Create a RowSelectionProvider that only handles fully selected rows and only fires 
+	 * SelectionChangedEvents if the row selection changes.
+	 * @param selectionLayer The SelectionLayer this ISelectionProvider is connected to
+	 * @param rowDataProvider The IRowDataProvider needed to access the selected row data
+	 */
 	public RowSelectionProvider(SelectionLayer selectionLayer, IRowDataProvider<T> rowDataProvider) {
 		this(selectionLayer, rowDataProvider, true);
 	}
 	
-	public RowSelectionProvider(SelectionLayer selectionLayer, IRowDataProvider<T> rowDataProvider, boolean fullySelectedRowsOnly) {
+	/**
+	 * Create a RowSelectionProvider that only fires SelectionChangedEvents if the row selection changes.
+	 * @param selectionLayer The SelectionLayer this ISelectionProvider is connected to
+	 * @param rowDataProvider The IRowDataProvider needed to access the selected row data
+	 * @param fullySelectedRowsOnly Flag to determine if only fully selected rows should be used 
+	 * 			to populate the selection or if any selection should be populated.
+	 */
+	public RowSelectionProvider(SelectionLayer selectionLayer, IRowDataProvider<T> rowDataProvider, 
+			boolean fullySelectedRowsOnly) {
+		
+		this(selectionLayer, rowDataProvider, fullySelectedRowsOnly, false);
+	}
+	
+	/**
+	 * Create a RowSelectionProvider configured with the given parameters.
+	 * @param selectionLayer The SelectionLayer this ISelectionProvider is connected to
+	 * @param rowDataProvider The IRowDataProvider needed to access the selected row data
+	 * @param fullySelectedRowsOnly Flag to determine if only fully selected rows should be used 
+	 * 			to populate the selection or if any selection should be populated.
+	 * @param handleSameRowSelection Flag to configure whether only SelectionChangedEvents should be 
+	 * 			fired if the row selection changes or even if you just select another column.
+	 */
+	public RowSelectionProvider(SelectionLayer selectionLayer, IRowDataProvider<T> rowDataProvider, 
+			boolean fullySelectedRowsOnly, boolean handleSameRowSelection) {
+		
 		this.selectionLayer = selectionLayer;
 		this.rowDataProvider = rowDataProvider;
 		this.fullySelectedRowsOnly = fullySelectedRowsOnly;
+		this.handleSameRowSelection = handleSameRowSelection;
 		
 		selectionLayer.addLayerListener(this);
 	}
 	
+	@Override
 	public void addSelectionChangedListener(ISelectionChangedListener listener) {
 		listeners.add(listener);
 	}
 
+	@Override
 	public ISelection getSelection() {
 		return populateRowSelection(selectionLayer, rowDataProvider, fullySelectedRowsOnly);
 	}
 
+	@Override
 	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
 		listeners.remove(listener);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public void setSelection(ISelection selection) {
 		if (selectionLayer != null && selection instanceof IStructuredSelection) {
@@ -83,16 +148,18 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
 					intValue = max.intValue();
 				}
 				if (intValue >= 0) {
-					selectionLayer.doCommand(new SelectRowsCommand(selectionLayer, 0, ObjectUtils.asIntArray(rowPositions), SWT.CONTROL, intValue));
+					selectionLayer.doCommand(new SelectRowsCommand(selectionLayer,
+							0, ObjectUtils.asIntArray(rowPositions), SWT.NONE, intValue));
 				}
 			}
 		}
 	}
 
+	@Override
 	public void handleLayerEvent(ILayerEvent event) {
 		if (event instanceof ISelectionEvent) {
 			ISelection selection = getSelection();
-			if (!selection.equals(previousSelection)) {
+			if (handleSameRowSelection || !selection.equals(previousSelection)) {
 				try {
 					for (ISelectionChangedListener listener : listeners) {
 						listener.selectionChanged(new SelectionChangedEvent(this, selection));

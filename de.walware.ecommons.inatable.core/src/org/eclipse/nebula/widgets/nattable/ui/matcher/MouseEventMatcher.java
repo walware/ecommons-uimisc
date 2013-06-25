@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -53,9 +53,9 @@ public class MouseEventMatcher implements IMouseEventMatcher {
 	/**
 	 * Constructor
 	 * @param stateMask @see "org.eclipse.swt.events.MouseEvent.stateMask"
-	 * @param eventRegion {@linkplain org.eclipse.nebula.widgets.nattable.grid.GridRegionEnum}
-	 * @param button @see "org.eclipse.swt.events.MouseEvent.button"<br/>
-	 *  	{@link MouseEventMatcher#LEFT_BUTTON}, {@link MouseEventMatcher#RIGHT_BUTTON}
+	 * @param eventRegion {@linkplain org.eclipse.nebula.widgets.nattable.grid.GridRegion}
+	 * @param button @see org.eclipse.swt.events.MouseEvent#button
+	 *  	{@link IMouseEventMatcher#LEFT_BUTTON}, {@link IMouseEventMatcher#RIGHT_BUTTON}
 	 *  	can be used for convenience
 	 */
 	public MouseEventMatcher(int stateMask, String eventRegion, int button) {

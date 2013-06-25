@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Edwin Park and others.
+ * Copyright (c) 2012 Edwin Park and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,10 +10,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer.cell;
 
-import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.InvertUtil;
-import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.swt.graphics.Rectangle;
+
+import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
+import org.eclipse.nebula.widgets.nattable.coordinate.SWTUtil;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+
 
 public class InvertedLayerCell implements ILayerCell {
 
@@ -33,6 +36,11 @@ public class InvertedLayerCell implements ILayerCell {
 
 	public ILayer getLayer() {
 		return layerCell.getLayer();
+	}
+	
+	@Override
+	public LayerCellDim getDim(Orientation orientation) {
+		return layerCell.getDim(orientation.getOrthogonal());
 	}
 
 	public int getColumnPosition() {
@@ -76,7 +84,7 @@ public class InvertedLayerCell implements ILayerCell {
 	}
 
 	public Rectangle getBounds() {
-		return InvertUtil.invertRectangle(layerCell.getBounds());
+		return SWTUtil.switchOrientation(layerCell.getBounds());
 	}
 	
 }

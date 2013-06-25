@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,10 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
-import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.isNotNull;
-
-import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -21,8 +17,12 @@ import org.eclipse.swt.graphics.Pattern;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+
+
 /**
- * Paints the cell background using an image.<br/>
+ * Paints the cell background using an image.
  * Image is repeated to cover the background. Similar to HTML table painting.
  */
 public class BackgroundImagePainter extends CellPainterWrapper {
@@ -66,7 +66,7 @@ public class BackgroundImagePainter extends CellPainterWrapper {
 		gc.setBackgroundPattern(null);
 		pattern.dispose();
 
-		if (isNotNull(separatorColor)) {
+		if (separatorColor != null) {
 			gc.setForeground(separatorColor);
 			gc.drawLine(rectangle.x - 1, rectangle.y, rectangle.x - 1, rectangle.y + rectangle.height);
 			gc.drawLine(rectangle.x - 1 + rectangle.width, rectangle.y, rectangle.x - 1 + rectangle.width, rectangle.y + rectangle.height);

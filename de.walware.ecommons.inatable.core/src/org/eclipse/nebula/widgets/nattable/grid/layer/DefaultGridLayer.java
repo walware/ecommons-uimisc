@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@ package org.eclipse.nebula.widgets.nattable.grid.layer;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultBodyDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
@@ -106,11 +107,11 @@ public class DefaultGridLayer extends GridLayer {
 
 		// Column header
 		this.columnHeaderDataLayer = columnHeaderDataLayer;
-		IUniqueIndexLayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer, selectionLayer);
+		ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer, selectionLayer);
 		
 		// Row header
 		this.rowHeaderDataLayer = rowHeaderDataLayer;
-		IUniqueIndexLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, bodyLayer, selectionLayer);
+		ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, bodyLayer, selectionLayer);
 		
 		// Corner
 		this.cornerDataLayer = cornerDataLayer;
@@ -120,9 +121,13 @@ public class DefaultGridLayer extends GridLayer {
 		setColumnHeaderLayer(columnHeaderLayer);
 		setRowHeaderLayer(rowHeaderLayer);
 		setCornerLayer(cornerLayer);
+		
+		CopyDataCommandHandler cdch = new CopyDataCommandHandler(selectionLayer, columnHeaderDataLayer, rowHeaderDataLayer);
+		cdch.setCopyFormattedText(true);
+		registerCommandHandler(cdch);
 	}
 	
-	public IUniqueIndexLayer getBodyDataLayer() {
+	public ILayer getBodyDataLayer() {
 		return bodyDataLayer;
 	}
 	
@@ -131,7 +136,7 @@ public class DefaultGridLayer extends GridLayer {
 		return (DefaultBodyLayerStack) super.getBodyLayer();
 	}
 	
-	public IUniqueIndexLayer getColumnHeaderDataLayer() {
+	public ILayer getColumnHeaderDataLayer() {
 		return columnHeaderDataLayer;
 	}
 	
@@ -140,7 +145,7 @@ public class DefaultGridLayer extends GridLayer {
 		return (ColumnHeaderLayer) super.getColumnHeaderLayer();
 	}
 	
-	public IUniqueIndexLayer getRowHeaderDataLayer() {
+	public ILayer getRowHeaderDataLayer() {
 		return rowHeaderDataLayer;
 	}
 	
@@ -149,7 +154,7 @@ public class DefaultGridLayer extends GridLayer {
 		return (RowHeaderLayer) super.getRowHeaderLayer();
 	}
 	
-	public IUniqueIndexLayer getCornerDataLayer() {
+	public ILayer getCornerDataLayer() {
 		return cornerDataLayer;
 	}
 	

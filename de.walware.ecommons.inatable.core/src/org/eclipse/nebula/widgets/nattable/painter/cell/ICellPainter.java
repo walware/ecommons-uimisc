@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
- * Implementations are responsible for painting a cell.<br/>
+ * Implementations are responsible for painting a cell.
  * 
  * Custom {@link ICellPainter} can be registered in the {@link IConfigRegistry}.
  * This is a mechanism for plugging in custom cell painting.
@@ -25,16 +25,6 @@ import org.eclipse.swt.graphics.Rectangle;
  */
 public interface ICellPainter {
 	
-	/**
-	 * 
-	 * @param gc SWT graphics context used to draw the cell
-	 * @param rectangle cell bounds
-	 * @param natTable :-)
-	 * @param cellRenderer
-	 * @param rowIndex of the cell to paint
-	 * @param colIndex of the cell to paint
-	 * @param selected is the cell selected ?
-	 */
 	public void paintCell(ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry);
 
 	/**

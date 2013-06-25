@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,11 +8,11 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
-// ~
 package org.eclipse.nebula.widgets.nattable.ui.mode;
 
+
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditor;
+import org.eclipse.nebula.widgets.nattable.edit.command.EditUtils;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
@@ -44,26 +44,19 @@ public class ConfigurableModeEventHandler extends AbstractModeEventHandler {
 	
 	@Override
 	public void mouseDown(MouseEvent event) {
-		if (ActiveCellEditor.commit()) {
-			final UiBindingRegistry registry = getUiBindingRegistry();
-			{	final IMouseAction action = registry.getMouseDownAction(event);
-				if (action != null) {
-					event.data = NatEventData.createInstanceFromEvent(event);
-					action.run(natTable, event);
-				}
-			}
-			{	final IMouseAction action = registry.getSingleClickAction(event);
-				if (action != null) {
-					event.data = NatEventData.createInstanceFromEvent(event);
-					action.run(natTable, event);
-				}
+		if (EditUtils.commitAndCloseActiveEditor()) {
+			IMouseAction mouseDownAction = natTable.getUiBindingRegistry().getMouseDownAction(event);
+			if (mouseDownAction != null) {
+				event.data = NatEventData.createInstanceFromEvent(event);
+				mouseDownAction.run(natTable, event);
 			}
 			
-			IMouseAction doubleClickAction = registry.getDoubleClickAction(event);
-			IDragMode dragMode = registry.getDragMode(event);
+			IMouseAction singleClickAction = getUiBindingRegistry().getSingleClickAction(event);
+			IMouseAction doubleClickAction = getUiBindingRegistry().getDoubleClickAction(event);
+			IDragMode dragMode = natTable.getUiBindingRegistry().getDragMode(event);
 			
-			if (doubleClickAction != null || dragMode != null) {
-				switchMode(new MouseModeEventHandler(getModeSupport(), natTable, event, null, doubleClickAction, dragMode));
+			if (singleClickAction != null || doubleClickAction != null || dragMode != null) {
+				switchMode(new MouseModeEventHandler(getModeSupport(), natTable, event, singleClickAction, doubleClickAction, dragMode));
 			}
 		}
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
- * Specifies the rectangular area available to an {@link ILayer}<br/>
+ * Specifies the rectangular area available to an {@link ILayer}
  * Note: All layers get the client area from {@link NatTable} which implements this interface. 
  * 
  * @see ILayer#getClientAreaProvider()

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,9 @@
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
+
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,7 +24,8 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
-import org.eclipse.nebula.widgets.nattable.layer.cell.TranslatedLayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCellDim;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
@@ -36,26 +40,29 @@ import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
  * class to implement specific kinds of layer transformations.
  */
 public abstract class AbstractLayerTransform extends AbstractLayer {
-
+	
+	
 	protected ILayer underlyingLayer;
-
+	
+	
 	public AbstractLayerTransform() {
 	}
-
+	
 	public AbstractLayerTransform(ILayer underlyingLayer) {
 		setUnderlyingLayer(underlyingLayer);
 	}
-
+	
+	
 	protected void setUnderlyingLayer(ILayer underlyingLayer) {
 		this.underlyingLayer = underlyingLayer;
 		this.underlyingLayer.setClientAreaProvider(getClientAreaProvider());
 		this.underlyingLayer.addLayerListener(this);
 	}
-
+	
 	protected ILayer getUnderlyingLayer() {
 		return underlyingLayer;
 	}
-
+	
 	// Dispose
 	
 	@Override
@@ -64,26 +71,26 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
 	}
 	
 	// Persistence
-
+	
 	@Override
 	public void saveState(String prefix, Properties properties) {
-		super.saveState(prefix, properties);
 		underlyingLayer.saveState(prefix, properties);
+		super.saveState(prefix, properties);
 	}
-
+	
 	/**
-	 * Underlying layers <i>must</i> load state first.<br/>
-	 * If this is not done, {@link IStructuralChangeEvent} from underlying<br/>
+	 * Underlying layers <i>must</i> load state first.
+	 * If this is not done, {@link IStructuralChangeEvent} from underlying
 	 * layers will reset caches after state has been loaded
 	 */
 	@Override
 	public void loadState(String prefix, Properties properties) {
-		super.loadState(prefix, properties);
 		underlyingLayer.loadState(prefix, properties);
+		super.loadState(prefix, properties);
 	}
-
+	
 	// Configuration
-
+	
 	@Override
 	public void configure(ConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
 		underlyingLayer.configure(configRegistry, uiBindingRegistry);
@@ -94,24 +101,24 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
 	public ILayerPainter getLayerPainter() {
 		return underlyingLayer.getLayerPainter();
 	}
-
+	
 	// Command
-
+	
 	@Override
 	public boolean doCommand(ILayerCommand command) {
 		if (super.doCommand(command)) {
 			return true;
 		}
-
+		
 		if (underlyingLayer != null) {
 			return underlyingLayer.doCommand(command);
 		}
-
+		
 		return false;
 	}
-
+	
 	// Client area
-
+	
 	@Override
 	public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
 		super.setClientAreaProvider(clientAreaProvider);
@@ -119,33 +126,33 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
 			getUnderlyingLayer().setClientAreaProvider(clientAreaProvider);
 		}
 	}
-
-    // Horizontal features
-
+	
+	// Horizontal features
+	
 	// Columns
-
+	
 	public int getColumnCount() {
 		return underlyingLayer.getColumnCount();
 	}
-
+	
 	public int getPreferredColumnCount() {
 		return underlyingLayer.getPreferredColumnCount();
 	}
-
+	
 	public int getColumnIndexByPosition(int columnPosition) {
 		int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
 		return underlyingLayer.getColumnIndexByPosition(underlyingColumnPosition);
 	}
-
+	
 	public int localToUnderlyingColumnPosition(int localColumnPosition) {
 		return localColumnPosition;
 	}
-
+	
 	public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, int underlyingColumnPosition) {
 		if (sourceUnderlyingLayer != getUnderlyingLayer()) {
-			return -1;
+			throw new IllegalArgumentException("underlyingLayer"); //$NON-NLS-1$
 		}
-
+		
 		return underlyingColumnPosition;
 	}
 	
@@ -163,74 +170,74 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
 		
 		return localColumnPositionRanges;
 	}
-
+	
 	// Width
-
+	
 	public int getWidth() {
 		return underlyingLayer.getWidth();
 	}
-
+	
 	public int getPreferredWidth() {
 		return underlyingLayer.getPreferredWidth();
 	}
-
-    public int getColumnWidthByPosition(int columnPosition) {
+	
+	public int getColumnWidthByPosition(int columnPosition) {
 		int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
 		return underlyingLayer.getColumnWidthByPosition(underlyingColumnPosition);
 	}
-
+	
 	// Column resize
-
+	
 	public boolean isColumnPositionResizable(int columnPosition) {
 		int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
 		return underlyingLayer.isColumnPositionResizable(underlyingColumnPosition);
 	}
-
+	
 	// X
-
+	
 	public int getColumnPositionByX(int x) {
 		return underlyingLayer.getColumnPositionByX(x);
 	}
-
+	
 	public int getStartXOfColumnPosition(int columnPosition) {
 		int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
 		return underlyingLayer.getStartXOfColumnPosition(underlyingColumnPosition);
 	}
-
+	
 	// Underlying
-
+	
 	public Collection<ILayer> getUnderlyingLayersByColumnPosition(int columnPosition) {
 		Collection<ILayer> underlyingLayers = new HashSet<ILayer>();
 		underlyingLayers.add(underlyingLayer);
 		return underlyingLayers;
 	}
-
+	
 	// Vertical features
-
+	
 	// Rows
-
+	
 	public int getRowCount() {
 		return underlyingLayer.getRowCount();
 	}
-
+	
 	public int getPreferredRowCount() {
 		return underlyingLayer.getPreferredRowCount();
 	}
-
+	
 	public int getRowIndexByPosition(int rowPosition) {
 		int underlyingRowPosition = localToUnderlyingRowPosition(rowPosition);
 		return underlyingLayer.getRowIndexByPosition(underlyingRowPosition);
 	}
-
+	
 	public int localToUnderlyingRowPosition(int localRowPosition) {
 		return localRowPosition;
 	}
-
+	
 	public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer, int underlyingRowPosition) {
 		if (sourceUnderlyingLayer != getUnderlyingLayer()) {
-			return -1;
+			throw new IllegalArgumentException("underlyingLayer"); //$NON-NLS-1$
 		}
-
+		
 		return underlyingRowPosition;
 	}
 	
@@ -248,75 +255,74 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
 		
 		return localRowPositionRanges;
 	}
-
+	
 	// Height
-
+	
 	public int getHeight() {
 		return underlyingLayer.getHeight();
 	}
-
+	
 	public int getPreferredHeight() {
 		return underlyingLayer.getPreferredHeight();
 	}
-
+	
 	public int getRowHeightByPosition(int rowPosition) {
 		int underlyingRowPosition = localToUnderlyingRowPosition(rowPosition);
 		return underlyingLayer.getRowHeightByPosition(underlyingRowPosition);
 	}
-
+	
 	// Row resize
-
+	
 	public boolean isRowPositionResizable(int rowPosition) {
 		int underlyingRowPosition = localToUnderlyingRowPosition(rowPosition);
 		return underlyingLayer.isRowPositionResizable(underlyingRowPosition);
 	}
-
+	
 	// Y
-
+	
 	public int getRowPositionByY(int y) {
 		return underlyingLayer.getRowPositionByY(y);
 	}
-
+	
 	public int getStartYOfRowPosition(int rowPosition) {
 		int underlyingRowPosition = localToUnderlyingRowPosition(rowPosition);
 		return underlyingLayer.getStartYOfRowPosition(underlyingRowPosition);
 	}
-
+	
 	// Underlying
-
+	
 	public Collection<ILayer> getUnderlyingLayersByRowPosition(int rowPosition) {
 		Collection<ILayer> underlyingLayers = new HashSet<ILayer>();
 		underlyingLayers.add(underlyingLayer);
 		return underlyingLayers;
 	}
-
-    // Cell features
-
+	
+	// Cell features
+	
 	@Override
-	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
-		int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
-		int underlyingRowPosition = localToUnderlyingRowPosition(rowPosition);
-		ILayerCell cell = underlyingLayer.getCellByPosition(underlyingColumnPosition, underlyingRowPosition);
+	public ILayerCell getCellByPosition(final int columnPosition, final int rowPosition) {
+		ILayerCell cell = this.underlyingLayer.getCellByPosition(
+				localToUnderlyingColumnPosition(columnPosition),
+				localToUnderlyingRowPosition(rowPosition) );
+		
 		if (cell != null) {
-			cell = new TranslatedLayerCell(
-					cell,
-					this,
-					underlyingToLocalColumnPosition(underlyingLayer, cell.getOriginColumnPosition()),
-					underlyingToLocalRowPosition(underlyingLayer, cell.getOriginRowPosition()),
-					underlyingToLocalColumnPosition(underlyingLayer, cell.getColumnPosition()),
-					underlyingToLocalRowPosition(underlyingLayer, cell.getRowPosition())
-			);
+			final LayerCellDim hDim = transformCellDim(cell.getDim(HORIZONTAL), columnPosition);
+			final LayerCellDim vDim = transformCellDim(cell.getDim(VERTICAL), rowPosition);
+			cell = new LayerCell(this, hDim, vDim, cell.getDisplayMode());
 		}
+		
 		return cell;
 	}
 	
-    @Override
-    public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
-		int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
-		int underlyingRowPosition = localToUnderlyingRowPosition(rowPosition);
-    	return underlyingLayer.getDisplayModeByPosition(underlyingColumnPosition, underlyingRowPosition);
-    }
-
+	protected LayerCellDim transformCellDim(final LayerCellDim underlyingDim, final int position) {
+		final int originPosition = (underlyingDim.getPosition() == underlyingDim.getOriginPosition()) ?
+				position :
+				getDim(underlyingDim.getOrientation()).underlyingToLocalPosition(
+						position, underlyingDim.getOriginPosition() );
+		return new LayerCellDim(underlyingDim.getOrientation(), underlyingDim.getIndex(),
+				position, originPosition, underlyingDim.getPositionSpan() );
+	}
+	
 	@Override
 	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
 		int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
@@ -332,7 +338,7 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
 		}
 		return configLabels;
 	}
-
+	
 	public Object getDataValueByPosition(int columnPosition, int rowPosition) {
 		int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
 		int underlyingRowPosition = localToUnderlyingRowPosition(rowPosition);
@@ -343,9 +349,9 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
 	public ICellPainter getCellPainter(int columnPosition, int rowPosition, ILayerCell cell, IConfigRegistry configRegistry) {
 		return underlyingLayer.getCellPainter(columnPosition, rowPosition, cell, configRegistry);
 	}
-
+	
 	// IRegionResolver
-
+	
 	@Override
 	public LabelStack getRegionLabelsByXY(int x, int y) {
 		LabelStack regionLabels = underlyingLayer.getRegionLabelsByXY(x, y);
@@ -355,9 +361,9 @@ public abstract class AbstractLayerTransform extends AbstractLayer {
 		}
 		return regionLabels;
 	}
-
+	
 	public ILayer getUnderlyingLayerByPosition(int columnPosition, int rowPosition) {
 		return underlyingLayer;
 	}
-
+	
 }

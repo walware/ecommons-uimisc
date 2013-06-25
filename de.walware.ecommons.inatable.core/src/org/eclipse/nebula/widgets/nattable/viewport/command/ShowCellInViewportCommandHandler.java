@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,13 +10,19 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.viewport.command;
 
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
+
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
+
 public class ShowCellInViewportCommandHandler extends AbstractLayerCommandHandler<ShowCellInViewportCommand> {
 	
+	
 	private final ViewportLayer viewportLayer;
-
+	
+	
 	public ShowCellInViewportCommandHandler(ViewportLayer viewportLayer) {
 		this.viewportLayer = viewportLayer;
 	}
@@ -24,11 +30,13 @@ public class ShowCellInViewportCommandHandler extends AbstractLayerCommandHandle
 	public Class<ShowCellInViewportCommand> getCommandClass() {
 		return ShowCellInViewportCommand.class;
 	}
-
+	
+	
 	@Override
 	protected boolean doCommand(ShowCellInViewportCommand command) {
-		viewportLayer.moveCellPositionIntoViewport(command.getColumnPosition(), command.getRowPosition(), false);
+		viewportLayer.getDim(HORIZONTAL).movePositionIntoViewport(command.getColumnPosition());
+		viewportLayer.getDim(VERTICAL).movePositionIntoViewport(command.getRowPosition());
 		return true;
 	}
-
+	
 }

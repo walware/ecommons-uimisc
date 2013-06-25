@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,7 +21,7 @@ import org.eclipse.swt.SWT;
 public class DefaultFreezeGridBindings extends AbstractUiBindingConfiguration {
 
 	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CTRL | SWT.SHIFT, 'f'), new FreezeGridAction());
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CTRL | SWT.SHIFT, 'u'), new UnFreezeGridAction());
+		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1 | SWT.MOD2, 'f'), new FreezeGridAction());
+		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1 | SWT.MOD2, 'u'), new UnFreezeGridAction());
 	}
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,13 +11,11 @@
 // ~Selection
 package org.eclipse.nebula.widgets.nattable.selection.action;
 
-import static org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.RANGE_SELECTION;
-
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.selection.SelectionFlags;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
 
@@ -41,7 +39,7 @@ public class CellSelectionDragMode implements IDragMode {
 		fireSelectionCommand(natTable,
 				natTable.getColumnPositionByX(event.x),
 				natTable.getRowPositionByY(event.y),
-				event.stateMask & (SWT.SHIFT | SWT.CTRL) );
+				SelectionFlags.swt2Flags(event.stateMask) );
 	}
 
 	public void mouseMove(NatTable natTable, MouseEvent event) {
@@ -56,7 +54,7 @@ public class CellSelectionDragMode implements IDragMode {
 			if(lastDragInCellPosition == null || !dragInCellPosition.equals(lastDragInCellPosition)){
 				lastDragInCellPosition = dragInCellPosition;
 
-				fireSelectionCommand(natTable, selectedColumnPosition, selectedRowPosition, RANGE_SELECTION);
+				fireSelectionCommand(natTable, selectedColumnPosition, selectedRowPosition, SelectionFlags.RANGE_SELECTION);
 			}
 		}
 	}

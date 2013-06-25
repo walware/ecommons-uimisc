@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Stephan Wahlbrink and others.
+ * Copyright (c) 2012, 2013 Stephan Wahlbrink and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,15 +25,16 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
  * Cell painter painting a diagonal line from the top left to the bottom right corner
  */
 public class DiagCellPainter extends BackgroundPainter {
-
+	
+	
 	private Color color;
-
-
+	
+	
 	public DiagCellPainter(Color color) {
 		this.color = color;
 	}
-
-
+	
+	
 	@Override
 	public void paintCell(ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
 		super.paintCell(cell, gc, bounds, configRegistry);
@@ -43,5 +44,5 @@ public class DiagCellPainter extends BackgroundPainter {
 		gc.drawLine(bounds.x, bounds.y, bounds.x + bounds.width - 1, bounds.y + bounds.height - 1);
 		gc.setAntialias(GUIHelper.DEFAULT_ANTIALIAS);
 	}
-
+	
 }

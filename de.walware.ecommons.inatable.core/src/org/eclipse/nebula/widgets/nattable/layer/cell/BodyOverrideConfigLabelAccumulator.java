@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,7 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 
 
 /**
- * Applies the given labels to all the cells in the grid.<br/>
+ * Applies the given labels to all the cells in the grid.
  * Used to apply styles to the entire grid.
  */
 public class BodyOverrideConfigLabelAccumulator implements IConfigLabelAccumulator {

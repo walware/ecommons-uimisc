@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,8 +8,8 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
+// ~
 package org.eclipse.nebula.widgets.nattable.style.editor;
-
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -25,6 +25,7 @@ import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignment;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.style.VerticalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+
 
 /**
  * EditorPanel for editing the core style attributes.
@@ -109,30 +110,21 @@ public class CellStyleEditorPanel extends AbstractEditorPanel<Style> {
     	Style newStyle = new Style();
     	
     	Color bgColor = backgroundColorPicker.getSelectedColor();
-    	if (!bgColor.equals(origBgColor)) {
-    		newStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, bgColor);
-    	}
+    	newStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, bgColor);
     	
     	Color fgColor = foregroundColorPicker.getSelectedColor();
-    	if (!fgColor.equals(origFgColor)) {
-    		newStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, fgColor);
-    	}
+    	newStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, fgColor);
     	
     	Font font = fontPicker.getSelectedFont();
-		if (!font.equals(fontPicker.getOriginalFont())) {
-			newStyle.setAttributeValue(CellStyleAttributes.FONT, font);
-		}
+		newStyle.setAttributeValue(CellStyleAttributes.FONT, font);
 		
     	HorizontalAlignment hAlign = horizontalAlignmentPicker.getSelectedAlignment();
-    	if (hAlign != origHAlign) {
-    		newStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, hAlign);
-    	}
+    	newStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, hAlign);
     	
     	VerticalAlignmentEnum vAlign = verticalAlignmentPicker.getSelectedAlignment();
-		if (vAlign != origVAlign) {
-			newStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT, vAlign);
-		}
+		newStyle.setAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT, vAlign);
 		
     	return newStyle;
     }
+	
 }

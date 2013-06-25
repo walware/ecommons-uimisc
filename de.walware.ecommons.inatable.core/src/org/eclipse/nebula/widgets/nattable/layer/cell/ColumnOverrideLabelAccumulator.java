@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,9 +26,9 @@ import org.eclipse.nebula.widgets.nattable.style.IStyle;
 
 
 /**
- * Registers/Adds configuration labels for a given column (by index).<br/>
- * Custom {@link ICellEditor}, {@link ICellPainter}, {@link IStyle} can then <br/>
- * be registered in the {@link IConfigRegistry} against these labels. <br/>
+ * Registers/Adds configuration labels for a given column (by index).
+ * Custom {@link ICellEditor}, {@link ICellPainter}, {@link IStyle} can then 
+ * be registered in the {@link IConfigRegistry} against these labels.
  * 
  * Also @see {@link RowOverrideLabelAccumulator} 
  */
@@ -55,7 +55,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
 	}
 
 	/**
-	 * Register labels to be contributed a column. This label will be applied to<br/>
+	 * Register labels to be contributed a column. This label will be applied to
 	 * all cells in the column.
 	 */
 	public void registerColumnOverrides(int columnIndex, String... configLabels) {
@@ -63,7 +63,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
 	}
 	
 	/**
-	 * Register labels to be contributed a column. This label will be applied to<br/>
+	 * Register labels to be contributed a column. This label will be applied to
 	 * all cells in the column.
 	 */
 	public void registerColumnOverridesOnTop(int columnIndex, String... configLabels) {
@@ -71,7 +71,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
 	}
 	
 	/** 
-	 * Save the overrides to a properties file. A line is stored for every column.<br/>
+	 * Save the overrides to a properties file. A line is stored for every column.
 	 * 
 	 * Example for column 0:
 	 * prefix.columnOverrideLabelAccumulator.0 = LABEL1,LABEL2
@@ -96,8 +96,8 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
 	}
 
 	/**
-	 * Load the overrides state from the given properties file.<br/>
-	 * @see CellOverrideLabelAccumulator#saveState() 
+	 * Load the overrides state from the given properties file.
+	 * @see #saveState(String, Properties)
 	 */
 	public void loadState(String prefix, Properties properties) {
 		Set<Object> keySet = properties.keySet();

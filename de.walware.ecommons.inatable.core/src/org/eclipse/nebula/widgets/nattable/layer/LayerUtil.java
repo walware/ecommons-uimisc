@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,13 +10,16 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
 
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+
+
 public class LayerUtil {
 	
 	public static final int getColumnPositionByX(ILayer layer, int x) {
 		int width = layer.getWidth();
 		
 		if (x < 0 || x >= width) {
-			return -1;
+			return Integer.MIN_VALUE;
 		}
 
 		return findColumnPosition(0, 0, layer, x, width, layer.getColumnCount());
@@ -41,7 +44,7 @@ public class LayerUtil {
 		int height = layer.getHeight();
 		
 		if (y < 0 || y >= height) {
-			return -1;
+			return Integer.MIN_VALUE;
 		}
 		
 		return findRowPosition(0, 0, layer, y, height, layer.getRowCount());
@@ -66,6 +69,27 @@ public class LayerUtil {
 	}
 	
 	/**
+	 * Convert column/row position from the source layer to the target layer
+	 * @param sourceLayer source layer
+	 * @param sourceColumnPosition column position in the source layer
+	 * @param targetLayer layer to convert the from position to 
+	 * @return converted column position, or -1 if conversion not possible
+	 */
+	public static final int convertPosition(final ILayerDim source, final int sourceRefPosition,
+			final int sourcePosition, final IUniqueIndexLayer targetLayer) {
+		if (targetLayer == source.getLayer()) {
+			return sourcePosition;
+		}
+		final int index = source.getPositionIndex(sourceRefPosition, sourcePosition);
+		if (index < 0) {
+			return Integer.MIN_VALUE;
+		}
+		return (source.getOrientation() == HORIZONTAL) ?
+				targetLayer.getColumnPositionByIndex(index) :
+				targetLayer.getRowPositionByIndex(index);
+	}
+	
+	/**
 	 * Convert column position from the source layer to the target layer
 	 * @param sourceLayer source layer
 	 * @param sourceColumnPosition column position in the source layer
@@ -78,7 +102,7 @@ public class LayerUtil {
 		}
 		int columnIndex = sourceLayer.getColumnIndexByPosition(sourceColumnPosition);
 		if (columnIndex < 0) {
-			return -1;
+			return Integer.MIN_VALUE;
 		}
 		return targetLayer.getColumnPositionByIndex(columnIndex);
 	}
@@ -96,9 +120,16 @@ public class LayerUtil {
 		}
 		int rowIndex = sourceLayer.getRowIndexByPosition(sourceRowPosition);
 		if (rowIndex < 0) {
-			return -1;
+			return Integer.MIN_VALUE;
 		}
 		return targetLayer.getRowPositionByIndex(rowIndex);
+	}
+	
+	public static final int localToUnderlyingPosition(final ILayerDim dim, final int position) {
+		if (position < 0 || position >= dim.getPositionCount()) {
+			return Integer.MIN_VALUE;
+		}
+		return dim.localToUnderlyingPosition(position, position);
 	}
 	
 }

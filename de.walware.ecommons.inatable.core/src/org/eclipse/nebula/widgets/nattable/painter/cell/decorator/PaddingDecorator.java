@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,6 +21,9 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
+import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignment;
+import org.eclipse.nebula.widgets.nattable.style.IStyle;
+import org.eclipse.nebula.widgets.nattable.style.VerticalAlignmentEnum;
 
 
 public class PaddingDecorator extends CellPainterWrapper {
@@ -49,14 +52,17 @@ public class PaddingDecorator extends CellPainterWrapper {
 	}
 	
 	
+	@Override
 	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return leftPadding + super.getPreferredWidth(cell, gc, configRegistry) + rightPadding;
 	}
 	
+	@Override
 	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return topPadding + super.getPreferredHeight(cell, gc, configRegistry) + bottomPadding;
 	}
 	
+	@Override
 	public void paintCell(ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
 		Color originalBg = gc.getBackground();
 		Color cellStyleBackground = getBackgroundColor(cell, configRegistry);
@@ -85,7 +91,34 @@ public class PaddingDecorator extends CellPainterWrapper {
 	}
 	
 	protected Color getBackgroundColor(ILayerCell cell, IConfigRegistry configRegistry) {
-		return CellStyleUtil.getCellStyle(cell, configRegistry).getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);
+		return CellStyleUtil.getCellStyle(cell, configRegistry).getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR);		
+	}
+	
+	@Override
+	public ICellPainter getCellPainterAt(int x, int y, ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
+		//need to take the alignment into account
+		IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
+		
+		HorizontalAlignment horizontalAlignment = cellStyle.getAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT);
+		int horizontalAlignmentPadding = 0;
+		switch (horizontalAlignment) {
+			case LEFT: horizontalAlignmentPadding = leftPadding;
+						break;
+			case CENTER: horizontalAlignmentPadding = leftPadding/2;
+						break;
+		}
+		
+		VerticalAlignmentEnum verticalAlignment = cellStyle.getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT);
+		int verticalAlignmentPadding = 0;
+		switch (verticalAlignment) {
+			case TOP: verticalAlignmentPadding = topPadding;
+						break;
+			case MIDDLE: verticalAlignmentPadding = topPadding/2;
+						break;
+		}
+		
+		return super.getCellPainterAt(x - horizontalAlignmentPadding, y - verticalAlignmentPadding, cell, gc, adjustedCellBounds,
+				configRegistry);
 	}
 	
 }

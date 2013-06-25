@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,7 +23,9 @@ import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.swt.SWT;
 
 public class DefaultSelectionBindings extends AbstractUiBindingConfiguration {
-
+	
+	
+	@Override
 	public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
 		// Move up
 //		configureMoveUpBindings(uiBindingRegistry, new MoveSelectionAction(Direction.UP));
@@ -50,10 +52,10 @@ public class DefaultSelectionBindings extends AbstractUiBindingConfiguration {
 //		configureEndButtonBindings(uiBindingRegistry, new MoveToLastColumnAction());
 
 		// Select all
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CONTROL, 'a'), new SelectAllAction());
+		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, 'a'), new SelectAllAction());
 
 		// Copy
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CONTROL, 'c'), new CopyDataAction());
+		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, 'c'), new CopyDataAction());
 
 		// Mouse bindings - select Cell
 		configureBodyMouseClickBindings(uiBindingRegistry);
@@ -72,72 +74,72 @@ public class DefaultSelectionBindings extends AbstractUiBindingConfiguration {
 
 //	protected void configureEndButtonBindings(UiBindingRegistry uiBindingRegistry, IKeyAction action) {
 //		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, SWT.END), action);
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT, SWT.END), action);
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CONTROL, SWT.END), action);
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.CONTROL, SWT.END), action);
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD2, SWT.END), action);
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, SWT.END), action);
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD2 | SWT.MOD1, SWT.END), action);
 //	}
 
 //	protected void configureHomeButtonBindings(UiBindingRegistry uiBindingRegistry, IKeyAction action) {
 //		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, SWT.HOME), action);
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT, SWT.HOME), action);
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CONTROL, SWT.HOME), action);
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.CONTROL, SWT.HOME), action);
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD2, SWT.HOME), action);
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, SWT.HOME), action);
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD2 | SWT.MOD1, SWT.HOME), action);
 //	}
 
 //	protected void configurePageDownButtonBindings(UiBindingRegistry uiBindingRegistry, IKeyAction action) {
 //		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, SWT.PAGE_DOWN), action);
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT, SWT.PAGE_DOWN), action);
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CONTROL, SWT.PAGE_DOWN), action);
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.CONTROL, SWT.PAGE_DOWN), action);
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD2, SWT.PAGE_DOWN), action);
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, SWT.PAGE_DOWN), action);
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD2 | SWT.MOD1, SWT.PAGE_DOWN), action);
 //	}
 
 //	protected void configurePageUpButtonBindings(UiBindingRegistry uiBindingRegistry, PageUpAction action) {
 //		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, SWT.PAGE_UP), action);
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT, SWT.PAGE_UP), action);
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CONTROL, SWT.PAGE_UP), action);
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.CONTROL, SWT.PAGE_UP), action);
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD2, SWT.PAGE_UP), action);
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, SWT.PAGE_UP), action);
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD2 | SWT.MOD1, SWT.PAGE_UP), action);
 //	}
 
 	// *** Arrow keys selection bindings ***
 
 //	protected void configureMoveRightBindings(UiBindingRegistry uiBindingRegistry, IKeyAction action) {
 //		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, SWT.ARROW_RIGHT), action);
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT, SWT.ARROW_RIGHT), action);
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CONTROL, SWT.ARROW_RIGHT), new MoveToLastColumnAction());
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.CONTROL, SWT.ARROW_RIGHT), new MoveToLastColumnAction());
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD2, SWT.ARROW_RIGHT), action);
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, SWT.ARROW_RIGHT), new MoveToLastColumnAction());
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD2 | SWT.MOD1, SWT.ARROW_RIGHT), new MoveToLastColumnAction());
 //
 //		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, SWT.TAB), action);
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CONTROL, SWT.TAB), action);
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, SWT.TAB), action);
 //	}
 
 //	protected void configureMoveLeftBindings(UiBindingRegistry uiBindingRegistry, IKeyAction action) {
 //		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, SWT.ARROW_LEFT), action);
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT, SWT.ARROW_LEFT), action);
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CONTROL, SWT.ARROW_LEFT), new MoveToFirstColumnAction());
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.CONTROL, SWT.ARROW_LEFT), new MoveToFirstColumnAction());
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD2, SWT.ARROW_LEFT), action);
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, SWT.ARROW_LEFT), new MoveToFirstColumnAction());
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD2 | SWT.MOD1, SWT.ARROW_LEFT), new MoveToFirstColumnAction());
 //
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT, SWT.TAB), new MoveSelectionAction(Direction.LEFT, false, false));
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.CONTROL, SWT.TAB), action);
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD2, SWT.TAB), new MoveSelectionAction(Direction.LEFT, false, false));
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD2 | SWT.MOD1, SWT.TAB), action);
 //	}
 
 //	protected void configureMoveDownBindings(UiBindingRegistry uiBindingRegistry, IKeyAction action) {
 //		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, SWT.ARROW_DOWN), action);
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT, SWT.ARROW_DOWN), action);
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CONTROL, SWT.ARROW_DOWN), new MoveToLastRowAction());
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.CONTROL, SWT.ARROW_DOWN), new MoveToLastRowAction());
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD2, SWT.ARROW_DOWN), action);
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, SWT.ARROW_DOWN), new MoveToLastRowAction());
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD2 | SWT.MOD1, SWT.ARROW_DOWN), new MoveToLastRowAction());
 //
 //		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, SWT.CR), action);
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CONTROL, SWT.CR), action);
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, SWT.CR), action);
 //	}
 
 //	protected void configureMoveUpBindings(UiBindingRegistry uiBindingRegistry, IKeyAction action) {
 //		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.NONE, SWT.ARROW_UP), action);
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT, SWT.ARROW_UP), action);
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CONTROL, SWT.ARROW_UP), new MoveToFirstRowAction());
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.CONTROL, SWT.ARROW_UP), new MoveToFirstRowAction());
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD2, SWT.ARROW_UP), action);
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, SWT.ARROW_UP), new MoveToFirstRowAction());
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD2 | SWT.MOD1, SWT.ARROW_UP), new MoveToFirstRowAction());
 //
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT, SWT.CR), new MoveSelectionAction(Direction.UP, false, false));
-//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.CONTROL, SWT.CR), action);
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD2, SWT.CR), new MoveSelectionAction(Direction.UP, false, false));
+//		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD2 | SWT.MOD1, SWT.CR), action);
 //	}
 
 	// *** Mouse bindings ***
@@ -145,31 +147,31 @@ public class DefaultSelectionBindings extends AbstractUiBindingConfiguration {
 	protected void configureBodyMouseClickBindings(UiBindingRegistry uiBindingRegistry) {
 		IMouseAction action = new SelectCellAction();
 		uiBindingRegistry.registerFirstSingleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), action);
-		uiBindingRegistry.registerFirstSingleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.SHIFT), action);
-		uiBindingRegistry.registerFirstSingleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.CTRL), action);
-		uiBindingRegistry.registerFirstSingleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.SHIFT | SWT.CONTROL), action);
+		uiBindingRegistry.registerFirstSingleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.MOD2), action);
+		uiBindingRegistry.registerFirstSingleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.MOD1), action);
+		uiBindingRegistry.registerFirstSingleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.MOD2 | SWT.MOD1), action);
 	}
 
 //	protected void configureColumnHeaderMouseClickBindings(UiBindingRegistry uiBindingRegistry) {
 //		uiBindingRegistry.registerSingleClickBinding(MouseEventMatcher.columnHeaderLeftClick(SWT.NONE), new ViewportSelectColumnAction(false, false));
-//		uiBindingRegistry.registerSingleClickBinding(MouseEventMatcher.columnHeaderLeftClick(SWT.SHIFT), new ViewportSelectColumnAction(true, false));
-//		uiBindingRegistry.registerSingleClickBinding(MouseEventMatcher.columnHeaderLeftClick(SWT.CONTROL), new ViewportSelectColumnAction(false, true));
-//		uiBindingRegistry.registerSingleClickBinding(MouseEventMatcher.columnHeaderLeftClick(SWT.SHIFT | SWT.CONTROL), new ViewportSelectColumnAction(true, true));
+//		uiBindingRegistry.registerSingleClickBinding(MouseEventMatcher.columnHeaderLeftClick(SWT.MOD2), new ViewportSelectColumnAction(true, false));
+//		uiBindingRegistry.registerSingleClickBinding(MouseEventMatcher.columnHeaderLeftClick(SWT.MOD1), new ViewportSelectColumnAction(false, true));
+//		uiBindingRegistry.registerSingleClickBinding(MouseEventMatcher.columnHeaderLeftClick(SWT.MOD2 | SWT.MOD1), new ViewportSelectColumnAction(true, true));
 //	}
 
 //	protected void configureRowHeaderMouseClickBindings(UiBindingRegistry uiBindingRegistry) {
 //		uiBindingRegistry.registerSingleClickBinding(MouseEventMatcher.rowHeaderLeftClick(SWT.NONE), new ViewportSelectRowAction(false, false));
-//		uiBindingRegistry.registerSingleClickBinding(MouseEventMatcher.rowHeaderLeftClick(SWT.SHIFT), new ViewportSelectRowAction(true, false));
-//		uiBindingRegistry.registerSingleClickBinding(MouseEventMatcher.rowHeaderLeftClick(SWT.CONTROL), new ViewportSelectRowAction(false, true));
-//		uiBindingRegistry.registerSingleClickBinding(MouseEventMatcher.rowHeaderLeftClick(SWT.SHIFT | SWT.CONTROL), new ViewportSelectRowAction(true, true));
+//		uiBindingRegistry.registerSingleClickBinding(MouseEventMatcher.rowHeaderLeftClick(SWT.MOD2), new ViewportSelectRowAction(true, false));
+//		uiBindingRegistry.registerSingleClickBinding(MouseEventMatcher.rowHeaderLeftClick(SWT.MOD1), new ViewportSelectRowAction(false, true));
+//		uiBindingRegistry.registerSingleClickBinding(MouseEventMatcher.rowHeaderLeftClick(SWT.MOD2 | SWT.MOD1), new ViewportSelectRowAction(true, true));
 //	}
 
 	protected void configureBodyMouseDragMode(UiBindingRegistry uiBindingRegistry) {
 		CellSelectionDragMode dragMode = new CellSelectionDragMode();
 		uiBindingRegistry.registerMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.NONE), dragMode);
-		uiBindingRegistry.registerMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.SHIFT), dragMode);
-		uiBindingRegistry.registerMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.CONTROL), dragMode);
-		uiBindingRegistry.registerMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.SHIFT | SWT.CONTROL), dragMode);
+		uiBindingRegistry.registerMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.MOD2), dragMode);
+		uiBindingRegistry.registerMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.MOD1), dragMode);
+		uiBindingRegistry.registerMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.MOD2 | SWT.MOD1), dragMode);
 	}
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,17 +8,18 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
+// ~
 package org.eclipse.nebula.widgets.nattable.columnCategories.gui;
 
 import java.util.List;
 
-
 import org.eclipse.jface.viewers.LabelProvider;
+
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.columnCategories.Node;
 import org.eclipse.nebula.widgets.nattable.columnChooser.ColumnChooserUtils;
 import org.eclipse.nebula.widgets.nattable.columnChooser.ColumnEntry;
-import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
+
 
 public class ColumnCategoriesLabelProvider extends LabelProvider {
 
@@ -37,7 +38,7 @@ public class ColumnCategoriesLabelProvider extends LabelProvider {
 		case COLUMN:
 			int index = Integer.parseInt(node.getData());
 			ColumnEntry columnEntry = ColumnChooserUtils.find(hiddenEntries, index);
-			if(ObjectUtils.isNull(columnEntry)){
+			if(columnEntry == null) {
 				System.err.println(
 						"Column index " + index + " is present " + //$NON-NLS-1$ //$NON-NLS-2$
 						"in the Column Categories model, " + //$NON-NLS-1$
@@ -49,4 +50,5 @@ public class ColumnCategoriesLabelProvider extends LabelProvider {
 			return Messages.getString("Unknown"); //$NON-NLS-1$
 		}
 	}
+	
 }

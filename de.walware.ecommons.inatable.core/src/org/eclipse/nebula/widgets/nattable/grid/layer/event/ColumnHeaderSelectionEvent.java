@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,7 +21,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ColumnVisualChangeEvent;
 public class ColumnHeaderSelectionEvent extends ColumnVisualChangeEvent {
 
 	public ColumnHeaderSelectionEvent(ILayer layer, int columnPosition) {
-		this(layer, new Range(columnPosition, columnPosition + 1));
+		this(layer, new Range(columnPosition));
 	}
 	
 	public ColumnHeaderSelectionEvent(ILayer layer, Range...columnPositionRanges) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,19 +11,18 @@
 // ~
 package org.eclipse.nebula.widgets.nattable.coordinate;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 
 /**
  * Represents an Range of numbers.
  * Example a Range of selected rows: 1 - 100
- * Ranges are inclusive of their start value and not inclusive of their end value, i.e. start <= x < end
+ * Ranges are inclusive of their start value and not inclusive of their end value, i.e. start &lt;= x &lt; end
  */
-public final class Range {
+public final class Range implements Comparable<Range> {
 
 
 	public static void sortByStart(List<Range> ranges) {
@@ -44,12 +43,34 @@ public final class Range {
 		this.start = start;
 		this.end = end;
 	}
-
+	
+	public Range(int value) {
+		this.start = value;
+		this.end = value + 1;
+	}
+	
 	public int size() {
 		return end - start;
 	}
-
-
+	
+	
+	@Override
+	public int compareTo(Range o) {
+		if (this.start < o.start) {
+			return -1;
+		}
+		if (this.start > o.start) {
+			return 1;
+		}
+		if (this.end < o.end) {
+			return -1;
+		}
+		if (this.end > o.end) {
+			return 1;
+		}
+		return 0;
+	}
+	
 	/**
 	 * @return TRUE if the range contains the given row position
 	 */
@@ -58,14 +79,13 @@ public final class Range {
 	}
 
 	public boolean overlap(Range range) {
-		return
-				(start < end) &&  // this is a non-empty range
+		return (start < end) &&  // this is a non-empty range
 				(range.start < range.end) &&  // range parameter is non-empty
 				(this.contains(range.start) || this.contains(range.end - 1) || range.contains(start) || range.contains(end - 1));
 	}
 
-	public Set<Integer> getMembers() {
-		final Set<Integer> members = new HashSet<Integer>();
+	public List<Integer> getMembers() {
+		final List<Integer> members = new ArrayList<Integer>(this.end - this.start);
 		for (int i = start; i < end; i++) {
 			members.add(Integer.valueOf(i));
 		}
@@ -90,10 +110,10 @@ public final class Range {
 		final Range other = (Range) obj;
 		return (start == other.start) && (end == other.end);
 	}
-
+	
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + " [" + start + "," + end + "]";
 	}
-
+	
 }

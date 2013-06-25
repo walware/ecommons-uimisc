@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,7 +14,6 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
@@ -30,7 +29,7 @@ public class MaxCellBoundsHelper {
 	 * @return Preferred widths for columns. Preferred width is the minimum width
 	 *    required to horizontally fit all the contents of the column (including header)
 	 */
-	public static int[] getPreferedColumnWidths(IConfigRegistry configRegistry, GCFactory gcFactory, ILayer layer, int[]columnPositions) {
+	public static int[] getPreferredColumnWidths(IConfigRegistry configRegistry, GCFactory gcFactory, ILayer layer, int[]columnPositions) {
 		int[] columnWidths = new int[columnPositions.length];
 		
 		GC gc = gcFactory.createGC();
@@ -82,10 +81,7 @@ public class MaxCellBoundsHelper {
 		return maxWidth;
 	}
 	
-	/**
-	 * @see MaxCellBoundsHelper#getPreferedColumnWidths(IConfiguration, GC, ILayer, int[])
-	 */
-	public static int[] getPreferedRowHeights(IConfigRegistry configRegistry, GCFactory gcFactory, ILayer layer, int[]rows) {
+	public static int[] getPreferredRowHeights(IConfigRegistry configRegistry, GCFactory gcFactory, ILayer layer, int[]rows) {
 		int[] rowHeights = new int[rows.length];
 		
 		GC gc = gcFactory.createGC();

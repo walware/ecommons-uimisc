@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,11 +8,18 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
+// ~
 package org.eclipse.nebula.widgets.nattable.grid.layer;
 
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
+import static org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell.NO_INDEX;
+
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCellDim;
 import org.eclipse.nebula.widgets.nattable.painter.layer.CellLayerPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 
@@ -20,7 +27,7 @@ import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 /**
  * Layer for the top left header corner of the grid layer
  */
-public class CornerLayer extends DimensionallyDependentLayer {
+public class CornerLayer extends DimensionallyDependentIndexLayer {
 
 
 	/**
@@ -33,7 +40,8 @@ public class CornerLayer extends DimensionallyDependentLayer {
 	 * @param verticalLayerDependency
 	 *            The layer to link the vertical dimension to, typically the column header layer
 	 */
-	public CornerLayer(IUniqueIndexLayer baseLayer, IUniqueIndexLayer horizontalLayerDependency, IUniqueIndexLayer verticalLayerDependency) {
+	public CornerLayer(final IUniqueIndexLayer baseLayer,
+			final ILayer horizontalLayerDependency, final ILayer verticalLayerDependency) {
 		this(baseLayer, horizontalLayerDependency, verticalLayerDependency, true, new CellLayerPainter());
 	}
 
@@ -49,8 +57,9 @@ public class CornerLayer extends DimensionallyDependentLayer {
 	 * @param layerPainter
 	 *            The painter for this layer or <code>null</code> to use the painter of the base layer
 	 */
-	public CornerLayer(IUniqueIndexLayer baseLayer, IUniqueIndexLayer horizontalLayerDependency, IUniqueIndexLayer verticalLayerDependency,
-			boolean useDefaultConfiguration, ILayerPainter layerPainter) {
+	public CornerLayer(final IUniqueIndexLayer baseLayer,
+			final ILayer horizontalLayerDependency, final ILayer verticalLayerDependency,
+			final boolean useDefaultConfiguration, final ILayerPainter layerPainter) {
 		super(baseLayer, horizontalLayerDependency, verticalLayerDependency);
 
 		this.layerPainter = layerPainter;
@@ -58,8 +67,12 @@ public class CornerLayer extends DimensionallyDependentLayer {
 
 
 	@Override
-	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
-		return new LayerCell(this, 0, 0, columnPosition, rowPosition, getHorizontalLayerDependency().getColumnCount(), getVerticalLayerDependency().getRowCount());
+	public ILayerCell getCellByPosition(final int columnPosition, final int rowPosition) {
+		return new LayerCell(this,
+				new LayerCellDim(HORIZONTAL, NO_INDEX,
+						columnPosition, 0, getHorizontalLayerDependency().getColumnCount() ),
+				new LayerCellDim(VERTICAL, NO_INDEX,
+						rowPosition, 0, getVerticalLayerDependency().getRowCount()) );
 	}
 
 }

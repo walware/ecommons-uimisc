@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Stephan Wahlbrink and others.
+ * Copyright (c) 2012, 2013 Stephan Wahlbrink and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,13 +11,19 @@
 
 package org.eclipse.nebula.widgets.nattable.grid.labeled;
 
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
+import static org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell.NO_INDEX;
+
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.layer.CornerLayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCellDim;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 
 
@@ -28,8 +34,8 @@ public class LabelCornerLayer extends CornerLayer {
 	public static final String ROW_HEADER_LABEL = GridRegion.ROW_HEADER + "_LABEL"; //$NON-NLS-1$
 
 
-	private IDataProvider columnHeaderLabelProvider;
-	private IDataProvider rowHeaderLabelProvider;
+	private final IDataProvider columnHeaderLabelProvider;
+	private final IDataProvider rowHeaderLabelProvider;
 
 
 	/**
@@ -44,9 +50,10 @@ public class LabelCornerLayer extends CornerLayer {
 	 * @param layerPainter
 	 *            The painter for this layer or <code>null</code> to use the painter of the base layer
 	 */
-	public LabelCornerLayer(IUniqueIndexLayer baseLayer, IUniqueIndexLayer horizontalLayerDependency, IUniqueIndexLayer verticalLayerDependency,
-			IDataProvider columnHeaderLabelProvider, IDataProvider rowHeaderLabelProvider,
-			boolean useDefaultConfiguration, ILayerPainter layerPainter) {
+	public LabelCornerLayer(final IUniqueIndexLayer baseLayer,
+			final ILayer horizontalLayerDependency, final ILayer verticalLayerDependency,
+			final IDataProvider columnHeaderLabelProvider, final IDataProvider rowHeaderLabelProvider,
+			final boolean useDefaultConfiguration, final ILayerPainter layerPainter) {
 		super(baseLayer, horizontalLayerDependency, verticalLayerDependency,
 				useDefaultConfiguration, layerPainter );
 		
@@ -56,20 +63,24 @@ public class LabelCornerLayer extends CornerLayer {
 
 
 	@Override
-	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
-		int columnCount = getColumnCount();
-		int rowCount = getRowCount();
+	public ILayerCell getCellByPosition(final int columnPosition, final int rowPosition) {
+		final int columnCount = getColumnCount();
+		final int rowCount = getRowCount();
 		if (rowPosition < rowCount - 1) {
-			return new LayerCell(this, 0, rowPosition, columnPosition, rowPosition, columnCount, 1);
+			return new LayerCell(this,
+					new LayerCellDim(HORIZONTAL, NO_INDEX, columnPosition, 0, columnCount),
+					new LayerCellDim(VERTICAL, NO_INDEX, rowPosition) );
 		}
 		else {
-			return new LayerCell(this, columnPosition, rowPosition);
+			return new LayerCell(this,
+					new LayerCellDim(HORIZONTAL, NO_INDEX, columnPosition),
+					new LayerCellDim(VERTICAL, NO_INDEX, rowPosition) );
 		}
 	}
 
 	@Override
-	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
-		LabelStack labelStack = super.getConfigLabelsByPosition(columnPosition, rowPosition);
+	public LabelStack getConfigLabelsByPosition(final int columnPosition, final int rowPosition) {
+		final LabelStack labelStack = super.getConfigLabelsByPosition(columnPosition, rowPosition);
 		if (rowPosition < getRowCount() - 1) {
 			labelStack.addLabelOnTop(COLUMN_HEADER_LABEL);
 		}
@@ -83,14 +94,14 @@ public class LabelCornerLayer extends CornerLayer {
 	}
 
 	@Override
-	public Object getDataValueByPosition(int columnPosition, int rowPosition) {
+	public Object getDataValueByPosition(final int columnPosition, final int rowPosition) {
 		if (rowPosition < getRowCount() - 1) {
-			return (columnHeaderLabelProvider != null) ? 
-					columnHeaderLabelProvider.getDataValue(0, rowPosition) : ""; //$NON-NLS-1$
+			return (this.columnHeaderLabelProvider != null) ? 
+					this.columnHeaderLabelProvider.getDataValue(0, rowPosition) : ""; //$NON-NLS-1$
 		}
 		if (columnPosition < getColumnCount() - 1) {
-			return (rowHeaderLabelProvider != null) ? 
-					rowHeaderLabelProvider.getDataValue(columnPosition, 0) : ""; //$NON-NLS-1$
+			return (this.rowHeaderLabelProvider != null) ? 
+					this.rowHeaderLabelProvider.getDataValue(columnPosition, 0) : ""; //$NON-NLS-1$
 		}
 		return null;
 	}

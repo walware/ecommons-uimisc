@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,9 @@
  ******************************************************************************/
 // -depend
 package org.eclipse.nebula.widgets.nattable.summaryrow;
+
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,12 +26,14 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCellDim;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
+
 
 /**
  * Adds a summary row at the end. Uses {@link ISummaryProvider} to calculate the summaries for all columns.
@@ -43,7 +48,7 @@ import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
  *
  * @see DefaultSummaryRowConfiguration
  */
-public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
+public class SummaryRowLayer extends AbstractLayerTransform {
 
 	public static final String DEFAULT_SUMMARY_ROW_CONFIG_LABEL = "SummaryRow"; //$NON-NLS-1$
 	public static final String DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX = "SummaryColumn_"; //$NON-NLS-1$
@@ -70,12 +75,12 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 			addConfiguration(new DefaultSummaryRowConfiguration());
 		}
 	}
-
+	
 	/**
-	 * Calculates the summary for the column using the {@link ISummaryProvider} from the {@link IConfigRegistry}.<br/>
+	 * Calculates the summary for the column using the {@link ISummaryProvider} from the {@link IConfigRegistry}.
 	 * In order to prevent the table from freezing (for large data sets), the summary is calculated in a separate Thread. While
 	 * summary is being calculated {@link ISummaryProvider#DEFAULT_SUMMARY_VALUE} is returned.
-	 * 
+	 * <p>
 	 * NOTE: Since this is a {@link IUniqueIndexLayer} sitting close to the {@link DataLayer}, columnPosition == columnIndex
 	 */
 	@Override
@@ -190,7 +195,11 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 	@Override
 	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
 		if (isSummaryRowPosition(rowPosition)) {
-			return new LayerCell(this, columnPosition, rowPosition);
+			return new LayerCell(this,
+					new LayerCellDim(HORIZONTAL, getColumnIndexByPosition(columnPosition),
+							columnPosition ),
+					new LayerCellDim(VERTICAL, getRowIndexByPosition(rowPosition),
+							rowPosition ) );
 		}
 		return super.getCellByPosition(columnPosition, rowPosition);
 	}
@@ -249,18 +258,17 @@ public class SummaryRowLayer extends AbstractLayerTransform implements IUniqueIn
 	}
 
 	public int getRowPositionByIndex(int rowIndex) {
-		if (rowIndex >= 0 && rowIndex < getRowCount()) {
-			return rowIndex;
-		} else {
-			return -1;
+		if (rowIndex < 0 || rowIndex >= getRowCount()) {
+			return Integer.MIN_VALUE;
 		}
+		return rowIndex;
 	}
 
 	public int getColumnPositionByIndex(int columnIndex) {
-		if (columnIndex >= 0 && columnIndex < getColumnCount()) {
-			return columnIndex;
-		} else {
-			return -1;
+		if (columnIndex < 0 || columnIndex >= getColumnCount()) {
+			return Integer.MIN_VALUE;
 		}
+		return columnIndex;
 	}
+	
 }

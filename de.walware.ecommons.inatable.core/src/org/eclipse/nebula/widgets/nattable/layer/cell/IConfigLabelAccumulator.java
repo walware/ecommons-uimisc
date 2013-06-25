@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,9 +14,9 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 
 /**
- * Resolves the configuration/config label(s) which are tied to a given cell.<br/>
- * Various attributes can be registered in the {@link IConfigRegistry} against this</br>
- * label</br> 
+ * Resolves the configuration/config label(s) which are tied to a given cell.
+ * Various attributes can be registered in the {@link IConfigRegistry} against this
+ * label
  */
 public interface IConfigLabelAccumulator {
 	

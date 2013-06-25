@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.summaryrow;
 
 /**
- * Summarizes the values in a column.<br/>
+ * Summarizes the values in a column.
  * Used by the {@link SummaryRowLayer} to calculate summary values.
  */
 public interface ISummaryProvider {
@@ -26,7 +26,7 @@ public interface ISummaryProvider {
 	public Object summarize(int columnIndex);
 
 	/**
-	 * Register this instance to indicate that a summary is not required.<br/>
+	 * Register this instance to indicate that a summary is not required.
 	 * Doing so avoids calls to the {@link ISummaryProvider} and is a performance tweak.
 	 */
 	public static final ISummaryProvider NONE = new ISummaryProvider() {
@@ -40,4 +40,5 @@ public interface ISummaryProvider {
 			return DEFAULT_SUMMARY_VALUE;
 		}
 	};
+	
 }

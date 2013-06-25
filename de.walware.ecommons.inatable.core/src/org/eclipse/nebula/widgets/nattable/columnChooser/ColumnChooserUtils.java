@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -39,11 +39,11 @@ public class ColumnChooserUtils {
 	}
 
 	public static void showColumnEntries(List<ColumnEntry> addedItems, ColumnHideShowLayer hideShowLayer) {
-		hideShowLayer.doCommand(new MultiColumnShowCommand(asIntArray(getColumnEntryIndexes(addedItems))));
+		hideShowLayer.doCommand(new MultiColumnShowCommand(getColumnEntryIndexes(addedItems)));
 	}
 
 	public static void showColumnIndexes(List<Integer> addedColumnIndexes, ColumnHideShowLayer hideShowLayer) {
-		hideShowLayer.doCommand(new MultiColumnShowCommand(asIntArray(addedColumnIndexes)));
+		hideShowLayer.doCommand(new MultiColumnShowCommand(addedColumnIndexes));
 	}
 
 	public static List<ColumnEntry> getHiddenColumnEntries(ColumnHideShowLayer columnHideShowLayer, ColumnHeaderLayer columnHeaderLayer, DataLayer columnHeaderDataLayer) {
@@ -60,7 +60,10 @@ public class ColumnChooserUtils {
 	}
 
 	/**
-	 * @return The renamed column header name for the given column index (if the column has been renamed),<br/>
+	 * @param columnHeaderLayer
+	 * @param columnHeaderDataLayer
+	 * @param columnIndex
+	 * @return The renamed column header name for the given column index (if the column has been renamed),
 	 * 	the original column name otherwise.
 	 */
 	public static String getColumnLabel(ColumnHeaderLayer columnHeaderLayer, DataLayer columnHeaderDataLayer, Integer columnIndex) {

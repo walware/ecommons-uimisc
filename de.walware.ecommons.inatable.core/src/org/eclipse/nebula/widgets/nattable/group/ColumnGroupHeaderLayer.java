@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,10 @@
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group;
+
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
+import static org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell.NO_INDEX;
 
 import java.util.List;
 import java.util.Properties;
@@ -25,7 +29,7 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.SizeConfig;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
-import org.eclipse.nebula.widgets.nattable.layer.cell.TransformedLayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCellDim;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.painter.layer.CellLayerPainter;
@@ -35,11 +39,11 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 
 
 /**
- * Adds the Column grouping functionality to the column headers.<br/>
- * Also persists the state of the column groups when {@link NatTable#saveState()} is invoked.<br/>
- * <br/>
- * Internally uses the {@link ColumnGroupModel} to track the column groups.<br/>
- * @see ColumnGroupGridExample
+ * Adds the Column grouping functionality to the column headers.
+ * Also persists the state of the column groups when {@link NatTable#saveState(String, Properties)} is invoked.
+ * 
+ * Internally uses the {@link ColumnGroupModel} to track the column groups.
+ * See ColumnGroupGridExample
  */
 public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 
@@ -213,19 +217,22 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	 */
 	@Override
 	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
-		int bodyColumnIndex = getColumnIndexByPosition(columnPosition);
+		int columnIndex = getColumnIndexByPosition(columnPosition);
+		String displayMode = getDisplayModeByPosition(columnPosition, rowPosition, columnIndex);
 
 		// Column group header cell
-		if (model.isPartOfAGroup(bodyColumnIndex)) {
+		if (model.isPartOfAGroup(columnIndex)) {
 			if (rowPosition == 0) {
-				return new LayerCell(
-						this,
-						getStartPositionOfGroup(columnPosition), rowPosition,
-						columnPosition, rowPosition,
-						getColumnSpan(columnPosition), 1
-				);
+				return new LayerCell(this,
+						new LayerCellDim(HORIZONTAL, columnIndex,
+								columnPosition, getStartPositionOfGroup(columnPosition), getColumnSpan(columnPosition) ),
+						new LayerCellDim(VERTICAL, NO_INDEX, rowPosition),
+						displayMode );
 			} else {
-				return new LayerCell(this, columnPosition, rowPosition);
+				return new LayerCell(this,
+						new LayerCellDim(HORIZONTAL, columnIndex, columnPosition),
+						new LayerCellDim(VERTICAL, NO_INDEX, rowPosition),
+						displayMode );
 			}
 		} else {
 			// render column header w/ rowspan = 2
@@ -244,17 +251,11 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 					rowSpan = 2;
 				}
 				
-				cell = new TransformedLayerCell(cell) {
-					@Override
-					public ILayer getLayer() {
-						return ColumnGroupHeaderLayer.this;
-					}
-					
-					@Override
-					public int getRowSpan() {
-						return rowSpan;
-					}
-				};
+				LayerCellDim vDim = cell.getDim(VERTICAL);
+				cell = new LayerCell(this, cell.getDim(HORIZONTAL),
+						new LayerCellDim(VERTICAL, vDim.getIndex(),
+								vDim.getPosition(), vDim.getOriginPosition(), rowSpan ),
+						displayMode );
 			}
 			return cell;
 		}
@@ -264,7 +265,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	 * Calculates the span of a cell in a Column Group.
 	 * Takes into account collapsing and hidden columns in the group.
 	 *
-	 * @param selectionLayerColumnPosition of any column belonging to the group
+	 * @param columnPosition position of any column belonging to the group
 	 */
 	protected int getColumnSpan(int columnPosition) {
 		int columnIndex = getColumnIndexByPosition(columnPosition);
@@ -309,13 +310,12 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 		return i;
 	}
 
-	@Override
-	public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
-		int columnIndex = getColumnIndexByPosition(columnPosition);
+	public String getDisplayModeByPosition(int columnPosition, int rowPosition, int columnIndex) {
 		if (rowPosition == 0 && model.isPartOfAGroup(columnIndex)) {
 			return DisplayMode.NORMAL;
 		} else {
-			return columnHeaderLayer.getDisplayModeByPosition(columnPosition, rowPosition);
+			ILayerCell cell = columnHeaderLayer.getCellByPosition(columnPosition, rowPosition);
+			return (cell != null) ? cell.getDisplayMode() : DisplayMode.NORMAL;
 		}
 	}
 
@@ -368,7 +368,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	}
 
 	/**
-	 * @see ColumnGroupModel#setGroupUnBreakable(int)
+	 * @see ColumnGroup#setUnbreakable(boolean)
 	 */
 	public void setGroupUnbreakable(int columnIndex){
 		ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);

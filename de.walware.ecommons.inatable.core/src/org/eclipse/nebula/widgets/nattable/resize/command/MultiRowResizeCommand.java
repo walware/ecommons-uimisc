@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -63,18 +63,20 @@ public class MultiRowResizeCommand extends AbstractMultiRowCommand {
 	
 	@Override
 	public boolean convertToTargetLayer(ILayer targetLayer) {
-		Map<RowPositionCoordinate, Integer> newRowPositionToHeight = new HashMap<RowPositionCoordinate, Integer>();
-		
-		for (RowPositionCoordinate rowPositionCoordinate : rowPositionToHeight.keySet()) {
-			RowPositionCoordinate convertedRowPositionCoordinate = LayerCommandUtil.convertRowPositionToTargetContext(rowPositionCoordinate, targetLayer);
-			if (convertedRowPositionCoordinate != null) {
-				newRowPositionToHeight.put(convertedRowPositionCoordinate, rowPositionToHeight.get(rowPositionCoordinate));
+		if (super.convertToTargetLayer(targetLayer)) {
+			Map<RowPositionCoordinate, Integer> targetRowPositionToHeight = new HashMap<RowPositionCoordinate, Integer>();
+			
+			for (RowPositionCoordinate rowPositionCoordinate : rowPositionToHeight.keySet()) {
+				RowPositionCoordinate targetRowPositionCoordinate = LayerCommandUtil.convertRowPositionToTargetContext(rowPositionCoordinate, targetLayer);
+				if (targetRowPositionCoordinate != null) {
+					targetRowPositionToHeight.put(targetRowPositionCoordinate, rowPositionToHeight.get(rowPositionCoordinate));
+				}
 			}
+			
+			rowPositionToHeight = targetRowPositionToHeight;
+			return true;
 		}
-		
-		rowPositionToHeight = newRowPositionToHeight;
-		
-		return super.convertToTargetLayer(targetLayer);
+		return false;
 	}
 	
 	public MultiRowResizeCommand cloneCommand() {

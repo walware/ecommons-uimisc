@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -90,20 +90,15 @@ public class GridLayer extends CompositeLayer {
 	 **/
 	@Override
 	protected boolean doCommandOnChildLayers(ILayerCommand command) {
-		if (doCommandOnChildLayer(command, getBodyLayer())) {
+		if (getBodyLayer().doCommand(command.cloneCommand())) {
 			return true;
-		} else if (doCommandOnChildLayer(command, getColumnHeaderLayer())) {
+		} else if (getColumnHeaderLayer().doCommand(command.cloneCommand())) {
 			return true;
-		} else if (doCommandOnChildLayer(command, getRowHeaderLayer())) {
+		} else if (getRowHeaderLayer().doCommand(command.cloneCommand())) {
 			return true;
 		} else {
-			return doCommandOnChildLayer(command, getCornerLayer());
+			return getCornerLayer().doCommand(command.cloneCommand());
 		}
-	}
-	
-	private boolean doCommandOnChildLayer(ILayerCommand command, ILayer childLayer) {
-		ILayerCommand childCommand = command.cloneCommand();
-		return childLayer.doCommand(childCommand);
 	}
 	
 	// Sub-layer accessors
@@ -138,6 +133,13 @@ public class GridLayer extends CompositeLayer {
 	
 	public void setBodyLayer(ILayer bodyLayer) {
 		setChildLayer(GridRegion.BODY, bodyLayer, 1, 1);
+		
+		//update the command handlers for auto resize because of the connection to the body layer stack
+//		unregisterCommandHandler(AutoResizeColumnsCommand.class);
+//		unregisterCommandHandler(AutoResizeRowsCommand.class);
+		
+//		registerCommandHandler(new AutoResizeColumnCommandHandler(this));
+//		registerCommandHandler(new AutoResizeRowCommandHandler(this));		
 	}
 	
 	@Override

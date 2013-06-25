@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.util;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,20 +20,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.TreeSet;
 
+
 public class ObjectUtils {
-
-	/**
-	 * Transfers the iterator to an unmodifiable collection.
-	 * @return Contents of the Iterator<Cell> as a Collection.
-	 */
-	public static <T>Collection<T> asCollection(Iterator<T> iterator) {
-		Collection<T> collection = new ArrayList<T>();
-		return addToCollection(iterator, collection);
-	}
-
-	public static <T> List<T> asList(Collection<T> collection) {
-		return new ArrayList<T>(collection);
-	}
 
 	public static int[] asIntArray(Collection<Integer> collection) {
 		int[] copy = new int[collection.size()];
@@ -96,40 +83,6 @@ public class ObjectUtils {
 		return collection == null || collection.size() == 0;
 	}
 
-	/**
-	 * @return TRUE if string == null || string.length() == 0
-	 */
-	public static <T> boolean isEmpty(String string) {
-		return string == null || string.length() == 0;
-	}
-
-	/**
-	 * @return TRUE if string != null && string.length() > 0
-	 */
-	public static <T> boolean isNotEmpty(String string) {
-		return string != null && string.length() > 0;
-	}
-
-	/**
-	 * @see ObjectUtils#isEmpty(Collection)
-	 */
-	public static <T> boolean isNotEmpty(Collection<T> collection) {
-		return !isEmpty(collection);
-	}
-
-	/**
-	 * @return TRUE if object reference is null
-	 */
-	public static boolean isNull(Object object) {
-		return object == null;
-	}
-
-	/**
-	 * @return TRUE if object reference is NOT null
-	 */
-	public static boolean isNotNull(Object object) {
-		return object != null;
-	}
 
 	private static final Random RANDOM = new Random();
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -35,6 +35,10 @@ public class SelectionLayerPainter extends GridLineCellLayerPainter {
 	
 	@Override
 	public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle pixelRectangle, IConfigRegistry configRegistry) {
+		if (pixelRectangle.width <= 0 || pixelRectangle.height <= 0) {
+			return;
+		}
+		
 		Rectangle positionRectangle = getPositionRectangleFromPixelRectangle(natLayer, pixelRectangle);
 		columnPositionOffset = positionRectangle.x;
 		rowPositionOffset = positionRectangle.y;

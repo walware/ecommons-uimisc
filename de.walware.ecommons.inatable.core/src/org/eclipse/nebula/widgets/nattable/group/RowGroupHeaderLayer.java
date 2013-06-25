@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,9 @@
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.group;
+
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,7 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.SizeConfig;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCellDim;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.painter.layer.CellLayerPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
@@ -35,11 +39,12 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 
 /**
- * Adds the Row grouping functionality to the row headers.<br/>
- * Also persists the state of the row groups when {@link NatTable#saveState()} is invoked.<br/>
- * <br/>
- * Internally uses the {@link IRowGroupModel} to track the row groups.<br/>
- * @see RowGroupGridExample
+ * Adds the Row grouping functionality to the row headers.
+ * Also persists the state of the row groups when {@link NatTable#saveState(String, Properties)} is invoked.
+ * 
+ * Internally uses the {@link IRowGroupModel} to track the row groups.
+ * <p>
+ * See RowGroupGridExample
  */
 public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 
@@ -191,26 +196,34 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {		
 		int bodyRowIndex = getRowIndexByPosition(rowPosition);
 		
+		int rowIndex = getRowIndexByPosition(rowPosition);
+		String displayMode = getDisplayModeByPosition(columnPosition, rowPosition, rowIndex);
+		
 		// Row group header cell
 		if (RowGroupUtils.isPartOfAGroup(model, bodyRowIndex)) {
 			if (columnPosition == 0) {
-				return new LayerCell(
-						this,
-						columnPosition, getStartPositionOfGroup(rowPosition),
-						columnPosition, rowPosition,
-						1, getRowSpan(rowPosition)
-				);
+				return new LayerCell(this,
+						new LayerCellDim(HORIZONTAL, getColumnIndexByPosition(columnPosition),
+								columnPosition ),
+						new LayerCellDim(VERTICAL, getRowIndexByPosition(rowPosition),
+								rowPosition, getStartPositionOfGroup(rowPosition), getRowSpan(rowPosition) ),
+						displayMode );
 			}
 		}
 		
-		return new LayerCell(this, columnPosition, rowPosition);
+		return new LayerCell(this,
+				new LayerCellDim(HORIZONTAL, getColumnIndexByPosition(columnPosition),
+						columnPosition ),
+				new LayerCellDim(VERTICAL, getRowIndexByPosition(rowPosition),
+						rowPosition ),
+				displayMode );
 	}
 	
 	/**
 	 * Calculates the span of a cell in a Row Group.
 	 * Takes into account collapsing and hidden rows in the group.
 	 *
-	 * @param selectionLayerColumnPosition of any row belonging to the group
+	 * @param rowPosition position of any row belonging to the group
 	 */
 	protected int getRowSpan(int rowPosition) {
 		int rowIndex = getRowIndexByPosition(rowPosition);
@@ -255,13 +268,12 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 		return i;
 	}
 	
-	@Override
-	public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
-		int rowIndex = getRowIndexByPosition(rowPosition);
+	public String getDisplayModeByPosition(int columnPosition, int rowPosition, int rowIndex) {
 		if( columnPosition == 0 && RowGroupUtils.isPartOfAGroup(model, rowIndex) ) {
 			return DisplayMode.NORMAL;
 		} else {
-			return rowHeaderLayer.getDisplayModeByPosition(columnPosition - 1, rowPosition);
+			ILayerCell cell = rowHeaderLayer.getCellByPosition(columnPosition - 1, rowPosition);
+			return (cell != null) ? cell.getDisplayMode() : DisplayMode.NORMAL;
 		}
 	}
 	

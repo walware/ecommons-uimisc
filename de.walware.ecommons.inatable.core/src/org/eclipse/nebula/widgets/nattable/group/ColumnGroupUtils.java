@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
+// ~
 package org.eclipse.nebula.widgets.nattable.group;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 
+
 public class ColumnGroupUtils {
 
 	public static Direction getMoveDirection(int fromColumnPosition, int toColumnPosition) {
@@ -27,7 +29,7 @@ public class ColumnGroupUtils {
 		} else if(fromColumnPosition < toColumnPosition){
 			return Direction.RIGHT;
 		} else {
-			return Direction.NONE;
+			return null;
 		}
 	}
 
@@ -124,7 +126,7 @@ public class ColumnGroupUtils {
 	}
 
 	public static boolean isColumnIndexHiddenInUnderLyingLayer(int columnIndex, ILayer layer, IUniqueIndexLayer underlyingLayer) {
-		return underlyingLayer.getColumnPositionByIndex(columnIndex) == -1;
+		return underlyingLayer.getColumnPositionByIndex(columnIndex) == Integer.MIN_VALUE;
 	}
 
 	public static boolean isColumnPositionHiddenInUnderLyingLayer(int columnPosition, ILayer layer, IUniqueIndexLayer underlyingLayer) {
@@ -136,7 +138,7 @@ public class ColumnGroupUtils {
 	}
 
 	/**
-	 * @see ColumnGroupUtilsTest
+	 * See ColumnGroupUtilsTest
 	 * @return TRUE if the given column is the <i>right</i> most column in a group
 	 */
 	public static boolean isRightEdgeOfAColumnGroup(ILayer natLayer, int columnPosition, int columnIndex, ColumnGroupModel model) {
@@ -156,7 +158,7 @@ public class ColumnGroupUtils {
 	}
 
 	/**
-	 * @see ColumnGroupUtilsTest
+	 * See ColumnGroupUtilsTest
 	 * @return TRUE if the given column is the <i>left</i> most column in a group
 	 */
 	public static boolean isLeftEdgeOfAColumnGroup(ILayer natLayer, int columnPosition, int columnIndex, ColumnGroupModel model) {
@@ -190,5 +192,4 @@ public class ColumnGroupUtils {
 				model);
 	}
 	
-
 }

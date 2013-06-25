@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,9 +14,10 @@ package org.eclipse.nebula.widgets.nattable.selection;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.swt.graphics.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 /**
  * Tracks the selections made in the table.
@@ -42,7 +43,7 @@ public interface ISelectionModel {
 	
 	// Cell features
 
-	public boolean isCellPositionSelected(int columnPosition, int rowPosition);
+	public boolean isCellPositionSelected(ILayerCell cell);
 	
 	// Column features
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,18 +10,26 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.coordinate;
 
-import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.isNotEmpty;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class PositionUtil {
 
+public class PositionUtil {
+	
+	
+	public static List<Integer> concat(List<Integer> list, Integer add) {
+		ArrayList<Integer> newList = new ArrayList<Integer>(list.size() + 1);
+		newList.addAll(list);
+		newList.add(add);
+		return newList;
+	}
+	
 	/**
 	 * Finds contiguous numbers in a group of numbers.
-	 * @see ColumnChooserDialogTest#getGroupedByContiguous()
+	 * <p>
+	 * See ColumnChooserDialogTest#getGroupedByContiguous()
 	 */
 	public static List<List<Integer>> getGroupedByContiguous(Collection<Integer> numberCollection) {
 		List<Integer> numbers = new ArrayList<Integer>(numberCollection);
@@ -39,7 +47,7 @@ public class PositionUtil {
 				contiguous.add(numbers.get(i));
 			}
 		}
-		if(isNotEmpty(numbers)){
+		if (!numbers.isEmpty()) {
 			contiguous.add(numbers.get(numbers.size()-1));
 		}
 		grouped.add(contiguous);
@@ -47,16 +55,16 @@ public class PositionUtil {
 	}
 
 	/**
-	 * Creates {@link Range}s out of list of numbers.<br/>
-	 * The contiguous numbers are grouped together in Ranges.<br/>
-	 *
-	 * Example: 0, 1, 2, 4, 5, 6 will return [[Range(0 - 3)][Range(4 - 7)]]<br/>
-	 * The last number in the Range is not inclusive.
+	 * <p>Creates {@link Range}s out of list of numbers.
+	 * The contiguous numbers are grouped together in Ranges.</p>
+	 * 
+	 * <p>Example: 0, 1, 2, 4, 5, 6 will return [[Range(0 - 3)][Range(4 - 7)]]</p>
+	 * <p>The last number in the Range is not inclusive.</p>
 	 */
 	public static List<Range> getRanges(Collection<Integer> numbers) {
 		List<Range> ranges = new ArrayList<Range>();
 
-		if(isNotEmpty(numbers)){
+		if (numbers != null) {
 			for (List<Integer> number : PositionUtil.getGroupedByContiguous(numbers)) {
 				int start = number.get(0).intValue();
 				int end = number.get(number.size() - 1).intValue() + 1;

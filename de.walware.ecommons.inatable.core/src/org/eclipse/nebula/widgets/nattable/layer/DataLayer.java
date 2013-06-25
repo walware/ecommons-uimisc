@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,33 +8,30 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
+
 package org.eclipse.nebula.widgets.nattable.layer;
 
+import static org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell.NO_INDEX;
+
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
-import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.command.StructuralRefreshCommandHandler;
 import org.eclipse.nebula.widgets.nattable.command.VisualRefreshCommandHandler;
-import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.config.LayoutSizeConfig;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.edit.command.UpdateDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
-import org.eclipse.nebula.widgets.nattable.grid.command.InitializeGridCommand;
 import org.eclipse.nebula.widgets.nattable.layer.event.ResizeStructuralRefreshEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.StructuralRefreshEvent;
+import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.command.MultiColumnResizeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.command.MultiRowResizeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommandHandler;
 import org.eclipse.nebula.widgets.nattable.resize.event.ColumnResizeEvent;
 import org.eclipse.nebula.widgets.nattable.resize.event.RowResizeEvent;
-import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 
 
 /**
@@ -56,24 +53,30 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 	private final SizeConfig columnWidthConfig;
 	private final SizeConfig rowHeightConfig;
 	
+	private boolean enableColumnIndex;
+	private boolean enableRowIndex;
+	
+	
 	public DataLayer(IDataProvider dataProvider) {
-		this(dataProvider, DEFAULT_COLUMN_WIDTH, DEFAULT_ROW_HEIGHT);
+		this(dataProvider, DEFAULT_COLUMN_WIDTH, DEFAULT_ROW_HEIGHT, true, true);
 	}
 
 	public DataLayer(IDataProvider dataProvider, int defaultColumnWidth, int defaultRowHeight) {
-		this(defaultColumnWidth, defaultRowHeight);
-		this.dataProvider = dataProvider;
+		this(dataProvider, defaultColumnWidth, defaultRowHeight, true, true);
 	}
 
-	protected DataLayer() {
-		this(DEFAULT_COLUMN_WIDTH, DEFAULT_ROW_HEIGHT);
-	}
-
-	protected DataLayer(int defaultColumnWidth, int defaultRowHeight) {
+	public DataLayer(IDataProvider dataProvider, int defaultColumnWidth, int defaultRowHeight,
+			boolean enableColumnIndex, boolean enableRowIndex) {
+		
 		columnWidthConfig = new SizeConfig(defaultColumnWidth);
 		rowHeightConfig = new SizeConfig(defaultRowHeight);
-
+		
+		this.enableColumnIndex = enableColumnIndex;
+		this.enableRowIndex = enableRowIndex;
+		
 		registerCommandHandlers();
+		
+		setDataProvider(dataProvider);
 	}
 
 	// Persistence
@@ -111,7 +114,15 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 	}
 
 	protected void setDataProvider(IDataProvider dataProvider) {
+		if (this.dataProvider instanceof IPersistable) {
+			unregisterPersistable((IPersistable) this.dataProvider);
+		}
+		
 		this.dataProvider = dataProvider;
+		
+		if (dataProvider instanceof IPersistable) {
+			registerPersistable((IPersistable) dataProvider);
+		}
 	}
 
 	// Horizontal features
@@ -130,22 +141,20 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 	 * This is the root coordinate system, so the column index is always equal to the column position.
 	 */
 	public int getColumnIndexByPosition(int columnPosition) {
-		if (columnPosition >=0 && columnPosition < getColumnCount()) {
-			return columnPosition;
-		} else {
-			return -1;
+		if (!enableColumnIndex || columnPosition < 0 || columnPosition >= getColumnCount()) {
+			return NO_INDEX;
 		}
+		return columnPosition;
 	}
 
 	/**
 	 * This is the root coordinate system, so the column position is always equal to the column index.
 	 */
 	public int getColumnPositionByIndex(int columnIndex) {
-		if (columnIndex >=0 && columnIndex < getColumnCount()) {
-			return columnIndex;
-		} else {
-			return -1;
+		if (!enableColumnIndex || columnIndex < 0 || columnIndex >= getColumnCount()) {
+			return Integer.MIN_VALUE;
 		}
+		return columnIndex;
 	}
 
 	public int localToUnderlyingColumnPosition(int localColumnPosition) {
@@ -228,22 +237,20 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 	 * This is the root coordinate system, so the row index is always equal to the row position.
 	 */
 	public int getRowIndexByPosition(int rowPosition) {
-		if (rowPosition >=0 && rowPosition < getRowCount()) {
-			return rowPosition;
-		} else {
-			return -1;
+		if (!enableRowIndex || rowPosition < 0 || rowPosition >= getRowCount()) {
+			return NO_INDEX;
 		}
+		return rowPosition;
 	}
 
 	/**
 	 * This is the root coordinate system, so the row position is always equal to the row index.
 	 */
 	public int getRowPositionByIndex(int rowIndex) {
-		if (rowIndex >= 0 && rowIndex < getRowCount()) {
-			return rowIndex;
-		} else {
-			return -1;
+		if (!enableRowIndex || rowIndex < 0 || rowIndex >= getRowCount()) {
+			return Integer.MIN_VALUE;
 		}
+		return rowIndex;
 	}
 
 	public int localToUnderlyingRowPosition(int localRowPosition) {
@@ -313,9 +320,9 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 	// Cell features
 
 	public Object getDataValueByPosition(int columnPosition, int rowPosition) {
-		int columnIndex = getColumnIndexByPosition(columnPosition);
-		int rowIndex = getRowIndexByPosition(rowPosition);
-		return dataProvider.getDataValue(columnIndex, rowIndex);
+//		long columnIndex = getColumnIndexByPosition(columnPosition);
+//		long rowIndex = getRowIndexByPosition(rowPosition);
+		return dataProvider.getDataValue(columnPosition, rowPosition);
 	}
 
 	public int getColumnPositionByX(int x) {
@@ -357,7 +364,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 				fireLayerEvent(new ResizeStructuralRefreshEvent(this));
 			}
 
-			return true;
+			return true; // refresh?
 		}
 		return super.doCommand(command);
 	}

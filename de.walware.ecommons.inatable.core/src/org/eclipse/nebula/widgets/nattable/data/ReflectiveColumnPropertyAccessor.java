@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,6 +20,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+
+import org.eclipse.nebula.widgets.nattable.internal.NatTablePlugin;
+
+
 /**
  * Convenience class which uses java reflection to get/set property names
  *  from the row bean. It looks for getter methods for reading and setter
@@ -28,7 +34,8 @@ import java.util.Map;
  * @param <R> type of the row object/bean
  */
 public class ReflectiveColumnPropertyAccessor<R> implements IColumnPropertyAccessor<R> {
-
+	
+	
 	private final List<String> propertyNames;
 
 	private Map<String, PropertyDescriptor> propertyDescriptorMap;
@@ -62,10 +69,13 @@ public class ReflectiveColumnPropertyAccessor<R> implements IColumnPropertyAcces
 				throw new RuntimeException("Setter method not found in backing bean for value at column index: " + columnIndex); //$NON-NLS-1$
 			}
 			writeMethod.invoke(rowObj, newValue);
-//		} catch (IllegalArgumentException ex) {
-//			System.err.println("Data type being set does not match the data type of the setter method in the backing bean"); //$NON-NLS-1$
+		} catch (IllegalArgumentException ex) {
+			NatTablePlugin.log(new Status(IStatus.WARNING, NatTablePlugin.PLUGIN_ID,
+					"Data type being set does not match the data type of the setter method in the backing bean", ex )); //$NON-NLS-1$
 		} catch (Exception e) {
-			throw new RuntimeException("Error while setting data value", e); //$NON-NLS-1$
+			NatTablePlugin.log(new Status(IStatus.ERROR, NatTablePlugin.PLUGIN_ID,
+					"Error while setting data value", e )); //$NON-NLS-1$
+			throw new RuntimeException("Error while setting data value"); //$NON-NLS-1$
 		}
 	};
 

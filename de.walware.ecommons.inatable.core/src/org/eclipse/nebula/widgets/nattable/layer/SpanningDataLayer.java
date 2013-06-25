@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,13 +8,19 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
+
 package org.eclipse.nebula.widgets.nattable.layer;
+
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
+
+import org.eclipse.swt.graphics.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.data.ISpanningDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.DataCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCellDim;
 
 
 public class SpanningDataLayer extends DataLayer {
@@ -27,14 +33,15 @@ public class SpanningDataLayer extends DataLayer {
 		super(dataProvider, defaultColumnWidth, defaultRowHeight);
 	}
 	
-	protected SpanningDataLayer() {
-		super();
+	public SpanningDataLayer(ISpanningDataProvider dataProvider,
+			int defaultColumnWidth, int defaultRowHeight,
+			boolean enableColumnIndex, boolean enableRowIndex) {
+		super(dataProvider,
+				defaultColumnWidth, defaultRowHeight,
+				enableColumnIndex, enableRowIndex );
 	}
-
-	protected SpanningDataLayer(int defaultColumnWidth, int defaultRowHeight) {
-		super(defaultColumnWidth, defaultRowHeight);
-	}
-
+	
+	
 	@Override
 	public ISpanningDataProvider getDataProvider() {
 		return (ISpanningDataProvider) super.getDataProvider();
@@ -49,7 +56,13 @@ public class SpanningDataLayer extends DataLayer {
 		
 		DataCell dataCell = getDataProvider().getCellByPosition(columnPosition, rowPosition);
 		
-		return new LayerCell(this, columnPosition, rowPosition, dataCell);
+		return new LayerCell(this,
+				new LayerCellDim(HORIZONTAL, getColumnIndexByPosition(columnPosition),
+						columnPosition,
+						dataCell.getColumnPosition(), dataCell.getColumnSpan() ),
+				new LayerCellDim(VERTICAL, getRowIndexByPosition(rowPosition),
+						rowPosition,
+						dataCell.getRowPosition(), dataCell.getRowSpan() ));
 	}
 	
 	@Override

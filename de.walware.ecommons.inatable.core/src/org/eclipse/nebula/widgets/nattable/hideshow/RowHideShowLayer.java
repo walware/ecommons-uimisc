@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,9 +25,14 @@ import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllRowsCommandHa
 import org.eclipse.nebula.widgets.nattable.hideshow.event.HideRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowRowPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
+import org.eclipse.nebula.widgets.nattable.layer.event.StructuralChangeEventHelper;
+import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
+import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 
 
-public class RowHideShowLayer extends AbstractRowHideShowLayer {
+public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHideShowCommandLayer {
 
 	public static final String PERSISTENCE_KEY_HIDDEN_ROW_INDEXES = ".hiddenRowIndexes"; //$NON-NLS-1$
 	
@@ -43,6 +48,22 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer {
 		registerCommandHandler(new MultiRowShowCommandHandler(this));
 	}
 
+	
+	@Override
+	public void handleLayerEvent(ILayerEvent event) {
+		if (event instanceof IStructuralChangeEvent) {
+			IStructuralChangeEvent structuralChangeEvent = (IStructuralChangeEvent) event;
+			if (structuralChangeEvent.isVerticalStructureChanged()) {
+				Collection<StructuralDiff> rowDiffs = structuralChangeEvent.getRowDiffs();
+				if (rowDiffs != null && !rowDiffs.isEmpty()) {
+					StructuralChangeEventHelper.handleRowDelete(rowDiffs, underlyingLayer, hiddenRowIndexes, false);
+					StructuralChangeEventHelper.handleRowInsert(rowDiffs, underlyingLayer, hiddenRowIndexes, false);
+				}
+			}
+		}
+		super.handleLayerEvent(event);
+	}
+	
 	// Persistence
 	
 	@Override
@@ -51,7 +72,7 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer {
 			StringBuilder strBuilder = new StringBuilder();
 			for (Integer index : hiddenRowIndexes) {
 				strBuilder.append(index);
-				strBuilder.append(',');
+				strBuilder.append(IPersistable.VALUE_SEPARATOR);
 			}
 			properties.setProperty(prefix + PERSISTENCE_KEY_HIDDEN_ROW_INDEXES, strBuilder.toString());
 		}
@@ -61,11 +82,10 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer {
 	
 	@Override
 	public void loadState(String prefix, Properties properties) {
+		hiddenRowIndexes.clear();
 		String property = properties.getProperty(prefix + PERSISTENCE_KEY_HIDDEN_ROW_INDEXES);
 		if (property != null) {
-			hiddenRowIndexes.clear();
-			
-			StringTokenizer tok = new StringTokenizer(property, ","); //$NON-NLS-1$
+			StringTokenizer tok = new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
 			while (tok.hasMoreTokens()) {
 				String index = tok.nextToken();
 				hiddenRowIndexes.add(Integer.valueOf(index));
@@ -87,47 +107,40 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer {
 		return hiddenRowIndexes; 
 	}
 	
+	@Override
 	public void hideRowPositions(Collection<Integer> rowPositions) {
 		Set<Integer> rowIndexes = new HashSet<Integer>();
 		for (Integer rowPosition : rowPositions) {
-			rowIndexes.add(Integer.valueOf(getRowIndexByPosition(rowPosition.intValue())));
+			rowIndexes.add(getRowIndexByPosition(rowPosition));
+		}
+		hiddenRowIndexes.addAll(rowIndexes);
+		invalidateCache();
+		fireLayerEvent(new HideRowPositionsEvent(this, rowPositions));
+	}
+
+	@Override
+	public void hideRowIndexes(Collection<Integer> rowIndexes) {
+		Set<Integer> rowPositions = new HashSet<Integer>();
+		for (Integer rowIndex : rowIndexes) {
+			rowPositions.add(getRowPositionByIndex(rowIndex));
 		}
 		hiddenRowIndexes.addAll(rowIndexes);
 		invalidateCache();
 		fireLayerEvent(new HideRowPositionsEvent(this, rowPositions));
 	}
 	
-	public void showRowIndexes(int[] rowIndexes) {
-		Set<Integer> rowIndexesSet = new HashSet<Integer>();
-		for (int i = 0; i < rowIndexes.length; i++) {
-			rowIndexesSet.add(Integer.valueOf(rowIndexes[i]));
-		}
-		hiddenRowIndexes.removeAll(rowIndexesSet);
+	@Override
+	public void showRowIndexes(Collection<Integer> rowIndexes) {
+		hiddenRowIndexes.removeAll(rowIndexes);
 		invalidateCache();
 		fireLayerEvent(new ShowRowPositionsEvent(this, getRowPositionsByIndexes(rowIndexes)));
 	}
-	
-	protected void showRowIndexes(Collection<Integer> rowIndexes) {
-		for (int rowIndex : rowIndexes) {
-			hiddenRowIndexes.remove(Integer.valueOf(rowIndex));
-		}
-		invalidateCache();
-		// Since we are exposing this method for showing individual rows, a structure event must be fired here.
-		fireLayerEvent(new ShowRowPositionsEvent(this, rowIndexes));
-	}
 
+	@Override
 	public void showAllRows() {
 		Collection<Integer> hiddenRows = new ArrayList<Integer>(hiddenRowIndexes);
 		hiddenRowIndexes.clear();
 		invalidateCache();
 		fireLayerEvent(new ShowRowPositionsEvent(this, hiddenRows));
-	}
-	
-	private Collection<Integer> getRowPositionsByIndexes(int[] rowIndexes) {
-		Collection<Integer> rowPositions = new HashSet<Integer>();
-		for (int rowIndex : rowIndexes) {
-			rowPositions.add(Integer.valueOf(getRowPositionByIndex(rowIndex)));
-		}
-		return rowPositions;
 	}
 }

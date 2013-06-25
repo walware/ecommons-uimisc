@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,23 +8,23 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
+// ~
 package org.eclipse.nebula.widgets.nattable.columnCategories.gui;
-
-import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.isNull;
 
 import java.util.List;
 
-
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+
 import org.eclipse.nebula.widgets.nattable.columnCategories.ColumnCategoriesModel;
 import org.eclipse.nebula.widgets.nattable.columnCategories.Node;
 import org.eclipse.nebula.widgets.nattable.columnChooser.ColumnEntry;
 import org.eclipse.nebula.widgets.nattable.util.ObjectCloner;
 
+
 /**
- * Provides data to the tree viewer representation of Column categories.<br/>
- * Data is in the form of {@link Node} objects exposed from the {@link ColumnCategoriesModel}<br/>
+ * Provides data to the tree viewer representation of Column categories.
+ * Data is in the form of {@link Node} objects exposed from the {@link ColumnCategoriesModel}
  */
 public class AvailableColumnCategoriesProvider implements ITreeContentProvider {
 
@@ -36,6 +36,7 @@ public class AvailableColumnCategoriesProvider implements ITreeContentProvider {
 
 	/**
 	 * Hide the given {@link ColumnEntry} (ies) i.e. do not show them in the viewer. 
+	 * @param entriesToHide the entries to hide
 	 */
 	public void hideEntries(List<ColumnEntry> entriesToHide) {
 		for (ColumnEntry hiddenColumnEntry : entriesToHide) {
@@ -56,9 +57,8 @@ public class AvailableColumnCategoriesProvider implements ITreeContentProvider {
 	}
 
 	public Object[] getElements(Object inputElement) {
-		return isNull(model.getRootCategory()) 
-					? new Object[]{} 
-					: model.getRootCategory().getChildren().toArray();
+		return (model.getRootCategory() != null) ? 
+				model.getRootCategory().getChildren().toArray() : new Object[0];
 	}
 
 	private Node castToNode(Object element) {

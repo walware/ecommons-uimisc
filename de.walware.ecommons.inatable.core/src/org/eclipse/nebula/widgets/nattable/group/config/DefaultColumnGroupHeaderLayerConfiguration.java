@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -70,8 +70,8 @@ public class DefaultColumnGroupHeaderLayerConfiguration implements IConfiguratio
 				MouseEventMatcher.columnGroupHeaderLeftClick(SWT.NONE),
 				new ColumnGroupExpandCollapseAction());
 
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CTRL, 'g'), new CreateColumnGroupAction());
-		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.CTRL, 'u'), new UngroupColumnsAction());
+		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, 'g'), new CreateColumnGroupAction());
+		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.MOD1, 'u'), new UngroupColumnsAction());
 	}
 
 }

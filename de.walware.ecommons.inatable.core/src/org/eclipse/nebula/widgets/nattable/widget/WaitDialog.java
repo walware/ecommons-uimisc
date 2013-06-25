@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,8 +13,6 @@ package org.eclipse.nebula.widgets.nattable.widget;
 import static org.eclipse.swt.layout.GridData.CENTER;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
@@ -25,6 +23,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+
 
 public class WaitDialog extends Dialog {
 
@@ -78,9 +79,10 @@ public class WaitDialog extends Dialog {
 
 	@Override
 	public boolean close() {
-		if(ObjectUtils.isNotNull(iconImage)){
+		if (iconImage != null) {
 			iconImage.dispose();
 		}
 		return super.close();
 	}
+	
 }

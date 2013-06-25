@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,11 +8,10 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
-// ~Direction
+// ~
 package org.eclipse.nebula.widgets.nattable.columnCategories.gui;
 
 import static org.eclipse.nebula.widgets.nattable.columnChooser.ColumnChooserUtils.getColumnEntryPositions;
-import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.isNotEmpty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +44,6 @@ import org.eclipse.nebula.widgets.nattable.columnChooser.ColumnEntry;
 import org.eclipse.nebula.widgets.nattable.columnChooser.gui.AbstractColumnChooserDialog;
 import org.eclipse.nebula.widgets.nattable.coordinate.Direction;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 
 
 /**
@@ -136,7 +134,7 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
 		listViewer.getControl().addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				boolean controlMask = (e.stateMask & SWT.CONTROL) == SWT.CONTROL;
+				boolean controlMask = (e.stateMask & SWT.MOD1) == SWT.MOD1;
 				if (controlMask && e.keyCode == SWT.ARROW_UP) {
 					moveSelectedUp();
 					e.doit = false;
@@ -244,7 +242,7 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
 	}
 
 	protected final void fireItemsSelected(List<Integer> addedColumnIndexes) {
-		if (isNotEmpty(addedColumnIndexes)) {
+		if (addedColumnIndexes != null) {
 			for (Object listener : listeners.getListeners()) {
 				((IColumnCategoriesDialogListener) listener).itemsSelected(addedColumnIndexes);
 			}
@@ -252,7 +250,7 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
 	}
 
 	protected final void fireItemsRemoved(List<Integer> removedColumnPositions) {
-		if (isNotEmpty(removedColumnPositions)) {
+		if (removedColumnPositions != null) {
 			for (Object listener : listeners.getListeners()) {
 				((IColumnCategoriesDialogListener) listener).itemsRemoved(removedColumnPositions);
 			}
@@ -324,8 +322,9 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
 		this.visibleColumnsEntries = visibleColumnsEntries;
 		populateAvailableTree();
 		populateSelectedList();
-		if(ObjectUtils.isNotNull(lastListSelection)){
+		if (lastListSelection != null){
 			listViewer.setSelection(lastListSelection);
 		}
 	}
+	
 }

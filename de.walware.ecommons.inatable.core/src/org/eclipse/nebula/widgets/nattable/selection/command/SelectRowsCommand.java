@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,7 +41,7 @@ public class SelectRowsCommand extends AbstractMultiRowCommand {
 	}
 
 	public SelectRowsCommand(final ILayer layer, final int columnPosition, final int[] rowPositions,
-			final int rowPositionToReveal, final int selectionFlags) {
+			final int selectionFlags, final int rowPositionToReveal) {
 		super(layer, rowPositions);
 		
 		this.selectionFlags = selectionFlags;
@@ -49,7 +49,7 @@ public class SelectRowsCommand extends AbstractMultiRowCommand {
 	}
 
 	public SelectRowsCommand(final ILayer layer, final int columnPosition, final Collection<Integer> rowPositions,
-			final int rowPositionToReveal, final int selectionFlags) {
+			final int selectionFlags, final int rowPositionToReveal) {
 		super(layer, rowPositions);
 		
 		this.selectionFlags = selectionFlags;
@@ -78,14 +78,14 @@ public class SelectRowsCommand extends AbstractMultiRowCommand {
 
 	@Override
 	public boolean convertToTargetLayer(ILayer targetLayer) {
-		if (super.convertToTargetLayer(targetLayer)) {
-			
-			columnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(
-					columnPositionCoordinate, targetLayer );
-			rowPositionToReveal = LayerCommandUtil.convertRowPositionToTargetContext(
-					rowPositionToReveal, targetLayer );
-			
-			return (columnPositionCoordinate != null);
+		ColumnPositionCoordinate targetColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(
+				columnPositionCoordinate, targetLayer );
+		if (targetColumnPositionCoordinate != null && targetColumnPositionCoordinate.getColumnPosition() >= 0
+				&& super.convertToTargetLayer(targetLayer) ) {
+			this.columnPositionCoordinate = targetColumnPositionCoordinate;
+			this.rowPositionToReveal = LayerCommandUtil.convertRowPositionToTargetContext(
+					this.rowPositionToReveal, targetLayer );
+			return true;
 		}
 		return false;
 	}

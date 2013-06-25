@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,10 +8,8 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
+// ~
 package org.eclipse.nebula.widgets.nattable.data.convert;
-
-import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.isNotEmpty;
-import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.isNotNull;
 
 import org.eclipse.nebula.widgets.nattable.Messages;
 
@@ -26,12 +24,14 @@ public class DefaultCharacterDisplayConverter extends DisplayConverter {
 	}
 
 	public Object displayToCanonicalValue(Object displayValue) {
-		if (isNotNull(displayValue) && isNotEmpty(displayValue.toString())) {
-			if (displayValue.toString().length() > 1) {
+		String s;
+		if (displayValue != null
+				&& (s = displayValue.toString()) != null && !s.isEmpty() ) {
+			if (s.length() > 1) {
 				throw new ConversionFailedException(Messages.getString("DefaultCharacterDisplayConverter.failure", //$NON-NLS-1$
-						new Object[] {displayValue}));
+						new Object[] {s}));
 			} else {
-				return displayValue.toString().charAt(0);
+				return s.charAt(0);
 			}
 		} 
 		return null;

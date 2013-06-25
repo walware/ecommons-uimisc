@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,44 +23,44 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 
 
 public class RowSelectionEvent extends RowVisualChangeEvent implements ISelectionEvent {
-
-
+	
+	
 	private final SelectionLayer selectionLayer;
-
+	
 	private int rowPositionToReveal;
-
-
+	
+	
 	public RowSelectionEvent(SelectionLayer selectionLayer, int rowPosition, boolean revealRow) {
-		super(selectionLayer, new Range(rowPosition, rowPosition+1));
+		super(selectionLayer, new Range(rowPosition));
 		this.selectionLayer = selectionLayer;
 		this.rowPositionToReveal = (revealRow) ? rowPosition : NO_SELECTION;
 	}
-
+	
 	public RowSelectionEvent(SelectionLayer selectionLayer, Collection<Integer> rowPositions, int rowPositionToReveal) {
 		super(selectionLayer, PositionUtil.getRanges(rowPositions));
 		this.selectionLayer = selectionLayer;
 		this.rowPositionToReveal = rowPositionToReveal;
 	}
-
+	
 	protected RowSelectionEvent(RowSelectionEvent event) {
 		super(event);
 		this.selectionLayer = event.selectionLayer;
 		this.rowPositionToReveal = event.rowPositionToReveal;
 	}
-
+	
 	public RowSelectionEvent cloneEvent() {
 		return new RowSelectionEvent(this);
 	}
-
-
+	
+	
 	public SelectionLayer getSelectionLayer() {
 		return selectionLayer;
 	}
-
+	
 	public int getRowPositionToReveal() {
 		return rowPositionToReveal;
 	}
-
+	
 	@Override
 	public boolean convertToLocal(ILayer localLayer) {
 		if (rowPositionToReveal != NO_SELECTION) {
@@ -69,5 +69,5 @@ public class RowSelectionEvent extends RowVisualChangeEvent implements ISelectio
 		
 		return super.convertToLocal(localLayer);
 	}
-
+	
 }

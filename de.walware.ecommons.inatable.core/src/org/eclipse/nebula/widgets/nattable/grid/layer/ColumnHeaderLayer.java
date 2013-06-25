@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,15 +8,21 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
+// ~
 package org.eclipse.nebula.widgets.nattable.grid.layer;
+
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
 
 import org.eclipse.nebula.widgets.nattable.columnRename.DisplayColumnRenameDialogCommandHandler;
 import org.eclipse.nebula.widgets.nattable.columnRename.RenameColumnHeaderCommandHandler;
 import org.eclipse.nebula.widgets.nattable.columnRename.RenameColumnHelper;
 import org.eclipse.nebula.widgets.nattable.columnRename.event.RenameColumnHeaderEvent;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayerDim;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
+import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCellDim;
 import org.eclipse.nebula.widgets.nattable.layer.config.DefaultColumnHeaderLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.painter.layer.CellLayerPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
@@ -24,10 +30,11 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 
+
 /**
  * Responsible for rendering, event handling etc on the column headers.
  */
-public class ColumnHeaderLayer extends DimensionallyDependentLayer {
+public class ColumnHeaderLayer extends DimensionallyDependentIndexLayer {
 
 	private final SelectionLayer selectionLayer;
 
@@ -43,11 +50,11 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
 	 * @param selectionLayer
 	 *            The selection layer required to respond to selection events
 	 */
-	public ColumnHeaderLayer(IUniqueIndexLayer baseLayer, IUniqueIndexLayer horizontalLayerDependency, SelectionLayer selectionLayer) {
+	public ColumnHeaderLayer(IUniqueIndexLayer baseLayer, ILayer horizontalLayerDependency, SelectionLayer selectionLayer) {
 		this(baseLayer, horizontalLayerDependency, selectionLayer, true);
 	}
 
-	public ColumnHeaderLayer(IUniqueIndexLayer baseLayer, IUniqueIndexLayer horizontalLayerDependency, SelectionLayer selectionLayer, boolean useDefaultConfiguration) {
+	public ColumnHeaderLayer(IUniqueIndexLayer baseLayer, ILayer horizontalLayerDependency, SelectionLayer selectionLayer, boolean useDefaultConfiguration) {
 		this(baseLayer, horizontalLayerDependency, selectionLayer, useDefaultConfiguration, new CellLayerPainter());
 	}
 
@@ -63,7 +70,7 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
 	 * @param layerPainter
 	 *            The painter for this layer or <code>null</code> to use the painter of the base layer
 	 */
-	public ColumnHeaderLayer(IUniqueIndexLayer baseLayer, IUniqueIndexLayer horizontalLayerDependency,
+	public ColumnHeaderLayer(IUniqueIndexLayer baseLayer, ILayer horizontalLayerDependency,
 			SelectionLayer selectionLayer, boolean useDefaultConfiguration, ILayerPainter layerPainter) {
 		super(baseLayer, horizontalLayerDependency, baseLayer);
 		if (selectionLayer == null) {
@@ -83,17 +90,24 @@ public class ColumnHeaderLayer extends DimensionallyDependentLayer {
 			addConfiguration(new DefaultColumnHeaderLayerConfiguration());
 		}
 	}
-
+	
+	
 	@Override
-	public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
-		int selectionLayerColumnPosition = LayerUtil.convertColumnPosition(this, columnPosition, selectionLayer);
-		if (selectionLayer.isColumnPositionSelected(selectionLayerColumnPosition)) {
-			return DisplayMode.SELECT;
-		} else {
-			return super.getDisplayModeByPosition(columnPosition, rowPosition);
-		}
+	protected String getDisplayMode(final LayerCellDim hDim, final LayerCellDim vDim,
+			final String displayMode) {
+		return (isSelected(hDim, vDim)) ? DisplayMode.SELECT : displayMode;
 	}
-
+	
+	protected boolean isSelected(final LayerCellDim hDim, final LayerCellDim vDim) {
+		final ILayerDim dim = getDim(HORIZONTAL);
+		final int columnPosition = hDim.getPosition();
+		if (this.selectionLayer.isRowPositionSelected(
+				LayerUtil.convertPosition(dim, columnPosition, columnPosition, this.selectionLayer) )) {
+			return true;
+		}
+		return false;
+	}
+	
 	@Override
 	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
 		LabelStack labelStack = super.getConfigLabelsByPosition(columnPosition, rowPosition);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,11 +10,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hideshow;
 
+import static org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell.NO_INDEX;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
@@ -23,7 +25,6 @@ import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
-import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 
 
 public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
@@ -50,17 +51,12 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
 		}
 		super.handleLayerEvent(event);
 	}
-
-	@Override
-	public void loadState(String prefix, Properties properties) {
-		super.loadState(prefix, properties);
-		fireLayerEvent(new RowStructuralRefreshEvent(this));
-	}
 	
 	// Horizontal features
 
 	// Columns
 	
+	@Override
 	public int getColumnPositionByIndex(int columnIndex) {
 		return ((IUniqueIndexLayer) getUnderlyingLayer()).getColumnPositionByIndex(columnIndex);
 	}
@@ -77,20 +73,29 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
 	@Override
 	public int getRowIndexByPosition(int rowPosition) {
 		if (rowPosition < 0 || rowPosition >= getRowCount()) {
-			return -1;
+			return NO_INDEX;
 		}
 
 		Integer rowIndex = getCachedVisibleRowPositons().get(rowPosition);
 		if (rowIndex != null) {
 			return rowIndex.intValue();
 		} else {
-			return -1;
+			return NO_INDEX;
 		}
 	}
 	
+	@Override
 	public int getRowPositionByIndex(int rowIndex) {
 		final Integer position = getCachedVisibleRowIndexes().get(Integer.valueOf(rowIndex));
-		return position != null ? position : -1;
+		return position != null ? position : Integer.MIN_VALUE;
+	}
+	
+	public Collection<Integer> getRowPositionsByIndexes(Collection<Integer> rowIndexes) {
+		Collection<Integer> rowPositions = new HashSet<Integer>();
+		for (int rowIndex : rowIndexes) {
+			rowPositions.add(getRowPositionByIndex(rowIndex));
+		}
+		return rowPositions;
 	}
 	
 	@Override
@@ -110,7 +115,7 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
 			if (hiddenRowPosition != null) {
 				return hiddenRowPosition.intValue();
 			} else {
-				return -1;
+				return Integer.MIN_VALUE;
 			}
 		}
 	}
@@ -181,7 +186,9 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
 
 		for (Integer hiddenIndex : getHiddenRowIndexes()) {
 			int hiddenPosition = underlyingLayer.getRowPositionByIndex(hiddenIndex.intValue());
-			if (hiddenPosition <= underlyingPosition) {
+			//if the hidden position is -1, it is hidden in the underlying layer
+			//therefore the underlying layer should handle the positioning
+			if (hiddenPosition >= 0 && hiddenPosition <= underlyingPosition) {
 				underlyingStartY -= underlyingLayer.getRowHeightByPosition(hiddenPosition);
 			}
 		}
@@ -192,15 +199,34 @@ public abstract class AbstractRowHideShowLayer extends AbstractLayerTransform im
 	
 	// Hide/show
 
+	/**
+	 * Will check if the row at the specified index is hidden or not. Checks this
+	 * layer and also the sublayers for the visibility.
+	 * @param rowIndex The row index of the row whose visibility state
+	 * 			should be checked.
+	 * @return <code>true</code> if the row at the specified index is hidden,
+	 * 			<code>false</code> if it is visible.
+	 */
 	public abstract boolean isRowIndexHidden(int rowIndex);
 
+	/**
+	 * Will collect and return all indexes of the rows that are hidden in this layer.
+	 * Note: It is not intended that it also collects the row indexes of underlying
+	 * 		 layers. This would cause issues on calculating positions as every layer
+	 * 		 is responsible for those calculations itself. 
+	 * @return Collection of all row indexes that are hidden in this layer.
+	 */
 	public abstract Collection<Integer> getHiddenRowIndexes();
 	
 	// Cache
 
+	/**
+	 * Invalidate the cache to ensure that information is rebuild.
+	 */
 	protected void invalidateCache() {
 		cachedVisibleRowIndexOrder = null;
 		cachedVisibleRowPositionOrder = null;
+		cachedHiddenRowIndexToPositionMap = null;
 		startYCache.clear();
 	}
 

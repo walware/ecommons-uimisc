@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Edwin Park and others.
+ * Copyright (c) 2012, 2013 Edwin Park and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,13 +10,21 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer;
 
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
+
 import java.util.Collection;
 import java.util.Properties;
 
+import org.eclipse.swt.graphics.Rectangle;
+
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
+import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.SWTUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.InvertedLayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
@@ -25,14 +33,32 @@ import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
-import org.eclipse.swt.graphics.Rectangle;
+
 
 public class InvertedLayer implements IUniqueIndexLayer {
 	
+	
+	private final ILayerDim h;
+	private final ILayerDim v;
+	
 	private IUniqueIndexLayer underlyingLayer;
 	
+	
 	public InvertedLayer(IUniqueIndexLayer underlyingLayer) {
+		this.h = new HorizontalLayerDim<ILayer>(this);
+		this.v = new VerticalLayerDim<ILayer>(this);
+		
 		this.underlyingLayer = underlyingLayer;
+	}
+	
+	
+	@Override
+	public ILayerDim getDim(final Orientation orientation) {
+		if (orientation == null) {
+			throw new NullPointerException("orientation"); //$NON-NLS-1$
+		}
+		
+		return (orientation == HORIZONTAL) ? this.h : this.v;
 	}
 	
 	// ILayerListener
@@ -85,6 +111,14 @@ public class InvertedLayer implements IUniqueIndexLayer {
 		return underlyingLayer.doCommand(command);
 	}
 	
+	public void registerCommandHandler(ILayerCommandHandler<?> commandHandler) {
+		underlyingLayer.registerCommandHandler(commandHandler);
+	}
+	
+	public void unregisterCommandHandler(Class<? extends ILayerCommand> commandClass) {
+		underlyingLayer.unregisterCommandHandler(commandClass);
+	}
+	
 	// Events
 	
 	public void fireLayerEvent(ILayerEvent event) {
@@ -104,7 +138,7 @@ public class InvertedLayer implements IUniqueIndexLayer {
 	}
 	
 	// Client area
-
+	
 	public IClientAreaProvider getClientAreaProvider() {
 		return underlyingLayer.getClientAreaProvider();
 	}
@@ -112,7 +146,7 @@ public class InvertedLayer implements IUniqueIndexLayer {
 	public void setClientAreaProvider(final IClientAreaProvider clientAreaProvider) {
 		underlyingLayer.setClientAreaProvider(new IClientAreaProvider() {
 			public Rectangle getClientArea() {
-				return InvertUtil.invertRectangle(clientAreaProvider.getClientArea());
+				return SWTUtil.switchOrientation(clientAreaProvider.getClientArea());
 			}
 		});
 	}
@@ -252,7 +286,7 @@ public class InvertedLayer implements IUniqueIndexLayer {
 	}
 	
 	// Unique index
-
+	
 	public int getRowPositionByIndex(int rowIndex) {
 		return underlyingLayer.getColumnPositionByIndex(rowIndex);
 	}
@@ -269,11 +303,7 @@ public class InvertedLayer implements IUniqueIndexLayer {
 	}
 	
 	public Rectangle getBoundsByPosition(int columnPosition, int rowPosition) {
-		return InvertUtil.invertRectangle(underlyingLayer.getBoundsByPosition(rowPosition, columnPosition));
-	}
-	
-	public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
-		return underlyingLayer.getDisplayModeByPosition(rowPosition, columnPosition);
+		return SWTUtil.switchOrientation(underlyingLayer.getBoundsByPosition(rowPosition, columnPosition));
 	}
 	
 	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {

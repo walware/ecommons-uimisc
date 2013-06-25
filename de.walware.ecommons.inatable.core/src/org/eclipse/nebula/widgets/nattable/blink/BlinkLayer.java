@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,6 +19,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.swt.widgets.Display;
+
 import org.eclipse.nebula.widgets.nattable.blink.command.BlinkTimerEnableCommandHandler;
 import org.eclipse.nebula.widgets.nattable.blink.event.BlinkEvent;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
@@ -35,7 +37,6 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.PropertyUpdateEvent;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.eclipse.swt.widgets.Display;
 
 /**
  * Blinks cells when they are updated.
@@ -113,13 +114,13 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements IUniqueInde
 		
 		registerCommandHandler(new BlinkTimerEnableCommandHandler(this));
 	}
-	
-	@Override
-	public void dispose() {
-		super.dispose();
-		
-		scheduler.shutdown();
-	}
+    
+    @Override
+    public void dispose() {
+    	super.dispose();
+    	
+    	scheduler.shutdown();
+    }
 	
 	@Override
 	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
@@ -178,8 +179,11 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements IUniqueInde
 
 	/**
 	 * Find the {@link IBlinkingCellResolver} from the {@link ConfigRegistry}.
-	 * Use the above to find the config types associated with a blinking cell.
-	 * @param indexCoordinate 
+	 * Use this to find the config types associated with a blinking cell.
+	 * @param cell the cell
+	 * @param oldValue the old value
+	 * @param newValue the new value
+	 * @return a LabelStack containing resolved config types associated with the cell
 	 */
 	public LabelStack resolveConfigTypes(ILayerCell cell, Object oldValue, Object newValue) {
 		// Acquire default config types for the coordinate. Use these to search for the associated resolver.
@@ -190,7 +194,7 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements IUniqueInde
 		if (resolver != null) {
 		    blinkConfigTypes = resolver.resolve(cell, configRegistry, oldValue, newValue);
 		}
-		if (blinkConfigTypes != null && blinkConfigTypes.length > 0) { //
+		if (blinkConfigTypes != null && blinkConfigTypes.length > 0) {
 			return new LabelStack(blinkConfigTypes);
 		}
 		return underlyingLabelStack;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,8 +19,10 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 
 public abstract class AbstractMultiRowCommand implements ILayerCommand {
-
+	
+	
 	private Collection<RowPositionCoordinate> rowPositionCoordinates;
+	
 	
 	protected AbstractMultiRowCommand(ILayer layer, int rowPositions) {
 		if (rowPositions < 0) {
@@ -64,17 +66,20 @@ public abstract class AbstractMultiRowCommand implements ILayerCommand {
 	}
 	
 	public boolean convertToTargetLayer(ILayer targetLayer) {
-		Collection<RowPositionCoordinate> convertedRowPositionCoordinates = new HashSet<RowPositionCoordinate>();
+		Collection<RowPositionCoordinate> targetRowPositionCoordinates = new HashSet<RowPositionCoordinate>();
 		for (RowPositionCoordinate rowPositionCoordinate : rowPositionCoordinates) {
-			RowPositionCoordinate convertedRowPositionCoordinate = LayerCommandUtil.convertRowPositionToTargetContext(rowPositionCoordinate, targetLayer);
-			if (convertedRowPositionCoordinate != null) {
-				convertedRowPositionCoordinates.add(convertedRowPositionCoordinate);
+			RowPositionCoordinate targetRowPositionCoordinate = LayerCommandUtil.convertRowPositionToTargetContext(rowPositionCoordinate, targetLayer);
+			if (targetRowPositionCoordinate != null) {
+				targetRowPositionCoordinates.add(targetRowPositionCoordinate);
 			}
 		}
 		
-		rowPositionCoordinates = convertedRowPositionCoordinates;
-		
-		return (rowPositionCoordinates.size() > 0);
+		if (targetRowPositionCoordinates.size() > 0) {
+			rowPositionCoordinates = targetRowPositionCoordinates;
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.sort.event;
 
-import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.isNotNull;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Point;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
@@ -20,11 +21,10 @@ import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeDetectUtil;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.graphics.Point;
+
 
 /**
- * Matches a click on the column header, except if the click is on the column edge.<br/>
+ * Matches a click on the column header, except if the click is on the column edge.
  */
 public class ColumnHeaderClickEventMatcher extends MouseEventMatcher {
 
@@ -46,7 +46,7 @@ public class ColumnHeaderClickEventMatcher extends MouseEventMatcher {
 	}
 
     private boolean isNotFilterRegion(LabelStack regionLabels) {
-        if(isNotNull(regionLabels)){
+        if (regionLabels != null) {
             return !regionLabels.getLabels().contains(GridRegion.FILTER_ROW);
         }
         return true;

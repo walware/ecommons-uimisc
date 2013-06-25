@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,13 +10,18 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.viewport.command;
 
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
+
 public class ShowColumnInViewportCommandHandler extends AbstractLayerCommandHandler<ShowColumnInViewportCommand> {
 	
+	
 	private final ViewportLayer viewportLayer;
-
+	
+	
 	public ShowColumnInViewportCommandHandler(ViewportLayer viewportLayer) {
 		this.viewportLayer = viewportLayer;
 	}
@@ -24,11 +29,12 @@ public class ShowColumnInViewportCommandHandler extends AbstractLayerCommandHand
 	public Class<ShowColumnInViewportCommand> getCommandClass() {
 		return ShowColumnInViewportCommand.class;
 	}
-
+	
+	
 	@Override
 	protected boolean doCommand(ShowColumnInViewportCommand command) {
-		viewportLayer.moveColumnPositionIntoViewport(command.getColumnPosition(), false);
+		viewportLayer.getDim(HORIZONTAL).movePositionIntoViewport(command.getColumnPosition());
 		return true;
 	}
-
+	
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,22 +41,6 @@ public class ArrayUtil {
 			list.add(integer);
 		}
 		return list;
-	}
-
-	public static boolean isEmpty(int[] array){
-		return (array == null) || (array.length == 0);
-	}
-
-	public static boolean isEmpty(String[] array){
-		return (array == null) || (array.length == 0);
-	}
-
-	public static boolean isNotEmpty(int[] array){
-		return !isEmpty(array);
-	}
-
-	public static boolean isNotEmpty(String[] array){
-		return !isEmpty(array);
 	}
 
 	public static int[] asIntArray(List<Integer> list) {

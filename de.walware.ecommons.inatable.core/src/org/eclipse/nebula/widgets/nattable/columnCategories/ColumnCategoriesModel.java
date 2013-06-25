@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,9 +8,8 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
+// ~
 package org.eclipse.nebula.widgets.nattable.columnCategories;
-
-import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.isNotNull;
 
 import java.io.Serializable;
 
@@ -25,7 +24,7 @@ public class ColumnCategoriesModel implements Serializable {
 	private final Tree tree = new Tree();
 
 	public Node addRootCategory(String rootCategoryName) {
-		if(isNotNull(tree.getRootElement())){
+		if(tree.getRootElement() != null) {
 			throw new IllegalStateException("Root has been set already. Clear using (clear()) to reset."); //$NON-NLS-1$
 		}
 		Node root = new Node(rootCategoryName, Type.ROOT);

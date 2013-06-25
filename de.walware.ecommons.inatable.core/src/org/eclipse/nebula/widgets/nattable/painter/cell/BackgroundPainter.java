@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,11 +20,11 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
- * Paints the background of the cell using the color from the cell style.<br/>
+ * Paints the background of the cell using the color from the cell style.
  * If no background color is registered in the {@link ConfigRegistry} the painting
- * is skipped.<br/>
- *
- * Example: The {@link TextPainter} inherits this and uses the paint method<br/>
+ * is skipped.
+ * <p>
+ * Example: The {@link TextPainter} inherits this and uses the paint method
  * in this class to paint the background of the cell.
  *
  * Can be used as a cell painter or a decorator.

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,7 +43,7 @@ public class CellEdgeDetectUtil {
 				return columnPosition;
 			}
 		}
-		return -1;
+		return Integer.MIN_VALUE;
 	}
 	
 	/**
@@ -65,7 +65,7 @@ public class CellEdgeDetectUtil {
 				return rowPosition;
 			}
 		}
-		return -1;
+		return Integer.MIN_VALUE;
 	}
 	
 	/**
@@ -115,6 +115,19 @@ public class CellEdgeDetectUtil {
 		} else {
 			return NONE;
 		}
+	}
+
+	/**
+	 * Gets the edge (top/bottom) of the cell which is closer to the click point.  
+	 * @param cellBounds bounds of the cell containing the click
+	 * @param clickPt usually the coordinates of a mouse click
+	 */
+	public static CellEdgeEnum getVerticalCellEdge(Rectangle cellBounds, Point clickPt) {
+		return getVerticalCellEdge(cellBounds, clickPt, -1);
+	}
+
+	public static CellEdgeEnum getVerticalCellEdge(ILayer layer, Point clickPt) {
+		return getVerticalCellEdge(layer, clickPt, -1);
 	}
 
 	public static CellEdgeEnum getVerticalCellEdge(ILayer layer, Point clickPt, int handleHeight) {

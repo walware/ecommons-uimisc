@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,7 +38,7 @@ public class DummyModifiableBodyDataProvider implements IDataProvider {
 	}
 
 	/**
-	 * You have to fire a {@link StructuralRefreshEvent} after using this method for refreshing the NatTable.
+	 * You have to fire a {@link org.eclipse.nebula.widgets.nattable.layer.event.StructuralRefreshEvent} after using this method for refreshing the NatTable.
 	 * @param columnCount
 	 */
 	public void setColumnCount(int columnCount) {
@@ -46,7 +46,7 @@ public class DummyModifiableBodyDataProvider implements IDataProvider {
 	}
 
 	/**
-	 * You have to fire a {@link StructuralRefreshEvent} after using this method for refreshing the NatTable.
+	 * You have to fire a {@link org.eclipse.nebula.widgets.nattable.layer.event.StructuralRefreshEvent} after using this method for refreshing the NatTable.
 	 * @param rowCount
 	 */
 	public void setRowCount(int rowCount) {

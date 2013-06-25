@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,17 +10,17 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.layer;
 
-
-import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+
+
 /**
- * Classes implementing this interface are responsible for painting to the relevant {@link Device}.<br/>
+ * Classes implementing this interface are responsible for painting to the relevant {@link Device}.
  * Every layer has a layer painter. A layer can contribute to painting by providing its own painter.
- * 
  */
 public interface ILayerPainter {
 	

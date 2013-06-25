@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,5 +12,21 @@ package org.eclipse.nebula.widgets.nattable.freeze.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 
+
+/**
+ * Simple command to unfreeze a frozen state.
+ */
 public class UnFreezeGridCommand extends AbstractContextFreeCommand implements IFreezeCommand {
+	
+	
+	@Override
+	public boolean isToggle() {
+		return false;
+	}
+	
+	@Override
+	public boolean isOverrideFreeze() {
+		return false;
+	}
+	
 }

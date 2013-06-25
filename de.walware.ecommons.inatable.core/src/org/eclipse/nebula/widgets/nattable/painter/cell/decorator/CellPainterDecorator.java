@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell.decorator;
 
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
@@ -17,34 +20,88 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
+
 
 /**
  * Decorates a cell painter with another cell painter.
  */
 public class CellPainterDecorator implements ICellPainter {
 
+	/**
+	 * The base {@link ICellPainter} that should be decorated
+	 */
 	private final ICellPainter baseCellPainter;
+	/**
+	 * The edge of the cell at which the decoration should be applied
+	 */
 	private final CellEdgeEnum cellEdge;
-	private final int spacing;
+	/**
+	 * The {@link ICellPainter} that should be used to render the decoration.
+	 */
 	private final ICellPainter decoratorCellPainter;
-    private boolean interiorPainterToSpanFullWidth;
+	/**
+	 * The spacing to use between base painter and decoration painter.
+	 * Note: If you want to add <b>padding</b> between the decoration and the cell border
+	 * 		 you need to add a PaddingDecorator to your painter stack.
+	 */
+	private final int spacing;
+	/**
+	 * Flag to specify whether the base painter should render dependent to the decoration painter
+	 * or not. This will have effect on the boundary calculation. Setting this flag to <code>true</code>
+	 * the bounds of the base painter will be modified regarding the bounds of the decoration painter.
+	 * This means that the starting coordinates for the base painter are moving e.g. if the base painter
+	 * renders centered the text will move to the left because the decoration consumes space.
+	 * If this flag is set to <code>false</code> you can think of the decoration painter painting on
+	 * top of the base painter, possibly painting over the base painter. 
+	 */
     private boolean paintDecorationDependent;
 
+    /**
+     * Will create a {@link CellPainterDecorator} with the default spacing of 2 between base and 
+     * decoration painter, where the base painter is rendered dependent to the decoration.
+     * @param baseCellPainter The base {@link ICellPainter} that should be decorated
+     * @param cellEdge The edge of the cell at which the decoration should be applied
+     * @param decoratorCellPainter The {@link ICellPainter} that should be used to render the decoration.
+     */
 	public CellPainterDecorator(ICellPainter baseCellPainter, CellEdgeEnum cellEdge, ICellPainter decoratorCellPainter) {
 		this(baseCellPainter, cellEdge, 2, decoratorCellPainter);
 	}
 
+    /**
+     * Will create a {@link CellPainterDecorator} with the default spacing of 2 between base and 
+     * decoration painter. If paintDecorationDependent is set to <code>false</code>, the spacing will be ignored.
+     * @param baseCellPainter The base {@link ICellPainter} that should be decorated
+     * @param cellEdge The edge of the cell at which the decoration should be applied
+     * @param decoratorCellPainter The {@link ICellPainter} that should be used to render the decoration.
+     * @param paintDecorationDependent Flag to specify whether the base painter should render dependent to the 
+     * 			decoration painter or not.
+     */
 	public CellPainterDecorator(ICellPainter baseCellPainter, CellEdgeEnum cellEdge, ICellPainter decoratorCellPainter, boolean paintDecorationDependent) {
 		this(baseCellPainter, cellEdge, 2, decoratorCellPainter, paintDecorationDependent);
 	}
 	
+    /**
+     * Will create a {@link CellPainterDecorator} with the given amount of pixels as spacing between base and 
+     * decoration painter, where the base painter is rendered dependent to the decoration.
+     * @param baseCellPainter The base {@link ICellPainter} that should be decorated
+     * @param cellEdge The edge of the cell at which the decoration should be applied
+     * @param spacing The amount of pixels that should be used as spacing between decoration and base painter
+     * @param decoratorCellPainter The {@link ICellPainter} that should be used to render the decoration.
+     */
 	public CellPainterDecorator(ICellPainter baseCellPainter, CellEdgeEnum cellEdge, int spacing, ICellPainter decoratorCellPainter) {
 		this(baseCellPainter, cellEdge, spacing, decoratorCellPainter, true);
 	}
 	
+    /**
+     * Will create a {@link CellPainterDecorator} with the given amount of pixels as spacing between base and 
+     * decoration painter. If paintDecorationDependent is set to <code>false</code>, the spacing will be ignored
+     * while the decoration is mainly rendered over the base painter.
+     * @param baseCellPainter The base {@link ICellPainter} that should be decorated
+     * @param cellEdge The edge of the cell at which the decoration should be applied
+     * @param decoratorCellPainter The {@link ICellPainter} that should be used to render the decoration.
+     * @param paintDecorationDependent Flag to specify whether the base painter should render dependent to the 
+     * 			decoration painter or not.
+     */
 	public CellPainterDecorator(ICellPainter baseCellPainter, CellEdgeEnum cellEdge, int spacing, ICellPainter decoratorCellPainter, boolean paintDecorationDependent) {
 		this.baseCellPainter = baseCellPainter;
 		this.cellEdge = cellEdge;
@@ -53,10 +110,16 @@ public class CellPainterDecorator implements ICellPainter {
 		this.paintDecorationDependent = paintDecorationDependent;
 	}
 
-    public void setBaseCellPainterSpansWholeCell(boolean interiorPainterToSpanFullWidth) {
-        this.interiorPainterToSpanFullWidth = interiorPainterToSpanFullWidth;
-    }
+	/**
+	 * @param paintDecorationDependent <code>true</code> if the base painter should render dependent to 
+	 * 			the decoration painter, <code>false</code> if the decoration should be rendered over
+	 * 			the base painter.
+	 */
+	public void setPaintDecorationDependent(boolean paintDecorationDependent) {
+		this.paintDecorationDependent = paintDecorationDependent;
+	}
 	
+    @Override
 	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		switch (cellEdge) {
 		case TOP_LEFT:
@@ -79,6 +142,7 @@ public class CellPainterDecorator implements ICellPainter {
 				+ decoratorCellPainter.getPreferredWidth(cell, gc, configRegistry);
 	}
 
+    @Override
 	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		switch (cellEdge) {
 		case TOP_LEFT:
@@ -101,6 +165,7 @@ public class CellPainterDecorator implements ICellPainter {
 				+ decoratorCellPainter.getPreferredHeight(cell, gc, configRegistry);
 	}
 
+    @Override
 	public void paintCell(ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
 		Rectangle baseCellPainterBounds = this.paintDecorationDependent ? 
 				getBaseCellPainterBounds(cell, gc, adjustedCellBounds, configRegistry) : adjustedCellBounds;
@@ -126,8 +191,8 @@ public class CellPainterDecorator implements ICellPainter {
 		int preferredDecoratorHeight = decoratorCellPainter.getPreferredHeight(cell, gc, configRegistry);
 		
 		// grab any extra space:
-		int grabbedPreferredWidth = adjustedCellBounds.width - (interiorPainterToSpanFullWidth ? 0 : preferredDecoratorWidth) - spacing;
-		int grabbedPreferredHeight = adjustedCellBounds.height - (interiorPainterToSpanFullWidth ? 0 : preferredDecoratorHeight) - spacing;
+		int grabbedPreferredWidth = adjustedCellBounds.width - preferredDecoratorWidth - spacing;
+		int grabbedPreferredHeight = adjustedCellBounds.height - preferredDecoratorHeight - spacing;
 		
 		switch (cellEdge) {
 		case LEFT:
@@ -256,12 +321,14 @@ public class CellPainterDecorator implements ICellPainter {
 		return null;
 	}
 	
+	@Override
 	public ICellPainter getCellPainterAt(int x, int y, ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
 		Rectangle decoratorCellPainterBounds = getDecoratorCellPainterBounds(cell, gc, adjustedCellBounds, configRegistry);
 		if (decoratorCellPainterBounds.contains(x, y)) {
 			return decoratorCellPainter.getCellPainterAt(x, y, cell, gc, decoratorCellPainterBounds, configRegistry);
 		} else {
-			Rectangle baseCellPainterBounds = getBaseCellPainterBounds(cell, gc, adjustedCellBounds, configRegistry);
+			Rectangle baseCellPainterBounds = this.paintDecorationDependent ? 
+					getBaseCellPainterBounds(cell, gc, adjustedCellBounds, configRegistry) : adjustedCellBounds;
 			if (baseCellPainterBounds.contains(x, y)) {
 				return baseCellPainter.getCellPainterAt(x, y, cell, gc, baseCellPainterBounds, configRegistry);
 			}

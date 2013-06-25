@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,23 +23,33 @@ import org.eclipse.nebula.widgets.nattable.internal.NatTablePlugin;
 
 
 /**
- * Error handling strategy that simply logs if 
- * 
- * @author fipro
- *
+ * Error handling strategy that simply writes conversion/validation errors to the log. 
  */
 public class LoggingErrorHandling extends AbstractEditErrorHandler {
 	
 	
+	/**
+	 * Create a new {@link LoggingErrorHandling} with no underlying {@link IEditErrorHandler}
+	 */
 	public LoggingErrorHandling() {
 		super(null);
 	}
 	
+	/**
+	 * Create a new {@link LoggingErrorHandling} using the given {@link IEditErrorHandler} as
+	 * the underlying to allow chaining of error handling.
+	 * @param underlyingErrorHandler The underlying {@link IEditErrorHandler}
+	 */
 	public LoggingErrorHandling(IEditErrorHandler underlyingErrorHandler) {
 		super(underlyingErrorHandler);
 	}
 	
 	
+	/**
+	 * {@inheritDoc}
+	 * After the error is handled by its underlying {@link IEditErrorHandler},
+	 * the error will be logged as a warning.
+	 */
 	@Override
 	public void displayError(ICellEditor cellEditor, Exception e) {
 		super.displayError(cellEditor, e);

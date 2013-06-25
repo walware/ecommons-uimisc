@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,11 +21,12 @@ import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.eclipse.swt.graphics.Rectangle;
+
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
-import org.eclipse.swt.graphics.Rectangle;
 
 public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 
@@ -194,8 +195,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 	
 	// Cell features
 
-	public boolean isCellPositionSelected(int columnPosition, int rowPosition) {
-		ILayerCell cell = selectionLayer.getCellByPosition(columnPosition, rowPosition);
+	public boolean isCellPositionSelected(final ILayerCell cell) {
 		int cellOriginRowPosition = cell.getOriginRowPosition();
 		for (int testRowPosition = cellOriginRowPosition; testRowPosition < cellOriginRowPosition + cell.getRowSpan(); testRowPosition++) {
 			if (isRowPositionSelected(testRowPosition)) {
@@ -301,7 +301,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		try {
 			for (Serializable rowId : selectedRows.keySet()) {
 				int rowPosition = getRowPositionById(rowId);
-				selectedRowRanges.add(new Range(rowPosition, rowPosition + 1));
+				selectedRowRanges.add(new Range(rowPosition));
 			}
 		} finally {
 			selectionsLock.readLock().unlock();
@@ -377,8 +377,8 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		try {
 			R rowObject = selectedRows.get(rowId);
 			int rowIndex = rowDataProvider.indexOfRowObject(rowObject);
-			if(rowIndex == -1){
-				return -1;
+			if(rowIndex < 0){
+				return Integer.MIN_VALUE;
 			}
 			int rowPosition = selectionLayer.getRowPositionByIndex(rowIndex);
 			return rowPosition;

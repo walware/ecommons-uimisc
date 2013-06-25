@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,14 +15,14 @@ import org.eclipse.nebula.widgets.nattable.group.ColumnGroupExpandCollapseLayer;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupReorderLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
+import org.eclipse.nebula.widgets.nattable.layer.AbstractTransformIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
 /**
- * A pre-configured layer stack which includes the following layers (in that order):<br/>
+ * A pre-configured layer stack which includes the following layers (in that order):
  * <ol>
  * <li>ColumnReorderLayer</li>
  * <li>ColumnGroupReorderLayer</li>
@@ -32,7 +32,7 @@ import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
  * <li>ViewportLayer</li>
  * </ol>
  */
-public class ColumnGroupBodyLayerStack extends AbstractIndexLayerTransform {
+public class ColumnGroupBodyLayerStack extends AbstractTransformIndexLayer {
 
 	private ColumnReorderLayer columnReorderLayer;
 	private ColumnGroupReorderLayer columnGroupReorderLayer;

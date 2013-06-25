@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,8 +20,8 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
- * Event indicating a change in the structure of the columns. <br/>
- * This event carried ColumnDiffs (Collection<StructuralDiff>) indicating the columns which have changed.<br/> 
+ * Event indicating a change in the structure of the columns. 
+ * This event carried ColumnDiffs (Collection&lt;StructuralDiff&gt;) indicating the columns which have changed. 
  */
 public abstract class ColumnStructuralChangeEvent extends ColumnVisualChangeEvent implements IStructuralChangeEvent {
 

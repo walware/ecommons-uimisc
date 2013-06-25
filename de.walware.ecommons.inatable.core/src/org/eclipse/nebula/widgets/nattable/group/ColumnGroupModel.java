@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -151,7 +151,7 @@ public class ColumnGroupModel implements IPersistable {
 	/**
 	 * Creates the column group if one does not exist with the given name
 	 * and adds the column indexes to it.
-	 * @see ColumnGroupModel#insertColumnIndexes(String, int...);
+	 * @see #insertColumnIndexes(String, int[])
 	 */
 	public void addColumnsIndexesToGroup(String colGroupName, int... bodyColumnIndexs) {
 		if (getColumnGroupByName(colGroupName) == null) {
@@ -165,7 +165,7 @@ public class ColumnGroupModel implements IPersistable {
 	/**
 	 * This method will add column index(s) to an existing group
 	 * @param colGroupName to add the indexes to
-	 * @param columnIndexToInsert
+	 * @param columnIndexesToInsert
 	 * @return FALSE if:
 	 * 		The column group is frozen
 	 * 		Index is already s part of a column group
@@ -216,7 +216,7 @@ public class ColumnGroupModel implements IPersistable {
 	 * This method will add static column index(s) to an existing group
 	 * 
 	 * @param colGroupName to add the indexes to
-	 * @param columnIndexToInsert
+	 * @param columnIndexesToInsert
 	 */
 	public void insertStaticColumnIndexes(String colGroupName, int... columnIndexesToInsert) {
 		
@@ -255,6 +255,11 @@ public class ColumnGroupModel implements IPersistable {
 		}
 		
 		return null;
+	}
+	
+	public void addColumnGroup(ColumnGroup columnGroup) {
+		columnGroups.add(columnGroup);
+		notifyListeners();
 	}
 	
 	public void removeColumnGroup(ColumnGroup columnGroup) {
@@ -339,7 +344,7 @@ public class ColumnGroupModel implements IPersistable {
 	}
 
 	/**
-	 * @param columnIndex
+	 * @param bodyColumnIndex
 	 * @return The position of the index within the column group
 	 */
 	public int getColumnGroupPositionFromIndex(int bodyColumnIndex) {
@@ -350,11 +355,60 @@ public class ColumnGroupModel implements IPersistable {
 		return -1;
 	}
 
-	public boolean isPartOfAnUnbreakableGroup(int bodyColumnIndex) {
-		if (isPartOfAGroup(bodyColumnIndex)) {
-			return getColumnGroupByIndex(bodyColumnIndex).unbreakable;
+	/**
+	 * Check if the column at the specified column index belongs to a {@link ColumnGroup}
+	 * and if this {@link ColumnGroup} is collabseable.
+	 * @param columnIndex The column index used to retrieve the corresponding column group
+	 * @return <code>true</code> if the column at the specified column index belongs
+	 * 			to a {@link ColumnGroup} and this {@link ColumnGroup} is collabseable,
+	 * 			<code>false</code> if not.
+	 */
+	public boolean isPartOfACollapseableGroup(int columnIndex) {
+		if (isPartOfAGroup(columnIndex)) {
+			return getColumnGroupByIndex(columnIndex).isCollapseable();
 		}
 		return false;
+	}
+	
+	/**
+	 * Set the {@link ColumnGroup} to which the column and the specified column index
+	 * belongs to, to be collapseable or not. 
+	 * @param columnIndex The column index used to retrieve the corresponding column group 
+	 * @param collabseable <code>true</code> to set the column group collapseable,
+	 * 			<code>false</code> to set it not to be collapseable.
+	 */
+	public void setColumnGroupCollapseable(int columnIndex, boolean collabseable) {
+		if (isPartOfAGroup(columnIndex)) {
+			getColumnGroupByIndex(columnIndex).setCollapseable(collabseable);
+		}
+	}
+
+	/**
+	 * Check if the column at the specified column index belongs to a {@link ColumnGroup}
+	 * and if this {@link ColumnGroup} is unbreakable.
+	 * @param columnIndex The column index used to retrieve the corresponding column group
+	 * @return <code>true</code> if the column at the specified column index belongs
+	 * 			to a {@link ColumnGroup} and this {@link ColumnGroup} is unbreakable,
+	 * 			<code>false</code> if not.
+	 */
+	public boolean isPartOfAnUnbreakableGroup(int columnIndex) {
+		if (isPartOfAGroup(columnIndex)) {
+			return getColumnGroupByIndex(columnIndex).isUnbreakable();
+		}
+		return false;
+	}
+	
+	/**
+	 * Set the {@link ColumnGroup} to which the column and the specified column index
+	 * belongs to, to be unbreakable/breakable. 
+	 * @param columnIndex The column index used to retrieve the corresponding column group 
+	 * @param unbreakable <code>true</code> to set the column group unbreakable,
+	 * 			<code>false</code> to remove the unbreakable state.
+	 */
+	public void setColumnGroupUnbreakable(int columnIndex, boolean unbreakable) {
+		if (isPartOfAGroup(columnIndex)) {
+			getColumnGroupByIndex(columnIndex).setUnbreakable(unbreakable);
+		}
 	}
 
 	// *** Column Group ***
@@ -369,8 +423,8 @@ public class ColumnGroupModel implements IPersistable {
 
 		private String name;
 		
-		boolean collapsed = false;
-		boolean collapseable = true;
+		private boolean collapsed = false;
+		private boolean collapseable = true;
 		
 		/**
 		 * If a group is marked as unbreakable, the composition of the group cannot be changed.
@@ -378,7 +432,7 @@ public class ColumnGroupModel implements IPersistable {
 		 *    Columns may be reorder within the group.
 		 * @see NTBL 393
 		 */
-		public boolean unbreakable = false;		
+		private boolean unbreakable = false;		
 		
 
 		ColumnGroup(String groupName) {

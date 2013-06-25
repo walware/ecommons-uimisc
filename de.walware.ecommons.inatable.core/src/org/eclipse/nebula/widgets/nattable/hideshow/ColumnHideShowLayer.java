@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,6 +25,7 @@ import org.eclipse.nebula.widgets.nattable.hideshow.command.ShowAllColumnsComman
 import org.eclipse.nebula.widgets.nattable.hideshow.event.HideColumnPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.hideshow.event.ShowColumnPositionsEvent;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 
 
 public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
@@ -51,7 +52,7 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
 			StringBuilder strBuilder = new StringBuilder();
 			for (Integer index : hiddenColumnIndexes) {
 				strBuilder.append(index);
-				strBuilder.append(',');
+				strBuilder.append(IPersistable.VALUE_SEPARATOR);
 			}
 			properties.setProperty(prefix + PERSISTENCE_KEY_HIDDEN_COLUMN_INDEXES, strBuilder.toString());
 		}
@@ -61,11 +62,11 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
 	
 	@Override
 	public void loadState(String prefix, Properties properties) {
+		//Bug 396925: always clear the state of the hidden columns, whether there is a state saved or not
+		hiddenColumnIndexes.clear();
 		String property = properties.getProperty(prefix + PERSISTENCE_KEY_HIDDEN_COLUMN_INDEXES);
 		if (property != null) {
-			hiddenColumnIndexes.clear();
-			
-			StringTokenizer tok = new StringTokenizer(property, ","); //$NON-NLS-1$
+			StringTokenizer tok = new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
 			while (tok.hasMoreTokens()) {
 				String index = tok.nextToken();
 				hiddenColumnIndexes.add(Integer.valueOf(index));
@@ -97,23 +98,10 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
 		fireLayerEvent(new HideColumnPositionsEvent(this, columnPositions));
 	}
 
-	public void showColumnIndexes(int[] columnIndexes) {
-		Set<Integer> columnIndexesSet = new HashSet<Integer>();
-		for (int i = 0; i < columnIndexes.length; i++) {
-			columnIndexesSet.add(Integer.valueOf(columnIndexes[i]));
-		}
-		hiddenColumnIndexes.removeAll(columnIndexesSet);
+	public void showColumnIndexes(Collection<Integer> columnIndexes) {
+		hiddenColumnIndexes.removeAll(columnIndexes);
 		invalidateCache();
 		fireLayerEvent(new ShowColumnPositionsEvent(this, getColumnPositionsByIndexes(columnIndexes)));
-	}
-
-	protected void showColumnIndexes(Collection<Integer> columnIndexes) {
-		for (int columnIndex : columnIndexes) {
-			hiddenColumnIndexes.remove(Integer.valueOf(columnIndex));
-		}
-		invalidateCache();
-		// Since we are exposing this method for showing individual columns, a structure event must be fired here.
-		fireLayerEvent(new ShowColumnPositionsEvent(this, columnIndexes));
 	}
 
 	public void showAllColumns() {
@@ -121,14 +109,6 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
 		hiddenColumnIndexes.clear();
 		invalidateCache();
 		fireLayerEvent(new ShowColumnPositionsEvent(this, hiddenColumns));
-	}
-	
-	private Collection<Integer> getColumnPositionsByIndexes(int[] columnIndexes) {
-		Collection<Integer> columnPositions = new HashSet<Integer>();
-		for (int columnIndex : columnIndexes) {
-			columnPositions.add(Integer.valueOf(getColumnPositionByIndex(columnIndex)));
-		}
-		return columnPositions;
 	}
 	
 }

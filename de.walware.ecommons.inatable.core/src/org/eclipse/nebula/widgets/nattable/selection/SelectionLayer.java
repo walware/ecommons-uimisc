@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,13 +9,16 @@
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 // ~Selection
+
 package org.eclipse.nebula.widgets.nattable.selection;
+
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
@@ -28,10 +31,11 @@ import org.eclipse.nebula.widgets.nattable.grid.command.InitializeAutoResizeColu
 import org.eclipse.nebula.widgets.nattable.grid.command.InitializeAutoResizeRowsCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
 import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideCommand;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
+import org.eclipse.nebula.widgets.nattable.layer.AbstractTransformIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.MultiColumnResizeCommand;
@@ -46,6 +50,7 @@ import org.eclipse.nebula.widgets.nattable.selection.event.SelectionLayerStructu
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 
+
 /**
  * Enables selection of column, rows, cells etc. on the table.
  * Also responds to UI bindings by changing the current selection.
@@ -54,16 +59,10 @@ import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
  * @see DefaultSelectionLayerConfiguration
  * @see Direction
  */
-public class SelectionLayer extends AbstractIndexLayerTransform {
+public class SelectionLayer extends AbstractTransformIndexLayer {
 
 	public static final int MOVE_ALL = -1;
 	public static final int NO_SELECTION = -1;
-
-	/** Extend current selection */
-	public static final int RANGE_SELECTION = SWT.SHIFT;
-	/** Retain or toggle */
-	public static final int RETAIN_SELECTION = SWT.CONTROL;
-
 
 	protected ISelectionModel selectionModel;
 	protected IUniqueIndexLayer underlyingLayer;
@@ -178,8 +177,9 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 
 	// Cell features
 
-	public boolean isCellPositionSelected(int columnPosition, int rowPosition) {
-		return selectionModel.isCellPositionSelected(columnPosition, rowPosition);
+	public boolean isCellPositionSelected(final int columnPosition, final int rowPosition) {
+		final ILayerCell cell = getCellByPosition(columnPosition, rowPosition);
+		return (cell != null && cell.getDisplayMode() == DisplayMode.SELECT);
 	}
 
 	public void setSelectedCell(int columnPosition, int rowPosition) {
@@ -197,7 +197,7 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 
 			for (Range rowIndexRange : selectedRowPositions) {
 				for (int rowPositionIndex = rowIndexRange.start; rowPositionIndex < rowIndexRange.end; rowPositionIndex++) {
-					if (selectionModel.isCellPositionSelected(columnPosition, rowPositionIndex)) {
+					if (isCellPositionSelected(columnPosition, rowPositionIndex)) {
 						selectedCells.add(new PositionCoordinate(this, columnPosition, rowPositionIndex));
 					}
 				}
@@ -343,24 +343,24 @@ public class SelectionLayer extends AbstractIndexLayerTransform {
 	}
 
 	// ILayer methods
-
+	
 	@Override
-	public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
-		if (isCellPositionSelected(columnPosition, rowPosition)) {
-			return DisplayMode.SELECT;
-		} else {
-			return super.getDisplayModeByPosition(columnPosition, rowPosition);
+	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
+		ILayerCell cell = super.getCellByPosition(columnPosition, rowPosition);
+		if (cell != null && selectionModel.isCellPositionSelected(cell)) {
+			cell = new LayerCell(cell.getLayer(), cell.getDim(HORIZONTAL), cell.getDim(VERTICAL),
+					DisplayMode.SELECT );
 		}
+		return cell;
 	}
-
+	
 	@Override
 	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
 		LabelStack labelStack = super.getConfigLabelsByPosition(columnPosition, rowPosition);
 		
 		ILayerCell cell = getCellByPosition(columnPosition, rowPosition);
 		if (cell != null) {
-			Rectangle cellRectangle =
-					new Rectangle(
+			Rectangle cellRectangle = new Rectangle(
 							cell.getOriginColumnPosition(),
 							cell.getOriginRowPosition(),
 							cell.getColumnSpan(),

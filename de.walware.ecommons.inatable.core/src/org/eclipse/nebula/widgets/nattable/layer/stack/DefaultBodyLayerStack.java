@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,7 @@ package org.eclipse.nebula.widgets.nattable.layer.stack;
 
 import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
+import org.eclipse.nebula.widgets.nattable.layer.AbstractTransformIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -20,7 +20,7 @@ import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
 
-public class DefaultBodyLayerStack extends AbstractIndexLayerTransform {
+public class DefaultBodyLayerStack extends AbstractTransformIndexLayer {
 
 	private final ColumnReorderLayer columnReorderLayer;
 	private final ColumnHideShowLayer columnHideShowLayer;

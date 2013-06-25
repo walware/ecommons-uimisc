@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,8 +19,10 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 
 public abstract class AbstractMultiColumnCommand implements ILayerCommand {
-
+	
+	
 	protected Collection<ColumnPositionCoordinate> columnPositionCoordinates;
+	
 	
 	protected AbstractMultiColumnCommand(ILayer layer, int columnPositions) {
 		if (columnPositions < 0) {
@@ -40,6 +42,7 @@ public abstract class AbstractMultiColumnCommand implements ILayerCommand {
 	protected AbstractMultiColumnCommand(AbstractMultiColumnCommand command) {
 		this.columnPositionCoordinates = new HashSet<ColumnPositionCoordinate>(command.columnPositionCoordinates);
 	}
+	
 	
 	public Collection<Integer> getColumnPositions() {
 		Collection<Integer> columnPositions = new HashSet<Integer>();
@@ -64,18 +67,21 @@ public abstract class AbstractMultiColumnCommand implements ILayerCommand {
 	}
 	
 	public boolean convertToTargetLayer(ILayer targetLayer) {
-		Collection<ColumnPositionCoordinate> convertedColumnPositionCoordinates = new HashSet<ColumnPositionCoordinate>();
+		Collection<ColumnPositionCoordinate> targetColumnPositionCoordinates = new HashSet<ColumnPositionCoordinate>();
 		
 		for (ColumnPositionCoordinate columnPositionCoordinate : columnPositionCoordinates) {
-			ColumnPositionCoordinate convertedColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(columnPositionCoordinate, targetLayer);
-			if (convertedColumnPositionCoordinate != null) {
-				convertedColumnPositionCoordinates.add(convertedColumnPositionCoordinate);
+			ColumnPositionCoordinate targetColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(columnPositionCoordinate, targetLayer);
+			if (targetColumnPositionCoordinate != null) {
+				targetColumnPositionCoordinates.add(targetColumnPositionCoordinate);
 			}
 		}
 		
-		columnPositionCoordinates = convertedColumnPositionCoordinates;
-		
-		return (columnPositionCoordinates.size() > 0);
+		if (targetColumnPositionCoordinates.size() > 0) {
+			columnPositionCoordinates = targetColumnPositionCoordinates;
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 }

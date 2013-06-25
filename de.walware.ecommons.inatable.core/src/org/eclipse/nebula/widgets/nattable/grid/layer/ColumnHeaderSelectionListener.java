@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.selection.event.ColumnSelectionEvent;
+
 
 /**
  * Marks the ColumnHeader as selected in response to a {@link ColumnSelectionEvent}
@@ -35,5 +36,5 @@ public class ColumnHeaderSelectionListener implements ILayerListener {
 			columnHeaderLayer.fireLayerEvent(colHeaderSelectionEvent);
 		}
 	}
-
+	
 }

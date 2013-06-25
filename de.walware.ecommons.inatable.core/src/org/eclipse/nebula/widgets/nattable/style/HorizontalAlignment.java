@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,25 +10,16 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.style;
 
-import org.eclipse.swt.SWT;
 
 public enum HorizontalAlignment {
 	
-	LEFT (SWT.LEFT),
-	CENTER (SWT.CENTER),
-	RIGHT (SWT.RIGHT);
+	LEFT,
+	CENTER,
+	RIGHT;
 	
 	
-	private final int swt;
-	
-	
-	private HorizontalAlignment(int swt) {
-		this.swt = swt;
+	private HorizontalAlignment() {
 	}
 	
 	
-	public int toSWT() {
-		return swt;
-	}
-
 }

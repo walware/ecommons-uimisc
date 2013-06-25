@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,21 +10,23 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.hideshow;
 
+import static org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell.NO_INDEX;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
-import org.eclipse.nebula.widgets.nattable.layer.event.RowStructuralRefreshEvent;
 
 
 public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
@@ -50,12 +52,6 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 		super.handleLayerEvent(event);
 	}
 
-	@Override
-	public void loadState(String prefix, Properties properties) {
-		super.loadState(prefix, properties);
-		fireLayerEvent(new RowStructuralRefreshEvent(this));
-	}
-
 	// Horizontal features
 
 	// Columns
@@ -68,21 +64,29 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 	@Override
 	public int getColumnIndexByPosition(int columnPosition) {
 		if (columnPosition < 0 || columnPosition >= getColumnCount()) {
-			return -1;
+			return NO_INDEX;
 		}
 
 		Integer columnIndex = getCachedVisibleColumnIndexes().get(columnPosition);
 		if (columnIndex != null) {
 			return columnIndex.intValue();
 		} else {
-			return -1;
+			return NO_INDEX;
 		}
 	}
 
 	public int getColumnPositionByIndex(int columnIndex) {
 		return getCachedVisibleColumnIndexes().indexOf(Integer.valueOf(columnIndex));
 	}
-
+	
+	public Collection<Integer> getColumnPositionsByIndexes(Collection<Integer> columnIndexes) {
+		Collection<Integer> columnPositions = new HashSet<Integer>();
+		for (int columnIndex : columnIndexes) {
+			columnPositions.add(getColumnPositionByIndex(columnIndex));
+		}
+		return columnPositions;
+	}
+	
 	@Override
 	public int localToUnderlyingColumnPosition(int localColumnPosition) {
 		int columnIndex = getColumnIndexByPosition(localColumnPosition);
@@ -100,7 +104,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 			if (hiddenColumnPosition != null) {
 				return hiddenColumnPosition.intValue();
 			} else {
-				return -1;
+				return Integer.MIN_VALUE;
 			}
 		}
 	}
@@ -168,9 +172,6 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 		IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
 		int underlyingPosition = localToUnderlyingColumnPosition(localColumnPosition);
 		int underlyingStartX = underlyingLayer.getStartXOfColumnPosition(underlyingPosition);
-		if (underlyingStartX < 0) {
-			return -1;
-		}
 
 		for (Integer hiddenIndex : getHiddenColumnIndexes()) {
 			int hiddenPosition = underlyingLayer.getColumnPositionByIndex(hiddenIndex.intValue());
@@ -182,7 +183,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 		startXCache.put(Integer.valueOf(localColumnPosition), Integer.valueOf(underlyingStartX));
 		return underlyingStartX;
 	}
-
+	
 	// Vertical features
 
 	// Rows
@@ -193,12 +194,32 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 
 	// Hide/show
 
+	/**
+	 * Will check if the column at the specified index is hidden or not. Checks this
+	 * layer and also the sublayers for the visibility.
+	 * Note: As the {@link ColumnGroup}s are created index based, this method only
+	 * 		 works correctly with indexes rather than positions.
+	 * @param columnIndex The column index of the column whose visibility state
+	 * 			should be checked.
+	 * @return <code>true</code> if the column at the specified index is hidden,
+	 * 			<code>false</code> if it is visible.
+	 */
 	public abstract boolean isColumnIndexHidden(int columnIndex);
 
+	/**
+	 * Will collect and return all indexes of the columns that are hidden in this layer.
+	 * Note: It is not intended that it also collects the column indexes of underlying
+	 * 		 layers. This would cause issues on calculating positions as every layer
+	 * 		 is responsible for those calculations itself. 
+	 * @return Collection of all column indexes that are hidden in this layer.
+	 */
 	public abstract Collection<Integer> getHiddenColumnIndexes();
 
 	// Cache
 
+	/**
+	 * Invalidate the cache to ensure that information is rebuild.
+	 */
 	protected void invalidateCache() {
 		cachedVisibleColumnIndexOrder = null;
 		startXCache.clear();

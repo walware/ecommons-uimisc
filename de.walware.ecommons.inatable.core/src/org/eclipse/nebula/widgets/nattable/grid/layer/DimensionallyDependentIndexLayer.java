@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,13 +9,22 @@
  *     Original authors and others - initial API and implementation (DimensionallyDependentLayer)
  *     Stephan Wahlbrink - initial API and implementation
  ******************************************************************************/
+
 package org.eclipse.nebula.widgets.nattable.grid.layer;
 
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+
+import java.util.Collection;
+import java.util.Collections;
+
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
+import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
+import org.eclipse.nebula.widgets.nattable.layer.AbstractTransformLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayerDim;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
+import org.eclipse.nebula.widgets.nattable.layer.TransformDim;
 
 
 /**
@@ -36,23 +45,144 @@ import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
  * ILayer columnHeaderLayer = new DimensionallyDependentIndexLayer(columnHeaderRowDataLayer, bodyLayer, columnHeaderRowDataLayer);
  * ILayer rowHeaderLayer = new DimensionallyDependentIndexLayer(rowHeaderColumnDataLayer, bodyLayer, rowHeaderColumnDataLayer);
  * </pre>
- * <p>In contrast to {@link DimensionallyDependentLayer}, this class:
- * </p>
- * <ul>
- *     <li>implements {@link IUniqueIndexLayer};</li>
- *     <li>provides conversion of local and underlying positions based on the unique index (reliable);</li>
- *     <li>provides an implementation of {@link #getCellByPosition(int, int)} which e.g. fully supports spanned cells;</li>
- *     <li>requires that the layers, the horizontal and vertical dimension are linked to, implements
- *         {@link IUniqueIndexLayer} too.</li>
- * </ul>
  */
-public class DimensionallyDependentIndexLayer extends AbstractIndexLayerTransform {
-
-
-	private IUniqueIndexLayer horizontalLayerDependency;
-	private IUniqueIndexLayer verticalLayerDependency;
-
-
+public class DimensionallyDependentIndexLayer extends AbstractTransformLayer {
+	
+	
+	protected static class Dim extends TransformDim<DimensionallyDependentIndexLayer> {
+		
+		
+		public Dim(final DimensionallyDependentIndexLayer layer, final ILayerDim underlyingDim) {
+			super(layer, underlyingDim);
+		}
+		
+		
+		protected ILayerDim getBaseDim() {
+			return getLayer().getBaseLayer().getDim(getOrientation());
+		}
+		
+		
+		@Override
+		public int getPositionIndex(final int refPosition, final int position) {
+			return this.underlyingDim.getPositionIndex(refPosition, position);
+		}
+		
+		
+		@Override
+		public int localToUnderlyingPosition(final int refPosition, final int position) {
+			if (this.underlyingDim == getBaseDim()) {
+				return position;
+			}
+			
+			return LayerUtil.convertPosition(this, refPosition, position, getLayer().getBaseLayer());
+		}
+		
+		@Override
+		public int underlyingToLocalPosition(final int refPosition,
+				final int underlyingPosition) {
+			if (this.underlyingDim == getBaseDim()) {
+				return underlyingPosition;
+			}
+			
+			if (refPosition < 0 || refPosition >= getPositionCount()) {
+				throw new IndexOutOfBoundsException("refPosition: " + refPosition); //$NON-NLS-1$
+			}
+			
+			final int index = getBaseDim().getPositionIndex(underlyingPosition,
+					underlyingPosition );
+			if (this.underlyingDim.getLayer() instanceof IUniqueIndexLayer) {
+				return getPositionByIndex((IUniqueIndexLayer) this.underlyingDim.getLayer(), index);
+			}
+//				final int count = getPositionCount();
+//				for (int position = 0; position < count; position++) {
+//					if (getPositionIndex(refPosition, position) == index) {
+//						return position;
+//					}
+//				}
+			return searchIndex(this.underlyingDim, refPosition, index);
+		}
+		
+		@Override
+		public int underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
+				final int underlyingPosition) {
+			if (sourceUnderlyingLayer != getBaseDim().getLayer()) {
+				throw new IllegalArgumentException("underlyingLayer"); //$NON-NLS-1$
+			}
+			
+			final int index = getBaseDim().getPositionIndex(underlyingPosition,
+					underlyingPosition );
+			
+			final int count = getPositionCount();
+			for (int position = 0; position < count; position++) {
+				if (getPositionIndex(position, position) == index) {
+					return position;
+				}
+			}
+			return Integer.MIN_VALUE;
+		}
+		
+		private int searchIndex(final ILayerDim dim, final int refPosition, final int index) {
+			final Collection<ILayer> underlyingLayers = dim.getUnderlyingLayersByPosition(refPosition);
+			final int underlyingRefPosition = dim.localToUnderlyingPosition(refPosition, refPosition);
+			for (final ILayer underlyingLayer : underlyingLayers) {
+				final int underlyingPosition;
+				if (underlyingLayer instanceof IUniqueIndexLayer) {
+					underlyingPosition = getPositionByIndex((IUniqueIndexLayer) underlyingLayer, index);
+				}
+				else {
+					underlyingPosition = searchIndex(underlyingLayer.getDim(getOrientation()),
+							underlyingRefPosition, index );
+				}
+				if (underlyingPosition != Integer.MIN_VALUE) {
+					final int position = dim.underlyingToLocalPosition(refPosition, underlyingPosition);
+					if (position != Integer.MIN_VALUE) {
+						return position;
+					}
+				}
+			}
+			return Integer.MIN_VALUE;
+		}
+		
+		private int getPositionByIndex(final IUniqueIndexLayer indexLayer, final int index) {
+			return (getOrientation() == HORIZONTAL) ?
+					indexLayer.getColumnPositionByIndex(index) :
+					indexLayer.getRowPositionByIndex(index);
+		}
+		
+		@Override
+		public Collection<ILayer> getUnderlyingLayersByPosition(final int position) {
+			return Collections.<ILayer>singletonList(getLayer().getBaseLayer());
+		}
+		
+		
+		@Override
+		public int getPositionByPixel(final int pixel) {
+			return this.underlyingDim.getPositionByPixel(pixel);
+		}
+		
+		@Override
+		public int getPositionStart(final int refPosition, final int position) {
+			return this.underlyingDim.getPositionStart(refPosition, position);
+		}
+		
+		@Override
+		public int getPositionSize(final int refPosition, final int position) {
+			return this.underlyingDim.getPositionSize(refPosition, position);
+		}
+		
+		
+		@Override
+		public boolean isPositionResizable(final int position) {
+			return this.underlyingDim.isPositionResizable(position);
+		}
+		
+	}
+	
+	
+	private ILayer horizontalLayerDependency;
+	private ILayer verticalLayerDependency;
+	
+	
 	/**
 	 * Creates a new DimensionallyDependentIndexLayer.
 	 * 
@@ -60,8 +190,8 @@ public class DimensionallyDependentIndexLayer extends AbstractIndexLayerTransfor
 	 * @param horizontalLayerDependency the layer, the horizontal dimension is linked to
 	 * @param verticalLayerDependency the layer, the vertical dimension is linked to
 	 */
-	public DimensionallyDependentIndexLayer(IUniqueIndexLayer baseLayer,
-			IUniqueIndexLayer horizontalLayerDependency, IUniqueIndexLayer verticalLayerDependency) {
+	public DimensionallyDependentIndexLayer(final IUniqueIndexLayer baseLayer,
+			final ILayer horizontalLayerDependency, final ILayer verticalLayerDependency) {
 		super(baseLayer);
 		
 		setHorizontalLayerDependency(horizontalLayerDependency);
@@ -74,16 +204,29 @@ public class DimensionallyDependentIndexLayer extends AbstractIndexLayerTransfor
 	 * 
 	 * @param baseLayer the underlying base layer
 	 */
-	protected DimensionallyDependentIndexLayer(IUniqueIndexLayer baseLayer) {
+	protected DimensionallyDependentIndexLayer(final ILayer baseLayer) {
 		super(baseLayer);
 	}
-
-
+	
+	
+	@Override
+	protected void updateDims() {
+		if (this.horizontalLayerDependency == null || this.verticalLayerDependency == null) {
+			return;
+		}
+		
+		for (final Orientation orientation : Orientation.values()) {
+			final ILayerDim dependency = getLayerDependency(orientation).getDim(orientation);
+			setDim(orientation, new Dim(this, dependency));
+		}
+	}
+	
+	
 	// Dependent layer accessors
-
-	protected void setHorizontalLayerDependency(IUniqueIndexLayer horizontalLayerDependency) {
+	
+	protected void setHorizontalLayerDependency(final ILayer horizontalLayerDependency) {
 		this.horizontalLayerDependency = horizontalLayerDependency;
-
+		
 //		horizontalLayerDependency.addLayerListener(new ILayerListener() {
 //
 //			public void handleLayerEvent(ILayerEvent event) {
@@ -93,9 +236,11 @@ public class DimensionallyDependentIndexLayer extends AbstractIndexLayerTransfor
 //			}
 //
 //		});
+		
+		updateDims();
 	}
 
-	protected void setVerticalLayerDependency(IUniqueIndexLayer verticalLayerDependency) {
+	protected void setVerticalLayerDependency(final ILayer verticalLayerDependency) {
 		this.verticalLayerDependency = verticalLayerDependency;
 
 //		verticalLayerDependency.addLayerListener(new ILayerListener() {
@@ -107,157 +252,44 @@ public class DimensionallyDependentIndexLayer extends AbstractIndexLayerTransfor
 //			}
 //
 //		});
-	}
-
-	public ILayer getHorizontalLayerDependency() {
-		return horizontalLayerDependency;
-	}
-
-	public ILayer getVerticalLayerDependency() {
-		return verticalLayerDependency;
-	}
-
-	public IUniqueIndexLayer getBaseLayer() {
-		return getUnderlyingLayer();
-	}
-
-	// Commands
-
-	@Override
-	public boolean doCommand(ILayerCommand command) {
-		// Invoke command handler(s) on the Dimensionally dependent layer
-		ILayerCommand clonedCommand = command.cloneCommand();
-		if (super.doCommand(command)) {
-			return true;
-		}
-
-		clonedCommand = command.cloneCommand();
-		if (horizontalLayerDependency.doCommand(clonedCommand)) {
-			return true;
-		}
-
-		clonedCommand = command.cloneCommand();
-		if (verticalLayerDependency.doCommand(clonedCommand)) {
-			return true;
-		}
-
-		return false;
-	}
-
-	// Horizontal features
-
-	// Columns
-
-	public int getColumnCount() {
-		return horizontalLayerDependency.getColumnCount();
-	}
-
-	public int getPreferredColumnCount() {
-		return horizontalLayerDependency.getPreferredColumnCount();
-	}
-
-	public int getColumnIndexByPosition(int columnPosition) {
-		return horizontalLayerDependency.getColumnIndexByPosition(columnPosition);
-	}
-
-	public int getColumnPositionByIndex(int columnIndex) {
-		return horizontalLayerDependency.getColumnPositionByIndex(columnIndex);
-	}
-
-	public int localToUnderlyingColumnPosition(int localColumnPosition) {
-		return LayerUtil.convertColumnPosition(this, localColumnPosition, getUnderlyingLayer());
-	}
-
-	public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, int underlyingColumnPosition) {
-		return LayerUtil.convertColumnPosition(sourceUnderlyingLayer, underlyingColumnPosition, this);
+		
+		updateDims();
 	}
 	
-	// Width
-
-	public int getWidth() {
-		return horizontalLayerDependency.getWidth();
+	public ILayer getHorizontalLayerDependency() {
+		return this.horizontalLayerDependency;
 	}
-
-	public int getPreferredWidth() {
-		return horizontalLayerDependency.getPreferredWidth();
+	
+	public ILayer getVerticalLayerDependency() {
+		return this.verticalLayerDependency;
 	}
-
-	public int getColumnWidthByPosition(int columnPosition) {
-		return horizontalLayerDependency.getColumnWidthByPosition(columnPosition);
+	
+	public ILayer getLayerDependency(final Orientation orientation) {
+		return (orientation == HORIZONTAL) ? this.horizontalLayerDependency : this.verticalLayerDependency;
 	}
-
-	// Column resize
-
-	public boolean isColumnPositionResizable(int columnPosition) {
-		return horizontalLayerDependency.isColumnPositionResizable(columnPosition);
+	
+	public IUniqueIndexLayer getBaseLayer() {
+		return (IUniqueIndexLayer) getUnderlyingLayer();
 	}
-
-	// X
-
-	public int getColumnPositionByX(int x) {
-		return horizontalLayerDependency.getColumnPositionByX(x);
+	
+	// Commands
+	
+	@Override
+	public boolean doCommand(final ILayerCommand command) {
+		// Invoke command handler(s) on the Dimensionally dependent layer
+		if (super.doCommand(command.cloneCommand())) {
+			return true;
+		}
+		
+		if (this.horizontalLayerDependency.doCommand(command.cloneCommand())) {
+			return true;
+		}
+		
+		if (this.verticalLayerDependency.doCommand(command.cloneCommand())) {
+			return true;
+		}
+		
+		return false;
 	}
-
-	public int getStartXOfColumnPosition(int columnPosition) {
-		return horizontalLayerDependency.getStartXOfColumnPosition(columnPosition);
-	}
-
-	// Vertical features
-
-	// Rows
-
-	public int getRowCount() {
-		return verticalLayerDependency.getRowCount();
-	}
-
-	public int getPreferredRowCount() {
-		return verticalLayerDependency.getPreferredRowCount();
-	}
-
-	public int getRowIndexByPosition(int rowPosition) {
-		return verticalLayerDependency.getRowIndexByPosition(rowPosition);
-	}
-
-	public int getRowPositionByIndex(int rowIndex) {
-		return verticalLayerDependency.getRowPositionByIndex(rowIndex);
-	}
-
-	public int localToUnderlyingRowPosition(int localRowPosition) {
-		return LayerUtil.convertRowPosition(this, localRowPosition, getUnderlyingLayer());
-	}
-
-	public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer, int underlyingRowPosition) {
-		return LayerUtil.convertRowPosition(sourceUnderlyingLayer, underlyingRowPosition, this);
-	}
-
-	// Height
-
-	public int getHeight() {
-		return verticalLayerDependency.getHeight();
-	}
-
-	public int getPreferredHeight() {
-		return verticalLayerDependency.getPreferredHeight();
-	}
-
-	public int getRowHeightByPosition(int rowPosition) {
-		return verticalLayerDependency.getRowHeightByPosition(rowPosition);
-	}
-
-	// Row resize
-
-	public boolean isRowPositionResizable(int rowPosition) {
-		return verticalLayerDependency.isRowPositionResizable(rowPosition);
-	}
-
-	// Y
-
-	public int getRowPositionByY(int y) {
-		return verticalLayerDependency.getRowPositionByY(y);
-	}
-
-	public int getStartYOfRowPosition(int rowPosition) {
-		return verticalLayerDependency.getStartYOfRowPosition(rowPosition);
-	}
-
+	
 }

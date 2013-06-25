@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,16 +10,17 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
-import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
-import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommand;
-import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
-import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
-import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
+
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
+import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
+import org.eclipse.nebula.widgets.nattable.style.IStyle;
+
 
 /**
  * TextPainter that draws text into a cell horizontally.
@@ -43,7 +44,7 @@ public class TextPainter extends AbstractTextPainter {
 	/**
 	 * @param wrapText split text over multiple lines
 	 * @param paintBg skips painting the background if is FALSE
-	 * @param spacing
+	 * @param spacing The space between text and cell border
 	 */
 	public TextPainter(boolean wrapText, boolean paintBg, int spacing) {
 		this(wrapText, paintBg, spacing, false);
@@ -52,11 +53,7 @@ public class TextPainter extends AbstractTextPainter {
 	/**
 	 * @param wrapText split text over multiple lines
 	 * @param paintBg skips painting the background if is FALSE
-	 * @param calculate tells the text painter to calculate the cell border
-	 * 			If wrapText is <code>true</code> the needed row height is calculated 
-	 * 			to show the whole cell content.
-	 * 			If wrapText is <code>false</code> the needed column width is calculated
-	 * 			to show the whole cell content. 
+	 * @param calculate tells the text painter to calculate the cell borders regarding the content
 	 */
 	public TextPainter(boolean wrapText, boolean paintBg, boolean calculate) {
 		this(wrapText, paintBg, 0, calculate);
@@ -65,17 +62,30 @@ public class TextPainter extends AbstractTextPainter {
 	/**
 	 * @param wrapText split text over multiple lines
 	 * @param paintBg skips painting the background if is FALSE
-	 * @param spacing
-	 * @param calculate tells the text painter to calculate the cell border
-	 * 			If wrapText is <code>true</code> the needed row height is calculated 
-	 * 			to show the whole cell content.
-	 * 			If wrapText is <code>false</code> the needed column width is calculated
-	 * 			to show the whole cell content. 
+	 * @param spacing The space between text and cell border
+	 * @param calculate tells the text painter to calculate the cell borders regarding the content
 	 */
 	public TextPainter(boolean wrapText, boolean paintBg, int spacing, boolean calculate) {
 		super(wrapText, paintBg, spacing, calculate);
 	}
-
+	
+//	/**
+//	 * @param wrapText split text over multiple lines
+//	 * @param paintBg skips painting the background if is FALSE
+//	 * @param spacing The space between text and cell border
+//	 * @param calculateByTextLength tells the text painter to calculate the cell border by containing
+//	 * 			text length. For horizontal text rendering, this means the width of the cell is calculated
+//	 * 			by content, for vertical text rendering the height is calculated
+//	 * @param calculateByTextHeight tells the text painter to calculate the cell border by containing
+//	 * 			text height. For horizontal text rendering, this means the height of the cell is calculated
+//	 * 			by content, for vertical text rendering the width is calculated
+//	 */
+//	public TextPainter(boolean wrapText, boolean paintBg, int spacing, 
+//			boolean calculateByTextLength, boolean calculateByTextHeight) {
+//		super(wrapText, paintBg, spacing, calculateByTextLength, calculateByTextHeight);
+//	}
+	
+	
 	@Override
 	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry){
 		setupGCFromConfig(gc, CellStyleUtil.getCellStyle(cell, configRegistry));
@@ -85,7 +95,7 @@ public class TextPainter extends AbstractTextPainter {
 	@Override
 	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		setupGCFromConfig(gc, CellStyleUtil.getCellStyle(cell, configRegistry));
-		return gc.textExtent(convertDataType(cell, configRegistry)).y;
+		return gc.textExtent(convertDataType(cell, configRegistry)).y + (spacing*2) + 1;
 	}
 
 
@@ -115,16 +125,16 @@ public class TextPainter extends AbstractTextPainter {
 			
 			//if the content height is bigger than the available row height
 			//we're extending the row height (only if word wrapping is enabled)
-			int contentHeight = fontHeight * numberOfNewLines;
+			int contentHeight = (fontHeight * numberOfNewLines) + (spacing*2);
 			int contentToCellDiff = (cell.getBounds().height - rectangle.height);
 	
-			if ((contentHeight > rectangle.height) && calculate) {
+			if (performRowResize(contentHeight, rectangle)) {
 				ILayer layer = cell.getLayer();
 				layer.doCommand(
 						new RowResizeCommand(
 								layer, 
 								cell.getRowPosition(), 
-								contentHeight + (spacing*2) + contentToCellDiff));
+								contentHeight + contentToCellDiff));
 			}
 			
 			if (numberOfNewLines == 1) {
@@ -132,16 +142,16 @@ public class TextPainter extends AbstractTextPainter {
 				
 				gc.drawText(
 						text,
-						rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentWidth + spacing),
-						rectangle.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, contentHeight + spacing),
+						rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentWidth) + spacing,
+						rectangle.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, contentHeight) + spacing,
 						SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER
 				);
 				
 				if (underline || strikethrough) {
 					//start x of line = start x of text
-					int x = rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentWidth + spacing);
+					int x = rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentWidth) + spacing;
 					//y = start y of text
-					int y = rectangle.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, contentHeight + spacing); 
+					int y = rectangle.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, contentHeight) + spacing; 
 					
 					//check and draw underline and strikethrough separately so it is possible to combine both
 					if (underline) {
@@ -177,14 +187,14 @@ public class TextPainter extends AbstractTextPainter {
 					
 					gc.drawText(
 							line,
-							rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, lineContentWidth + spacing),
+							rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, lineContentWidth) + spacing,
 							yStartPos + spacing,
 							SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER
 					);
 					
 					if (underline || strikethrough) {
 						//start x of line = start x of text
-						int x = rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, lineContentWidth + spacing);
+						int x = rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, lineContentWidth) + spacing;
 						//y = start y of text
 						int y = yStartPos + spacing; 
 								
@@ -238,4 +248,15 @@ public class TextPainter extends AbstractTextPainter {
 //	protected int calculatePadding(ILayerCell cell, int availableLength) {
 //		return cell.getBounds().width - availableLength;
 //	}
+	
+	/**
+	 * Checks if a row resize needs to be triggered.
+	 * @param contentHeight The necessary height to show the content completely
+	 * @param rectangle The available rectangle to render to
+	 * @return <code>true</code> if a row resize needs to be performed, <code>false</code> if not
+	 */
+	protected boolean performRowResize(int contentHeight, Rectangle rectangle) {
+		return (calculateByTextHeight && (contentHeight > rectangle.height));
+	}
+	
 }

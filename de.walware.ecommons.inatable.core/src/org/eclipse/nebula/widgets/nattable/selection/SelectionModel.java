@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -210,17 +210,15 @@ public class SelectionModel implements ISelectionModel {
 	
 	// Cell features
 
-	public boolean isCellPositionSelected(int columnPosition, int rowPosition) {
+	public boolean isCellPositionSelected(final ILayerCell cell) {
 		selectionsLock.readLock().lock();
-
+		
 		try {
-			ILayerCell cell = selectionLayer.getCellByPosition(columnPosition, rowPosition);
-			Rectangle cellRectangle =
-					new Rectangle(
-							cell.getOriginColumnPosition(),
-							cell.getOriginRowPosition(),
-							cell.getColumnSpan(),
-							cell.getRowSpan());
+			final Rectangle cellRectangle = new Rectangle(
+					cell.getOriginColumnPosition(),
+					cell.getOriginRowPosition(),
+					cell.getColumnSpan(),
+					cell.getRowSpan());
 			
 			for (Rectangle selectionRectangle : selections) {
 				if (selectionRectangle.intersects(cellRectangle))
@@ -229,7 +227,7 @@ public class SelectionModel implements ISelectionModel {
 		} finally {
 			selectionsLock.readLock().unlock();
 		}
-
+		
 		return false;
 	}
 	
@@ -303,7 +301,7 @@ public class SelectionModel implements ISelectionModel {
 	 * We need to take into account any overlapping selections or any selection rectangles
 	 * contained within each other.
 	 * 
-	 * @see the related tests for a better understanding.
+	 * See the related tests for a better understanding.
 	 */
 	public boolean isColumnPositionFullySelected(int columnPosition) {
 		selectionsLock.readLock().lock();

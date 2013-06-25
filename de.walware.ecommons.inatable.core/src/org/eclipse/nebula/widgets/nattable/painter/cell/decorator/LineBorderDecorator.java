@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,20 +8,22 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
+// ~
 package org.eclipse.nebula.widgets.nattable.painter.cell.decorator;
 
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
+
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.SWTUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
-import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyle;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
 
 
 public class LineBorderDecorator extends CellPainterWrapper {
@@ -108,7 +110,7 @@ public class LineBorderDecorator extends CellPainterWrapper {
 		}
 
 		gc.setLineWidth(borderThickness);
-		gc.setLineStyle(borderStyle.getLineStyle().toSWT());
+		gc.setLineStyle(SWTUtil.toSWT(borderStyle.getLineStyle()));
 		gc.setForeground(borderStyle.getColor());
 		gc.drawRectangle(borderArea);
 

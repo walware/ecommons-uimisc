@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@ import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 /**
- * Event fired by the {@link ILayerCommandHandler} classes (usually to signal to handling of a {@link ILayerCommand}).<br/>
+ * Event fired by the {@link ILayerCommandHandler} classes (usually to signal to handling of a {@link ILayerCommand}).
  * Every layer in the grid is given a chance to respond to an event via {@link ILayer#handleLayerEvent(ILayerEvent)}.
  * 
  *  @see ILayerEventHandler

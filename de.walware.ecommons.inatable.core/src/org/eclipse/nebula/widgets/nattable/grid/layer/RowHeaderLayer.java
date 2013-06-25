@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,9 +10,14 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.grid.layer;
 
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
+
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayerDim;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
+import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCellDim;
 import org.eclipse.nebula.widgets.nattable.layer.config.DefaultRowHeaderLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -23,7 +28,7 @@ import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
 /**
  * Layer for the row headers of the grid layer
  */
-public class RowHeaderLayer extends DimensionallyDependentLayer {
+public class RowHeaderLayer extends DimensionallyDependentIndexLayer {
 
 	private final SelectionLayer selectionLayer;
 
@@ -38,11 +43,11 @@ public class RowHeaderLayer extends DimensionallyDependentLayer {
 	 * @param selectionLayer
 	 *            The selection layer required to respond to selection events
 	 */
-	public RowHeaderLayer(IUniqueIndexLayer baseLayer, IUniqueIndexLayer verticalLayerDependency, SelectionLayer selectionLayer) {
+	public RowHeaderLayer(IUniqueIndexLayer baseLayer, ILayer verticalLayerDependency, SelectionLayer selectionLayer) {
 		this(baseLayer, verticalLayerDependency, selectionLayer, true);
 	}
 	
-	public RowHeaderLayer(IUniqueIndexLayer baseLayer, IUniqueIndexLayer verticalLayerDependency, SelectionLayer selectionLayer,
+	public RowHeaderLayer(IUniqueIndexLayer baseLayer, ILayer verticalLayerDependency, SelectionLayer selectionLayer,
 			boolean useDefaultConfiguration) {
 		this(baseLayer, verticalLayerDependency, selectionLayer, useDefaultConfiguration, null);
 	}
@@ -59,7 +64,7 @@ public class RowHeaderLayer extends DimensionallyDependentLayer {
 	 * @param layerPainter
 	 *            The painter for this layer or <code>null</code> to use the painter of the base layer
 	 */
-	public RowHeaderLayer(IUniqueIndexLayer baseLayer, IUniqueIndexLayer verticalLayerDependency,
+	public RowHeaderLayer(IUniqueIndexLayer baseLayer, ILayer verticalLayerDependency,
 			SelectionLayer selectionLayer, boolean useDefaultConfiguration, ILayerPainter layerPainter) {
 		super(baseLayer, baseLayer, verticalLayerDependency);
 		if (selectionLayer == null) {
@@ -76,13 +81,19 @@ public class RowHeaderLayer extends DimensionallyDependentLayer {
 
 
 	@Override
-	public String getDisplayModeByPosition(int columnPosition, int rowPosition) {
-		int selectionLayerRowPosition = LayerUtil.convertRowPosition(this, rowPosition, selectionLayer);
-		if (selectionLayer.isRowPositionSelected(selectionLayerRowPosition)) {
-			return DisplayMode.SELECT;
-		} else {
-			return super.getDisplayModeByPosition(columnPosition, rowPosition);
+	protected String getDisplayMode(final LayerCellDim hDim, final LayerCellDim vDim,
+			final String displayMode) {
+		return (isSelected(hDim, vDim)) ? DisplayMode.SELECT : displayMode;
+	}
+	
+	protected boolean isSelected(final LayerCellDim hDim, final LayerCellDim vDim) {
+		final ILayerDim dim = getDim(VERTICAL);
+		final int rowPosition = vDim.getPosition();
+		if (this.selectionLayer.isRowPositionSelected(
+				LayerUtil.convertPosition(dim, rowPosition, rowPosition, this.selectionLayer) )) {
+			return true;
 		}
+		return false;
 	}
 	
 	@Override

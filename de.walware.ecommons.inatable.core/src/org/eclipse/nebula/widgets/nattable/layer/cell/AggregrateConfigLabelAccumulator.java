@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,8 +18,8 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 
 
 /**
- * An {@link ICellLabelAccumulator} that can aggregate labels from other <code>ICellLabelAccumulator</code>s.<br/> 
- * All the labels provided by the aggregated accumulators are applied to the cell.<be/>
+ * An {@link IConfigLabelAccumulator} that can aggregate labels from other <code>IConfigLabelAccumulator</code>s. 
+ * All the labels provided by the aggregated accumulators are applied to the cell.
  */
 public class AggregrateConfigLabelAccumulator implements IConfigLabelAccumulator {
     

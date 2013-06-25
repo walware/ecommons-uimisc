@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,9 +38,6 @@ import org.eclipse.swt.graphics.RGB;
  * alternating colour rather than just replacing it leaving two alternating
  * selection colours.
  * </p>
- *
- * @author Stefan Bolton
- *
  */
 public class BlendedBackgroundPainter extends TextPainter {
 
@@ -63,9 +60,9 @@ public class BlendedBackgroundPainter extends TextPainter {
 	 * have been registered, they are all blended together.
 	 *
 	 * @param cell
-	 *            the {@link LayerCell} to get a background colour for.
+	 *            the {@link org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell} to get a background colour for.
 	 * @param configRegistry
-	 *            an {@link IConfigRegistry}.
+	 *            an {@link org.eclipse.nebula.widgets.nattable.config.IConfigRegistry}.
 	 * @param baseColor
 	 *            Colours are not blended with this colour.
 	 * @return A blended background colour.

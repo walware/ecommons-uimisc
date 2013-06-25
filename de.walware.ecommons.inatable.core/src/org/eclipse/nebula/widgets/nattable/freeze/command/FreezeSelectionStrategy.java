@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,12 +10,17 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.freeze.command;
 
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
+
+import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.viewport.IViewportDim;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
-class FreezeSelectionStrategy implements IFreezeCoordinatesProvider {
+public class FreezeSelectionStrategy implements IFreezeCoordinatesProvider {
 
 	private final FreezeLayer freezeLayer;
 
@@ -23,31 +28,39 @@ class FreezeSelectionStrategy implements IFreezeCoordinatesProvider {
 	
 	private final SelectionLayer selectionLayer;
 
-	FreezeSelectionStrategy(FreezeLayer freezeLayer, ViewportLayer viewportLayer, SelectionLayer selectionLayer) {
+	public FreezeSelectionStrategy(FreezeLayer freezeLayer, ViewportLayer viewportLayer, SelectionLayer selectionLayer) {
 		this.freezeLayer = freezeLayer;
 		this.viewportLayer = viewportLayer;
 		this.selectionLayer = selectionLayer;
 	}
 
 	public PositionCoordinate getTopLeftPosition() {
-		PositionCoordinate lastSelectedCellPosition = selectionLayer.getLastSelectedCellPosition();
-		
-		int columnPosition = viewportLayer.getOriginColumnPosition();
-		if (columnPosition >= lastSelectedCellPosition.columnPosition) {
-			columnPosition = lastSelectedCellPosition.columnPosition - 1;
+		PositionCoordinate selectionAnchor = selectionLayer.getSelectionAnchor();
+		if (selectionAnchor == null) {
+			return null;
 		}
 		
-		int rowPosition = viewportLayer.getOriginRowPosition();
-		if (rowPosition >= lastSelectedCellPosition.rowPosition) {
-			rowPosition = lastSelectedCellPosition.rowPosition - 1;
+		return new PositionCoordinate(freezeLayer,
+				checkPosition(HORIZONTAL, selectionAnchor.columnPosition),
+				checkPosition(VERTICAL, selectionAnchor.rowPosition) );
+	}
+	
+	private int checkPosition(final Orientation orientation, final int maxPosition) {
+		final IViewportDim dim = viewportLayer.getDim(orientation);
+		if (dim.getSize() > 0) {
+			final int position = dim.getOriginPosition();
+			if (position < maxPosition) {
+				return position;
+			}
 		}
-		
-		return new PositionCoordinate(freezeLayer, columnPosition, rowPosition);
+		return -1;
 	}
 	
 	public PositionCoordinate getBottomRightPosition() {
 		PositionCoordinate selectionAnchor = selectionLayer.getSelectionAnchor();
-		
+		if (selectionAnchor == null) {
+			return null;
+		}
 		return new PositionCoordinate(freezeLayer, selectionAnchor.columnPosition - 1, selectionAnchor.rowPosition - 1);
 	}
 

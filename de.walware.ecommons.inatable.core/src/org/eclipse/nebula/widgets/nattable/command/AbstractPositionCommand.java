@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,9 +13,12 @@ package org.eclipse.nebula.widgets.nattable.command;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
-public abstract class AbstractPositionCommand implements ILayerCommand {
 
+public abstract class AbstractPositionCommand implements ILayerCommand {
+	
+	
 	private PositionCoordinate positionCoordinate;
+	
 	
 	protected AbstractPositionCommand(ILayer layer, int columnPosition, int rowPosition) {
 		positionCoordinate = new PositionCoordinate(layer, columnPosition, rowPosition);
@@ -25,10 +28,6 @@ public abstract class AbstractPositionCommand implements ILayerCommand {
 		this.positionCoordinate = command.positionCoordinate;
 	}
 	
-	public boolean convertToTargetLayer(ILayer targetLayer) {
-		positionCoordinate = LayerCommandUtil.convertPositionToTargetContext(positionCoordinate, targetLayer);
-		return positionCoordinate != null;
-	}
 	
 	public int getColumnPosition() {
 		return positionCoordinate.getColumnPosition();
@@ -38,9 +37,20 @@ public abstract class AbstractPositionCommand implements ILayerCommand {
 		return positionCoordinate.getRowPosition();
 	}
 	
+	public boolean convertToTargetLayer(ILayer targetLayer) {
+		PositionCoordinate targetPositionCoordinate = LayerCommandUtil.convertPositionToTargetContext(positionCoordinate, targetLayer);
+		if (targetPositionCoordinate != null) {
+			positionCoordinate = targetPositionCoordinate;
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	
 	@Override
 	public String toString() {
 		return this.getClass().getSimpleName() + " columnPosition=" + positionCoordinate.getColumnPosition() + ", rowPosition=" + positionCoordinate.getRowPosition(); //$NON-NLS-1$ //$NON-NLS-2$
 	}
-
+	
 }

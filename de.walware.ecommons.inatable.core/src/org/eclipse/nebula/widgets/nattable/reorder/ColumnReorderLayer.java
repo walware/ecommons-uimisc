@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,8 @@
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.reorder;
+
+import static org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell.NO_INDEX;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,7 +40,7 @@ import org.eclipse.nebula.widgets.nattable.reorder.event.ColumnReorderEvent;
 
 
 /**
- * Adds functionality for reordering column(s)<br/>
+ * Adds functionality for reordering column(s)
  * Also responsible for saving/loading the column order state.
  * 
  * @see DefaultColumnReorderLayerConfiguration
@@ -184,10 +186,11 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 		if (columnPosition >= 0 && columnPosition < columnIndexOrder.size()) {
 			return columnIndexOrder.get(columnPosition).intValue();
 		} else {
-			return -1;
+			return NO_INDEX;
 		}
 	}
 
+	@Override
 	public int getColumnPositionByIndex(int columnIndex) {
 		return columnIndexOrder.indexOf(Integer.valueOf(columnIndex));
 	}
@@ -240,7 +243,7 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 		startXCache.put(Integer.valueOf(targetColumnPosition), Integer.valueOf(aggregateWidth));
 		return aggregateWidth;
 	}
-
+	
 	private void populateIndexOrder() {
 		ILayer underlyingLayer = getUnderlyingLayer();
 		for (int columnPosition = 0; columnPosition < underlyingLayer.getColumnCount(); columnPosition++) {
@@ -252,6 +255,7 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 
 	// Rows
 
+	@Override
 	public int getRowPositionByIndex(int rowIndex) {
 		return underlyingLayer.getRowPositionByIndex(rowIndex);
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,9 +9,6 @@
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
-
-import static org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.RANGE_SELECTION;
-import static org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.RETAIN_SELECTION;
 
 import org.eclipse.swt.graphics.Rectangle;
 
@@ -44,11 +41,10 @@ public class SelectCellCommandHandler extends AbstractLayerCommandHandler<Select
 
 	/**
 	 * Toggles the selection state of the given row and column.
-	 * @return <code>false</code> if the cell was unselected.
 	 */
 	protected void toggleOrSelectCell(final int columnPosition, final int rowPosition,
 			final int selectionFlags, final boolean showCell) {
-		if ((selectionFlags & (RETAIN_SELECTION | RANGE_SELECTION)) == RETAIN_SELECTION) {
+		if ((selectionFlags & (SelectionFlags.RETAIN_SELECTION | SelectionFlags.RANGE_SELECTION)) == SelectionFlags.RETAIN_SELECTION) {
 			if (this.selectionLayer.isCellPositionSelected(columnPosition, rowPosition)) {
 				this.selectionLayer.clearSelection(columnPosition, rowPosition);
 				return;
@@ -63,15 +59,15 @@ public class SelectCellCommandHandler extends AbstractLayerCommandHandler<Select
 	 */
 	protected void selectCell(final int columnPosition, final int rowPosition,
 			final int selectionFlags, final boolean show) {
-		if ((selectionFlags & (RETAIN_SELECTION | RANGE_SELECTION)) == 0) {
+		if ((selectionFlags & (SelectionFlags.RETAIN_SELECTION | SelectionFlags.RANGE_SELECTION)) == 0) {
 			this.selectionLayer.clearSelections();
 		}
 		this.selectionLayer.lastSelectedCell.columnPosition = columnPosition;
 		this.selectionLayer.lastSelectedCell.rowPosition = rowPosition;
 		
-		if ((selectionFlags & RANGE_SELECTION) != 0 && this.selectionLayer.lastSelectedRegion != null
+		if ((selectionFlags & SelectionFlags.RANGE_SELECTION) != 0 && this.selectionLayer.lastSelectedRegion != null
 				&& this.selectionLayer.selectionAnchor.columnPosition >= 0) {
-			if ((selectionFlags & RETAIN_SELECTION) != 0) {
+			if ((selectionFlags & SelectionFlags.RETAIN_SELECTION) != 0) {
 				this.selectionLayer.lastSelectedRegion = new Rectangle(0, 0, 0, 0);
 			}
 			

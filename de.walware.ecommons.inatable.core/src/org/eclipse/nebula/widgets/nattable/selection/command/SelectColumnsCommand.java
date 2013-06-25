@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -75,14 +75,14 @@ public class SelectColumnsCommand extends AbstractMultiColumnCommand {
 
 	@Override
 	public boolean convertToTargetLayer(ILayer targetLayer) {
-		if (super.convertToTargetLayer(targetLayer)) {
-			
-			rowPositionCoordinate = LayerCommandUtil.convertRowPositionToTargetContext(
-					rowPositionCoordinate, targetLayer );
+		RowPositionCoordinate targetRowPositionCoordinate = LayerCommandUtil.convertRowPositionToTargetContext(
+				rowPositionCoordinate, targetLayer );
+		if (targetRowPositionCoordinate != null
+				&& super.convertToTargetLayer(targetLayer)) {
+			rowPositionCoordinate = targetRowPositionCoordinate;
 			columnPositionToReveal = LayerCommandUtil.convertColumnPositionToTargetContext(
-					columnPositionToReveal, targetLayer );
-			
-			return (rowPositionCoordinate != null);
+					columnPositionToReveal, targetLayer);
+			return true;
 		}
 		return false;
 	}

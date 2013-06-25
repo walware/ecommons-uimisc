@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,12 +18,13 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
-import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
+
 
 /**
  * This class stores the size configuration of rows/columns within the NatTable.
  */
-public class SizeConfig {
+public class SizeConfig implements IPersistable {
 
 	public static final String PERSISTENCE_KEY_DEFAULT_SIZE = ".defaultSize"; //$NON-NLS-1$
 	public static final String PERSISTENCE_KEY_DEFAULT_SIZES = ".defaultSizes"; //$NON-NLS-1$
@@ -76,6 +77,7 @@ public class SizeConfig {
 
 	// Persistence
 
+	@Override
 	public void saveState(String prefix, Properties properties) {
 		properties.put(prefix + PERSISTENCE_KEY_DEFAULT_SIZE, String.valueOf(defaultSize));
 		saveMap(defaultSizeMap, prefix + PERSISTENCE_KEY_DEFAULT_SIZES, properties);
@@ -98,7 +100,13 @@ public class SizeConfig {
 		}
 	}
 
+	@Override
 	public void loadState(String prefix, Properties properties) {
+		//ensure to cleanup the current states prior loading new ones
+		defaultSizeMap.clear();
+		sizeMap.clear();
+		resizablesMap.clear();
+		
 		String persistedDefaultSize = properties.getProperty(prefix + PERSISTENCE_KEY_DEFAULT_SIZE);
 		if (persistedDefaultSize != null && !persistedDefaultSize.isEmpty()) {
 			defaultSize = Integer.valueOf(persistedDefaultSize).intValue();
@@ -147,18 +155,24 @@ public class SizeConfig {
 
 	// Default size
 
-	public void setDefaultSize(int defaultSize) {
-		this.defaultSize = defaultSize;
+	public void setDefaultSize(int size) {
+		if (size < 0) {
+			throw new IllegalArgumentException("size < 0"); //$NON-NLS-1$
+		}
+		this.defaultSize = size;
 	}
 
 	public void setDefaultSize(int position, int size) {
+		if (defaultSize < 0) {
+			throw new IllegalArgumentException("size < 0"); //$NON-NLS-1$
+		}
 		defaultSizeMap.put(Integer.valueOf(position), Integer.valueOf(size));
 	}
 
 	private int getDefaultSize(int position) {
-		int size = getSize(defaultSizeMap, position);
-		if (size >= 0) {
-			return size;
+		Integer size = defaultSizeMap.get(Integer.valueOf(position));
+		if (size != null) {
+			return size.intValue();
 		} else {
 			return defaultSize;
 		}
@@ -168,7 +182,7 @@ public class SizeConfig {
 
 	public int getAggregateSize(int position) {
 		if (position < 0) {
-			return -1;
+			throw new IndexOutOfBoundsException("position: " + position); //$NON-NLS-1$
 		} else if (position == 0) {
 			return 0;
 		} else if (isAllPositionsSameSize() && !percentageSizing) {
@@ -194,17 +208,14 @@ public class SizeConfig {
 	}
 
 	public int getSize(int position) {
-		int size = -1;
+		Integer size;
 		if (percentageSizing) {
-			size = getSize(realSizeMap, position);
+			size = realSizeMap.get(Integer.valueOf(position));
 		} else {
-			size = getSize(sizeMap, position);
+			size = sizeMap.get(Integer.valueOf(position));
 		}
-
-		if (size <= 0 && sizeMap.containsKey(Integer.valueOf(position))) {
-			return GUIHelper.DEFAULT_MIN_DISPLAY_SIZE;
-		} else if (size >= 0) {
-			return size;
+		if (size != null) {
+			return size.intValue();
 		} else {
 			return getDefaultSize(position);
 		}
@@ -224,6 +235,9 @@ public class SizeConfig {
 	 * @param size The size in pixels to set for the given position.
 	 */
 	public void setSize(int position, int size) {
+		if (size < 0) {
+			throw new IllegalArgumentException("size < 0"); //$NON-NLS-1$
+		}
 		if (isPositionResizable(position)) {
 			//check whether the given value should be remembered as is or if it needs to be calculated
 			if (!isPercentageSizing()) {
@@ -246,6 +260,9 @@ public class SizeConfig {
 	 * @param percentage
 	 */
 	public void setPercentage(int position, int percentage) {
+		if (percentage < 0) {
+			throw new IllegalArgumentException("percentage < 0"); //$NON-NLS-1$
+		}
 		if (isPositionResizable(position) && isPercentageSizing()) {
 			sizeMap.put(Integer.valueOf(position), Integer.valueOf(percentage));
 			realSizeMap.put(position, calculatePercentageValue(percentage, availableSpace));
@@ -310,25 +327,6 @@ public class SizeConfig {
 		return defaultSizeMap.size() == 0 && sizeMap.size() == 0;
 	}
 
-	/**
-	 * Returns the size value for the given position out of the given map.
-	 * If there is no value for the given position within the given map, 
-	 * -1 will be returned.
-	 * @param map The map to get the value from.
-	 * @param position The position for which the size value should be retrieved.
-	 * @return The size value for the given position out of the given map or -1 if
-	 * 			there is no value for the given position within the given map.
-	 */
-	private int getSize(Map<Integer, Integer> map, int position) {
-		Integer sizeFromMap = map.get(Integer.valueOf(position));
-
-		if (sizeFromMap != null) {
-			return sizeFromMap;
-		}
-
-		return -1;
-	}
-	
 	/**
 	 * @return <code>true</code> if the size of the positions is interpreted percentaged,
 	 * 			<code>false</code> if the size of the positions is interpreted by pixel.

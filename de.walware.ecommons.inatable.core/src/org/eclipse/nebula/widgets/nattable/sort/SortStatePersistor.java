@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,16 +17,22 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+
+import org.eclipse.nebula.widgets.nattable.internal.NatTablePlugin;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 
 
 /**
- * Handles persisting of the sorting state.<br/>
- * The sorting state is read from and restored to the {@link ISortModel}.<br/>
+ * Handles persisting of the sorting state.
+ * The sorting state is read from and restored to the {@link ISortModel}.
  *
  * @param <T> Type of the Beans in the backing data source.
  */
 public class SortStatePersistor<T> implements IPersistable {
+	
+	
 	public static final String PERSISTENCE_KEY_SORTING_STATE = ".SortHeaderLayer.sortingState"; //$NON-NLS-1$
 	private final ISortModel sortModel;
 
@@ -35,11 +41,12 @@ public class SortStatePersistor<T> implements IPersistable {
 	}
 
 	/**
-	 * Save the sorting state in the properties file.<br/>
+	 * Save the sorting state in the properties file.
+	 * <p>
 	 * Key:
-	 * 	{@link #PERSISTENCE_KEY_SORTING_STATE}<br/>
-	 *
-	 * Format:<br/>
+	 * 	{@link #PERSISTENCE_KEY_SORTING_STATE}
+	 * <p>
+	 * Format:
 	 * 	column index : sort direction : sort order |
 	 */
 	public void saveState(String prefix, Properties properties) {
@@ -67,41 +74,38 @@ public class SortStatePersistor<T> implements IPersistable {
 	 */
 	public void loadState(String prefix, Properties properties) {
 		
+		/*
+		 * restoring the sortState starts with a clean sortModel. This step
+		 * is necessary because there could be calls to the sortModel before
+		 * which leads to an undefined state afterwards ...
+		 */
+		sortModel.clear();
+		
 		Object savedValue = properties.get(prefix + PERSISTENCE_KEY_SORTING_STATE);
 		if(savedValue == null){
 			return;
 		}
 		
 		try{
-			
-			/*
-			 * restoring the sortState starts with a clean sortModel. This step
-			 * is necessary because there could be calls to the sortModel before
-			 * which leads to an undefined state afterwards ...
-			 */
-			sortModel.clear();
-			
 			String savedState = savedValue.toString();
 			String[] sortedColumns = savedState.split("\\|"); //$NON-NLS-1$
-			List<SortState> stateInfo = new ArrayList<SortState>();
+			final List<SortState> stateInfo = new ArrayList<SortState>();
 
 			// Parse string
 			for (String token : sortedColumns) {
 				stateInfo.add(getSortStateFromString(token));
 			}
 
-			// Order by the sort order
-			Collections.sort(stateInfo, new SortStateComparator());
-
 			// Restore to the model
+			Collections.sort(stateInfo, new SortStateComparator());
 			for (SortState state : stateInfo) {
 				sortModel.sort(state.columnIndex, state.sortDirection, true);
 			}
 		}
 		catch(Exception ex){
 			sortModel.clear();
-			System.err.println("Error while restoring sorting state. Skipping"); //$NON-NLS-1$
-			ex.printStackTrace(System.err);
+			NatTablePlugin.log(new Status(IStatus.ERROR, NatTablePlugin.PLUGIN_ID,
+					"Error while restoring sorting state: " + ex.getLocalizedMessage(), ex )); //$NON-NLS-1$
 		}
 	}
 
@@ -145,4 +149,5 @@ public class SortStatePersistor<T> implements IPersistable {
 		}
 
 	}
+	
 }
