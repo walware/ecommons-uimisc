@@ -16,13 +16,15 @@ import java.util.List;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.SWTUtil;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.SWTUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
+import org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
@@ -85,11 +87,11 @@ public class CustomLineBorderDecorator extends CellPainterWrapper {
 	}
 
 	@Override
-	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public long getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		BorderStyle borderStyle = getBorderStyle(cell, configRegistry);
-		int borderThickness = borderStyle != null ? borderStyle.getThickness() : 0;
+		long borderThickness = borderStyle != null ? borderStyle.getThickness() : 0;
 		
-		int borderLineCount = 0;
+		long borderLineCount = 0;
 		//check how many border lines are configured for that cell
 		List<String> labels = cell.getConfigLabels().getLabels();
 		if (labels.contains(RIGHT_LINE_BORDER_LABEL)) borderLineCount++;
@@ -99,11 +101,11 @@ public class CustomLineBorderDecorator extends CellPainterWrapper {
 	}
 	
 	@Override
-	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public long getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		BorderStyle borderStyle = getBorderStyle(cell, configRegistry);
-		int borderThickness = borderStyle != null ? borderStyle.getThickness() : 0;
+		long borderThickness = borderStyle != null ? borderStyle.getThickness() : 0;
 		
-		int borderLineCount = 0;
+		long borderLineCount = 0;
 		//check how many border lines are configured for that cell
 		List<String> labels = cell.getConfigLabels().getLabels();
 		if (labels.contains(TOP_LINE_BORDER_LABEL)) borderLineCount++;
@@ -129,10 +131,10 @@ public class CustomLineBorderDecorator extends CellPainterWrapper {
 		//check how many border lines are configured for that cell
 		List<String> labels = cell.getConfigLabels().getLabels();
 
-		int leftBorderThickness = 0;
-		int rightBorderThickness = 0;
-		int topBorderThickness = 0;
-		int bottomBorderThickness = 0;
+		long leftBorderThickness = 0;
+		long rightBorderThickness = 0;
+		long topBorderThickness = 0;
+		long bottomBorderThickness = 0;
 		
 		if (labels.contains(LEFT_LINE_BORDER_LABEL)) leftBorderThickness = borderThickness;
 		if (labels.contains(RIGHT_LINE_BORDER_LABEL)) rightBorderThickness = borderThickness;
@@ -195,17 +197,18 @@ public class CustomLineBorderDecorator extends CellPainterWrapper {
 		gc.setLineStyle(SWTUtil.toSWT(borderStyle.getLineStyle()));
 		gc.setForeground(borderStyle.getColor());
 		
+		org.eclipse.swt.graphics.Rectangle rect = GraphicsUtils.safe(borderArea);
 		//if all borders are set draw a rectangle
 		if (leftBorderThickness > 0 && rightBorderThickness > 0 
 						&& topBorderThickness > 0 && bottomBorderThickness > 0) {
-			gc.drawRectangle(borderArea);
+			gc.drawRectangle(rect);
 		}
 		//else draw a line for every set border
 		else {
-			Point topLeftPos = new Point(borderArea.x, borderArea.y); 
-			Point topRightPos = new Point(borderArea.x + borderArea.width, borderArea.y); 
-			Point bottomLeftPos = new Point(borderArea.x, borderArea.y + borderArea.height); 
-			Point bottomRightPos = new Point(borderArea.x + borderArea.width, borderArea.y + borderArea.height); 
+			Point topLeftPos = new Point(rect.x, rect.y); 
+			Point topRightPos = new Point(rect.x + rect.width, rect.y); 
+			Point bottomLeftPos = new Point(rect.x, rect.y + rect.height); 
+			Point bottomRightPos = new Point(rect.x + rect.width, rect.y + rect.height); 
 			
 			if (leftBorderThickness > 0) {
 				gc.drawLine(topLeftPos.x, topLeftPos.y, bottomLeftPos.x, bottomLeftPos.y);

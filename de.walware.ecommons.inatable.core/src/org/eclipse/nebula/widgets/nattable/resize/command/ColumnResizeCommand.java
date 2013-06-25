@@ -20,7 +20,7 @@ public class ColumnResizeCommand extends AbstractColumnCommand {
 	
     private int newColumnWidth;
     
-    public ColumnResizeCommand(ILayer layer, int columnPosition, int newWidth) {
+    public ColumnResizeCommand(ILayer layer, long columnPosition, int newWidth) {
     	super (layer, columnPosition);
     	this.newColumnWidth = newWidth;
     }

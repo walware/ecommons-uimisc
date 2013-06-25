@@ -20,19 +20,19 @@ public class DummyColumnHeaderDataProvider implements IDataProvider {
 		this.bodyDataProvider = bodyDataProvider;
 	}
 	
-	public int getColumnCount() {
+	public long getColumnCount() {
 		return bodyDataProvider.getColumnCount();
 	}
 
-	public int getRowCount() {
+	public long getRowCount() {
 		return 1;
 	}
 	
-	public Object getDataValue(int columnIndex, int rowIndex) {
+	public Object getDataValue(long columnIndex, long rowIndex) {
 		return "Column " + (columnIndex + 1); //$NON-NLS-1$
 	}
 	
-	public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
+	public void setDataValue(long columnIndex, long rowIndex, Object newValue) {
 		throw new UnsupportedOperationException();
 	}
 

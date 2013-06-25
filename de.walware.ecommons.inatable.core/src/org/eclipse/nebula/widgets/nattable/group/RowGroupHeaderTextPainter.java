@@ -45,7 +45,7 @@ public class RowGroupHeaderTextPainter<T> extends CellPainterWrapper {
 	}
 	
 	@Override
-	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public long getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return 0;
 	}
 

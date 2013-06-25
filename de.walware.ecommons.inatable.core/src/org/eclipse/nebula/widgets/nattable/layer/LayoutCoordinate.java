@@ -12,7 +12,7 @@
 package org.eclipse.nebula.widgets.nattable.layer;
 
 
-public final class LayoutCoordinate {
+final class LayoutCoordinate {
 	
 	
 	public final int x;
@@ -26,11 +26,11 @@ public final class LayoutCoordinate {
 	}
 	
 	
-	public int getColumnPosition() {
+	public long getColumnPosition() {
 		return x;
 	}
 	
-	public int getRowPosition() {
+	public long getRowPosition() {
 		return y;
 	}
 	

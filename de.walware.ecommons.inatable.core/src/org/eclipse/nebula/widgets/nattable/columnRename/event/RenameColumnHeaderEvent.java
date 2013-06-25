@@ -20,8 +20,8 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 
 public class RenameColumnHeaderEvent extends ColumnVisualChangeEvent {
     
-	public RenameColumnHeaderEvent(ColumnHeaderLayer columnHeaderLayer, int columnPosition)	{
-		super(columnHeaderLayer,PositionUtil.getRanges(Arrays.asList(Integer.valueOf(columnPosition))));
+	public RenameColumnHeaderEvent(ColumnHeaderLayer columnHeaderLayer, long columnPosition)	{
+		super(columnHeaderLayer,PositionUtil.getRanges(Arrays.asList(Long.valueOf(columnPosition))));
 	}
 	
 	// Copy constructor

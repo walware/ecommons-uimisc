@@ -61,35 +61,35 @@ public class PlaceholderLayer extends DimensionallyDependentIndexLayer {
 			
 			
 			@Override
-			public int getPositionIndex(final int refPosition, final int position) {
+			public long getPositionIndex(final long refPosition, final long position) {
 				return NO_INDEX;
 			}
 			
 			
 			@Override
-			public int getPositionCount() {
+			public long getPositionCount() {
 				return 1;
 			}
 			
 			@Override
-			public int getPreferredPositionCount() {
+			public long getPreferredPositionCount() {
 				return 1;
 			}
 			
 			@Override
-			public int localToUnderlyingPosition(final int refPosition, final int position) {
+			public long localToUnderlyingPosition(final long refPosition, final long position) {
 				return position;
 			}
 			
 			@Override
-			public int underlyingToLocalPosition(final int refPosition,
-					final int underlyingPosition) {
+			public long underlyingToLocalPosition(final long refPosition,
+					final long underlyingPosition) {
 				return underlyingPosition;
 			}
 			
 			@Override
-			public int underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
-					final int underlyingPosition) {
+			public long underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
+					final long underlyingPosition) {
 				return underlyingPosition;
 			}
 			
@@ -100,23 +100,23 @@ public class PlaceholderLayer extends DimensionallyDependentIndexLayer {
 			}
 			
 			@Override
-			public Collection<ILayer> getUnderlyingLayersByPosition(final int position) {
+			public Collection<ILayer> getUnderlyingLayersByPosition(final long position) {
 				return null;
 			}
 			
 			
 			@Override
-			public int getSize() {
+			public long getSize() {
 				return DummyLayer.this.size;
 			}
 			
 			@Override
-			public int getPreferredSize() {
+			public long getPreferredSize() {
 				return DummyLayer.this.size;
 			}
 			
 			@Override
-			public int getPositionByPixel(final int pixel) {
+			public long getPositionByPixel(final long pixel) {
 				if (pixel < 0 || pixel >= DummyLayer.this.size) {
 					throw new IndexOutOfBoundsException("pixel: " + pixel); //$NON-NLS-1$
 				}
@@ -124,7 +124,7 @@ public class PlaceholderLayer extends DimensionallyDependentIndexLayer {
 			}
 			
 			@Override
-			public int getPositionStart(final int refPosition, final int position) {
+			public long getPositionStart(final long refPosition, final long position) {
 				if (refPosition != 0) {
 					throw new IndexOutOfBoundsException("refPosition: " + refPosition); //$NON-NLS-1$
 				}
@@ -135,7 +135,7 @@ public class PlaceholderLayer extends DimensionallyDependentIndexLayer {
 			}
 			
 			@Override
-			public int getPositionSize(final int refPosition, final int position) {
+			public int getPositionSize(final long refPosition, final long position) {
 				if (refPosition != 0) {
 					throw new IndexOutOfBoundsException("refPosition: " + refPosition); //$NON-NLS-1$
 				}
@@ -146,7 +146,7 @@ public class PlaceholderLayer extends DimensionallyDependentIndexLayer {
 			}
 			
 			@Override
-			public boolean isPositionResizable(final int position) {
+			public boolean isPositionResizable(final long position) {
 				return false;
 			}
 			
@@ -169,22 +169,22 @@ public class PlaceholderLayer extends DimensionallyDependentIndexLayer {
 		
 		
 		@Override
-		public Object getDataValueByPosition(final int columnPosition, final int rowPosition) {
+		public Object getDataValueByPosition(final long columnPosition, final long rowPosition) {
 			return null;
 		}
 		
 		@Override
-		public ILayer getUnderlyingLayerByPosition(final int columnPosition, final int rowPosition) {
+		public ILayer getUnderlyingLayerByPosition(final long columnPosition, final long rowPosition) {
 			return null;
 		}
 		
 		@Override
-		public int getColumnPositionByIndex(final int columnIndex) {
+		public long getColumnPositionByIndex(final long columnIndex) {
 			return columnIndex;
 		}
 		
 		@Override
-		public int getRowPositionByIndex(final int rowIndex) {
+		public long getRowPositionByIndex(final long rowIndex) {
 			return rowIndex;
 		}
 		
@@ -233,13 +233,13 @@ public class PlaceholderLayer extends DimensionallyDependentIndexLayer {
 	}
 	
 	@Override
-	public ICellPainter getCellPainter(final int columnPosition, final int rowPosition,
+	public ICellPainter getCellPainter(final long columnPosition, final long rowPosition,
 			final ILayerCell cell, final IConfigRegistry configRegistry) {
 		return CELL_PAINTER;
 	}
 	
 	@Override
-	public ILayerCell getCellByPosition(final int columnPosition, final int rowPosition) {
+	public ILayerCell getCellByPosition(final long columnPosition, final long rowPosition) {
 		return new LayerCell(this,
 				new LayerCellDim(HORIZONTAL, NO_INDEX,
 						columnPosition, 0, getHorizontalLayerDependency().getColumnCount() ),

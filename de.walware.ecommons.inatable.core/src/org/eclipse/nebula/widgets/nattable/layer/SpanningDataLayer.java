@@ -14,8 +14,7 @@ package org.eclipse.nebula.widgets.nattable.layer;
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
 
-import org.eclipse.swt.graphics.Rectangle;
-
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.data.ISpanningDataProvider;
 import org.eclipse.nebula.widgets.nattable.layer.cell.DataCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
@@ -48,7 +47,7 @@ public class SpanningDataLayer extends DataLayer {
 	}
 	
 	@Override
-	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
+	public ILayerCell getCellByPosition(long columnPosition, long rowPosition) {
 		if (columnPosition < 0 || columnPosition >= getColumnCount()
 				|| rowPosition < 0 || rowPosition >= getRowCount()) {
 			return null;
@@ -66,7 +65,7 @@ public class SpanningDataLayer extends DataLayer {
 	}
 	
 	@Override
-	public Rectangle getBoundsByPosition(int columnPosition, int rowPosition) {
+	public Rectangle getBoundsByPosition(long columnPosition, long rowPosition) {
 		ILayerCell cell = getCellByPosition(columnPosition, rowPosition);
 		return super.getBoundsByPosition(cell.getOriginColumnPosition(), cell.getOriginRowPosition());
 	}

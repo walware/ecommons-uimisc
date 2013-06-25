@@ -13,24 +13,24 @@ package org.eclipse.nebula.widgets.nattable.print;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-
-import org.eclipse.nebula.widgets.nattable.Messages;
-import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
-import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
-import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
-import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.printing.PrintDialog;
 import org.eclipse.swt.printing.Printer;
 import org.eclipse.swt.printing.PrinterData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+
+import org.eclipse.nebula.widgets.nattable.Messages;
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
+import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
+import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
+import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 
 public class GridLayerPrinter {
 
@@ -75,12 +75,12 @@ public class GridLayerPrinter {
 	 */
 	private Point getPageCount(Printer printer){
 		Rectangle gridArea = getTotalGridArea();
-		Rectangle printArea = computePrintArea(printer);
+		org.eclipse.swt.graphics.Rectangle printArea = computePrintArea(printer);
 		Point scaleFactor = computeScaleFactor(printer);
 
-		int numOfHorizontalPages = gridArea.width / (printArea.width / scaleFactor.x);
-		int numOfVerticalPages = gridArea.height / (printArea.height / scaleFactor.y);
-
+		int numOfHorizontalPages = (int) (gridArea.width / (printArea.width / scaleFactor.x));
+		int numOfVerticalPages = (int) (gridArea.height / (printArea.height / scaleFactor.y));
+		
 		// Adjusting for 0 index
 		return new Point(numOfHorizontalPages + 1, numOfVerticalPages + 1);
 	}
@@ -96,19 +96,19 @@ public class GridLayerPrinter {
 
 			public void run() {
 				if (printer.startJob("NatTable")) { //$NON-NLS-1$
-					final Rectangle printerClientArea = computePrintArea(printer);
+					final org.eclipse.swt.graphics.Rectangle printerClientArea = computePrintArea(printer);
 					final Point scaleFactor = computeScaleFactor(printer);
 					final Point pageCount = getPageCount(printer);
 					GC gc = new GC(printer);
 
-					// Print pages Left to Right and then Top to Down
+					// Prlong pages Left to Right and then Top to Down
 					int currentPage = 1;
 					for (int verticalPageNumber = 0; verticalPageNumber < pageCount.y; verticalPageNumber++) {
 
 						for (int horizontalPageNumber = 0; horizontalPageNumber < pageCount.x; horizontalPageNumber++) {
 
 							// Calculate bounds for the next page
-							Rectangle printBounds = new Rectangle((printerClientArea.width / scaleFactor.x) * horizontalPageNumber,
+							org.eclipse.swt.graphics.Rectangle printBounds = new org.eclipse.swt.graphics.Rectangle((printerClientArea.width / scaleFactor.x) * horizontalPageNumber,
 							                                      ((printerClientArea.height - FOOTER_HEIGHT_IN_PRINTER_DPI) / scaleFactor.y) * verticalPageNumber,
 							                                      printerClientArea.width / scaleFactor.x,
 							                                      (printerClientArea.height - FOOTER_HEIGHT_IN_PRINTER_DPI) / scaleFactor.y);
@@ -149,11 +149,11 @@ public class GridLayerPrinter {
 				restoreGridLayerState();
 			}
 
-			private void printGrid(GC gc, Rectangle printBounds) {
+			private void printGrid(GC gc, org.eclipse.swt.graphics.Rectangle printBounds) {
 				gridLayer.getLayerPainter().paintLayer(gridLayer, gc, 0, 0, printBounds, configRegistry);
 			}
 
-			private void printFooter(GC gc, int totalPageCount, Rectangle printBounds) {
+			private void printFooter(GC gc, long totalPageCount, org.eclipse.swt.graphics.Rectangle printBounds) {
 				gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
 				gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 
@@ -179,7 +179,7 @@ public class GridLayerPrinter {
 	 * Page is allowed to print if:
 	 * 	  User asked to print all pages or Page in a specified range
 	 */
-	private boolean shouldPrint(PrinterData printerData, int totalPageCount) {
+	private boolean shouldPrint(PrinterData printerData, long totalPageCount) {
 		if(printerData.scope == PrinterData.PAGE_RANGE){
 			return totalPageCount >= printerData.startPage && totalPageCount <= printerData.endPage;
 		}
@@ -234,12 +234,12 @@ public class GridLayerPrinter {
 	  /**
 	   * Computes the print area, including margins
 	   */
-	  private static Rectangle computePrintArea(Printer printer) {
+	  private static org.eclipse.swt.graphics.Rectangle computePrintArea(Printer printer) {
 	    // Get the printable area
-	    Rectangle rect = printer.getClientArea();
+	    org.eclipse.swt.graphics.Rectangle rect = printer.getClientArea();
 
 	    // Compute the trim
-	    Rectangle trim = printer.computeTrim(0, 0, 0, 0);
+	    org.eclipse.swt.graphics.Rectangle trim = printer.computeTrim(0, 0, 0, 0);
 
 	    // Get the printer's DPI
 	    Point dpi = printer.getDPI();
@@ -259,7 +259,7 @@ public class GridLayerPrinter {
 	    int bottom = (rect.height + trim.y + trim.height) - dpi.y;
 	    if (bottom > rect.height) bottom = rect.height;
 
-	    return new Rectangle(left, top, right - left, bottom - top);
+	    return new org.eclipse.swt.graphics.Rectangle(left, top, right - left, bottom - top);
 	  }
 
 

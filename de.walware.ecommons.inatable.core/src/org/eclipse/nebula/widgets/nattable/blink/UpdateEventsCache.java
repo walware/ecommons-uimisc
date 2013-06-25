@@ -32,10 +32,10 @@ import org.eclipse.nebula.widgets.nattable.layer.event.PropertyUpdateEvent;
 public class UpdateEventsCache<T> {
 
 	/** Initial startup delay for the expired event removal task */
-	public static final int INITIAL_DELAY = 100;
+	public static final long INITIAL_DELAY = 100;
 
 	/** TTL for an event in the cache. The event is deleted when this expires */
-	public static final int TIME_TO_LIVE = 500;
+	public static final long TIME_TO_LIVE = 500;
 
 	private final IRowIdAccessor<T> rowIdAccessor;
 	private final KeyStrategy keyStrategy;
@@ -108,7 +108,7 @@ public class UpdateEventsCache<T> {
 		return updateEvents.get(key).event;
 	}
 
-	public int getCount() {
+	public long getCount() {
 		return updateEvents.size();
 	}
 

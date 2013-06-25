@@ -61,11 +61,11 @@ public class SortHeaderLayer<T> extends AbstractTransformLayer implements IPersi
 	 * A special painter is registered against the above labels to render the sort arrows
 	 */
 	@Override
-	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
+	public LabelStack getConfigLabelsByPosition(long columnPosition, long rowPosition) {
 		LabelStack configLabels = super.getConfigLabelsByPosition(columnPosition, rowPosition);
 		
 		if (sortModel != null) {
-			int columnIndex = getColumnIndexByPosition(columnPosition);
+			long columnIndex = getColumnIndexByPosition(columnPosition);
 			if (sortModel.isColumnIndexSorted(columnIndex)) {
 				String sortConfig = DefaultSortConfiguration.SORT_SEQ_CONFIG_TYPE + sortModel.getSortOrder(columnIndex);
 				configLabels.addLabelOnTop(sortConfig);

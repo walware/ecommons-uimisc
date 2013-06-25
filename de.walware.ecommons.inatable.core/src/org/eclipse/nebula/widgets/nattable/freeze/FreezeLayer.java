@@ -33,8 +33,8 @@ public class FreezeLayer extends AbstractTransformIndexLayer {
 	static class Dim extends TransformDim<FreezeLayer> {
 		
 		
-		private int startPosition;
-		private int endPosition;
+		private long startPosition;
+		private long endPosition;
 		
 		
 		public Dim(final FreezeLayer layer, final ILayerDim underlyingDim) {
@@ -42,7 +42,7 @@ public class FreezeLayer extends AbstractTransformIndexLayer {
 		}
 		
 		
-		public void setFreeze(final int start, final int end) {
+		public void setFreeze(final long start, final long end) {
 			if (start < 0 || start > end) {
 				throw new IllegalArgumentException();
 			}
@@ -50,31 +50,31 @@ public class FreezeLayer extends AbstractTransformIndexLayer {
 			this.endPosition = end;
 		}
 		
-		public int getStartPosition() {
+		public long getStartPosition() {
 			return this.startPosition;
 		}
 		
-		public int getEndPosition() {
+		public long getEndPosition() {
 			return this.endPosition;
 		}
 		
-		private int getStartPixel() {
+		private long getStartPixel() {
 			return this.underlyingDim.getPositionStart(this.startPosition, this.startPosition);
 		}
 		
 		
 		@Override
-		public int getPositionCount() {
+		public long getPositionCount() {
 			return this.endPosition - this.startPosition;
 		}
 		
 		@Override
-		public int getPreferredPositionCount() {
+		public long getPreferredPositionCount() {
 			return getPositionCount();
 		}
 		
 		@Override
-		public int localToUnderlyingPosition(final int refPosition, final int position) {
+		public long localToUnderlyingPosition(final long refPosition, final long position) {
 			if (refPosition < 0 || refPosition >= getPositionCount()) {
 				throw new IndexOutOfBoundsException("refPosition: " + refPosition); //$NON-NLS-1$
 			}
@@ -83,8 +83,8 @@ public class FreezeLayer extends AbstractTransformIndexLayer {
 		}
 		
 		@Override
-		public int underlyingToLocalPosition(final int refPosition,
-				final int underlyingPosition) {
+		public long underlyingToLocalPosition(final long refPosition,
+				final long underlyingPosition) {
 			if (refPosition < 0 || refPosition >= getPositionCount()) {
 				throw new IndexOutOfBoundsException("refPosition: " + refPosition); //$NON-NLS-1$
 			}
@@ -93,8 +93,8 @@ public class FreezeLayer extends AbstractTransformIndexLayer {
 		}
 		
 		@Override
-		public int underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
-				final int underlyingPosition) {
+		public long underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
+				final long underlyingPosition) {
 			if (sourceUnderlyingLayer != this.underlyingDim.getLayer()) {
 				throw new IllegalArgumentException("underlyingLayer"); //$NON-NLS-1$
 			}
@@ -104,27 +104,27 @@ public class FreezeLayer extends AbstractTransformIndexLayer {
 		
 		
 		@Override
-		public int getSize() {
-			int size = 0;
-			for (int position = this.startPosition; position < this.endPosition; position++) {
+		public long getSize() {
+			long size = 0;
+			for (long position = this.startPosition; position < this.endPosition; position++) {
 				size += this.underlyingDim.getPositionSize(position, position);
 			}
 			return size;
 		}
 		
 		@Override
-		public int getPreferredSize() {
+		public long getPreferredSize() {
 			return getSize();
 		}
 		
 		@Override
-		public int getPositionByPixel(final int pixel) {
-			final int underlyingPosition = this.underlyingDim.getPositionByPixel(getStartPixel() + pixel);
+		public long getPositionByPixel(final long pixel) {
+			final long underlyingPosition = this.underlyingDim.getPositionByPixel(getStartPixel() + pixel);
 			return underlyingToLocalPosition(this.underlyingDim.getLayer(), underlyingPosition);
 		}
 		
 		@Override
-		public int getPositionStart(final int refPosition, final int position) {
+		public long getPositionStart(final long refPosition, final long position) {
 			return super.getPositionStart(refPosition, position) - getStartPixel();
 		}
 		
@@ -169,8 +169,8 @@ public class FreezeLayer extends AbstractTransformIndexLayer {
 				get(VERTICAL).endPosition - 1 );
 	}
 	
-	public void setFreeze(final int leftColumnPosition, final int topRowPosition,
-			final int rightColumnPosition, final int bottomRowPosition) {
+	public void setFreeze(final long leftColumnPosition, final long topRowPosition,
+			final long rightColumnPosition, final long bottomRowPosition) {
 		if (rightColumnPosition < leftColumnPosition || bottomRowPosition < topRowPosition) {
 			throw new IllegalArgumentException();
 		}

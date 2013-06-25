@@ -44,9 +44,9 @@ public interface ILayerExporter {
 	
 	void exportLayerEnd(OutputStream outputStream, String layerName) throws IOException;
 	
-	void exportRowBegin(OutputStream outputStream, int rowPosition) throws IOException;
+	void exportRowBegin(OutputStream outputStream, long rowPosition) throws IOException;
 	
-	void exportRowEnd(OutputStream outputStream, int rowPosition) throws IOException;
+	void exportRowEnd(OutputStream outputStream, long rowPosition) throws IOException;
 	
 	void exportCell(OutputStream outputStream, Object exportDisplayValue, ILayerCell cell, IConfigRegistry configRegistry) throws IOException;
 	

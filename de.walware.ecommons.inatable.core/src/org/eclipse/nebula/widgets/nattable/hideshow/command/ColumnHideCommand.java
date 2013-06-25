@@ -15,7 +15,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public class ColumnHideCommand extends AbstractColumnCommand {
 
-	public ColumnHideCommand(ILayer layer, int columnPosition) {
+	public ColumnHideCommand(ILayer layer, long columnPosition) {
 		super(layer, columnPosition);
 	}
 	

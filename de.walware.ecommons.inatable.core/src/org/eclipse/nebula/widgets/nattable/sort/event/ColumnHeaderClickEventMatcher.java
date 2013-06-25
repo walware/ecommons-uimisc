@@ -11,9 +11,9 @@
 package org.eclipse.nebula.widgets.nattable.sort.event;
 
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.graphics.Point;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.coordinate.Point;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;

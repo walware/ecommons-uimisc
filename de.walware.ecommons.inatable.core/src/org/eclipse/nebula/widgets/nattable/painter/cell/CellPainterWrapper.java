@@ -14,7 +14,7 @@ package org.eclipse.nebula.widgets.nattable.painter.cell;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 
 public abstract class CellPainterWrapper extends AbstractCellPainter {
 
@@ -39,7 +39,7 @@ public abstract class CellPainterWrapper extends AbstractCellPainter {
 	}
 
 	@Override
-	public ICellPainter getCellPainterAt(int x, int y, ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
+	public ICellPainter getCellPainterAt(long x, long y, ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
 		Rectangle wrappedPainterBounds = getWrappedPainterBounds(cell, gc, adjustedCellBounds, configRegistry);
 		if (wrappedPainter != null && wrappedPainterBounds.contains(x, y)) {
 			return wrappedPainter.getCellPainterAt(x, y, cell, gc, wrappedPainterBounds, configRegistry);
@@ -48,11 +48,11 @@ public abstract class CellPainterWrapper extends AbstractCellPainter {
 		}
 	}
 
-	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public long getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return wrappedPainter != null ? wrappedPainter.getPreferredWidth(cell, gc, configRegistry) : 0;
 	}
 
-	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public long getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return wrappedPainter != null ? wrappedPainter.getPreferredHeight(cell, gc, configRegistry) : 0;
 	}
 

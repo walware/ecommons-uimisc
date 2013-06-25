@@ -17,13 +17,13 @@ import java.util.Map.Entry;
 public class PersistenceUtils {
 
 	/**
-	 * Parse the persisted property and create a TreeMap&lt;Integer, String&gt; from it.
+	 * Parse the persisted property and create a TreeMap&lt;Long, String&gt; from it.
 	 * Works in conjunction with the {@link PersistenceUtils#mapAsString(Map)}.
 	 * 
 	 * @param property from the properties file.
 	 */
-	public static Map<Integer, String> parseString(Object property) {
-		TreeMap<Integer, String> map = new TreeMap<Integer, String>();
+	public static Map<Long, String> parseString(Object property) {
+		TreeMap<Long, String> map = new TreeMap<Long, String>();
 		
 		if (property != null) {
 			String value = (String) property;
@@ -33,7 +33,7 @@ public class PersistenceUtils {
 				String[] split = token.split(":"); //$NON-NLS-1$
 				String index = split[0];
 				String label = split[1];
-				map.put(Integer.valueOf(index), label);
+				map.put(Long.valueOf(index), label);
 			}
 		}
 		return map;
@@ -43,9 +43,9 @@ public class PersistenceUtils {
 	 * Convert the Map to a String suitable for persisting in the Properties file.
 	 * {@link PersistenceUtils#parseString(Object)} can be used to reconstruct this Map object from the String.
 	 */
-	public static String mapAsString(Map<Integer, String> map) {
+	public static String mapAsString(Map<Long, String> map) {
 		StringBuffer buffer = new StringBuffer();
-		for (Entry<Integer, String> entry : map.entrySet()) {
+		for (Entry<Long, String> entry : map.entrySet()) {
 			buffer.append(entry.getKey() + ":" + entry.getValue() + "|"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return buffer.toString();

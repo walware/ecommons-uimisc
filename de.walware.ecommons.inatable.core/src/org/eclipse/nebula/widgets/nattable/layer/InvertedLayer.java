@@ -16,15 +16,13 @@ import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICA
 import java.util.Collection;
 import java.util.Properties;
 
-import org.eclipse.swt.graphics.Rectangle;
-
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
-import org.eclipse.nebula.widgets.nattable.coordinate.SWTUtil;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.InvertedLayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
@@ -101,7 +99,7 @@ public class InvertedLayer implements IUniqueIndexLayer {
 	
 	// Region
 	
-	public LabelStack getRegionLabelsByXY(int x, int y) {
+	public LabelStack getRegionLabelsByXY(long x, long y) {
 		return underlyingLayer.getRegionLabelsByXY(y, x);
 	}
 	
@@ -146,7 +144,7 @@ public class InvertedLayer implements IUniqueIndexLayer {
 	public void setClientAreaProvider(final IClientAreaProvider clientAreaProvider) {
 		underlyingLayer.setClientAreaProvider(new IClientAreaProvider() {
 			public Rectangle getClientArea() {
-				return SWTUtil.switchOrientation(clientAreaProvider.getClientArea());
+				return clientAreaProvider.getClientArea().switchOrientation();
 			}
 		});
 	}
@@ -155,23 +153,23 @@ public class InvertedLayer implements IUniqueIndexLayer {
 	
 	// Columns
 	
-	public int getColumnCount() {
+	public long getColumnCount() {
 		return underlyingLayer.getRowCount();
 	}
 	
-	public int getPreferredColumnCount() {
+	public long getPreferredColumnCount() {
 		return underlyingLayer.getPreferredRowCount();
 	}
 	
-	public int getColumnIndexByPosition(int columnPosition) {
+	public long getColumnIndexByPosition(long columnPosition) {
 		return underlyingLayer.getRowIndexByPosition(columnPosition);
 	}
 	
-	public int localToUnderlyingColumnPosition(int localColumnPosition) {
+	public long localToUnderlyingColumnPosition(long localColumnPosition) {
 		return underlyingLayer.localToUnderlyingRowPosition(localColumnPosition);
 	}
 	
-	public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, int underlyingColumnPosition) {
+	public long underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, long underlyingColumnPosition) {
 		return underlyingLayer.underlyingToLocalRowPosition(sourceUnderlyingLayer, underlyingColumnPosition);
 	}
 	
@@ -181,43 +179,43 @@ public class InvertedLayer implements IUniqueIndexLayer {
 	
 	// Width
 	
-	public int getWidth() {
+	public long getWidth() {
 		return underlyingLayer.getHeight();
 	}
 	
-	public int getPreferredWidth() {
+	public long getPreferredWidth() {
 		return underlyingLayer.getPreferredHeight();
 	}
 	
-	public int getColumnWidthByPosition(int columnPosition) {
+	public int getColumnWidthByPosition(long columnPosition) {
 		return underlyingLayer.getRowHeightByPosition(columnPosition);
 	}
 	
 	// Column resize
 	
-	public boolean isColumnPositionResizable(int columnPosition) {
+	public boolean isColumnPositionResizable(long columnPosition) {
 		return underlyingLayer.isRowPositionResizable(columnPosition);
 	}
 	
 	// X
 	
-	public int getColumnPositionByX(int x) {
+	public long getColumnPositionByX(long x) {
 		return underlyingLayer.getRowPositionByY(x);
 	}
 	
-	public int getStartXOfColumnPosition(int columnPosition) {
+	public long getStartXOfColumnPosition(long columnPosition) {
 		return underlyingLayer.getStartYOfRowPosition(columnPosition);
 	}
 	
 	// Underlying
 	
-	public Collection<ILayer> getUnderlyingLayersByColumnPosition(int columnPosition) {
+	public Collection<ILayer> getUnderlyingLayersByColumnPosition(long columnPosition) {
 		return underlyingLayer.getUnderlyingLayersByRowPosition(columnPosition);
 	}
 	
 	// Unique index
 
-	public int getColumnPositionByIndex(int columnIndex) {
+	public long getColumnPositionByIndex(long columnIndex) {
 		return underlyingLayer.getRowPositionByIndex(columnIndex);
 	}
 	
@@ -225,23 +223,23 @@ public class InvertedLayer implements IUniqueIndexLayer {
 	
 	// Rows
 	
-	public int getRowCount() {
+	public long getRowCount() {
 		return underlyingLayer.getColumnCount();
 	}
 	
-	public int getPreferredRowCount() {
+	public long getPreferredRowCount() {
 		return underlyingLayer.getPreferredColumnCount();
 	}
 	
-	public int getRowIndexByPosition(int rowPosition) {
+	public long getRowIndexByPosition(long rowPosition) {
 		return underlyingLayer.getColumnIndexByPosition(rowPosition);
 	}
 	
-	public int localToUnderlyingRowPosition(int localRowPosition) {
+	public long localToUnderlyingRowPosition(long localRowPosition) {
 		return underlyingLayer.localToUnderlyingColumnPosition(localRowPosition);
 	}
 	
-	public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer, int underlyingRowPosition) {
+	public long underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer, long underlyingRowPosition) {
 		return underlyingLayer.underlyingToLocalColumnPosition(sourceUnderlyingLayer, underlyingRowPosition);
 	}
 	
@@ -251,49 +249,49 @@ public class InvertedLayer implements IUniqueIndexLayer {
 	
 	// Height
 	
-	public int getHeight() {
+	public long getHeight() {
 		return underlyingLayer.getWidth();
 	}
 	
-	public int getPreferredHeight() {
+	public long getPreferredHeight() {
 		return underlyingLayer.getPreferredWidth();
 	}
 	
-	public int getRowHeightByPosition(int rowPosition) {
+	public int getRowHeightByPosition(long rowPosition) {
 		return underlyingLayer.getColumnWidthByPosition(rowPosition);
 	}
 	
 	// Row resize
 	
-	public boolean isRowPositionResizable(int rowPosition) {
+	public boolean isRowPositionResizable(long rowPosition) {
 		return underlyingLayer.isColumnPositionResizable(rowPosition);
 	}
 	
 	// Y
 	
-	public int getRowPositionByY(int y) {
+	public long getRowPositionByY(long y) {
 		return underlyingLayer.getColumnPositionByX(y);
 	}
 	
-	public int getStartYOfRowPosition(int rowPosition) {
+	public long getStartYOfRowPosition(long rowPosition) {
 		return underlyingLayer.getStartXOfColumnPosition(rowPosition);
 	}
 	
 	// Underlying
 	
-	public Collection<ILayer> getUnderlyingLayersByRowPosition(int rowPosition) {
+	public Collection<ILayer> getUnderlyingLayersByRowPosition(long rowPosition) {
 		return underlyingLayer.getUnderlyingLayersByColumnPosition(rowPosition);
 	}
 	
 	// Unique index
 	
-	public int getRowPositionByIndex(int rowIndex) {
+	public long getRowPositionByIndex(long rowIndex) {
 		return underlyingLayer.getColumnPositionByIndex(rowIndex);
 	}
 	
 	// Cell features
 	
-	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
+	public ILayerCell getCellByPosition(long columnPosition, long rowPosition) {
 		ILayerCell cell = underlyingLayer.getCellByPosition(rowPosition, columnPosition);
 		if (cell != null)
 			return new InvertedLayerCell(cell);
@@ -302,23 +300,23 @@ public class InvertedLayer implements IUniqueIndexLayer {
 //		return underlyingLayer.getCellByPosition(rowPosition, columnPosition);
 	}
 	
-	public Rectangle getBoundsByPosition(int columnPosition, int rowPosition) {
-		return SWTUtil.switchOrientation(underlyingLayer.getBoundsByPosition(rowPosition, columnPosition));
+	public Rectangle getBoundsByPosition(long columnPosition, long rowPosition) {
+		return underlyingLayer.getBoundsByPosition(rowPosition, columnPosition).switchOrientation();
 	}
 	
-	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
+	public LabelStack getConfigLabelsByPosition(long columnPosition, long rowPosition) {
 		return underlyingLayer.getConfigLabelsByPosition(rowPosition, columnPosition);
 	}
 	
-	public Object getDataValueByPosition(int columnPosition, int rowPosition) {
+	public Object getDataValueByPosition(long columnPosition, long rowPosition) {
 		return underlyingLayer.getDataValueByPosition(rowPosition, columnPosition);
 	}
 	
-	public ILayer getUnderlyingLayerByPosition(int columnPosition, int rowPosition) {
+	public ILayer getUnderlyingLayerByPosition(long columnPosition, long rowPosition) {
 		return underlyingLayer.getUnderlyingLayerByPosition(rowPosition, columnPosition);
 	}
 	
-	public ICellPainter getCellPainter(int columnPosition, int rowPosition, ILayerCell cell, IConfigRegistry configRegistry) {
+	public ICellPainter getCellPainter(long columnPosition, long rowPosition, ILayerCell cell, IConfigRegistry configRegistry) {
 		return underlyingLayer.getCellPainter(rowPosition, columnPosition, cell, configRegistry);
 	}
 	

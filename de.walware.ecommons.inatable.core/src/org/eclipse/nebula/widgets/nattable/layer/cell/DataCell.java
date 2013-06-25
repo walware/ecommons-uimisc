@@ -14,38 +14,38 @@ package org.eclipse.nebula.widgets.nattable.layer.cell;
 
 public class DataCell {
 
-	protected int columnPosition;
+	protected long columnPosition;
 	
-	protected int rowPosition;
+	protected long rowPosition;
 	
-	protected int columnSpan;
+	protected long columnSpan;
 	
-	protected int rowSpan;
+	protected long rowSpan;
 	
-	public DataCell(int columnPosition, int rowPosition) {
+	public DataCell(long columnPosition, long rowPosition) {
 		this(columnPosition, rowPosition, 1, 1);
 	}	
 	
-	public DataCell(int columnPosition, int rowPosition, int columnSpan, int rowSpan) {
+	public DataCell(long columnPosition, long rowPosition, long columnSpan, long rowSpan) {
 		this.columnPosition = columnPosition;
 		this.rowPosition = rowPosition;
 		this.columnSpan = columnSpan;
 		this.rowSpan = rowSpan;
 	}
 	
-	public int getColumnPosition() {
+	public long getColumnPosition() {
 		return columnPosition;
 	}
 	
-	public int getRowPosition() {
+	public long getRowPosition() {
 		return rowPosition;
 	}
 	
-	public int getColumnSpan() {
+	public long getColumnSpan() {
 		return columnSpan;
 	}
 	
-	public int getRowSpan() {
+	public long getRowSpan() {
 		return rowSpan;
 	}
 	
@@ -56,9 +56,13 @@ public class DataCell {
 	
 	@Override
 	public int hashCode() {
-		return (((columnPosition * 253 + (rowPosition << 16) + rowPosition)
-				* 13 + columnSpan)
-				* 14 + rowSpan);
+		int h = (int) (columnPosition ^ (columnPosition >>> 32));
+		h = Integer.rotateRight(h, 15);
+		h ^= (int) (rowPosition ^ (rowPosition >>> 32));
+		h ^= (h >>> 7);
+		h ^= 3 * (int) (columnSpan ^ (columnSpan >>> 32));
+		h ^= 31 * (int) (rowSpan ^ (rowSpan >>> 32));
+		return h;
 	}
 	
 	@Override

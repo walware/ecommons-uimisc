@@ -15,17 +15,17 @@ import java.util.Collection;
 
 
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 
 public class CellVisualChangeEvent implements IVisualChangeEvent {
 
 	protected ILayer layer;
 	
-	protected int columnPosition;
+	protected long columnPosition;
 	
-	protected int rowPosition;
+	protected long rowPosition;
 	
-	public CellVisualChangeEvent(ILayer layer, int columnPosition, int rowPosition) {
+	public CellVisualChangeEvent(ILayer layer, long columnPosition, long rowPosition) {
 		this.layer = layer;
 		this.columnPosition = columnPosition;
 		this.rowPosition = rowPosition;
@@ -41,11 +41,11 @@ public class CellVisualChangeEvent implements IVisualChangeEvent {
 		return layer;
 	}
 	
-	public int getColumnPosition() {
+	public long getColumnPosition() {
 		return columnPosition;
 	}
 	
-	public int getRowPosition() {
+	public long getRowPosition() {
 		return rowPosition;
 	}
 	

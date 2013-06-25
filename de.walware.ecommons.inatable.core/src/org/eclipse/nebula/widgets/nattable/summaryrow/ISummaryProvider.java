@@ -23,20 +23,20 @@ public interface ISummaryProvider {
 	 *            for which the summary is required
 	 * @return the summary value for the column
 	 */
-	public Object summarize(int columnIndex);
+	public Object summarize(long columnIndex);
 
 	/**
 	 * Register this instance to indicate that a summary is not required.
 	 * Doing so avoids calls to the {@link ISummaryProvider} and is a performance tweak.
 	 */
 	public static final ISummaryProvider NONE = new ISummaryProvider() {
-		public Object summarize(int columnIndex) {
+		public Object summarize(long columnIndex) {
 			return null;
 		}
 	};
 
 	public static final ISummaryProvider DEFAULT = new ISummaryProvider() {
-		public Object summarize(int columnIndex) {
+		public Object summarize(long columnIndex) {
 			return DEFAULT_SUMMARY_VALUE;
 		}
 	};

@@ -12,8 +12,6 @@
 package org.eclipse.nebula.widgets.nattable.coordinate;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 
@@ -23,34 +21,25 @@ import java.util.List;
  * Ranges are inclusive of their start value and not inclusive of their end value, i.e. start &lt;= x &lt; end
  */
 public final class Range implements Comparable<Range> {
-
-
-	public static void sortByStart(List<Range> ranges) {
-		Collections.sort(ranges, new Comparator<Range>() {
-			public int compare(Range range1, Range range2) {
-				return Integer.valueOf(range1.start).compareTo(
-						Integer.valueOf(range2.start));
-			}
-		});
-	}
-
-
-	public int start = 0;
-	public int end = 0;
-
-
-	public Range(int start, int end) {
+	
+	
+	public long start = 0;
+	public long end = 0;
+	
+	
+	public Range(final long start, final long end) {
 		this.start = start;
 		this.end = end;
 	}
 	
-	public Range(int value) {
+	public Range(final long value) {
 		this.start = value;
 		this.end = value + 1;
 	}
 	
-	public int size() {
-		return end - start;
+	
+	public long size() {
+		return this.end - this.start;
 	}
 	
 	
@@ -74,7 +63,7 @@ public final class Range implements Comparable<Range> {
 	/**
 	 * @return TRUE if the range contains the given row position
 	 */
-	public boolean contains(int position) {
+	public boolean contains(long position) {
 		return position >= start && position < end;
 	}
 
@@ -84,10 +73,14 @@ public final class Range implements Comparable<Range> {
 				(this.contains(range.start) || this.contains(range.end - 1) || range.contains(start) || range.contains(end - 1));
 	}
 
-	public List<Integer> getMembers() {
-		final List<Integer> members = new ArrayList<Integer>(this.end - this.start);
-		for (int i = start; i < end; i++) {
-			members.add(Integer.valueOf(i));
+	public List<Long> getMembers() {
+		final long l = size();
+		if (l > Integer.MAX_VALUE) {
+			throw new RuntimeException("too long: " + l);
+		}
+		final List<Long> members = new ArrayList<Long>((int) l);
+		for (long i = start; i < end; i++) {
+			members.add(Long.valueOf(i));
 		}
 		return members;
 	}
@@ -95,7 +88,9 @@ public final class Range implements Comparable<Range> {
 
 	@Override
 	public int hashCode() {
-		int h = start * 17 + start & 0xff000000 + Integer.rotateRight(end - start, 15) + end;
+		int h = (int) (this.start ^ (this.start >>> 32));
+		h = Integer.rotateRight(h, 15);
+		h ^= (int) (this.end ^ (this.end >>> 32));
 		return h ^ (h >>> 7);
 	}
 

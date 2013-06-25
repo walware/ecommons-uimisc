@@ -36,12 +36,12 @@ public class DefaultSummaryRowHeaderDataProvider extends DefaultRowHeaderDataPro
 	}
 
 	@Override
-	public int getRowCount() {
+	public long getRowCount() {
 		return super.getRowCount() + 1;
 	}
 
 	@Override
-	public Object getDataValue(int columnIndex, int rowIndex) {
+	public Object getDataValue(long columnIndex, long rowIndex) {
 		if (rowIndex == super.getRowCount()){
 			return summaryRowLabel;
 		}

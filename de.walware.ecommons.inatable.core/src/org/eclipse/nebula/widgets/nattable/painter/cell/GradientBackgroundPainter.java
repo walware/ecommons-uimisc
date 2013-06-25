@@ -10,14 +10,17 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
+import static org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils.safe;
+
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * Paints the background of the cell with a gradient sweeping using the style configuration.
@@ -91,7 +94,8 @@ public class GradientBackgroundPainter extends CellPainterWrapper {
 
 			gc.setForeground(foregroundColor);
 			gc.setBackground(backgroundColor);
-			gc.fillGradientRectangle(bounds.x, bounds.y, bounds.width, bounds.height, vertical);
+			org.eclipse.swt.graphics.Rectangle rect = GraphicsUtils.safe(bounds);
+			gc.fillGradientRectangle(rect.x, rect.y, rect.width, rect.height, vertical);
 
 			gc.setForeground(originalForeground);
 			gc.setBackground(originalBackground);

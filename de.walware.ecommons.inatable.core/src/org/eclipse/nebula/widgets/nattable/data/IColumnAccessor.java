@@ -16,10 +16,10 @@ package org.eclipse.nebula.widgets.nattable.data;
  */
 public interface IColumnAccessor<T> {
 
-	public Object getDataValue(T rowObject, int columnIndex);
+	public Object getDataValue(T rowObject, long columnIndex);
 	
-	public void setDataValue(T rowObject, int columnIndex, Object newValue);
+	public void setDataValue(T rowObject, long columnIndex, Object newValue);
 	
-	public int getColumnCount();
+	public long getColumnCount();
 	
 }

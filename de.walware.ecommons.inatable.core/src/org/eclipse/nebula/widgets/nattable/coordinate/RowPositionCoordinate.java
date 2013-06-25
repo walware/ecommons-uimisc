@@ -19,10 +19,10 @@ public final class RowPositionCoordinate {
 	
 	private final ILayer layer;
 	
-	public final int rowPosition;
+	public final long rowPosition;
 	
 	
-	public RowPositionCoordinate(final ILayer layer, final int rowPosition) {
+	public RowPositionCoordinate(final ILayer layer, final long rowPosition) {
 		this.layer = layer;
 		this.rowPosition = rowPosition;
 	}
@@ -32,14 +32,14 @@ public final class RowPositionCoordinate {
 		return layer;
 	}
 	
-	public int getRowPosition() {
+	public long getRowPosition() {
 		return rowPosition;
 	}
 	
 	
 	@Override
 	public int hashCode() {
-		int h = 125315 + rowPosition * 17 + rowPosition & 0xff000000;
+		int h = 125315 + (int) (rowPosition ^ (rowPosition >>> 32));
 		return layer.hashCode() + (h ^ (h >>> 7));
 	}
 	

@@ -38,22 +38,22 @@ public class AbstractTransformIndexLayer extends AbstractTransformLayer
 	
 	
 	@Override
-	public int getColumnPositionByIndex(final int columnIndex) {
+	public long getColumnPositionByIndex(final long columnIndex) {
 		final IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
-		final int underlyingPosition = underlyingLayer.getColumnPositionByIndex(columnIndex);
-		if (underlyingPosition == Integer.MIN_VALUE) {
-			return Integer.MIN_VALUE;
+		final long underlyingPosition = underlyingLayer.getColumnPositionByIndex(columnIndex);
+		if (underlyingPosition == Long.MIN_VALUE) {
+			return Long.MIN_VALUE;
 		}
 		return getDim(HORIZONTAL).underlyingToLocalPosition(underlyingLayer,
 				underlyingPosition );
 	}
 	
 	@Override
-	public int getRowPositionByIndex(final int rowIndex) {
+	public long getRowPositionByIndex(final long rowIndex) {
 		final IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
-		final int underlyingPosition = underlyingLayer.getRowPositionByIndex(rowIndex);
-		if (underlyingPosition == Integer.MIN_VALUE) {
-			return Integer.MIN_VALUE;
+		final long underlyingPosition = underlyingLayer.getRowPositionByIndex(rowIndex);
+		if (underlyingPosition == Long.MIN_VALUE) {
+			return Long.MIN_VALUE;
 		}
 		return getDim(VERTICAL).underlyingToLocalPosition(underlyingLayer,
 				underlyingPosition );

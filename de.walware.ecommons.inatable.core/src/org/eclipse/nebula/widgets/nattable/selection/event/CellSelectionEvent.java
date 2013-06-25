@@ -23,7 +23,7 @@ public class CellSelectionEvent extends CellVisualChangeEvent implements ISelect
 	private boolean revealCell;
 	
 	
-	public CellSelectionEvent(SelectionLayer selectionLayer, int columnPosition, int rowPosition,
+	public CellSelectionEvent(SelectionLayer selectionLayer, long columnPosition, long rowPosition,
 			boolean revealCell) {
 		super(selectionLayer, columnPosition, rowPosition);
 		this.selectionLayer = selectionLayer;

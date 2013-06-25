@@ -32,29 +32,29 @@ public class CompositeDim implements ILayerDim {
 		
 		
 		@Override
-		public int getPositionIndex(final int refPosition, final int position) {
+		public long getPositionIndex(final long refPosition, final long position) {
 			return super.getPositionIndex(position, position);
 		}
 		
 		
 		@Override
-		public int localToUnderlyingPosition(final int refPosition, final int position) {
+		public long localToUnderlyingPosition(final long refPosition, final long position) {
 			return super.localToUnderlyingPosition(refPosition, position);
 		}
 		
 		@Override
-		public int underlyingToLocalPosition(final int refPosition, final int underlyingPosition) {
+		public long underlyingToLocalPosition(final long refPosition, final long underlyingPosition) {
 			return super.underlyingToLocalPosition(refPosition, underlyingPosition);
 		}
 		
 		
 		@Override
-		public int getPositionStart(final int refPosition, final int position) {
+		public long getPositionStart(final long refPosition, final long position) {
 			return super.getPositionStart(position, position);
 		}
 		
 		@Override
-		public int getPositionSize(final int refPosition, final int position) {
+		public int getPositionSize(final long refPosition, final long position) {
 			return super.getPositionSize(position, position);
 		}
 		
@@ -102,7 +102,7 @@ public class CompositeDim implements ILayerDim {
 	}
 	
 	
-	protected final int getLayoutByPosition(final int position) {
+	protected final int getLayoutByPosition(final long position) {
 		if (position >= 0) {
 			for (int layout = 0, offset = 0; layout < this.childDims.length; layout++) {
 				if (/*position >= offset & */
@@ -114,7 +114,7 @@ public class CompositeDim implements ILayerDim {
 		return -1;
 	}
 	
-	protected final int getLayoutByPixel(final int pixel) {
+	protected final int getLayoutByPixel(final long pixel) {
 		if (pixel >= 0) {
 			for (int layout = 0, offset = 0; layout < this.childDims.length; layout++) {
 				if (/*x >= offset & */ pixel < (offset += this.childDims[layout][0].getSize())) {
@@ -137,31 +137,31 @@ public class CompositeDim implements ILayerDim {
 		return -1;
 	}
 	
-	protected final int getLayoutPosition(final int layout) {
-		int offset = 0;
-		for (int x = 0; x < layout; x++) {
-			offset += this.childDims[x][0].getPositionCount();
+	protected final long getLayoutPosition(final int layout) {
+		long offset = 0;
+		for (int i = 0; i < layout; i++) {
+			offset += this.childDims[i][0].getPositionCount();
 		}
 		return offset;
 	}
 	
-	protected final int getLayoutStart(final int layout) {
-		int start = 0;
-		for (int x = 0; x < layout; x++) {
-			start += this.childDims[x][0].getSize();
+	protected final long getLayoutStart(final int layout) {
+		long start = 0;
+		for (int i = 0; i < layout; i++) {
+			start += this.childDims[i][0].getSize();
 		}
 		return start;
 	}
 	
 	
 	@Override
-	public int getPositionIndex(final int refPosition, final int position) {
+	public long getPositionIndex(final long refPosition, final long position) {
 		final int layout = getLayoutByPosition(refPosition);
 		if (layout < 0) {
 			throw new IndexOutOfBoundsException("refPosition: " + refPosition); //$NON-NLS-1$
 		}
 		
-		final int layoutPosition = getLayoutPosition(layout);
+		final long layoutPosition = getLayoutPosition(layout);
 		return this.childDims[layout][0].getPositionIndex(
 				refPosition - layoutPosition,
 				position - layoutPosition );
@@ -169,8 +169,8 @@ public class CompositeDim implements ILayerDim {
 	
 	
 	@Override
-	public int getPositionCount() {
-		int count = 0;
+	public long getPositionCount() {
+		long count = 0;
 		for (int layout = 0; layout < this.childDims.length; layout++) {
 			count += this.childDims[layout][0].getPositionCount();
 		}
@@ -178,8 +178,8 @@ public class CompositeDim implements ILayerDim {
 	}
 	
 	@Override
-	public int getPreferredPositionCount() {
-		int count = 0;
+	public long getPreferredPositionCount() {
+		long count = 0;
 		for (int layout = 0; layout < this.childDims.length; layout++) {
 			count += this.childDims[layout][0].getPreferredPositionCount();
 		}
@@ -187,7 +187,7 @@ public class CompositeDim implements ILayerDim {
 	}
 	
 	@Override
-	public int localToUnderlyingPosition(final int refPosition, final int position) {
+	public long localToUnderlyingPosition(final long refPosition, final long position) {
 		final int layout = getLayoutByPosition(refPosition);
 		if (layout < 0) {
 			throw new IndexOutOfBoundsException("refPosition: " + refPosition); //$NON-NLS-1$
@@ -197,26 +197,26 @@ public class CompositeDim implements ILayerDim {
 	}
 	
 	@Override
-	public int underlyingToLocalPosition(final int refPosition,
-			final int underlyingPosition) {
+	public long underlyingToLocalPosition(final long refPosition,
+			final long underlyingPosition) {
 		final int layout = getLayoutByPosition(refPosition);
 		if (layout < 0) {
 			throw new IndexOutOfBoundsException("refPosition:" + refPosition); //$NON-NLS-1$
 		}
 		
-		final int layoutPosition = getLayoutPosition(layout);
+		final long layoutPosition = getLayoutPosition(layout);
 		return layoutPosition + underlyingPosition;
 	}
 	
 	@Override
-	public int underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
-			final int underlyingPosition) {
+	public long underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
+			final long underlyingPosition) {
 		final int layout = getLayoutByChildLayer(sourceUnderlyingLayer);
 		if (layout < 0) {
 			throw new IllegalArgumentException("underlyingLayer"); //$NON-NLS-1$
 		}
 		
-		final int layoutPosition = getLayoutPosition(layout);
+		final long layoutPosition = getLayoutPosition(layout);
 		return layoutPosition + underlyingPosition;
 	}
 	
@@ -230,7 +230,7 @@ public class CompositeDim implements ILayerDim {
 		
 		final Collection<Range> localPositionRanges = new ArrayList<Range>();
 		
-		final int layoutPosition = getLayoutPosition(layout);
+		final long layoutPosition = getLayoutPosition(layout);
 		for (final Range underlyingPositionRange : underlyingPositionRanges) {
 			localPositionRanges.add(new Range(
 					layoutPosition + underlyingPositionRange.start,
@@ -241,7 +241,7 @@ public class CompositeDim implements ILayerDim {
 	}
 	
 	@Override
-	public Collection<ILayer> getUnderlyingLayersByPosition(final int position) {
+	public Collection<ILayer> getUnderlyingLayersByPosition(final long position) {
 		final int layout = getLayoutByPosition(position);
 		if (layout < 0) {
 			return null;
@@ -259,8 +259,8 @@ public class CompositeDim implements ILayerDim {
 	
 	
 	@Override
-	public int getSize() {
-		int size = 0;
+	public long getSize() {
+		long size = 0;
 		for (int layout = 0; layout < this.childDims.length; layout++) {
 			size += this.childDims[layout][0].getSize();
 		}
@@ -268,8 +268,8 @@ public class CompositeDim implements ILayerDim {
 	}
 	
 	@Override
-	public int getPreferredSize() {
-		int size = 0;
+	public long getPreferredSize() {
+		long size = 0;
 		for (int layout = 0; layout < this.childDims.length; layout++) {
 			size += this.childDims[layout][0].getPreferredSize();
 		}
@@ -277,50 +277,50 @@ public class CompositeDim implements ILayerDim {
 	}
 	
 	@Override
-	public int getPositionByPixel(final int pixel) {
+	public long getPositionByPixel(final long pixel) {
 		final int layout = getLayoutByPixel(pixel);
 		if (layout < 0) {
 			throw new IndexOutOfBoundsException("pixel: " + pixel); //$NON-NLS-1$
 		}
 		
-		final int childPosition = this.childDims[layout][0].getPositionByPixel(
+		final long childPosition = this.childDims[layout][0].getPositionByPixel(
 				pixel - getLayoutStart(layout) );
 		return getLayoutPosition(layout) + childPosition;
 	}
 	
 	@Override
-	public int getPositionStart(final int refPosition, final int position) {
+	public long getPositionStart(final long refPosition, final long position) {
 		final int layout = getLayoutByPosition(refPosition);
 		if (layout < 0) {
 			throw new IndexOutOfBoundsException("refPosition: " + refPosition); //$NON-NLS-1$
 		}
 		
-		final int layoutPosition = getLayoutPosition(layout);
-		final int childStart = this.childDims[layout][0].getPositionStart(
+		final long layoutPosition = getLayoutPosition(layout);
+		final long childStart = this.childDims[layout][0].getPositionStart(
 				refPosition - layoutPosition, position - layoutPosition );
 		return getLayoutStart(layout) + childStart;
 	}
 	
 	@Override
-	public int getPositionSize(final int refPosition, final int position) {
+	public int getPositionSize(final long refPosition, final long position) {
 		final int layout = getLayoutByPosition(refPosition);
 		if (layout < 0) {
 			throw new IndexOutOfBoundsException("refPosition: " + refPosition); //$NON-NLS-1$
 		}
 		
-		final int layoutPosition = getLayoutPosition(layout);
+		final long layoutPosition = getLayoutPosition(layout);
 		return this.childDims[layout][0].getPositionSize(
 				refPosition - layoutPosition, position - layoutPosition );
 	}
 	
 	@Override
-	public boolean isPositionResizable(final int position) {
+	public boolean isPositionResizable(final long position) {
 		final int layout = getLayoutByPosition(position);
 		if (layout < 0) {
 			return false;
 		}
 		
-		final int layoutPosition = getLayoutPosition(layout);
+		final long layoutPosition = getLayoutPosition(layout);
 		return this.childDims[layout][0].isPositionResizable(
 				position - layoutPosition );
 	}

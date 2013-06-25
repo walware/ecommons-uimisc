@@ -14,19 +14,19 @@ import java.util.List;
 
 public interface ITreeRowModel<T> {
 
-	int depth(int index);
+	long depth(long index);
 
-	boolean isLeaf(int index);
+	boolean isLeaf(long index);
 
-	String getObjectAtIndexAndDepth(int index, int depth);
+	String getObjectAtIndexAndDepth(long index, long depth);
 
-	boolean hasChildren(int index);
+	boolean hasChildren(long index);
 
-	boolean isCollapsed(int index);
+	boolean isCollapsed(long index);
 
-	List<Integer> collapse(int parentIndex);
+	List<Long> collapse(long parentIndex);
 
-	List<Integer> expand(int parentIndex);
+	List<Long> expand(long parentIndex);
 
-	List<Integer> getChildIndexes(int parentIndex);
+	List<Long> getChildIndexes(long parentIndex);
 }

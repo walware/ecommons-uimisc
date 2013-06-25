@@ -12,8 +12,8 @@ package org.eclipse.nebula.widgets.nattable.data;
 
 public interface IRowDataProvider<T> extends IDataProvider {
 
-	public T getRowObject(int rowIndex);
+	public T getRowObject(long rowIndex);
 	
-	public int indexOfRowObject(T rowObject);
+	public long indexOfRowObject(T rowObject);
 	
 }

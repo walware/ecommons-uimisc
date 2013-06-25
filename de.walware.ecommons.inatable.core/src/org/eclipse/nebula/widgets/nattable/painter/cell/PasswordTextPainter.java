@@ -17,7 +17,7 @@ import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 
 /**
  * Specialized {@link TextPainter} that will paint the text that should be showed within
@@ -74,7 +74,7 @@ public class PasswordTextPainter extends TextPainter {
 	}
 	
 	@Override
-	protected String getTextToDisplay(ILayerCell cell, GC gc, int availableLength, String text) {
+	protected String getTextToDisplay(ILayerCell cell, GC gc, long availableLength, String text) {
 		String result = super.getTextToDisplay(cell, gc, availableLength, text);
 		//replace all characters with the configured echo character
 		return result.replaceAll(".", this.echoChar.toString()); //$NON-NLS-1$

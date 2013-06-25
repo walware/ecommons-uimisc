@@ -17,7 +17,7 @@ import java.util.List;
 
 public class TreeRowModel<T> implements ITreeRowModel<T>{
 
-	private final HashSet<Integer> parentIndexes = new HashSet<Integer>();
+	private final HashSet<Long> parentIndexes = new HashSet<Long>();
 
 	private final Collection<ITreeRowModelListener> listeners = new HashSet<ITreeRowModelListener>();
 
@@ -37,24 +37,24 @@ public class TreeRowModel<T> implements ITreeRowModel<T>{
 		}
 	}
 
-	public int depth(int index) {
+	public long depth(long index) {
 		return this.treeData
 				.getDepthOfData(this.treeData.getDataAtIndex(index));
 	}
 
-	public boolean isLeaf(int index) {
+	public boolean isLeaf(long index) {
 		return !hasChildren(index);
 	}
 
-	public String getObjectAtIndexAndDepth(int index, int depth) {
+	public String getObjectAtIndexAndDepth(long index, long depth) {
 		return this.treeData.formatDataForDepth(depth,this.treeData.getDataAtIndex(index));
 	}
 
-	public boolean hasChildren(int index) {
+	public boolean hasChildren(long index) {
 		return this.treeData.hasChildren(this.treeData.getDataAtIndex(index));
 	}
 
-	public boolean isCollapsed(int index) {
+	public boolean isCollapsed(long index) {
 		return this.parentIndexes.contains(index);
 	}
 
@@ -65,30 +65,30 @@ public class TreeRowModel<T> implements ITreeRowModel<T>{
 	/**
 	 * @return TRUE if the row group this index is collapseable
 	 */
-	public boolean isCollapseable(int index) {
+	public boolean isCollapseable(long index) {
 		return hasChildren(index);
 	}
 
-	public List<Integer> collapse(int index) {
+	public List<Long> collapse(long index) {
 		this.parentIndexes.add(index);
 		notifyListeners();
 		return getChildIndexes(index);
 	}
 
-	public List<Integer> expand(int index) {
+	public List<Long> expand(long index) {
 		this.parentIndexes.remove(index);
 		notifyListeners();
-		List<Integer> children = getChildIndexes(index);
+		List<Long> children = getChildIndexes(index);
 		this.parentIndexes.removeAll(children);
 		return children;
 	}
 
-	public List<Integer> getChildIndexes(int parentIndex) {
-		List<Integer> result = new ArrayList<Integer>();
+	public List<Long> getChildIndexes(long parentIndex) {
+		List<Long> result = new ArrayList<Long>();
 		List<T> children = this.treeData.getChildren(this.treeData
 				.getDataAtIndex(parentIndex));
 		for (T child : children) {
-			int index = this.treeData.indexOf(child);
+			long index = this.treeData.indexOf(child);
 			result.add(index);
 			result.addAll(getChildIndexes(index));
 		}

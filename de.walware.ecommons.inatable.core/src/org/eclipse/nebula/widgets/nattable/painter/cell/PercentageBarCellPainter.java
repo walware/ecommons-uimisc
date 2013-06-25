@@ -21,7 +21,7 @@ public class PercentageBarCellPainter extends CellPainterWrapper {
         this(2);
     }
 
-    public PercentageBarCellPainter(int outerPadding) {
+    public PercentageBarCellPainter(long outerPadding) {
         super(new PaddingDecorator(new LineBorderDecorator(new PercentageBarDecorator(new TextPainter(false, false)), new BorderStyle()), outerPadding));
     }
 }

@@ -31,8 +31,8 @@ public class MultiRowReorderCommandHandler extends AbstractLayerCommandHandler<M
 
 	@Override
 	protected boolean doCommand(MultiRowReorderCommand command) {
-		List<Integer> fromRowPositions = command.getFromRowPositions();
-		int toRowPosition = command.getToRowPosition();
+		List<Long> fromRowPositions = command.getFromRowPositions();
+		long toRowPosition = command.getToRowPosition();
 		boolean reorderToTopEdge = command.isReorderToTopEdge();
 		
 		rowReorderLayer.reorderMultipleRowPositions(fromRowPositions, toRowPosition, reorderToTopEdge);

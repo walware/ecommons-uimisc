@@ -23,7 +23,7 @@ public class DummyGridLayerStack extends DefaultGridLayer {
 		this(20, 20);
 	}
 	
-	public DummyGridLayerStack(int columnCount, int rowCount) {
+	public DummyGridLayerStack(long columnCount, long rowCount) {
 		this(new DummyBodyDataProvider(columnCount, rowCount));
 	}
 	

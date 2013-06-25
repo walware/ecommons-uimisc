@@ -20,7 +20,7 @@ public class RowResizeCommand extends AbstractRowCommand {
     
     private int newHeight;
     
-    public RowResizeCommand(ILayer layer, int rowPosition, int newHeight) {
+    public RowResizeCommand(ILayer layer, long rowPosition, int newHeight) {
         super(layer, rowPosition);
         this.newHeight = newHeight;
     }

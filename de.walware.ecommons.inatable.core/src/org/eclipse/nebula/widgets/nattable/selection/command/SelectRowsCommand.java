@@ -32,7 +32,7 @@ public class SelectRowsCommand extends AbstractMultiRowCommand {
 	private RowPositionCoordinate rowPositionToReveal;
 
 
-	public SelectRowsCommand(ILayer layer, int columnPosition, int rowPosition,
+	public SelectRowsCommand(ILayer layer, long columnPosition, long rowPosition,
 			final int selectionFlags) {
 		super(layer, columnPosition);
 		
@@ -40,23 +40,23 @@ public class SelectRowsCommand extends AbstractMultiRowCommand {
 		init(layer, columnPosition, rowPosition);
 	}
 
-	public SelectRowsCommand(final ILayer layer, final int columnPosition, final int[] rowPositions,
-			final int selectionFlags, final int rowPositionToReveal) {
+	public SelectRowsCommand(final ILayer layer, final long columnPosition, final long[] rowPositions,
+			final int selectionFlags, final long rowPositionToReveal) {
 		super(layer, rowPositions);
 		
 		this.selectionFlags = selectionFlags;
 		init(layer, columnPosition, rowPositionToReveal);
 	}
 
-	public SelectRowsCommand(final ILayer layer, final int columnPosition, final Collection<Integer> rowPositions,
-			final int selectionFlags, final int rowPositionToReveal) {
+	public SelectRowsCommand(final ILayer layer, final long columnPosition, final Collection<Long> rowPositions,
+			final int selectionFlags, final long rowPositionToReveal) {
 		super(layer, rowPositions);
 		
 		this.selectionFlags = selectionFlags;
 		init(layer, columnPosition, rowPositionToReveal);
 	}
 
-	private void init(final ILayer layer, final int columnPosition, final int rowPositionToReveal) {
+	private void init(final ILayer layer, final long columnPosition, final long rowPositionToReveal) {
 		this.columnPositionCoordinate = new ColumnPositionCoordinate(layer, columnPosition);
 		if (rowPositionToReveal != NO_SELECTION) {
 			this.rowPositionToReveal = new RowPositionCoordinate(layer, rowPositionToReveal);
@@ -90,7 +90,7 @@ public class SelectRowsCommand extends AbstractMultiRowCommand {
 		return false;
 	}
 
-	public int getColumnPosition() {
+	public long getColumnPosition() {
 		return columnPositionCoordinate.columnPosition;
 	}
 
@@ -98,7 +98,7 @@ public class SelectRowsCommand extends AbstractMultiRowCommand {
 		return selectionFlags;
 	}
 
-	public int getRowPositionToReveal() {
+	public long getRowPositionToReveal() {
 		if (rowPositionToReveal != null) {
 			return rowPositionToReveal.rowPosition;
 		} else {

@@ -32,7 +32,7 @@ public class RowOverrideLabelAccumulator<T> extends AbstractOverrider {
 		this.idAccessor = idAccessor;
 	}
 	
-	public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
+	public void accumulateConfigLabels(LabelStack configLabels, long columnPosition, long rowPosition) {
 		T rowObject = dataProvider.getRowObject(rowPosition);
 		Serializable rowId = idAccessor.getRowId(rowObject);
 		List<String> overrides = getOverrides(rowId);
@@ -43,7 +43,7 @@ public class RowOverrideLabelAccumulator<T> extends AbstractOverrider {
 		}
 	}
 
-	public void registerOverrides(int rowIndex, String...configLabels) {
+	public void registerOverrides(long rowIndex, String...configLabels) {
 		Serializable id = idAccessor.getRowId(dataProvider.getRowObject(rowIndex));
 		registerOverrides(id, configLabels);
 	}

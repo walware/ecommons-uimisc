@@ -241,7 +241,7 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
 		fireItemsSelected(getColumnIndexesFromTreeNodes());
 	}
 
-	protected final void fireItemsSelected(List<Integer> addedColumnIndexes) {
+	protected final void fireItemsSelected(List<Long> addedColumnIndexes) {
 		if (addedColumnIndexes != null) {
 			for (Object listener : listeners.getListeners()) {
 				((IColumnCategoriesDialogListener) listener).itemsSelected(addedColumnIndexes);
@@ -249,7 +249,7 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
 		}
 	}
 
-	protected final void fireItemsRemoved(List<Integer> removedColumnPositions) {
+	protected final void fireItemsRemoved(List<Long> removedColumnPositions) {
 		if (removedColumnPositions != null) {
 			for (Object listener : listeners.getListeners()) {
 				((IColumnCategoriesDialogListener) listener).itemsRemoved(removedColumnPositions);
@@ -257,14 +257,14 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
 		}
 	}
 
-	protected final void fireItemsMoved(Direction direction, List<Integer> toPositions) {
+	protected final void fireItemsMoved(Direction direction, List<Long> toPositions) {
 		for (Object listener : listeners.getListeners()) {
 			((IColumnCategoriesDialogListener) listener).itemsMoved(direction, toPositions);
 		}
 	}
 
 	protected void moveSelectedUp() {
-		List<Integer> selectedPositions = getColumnEntryPositions(getSelectedColumnEntriesFromListViewer());
+		List<Long> selectedPositions = getColumnEntryPositions(getSelectedColumnEntriesFromListViewer());
 
 		// First position selected
 		if(!selectedPositions.contains(0)){
@@ -273,7 +273,7 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
 	}
 
 	protected void moveSelectedDown() {
-		List<Integer> selectedPositions = getColumnEntryPositions(getSelectedColumnEntriesFromListViewer());
+		List<Long> selectedPositions = getColumnEntryPositions(getSelectedColumnEntriesFromListViewer());
 
 		// Last position selected
 		if(!selectedPositions.contains(visibleColumnsEntries.size())){
@@ -284,7 +284,7 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
 	/**
 	 * @return selected column position(s) from the list viewer
 	 */
-	private List<Integer> getColumnPositionsFromListViewer() {
+	private List<Long> getColumnPositionsFromListViewer() {
 		return getColumnEntryPositions(getSelectedColumnEntriesFromListViewer());
 	}
 
@@ -303,14 +303,14 @@ public class ColumnCategoriesDialog extends AbstractColumnChooserDialog {
 	/**
 	 * @return selected columns index(s) from the tree viewer
 	 */
-	private List<Integer> getColumnIndexesFromTreeNodes() {
+	private List<Long> getColumnIndexesFromTreeNodes() {
 		Object[] nodes = ((TreeSelection)treeViewer.getSelection()).toArray();
 
-		List<Integer> indexes = new ArrayList<Integer>();
+		List<Long> indexes = new ArrayList<Long>();
 		for (Object object : nodes) {
 			Node node = (Node) object;
 			if(Type.COLUMN == node.getType()){
-				indexes.add(Integer.parseInt(node.getData()));
+				indexes.add(Long.parseLong(node.getData()));
 			}
 		}
 		return indexes;

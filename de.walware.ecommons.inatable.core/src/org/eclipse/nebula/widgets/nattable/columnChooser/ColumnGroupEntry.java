@@ -27,11 +27,11 @@ import org.eclipse.nebula.widgets.nattable.columnChooser.gui.ColumnChooserDialog
  */
 public class ColumnGroupEntry {
 	private final String label;
-	private final Integer firstElementPosition;
-	private final Integer firstElementIndex;
+	private final Long firstElementPosition;
+	private final Long firstElementIndex;
 	private final boolean isCollapsed;
 
-	public ColumnGroupEntry(String label, Integer firstElementPosition, Integer firstElementIndex, boolean isCollapsed) {
+	public ColumnGroupEntry(String label, Long firstElementPosition, Long firstElementIndex, boolean isCollapsed) {
 		super();
 		this.label = label;
 		this.firstElementPosition = firstElementPosition;
@@ -43,11 +43,11 @@ public class ColumnGroupEntry {
 		return label;
 	}
 
-	public Integer getFirstElementPosition() {
+	public Long getFirstElementPosition() {
 		return firstElementPosition;
 	}
 
-	public Integer getFirstElementIndex() {
+	public Long getFirstElementIndex() {
 		return firstElementIndex;
 	}
 
@@ -55,8 +55,8 @@ public class ColumnGroupEntry {
 		return isCollapsed;
 	}
 
-	public static List<Integer> getColumnGroupEntryPositions(List<ColumnGroupEntry> columnEntries) {
-		List<Integer> columnGroupEntryPositions = new ArrayList<Integer>();
+	public static List<Long> getColumnGroupEntryPositions(List<ColumnGroupEntry> columnEntries) {
+		List<Long> columnGroupEntryPositions = new ArrayList<Long>();
 		for (ColumnGroupEntry ColumnGroupEntry : columnEntries) {
 			columnGroupEntryPositions.add(ColumnGroupEntry.getFirstElementPosition());
 		}

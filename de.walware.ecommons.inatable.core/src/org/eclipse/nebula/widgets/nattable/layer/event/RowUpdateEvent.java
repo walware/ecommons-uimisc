@@ -15,7 +15,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public class RowUpdateEvent extends RowVisualChangeEvent {
 	
-	public RowUpdateEvent(ILayer layer, int rowPosition) {
+	public RowUpdateEvent(ILayer layer, long rowPosition) {
 		this(layer, new Range(rowPosition));
 	}
 	

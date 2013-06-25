@@ -35,10 +35,10 @@ public class SortableTreeComparator<T> implements Comparator<T> {
 		if (treeComparatorResult == 0) {
 			return 0;
 		} else {
-			List<Integer> sortedColumnIndexes = sortModel.getSortedColumnIndexes();
+			List<Long> sortedColumnIndexes = sortModel.getSortedColumnIndexes();
 			if (sortedColumnIndexes != null && sortedColumnIndexes.size() > 0) {
 				List<Comparator<T>> comparators = new ArrayList<Comparator<T>>();
-				for (int sortedColumnIndex : sortedColumnIndexes) {
+				for (long sortedColumnIndex : sortedColumnIndexes) {
 					// get comparator for column index... somehow
 					List<Comparator> columnComparators = sortModel.getComparatorsForColumnIndex(sortedColumnIndex);
 					

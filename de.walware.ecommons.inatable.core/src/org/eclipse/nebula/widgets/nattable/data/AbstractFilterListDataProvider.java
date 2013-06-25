@@ -45,8 +45,8 @@ public abstract class AbstractFilterListDataProvider<T> extends ListDataProvider
 	 * every object. The number of non visible items will be subtracted from the
 	 * size of the wrapped list to return the number of visible items.
 	 */
-	public int getRowCount() {
-		int numberOfInvisible = 0;
+	public long getRowCount() {
+		long numberOfInvisible = 0;
 		for (T object : list) {
 			if (!show(object)) {
 				numberOfInvisible++;
@@ -58,7 +58,7 @@ public abstract class AbstractFilterListDataProvider<T> extends ListDataProvider
 	/**
 	 * Get the data value for the columnIndex and the visible rowIndex.
 	 */
-	public Object getDataValue(int columnIndex, int rowIndex) {
+	public Object getDataValue(long columnIndex, long rowIndex) {
 		T rowObj = getRowObject(rowIndex);
 		return columnAccessor.getDataValue(rowObj, columnIndex);
 	}
@@ -66,7 +66,7 @@ public abstract class AbstractFilterListDataProvider<T> extends ListDataProvider
 	/**
 	 * Set the data value for the columnIndex and the visible rowIndex.
 	 */
-	public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
+	public void setDataValue(long columnIndex, long rowIndex, Object newValue) {
 		T rowObj = getRowObject(rowIndex);
 		columnAccessor.setDataValue(rowObj, columnIndex, newValue);
 	}
@@ -77,9 +77,12 @@ public abstract class AbstractFilterListDataProvider<T> extends ListDataProvider
 	 * items into account, so the real row index for the given visible row index
 	 * is calculated.
 	 */
-	public T getRowObject(int rowIndex) {
+	public T getRowObject(long rowIndex) {
+		if (rowIndex >= Integer.MAX_VALUE) {
+			return null;
+		}
 		T object = null;
-		int count = 0;
+		long count = 0;
 		int realRowIndex = 0;
 		while (count <= rowIndex) {
 			object = list.get(realRowIndex);
@@ -98,7 +101,7 @@ public abstract class AbstractFilterListDataProvider<T> extends ListDataProvider
 	 * is searched and then all invisible items are subtracted from the
 	 * real row index to calculate the visible row index.
 	 */
-	public int indexOfRowObject(T rowObject) {
+	public long indexOfRowObject(T rowObject) {
 		int realRowIndex = list.indexOf(rowObject);
 		int filteredIndex = realRowIndex;
 		//now find number of not visible items

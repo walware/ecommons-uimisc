@@ -15,11 +15,11 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public class MultiColumnHideCommand extends AbstractMultiColumnCommand {
 
-	public MultiColumnHideCommand(ILayer layer, int columnPosition) {
-		this(layer, new int[] { columnPosition });
+	public MultiColumnHideCommand(ILayer layer, long columnPosition) {
+		this(layer, new long[] { columnPosition });
 	}
 
-	public MultiColumnHideCommand(ILayer layer, int[] columnPositions) {
+	public MultiColumnHideCommand(ILayer layer, long[] columnPositions) {
 		super(layer, columnPositions);
 	}
 	

@@ -15,7 +15,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public class ShowRowInViewportCommand extends AbstractRowCommand {
 
-	public ShowRowInViewportCommand(ILayer layer, int rowPosition) {
+	public ShowRowInViewportCommand(ILayer layer, long rowPosition) {
 		super(layer, rowPosition);
 	}
 	

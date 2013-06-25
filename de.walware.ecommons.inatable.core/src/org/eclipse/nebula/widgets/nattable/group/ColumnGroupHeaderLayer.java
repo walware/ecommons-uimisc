@@ -118,7 +118,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	// Rows
 
 	@Override
-	public int getRowCount() {
+	public long getRowCount() {
 		if (!calculateHeight 
 				|| (this.model.getAllIndexesInGroups() != null 
 						&& this.model.getAllIndexesInGroups().size() > 0)) { 
@@ -128,12 +128,12 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	}
 
 	@Override
-	public int getPreferredRowCount() {
+	public long getPreferredRowCount() {
 		return columnHeaderLayer.getPreferredRowCount() + 1;
 	}
 
 	@Override
-	public int getRowIndexByPosition(int rowPosition) {
+	public long getRowIndexByPosition(long rowPosition) {
 		if (rowPosition == 0) {
 			return rowPosition;
 		} else {
@@ -144,7 +144,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	// Height
 
 	@Override 
-	public int getHeight() { 
+	public long getHeight() { 
 		if (!calculateHeight 
 				|| (this.model.getAllIndexesInGroups() != null 
 						&& this.model.getAllIndexesInGroups().size() > 0)) { 
@@ -156,12 +156,12 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 
 	
 	@Override
-	public int getPreferredHeight() {
+	public long getPreferredHeight() {
 		return rowHeightConfig.getAggregateSize(1) + columnHeaderLayer.getPreferredHeight();
 	}
 
 	@Override
-	public int getRowHeightByPosition(int rowPosition) {
+	public int getRowHeightByPosition(long rowPosition) {
 		if (rowPosition == 0) {
 			return rowHeightConfig.getSize(rowPosition);
 		} else {
@@ -176,7 +176,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	// Row resize
 
 	@Override
-	public boolean isRowPositionResizable(int rowPosition) {
+	public boolean isRowPositionResizable(long rowPosition) {
 		if (rowPosition == 0) {
 			return rowHeightConfig.isPositionResizable(rowPosition);
 		} else {
@@ -187,8 +187,8 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	// Y
 
 	@Override
-	public int getRowPositionByY(int y) {
-		int row0Height = getRowHeightByPosition(0);
+	public long getRowPositionByY(long y) {
+		long row0Height = getRowHeightByPosition(0);
 		if (y < row0Height) {
 			return 0;
 		} else {
@@ -197,7 +197,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	}
 
 	@Override
-	public int getStartYOfRowPosition(int rowPosition) {
+	public long getStartYOfRowPosition(long rowPosition) {
 		if (rowPosition == 0) {
 			return rowHeightConfig.getAggregateSize(rowPosition);
 		} else {
@@ -216,8 +216,8 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	 * Column group header cells are rendered properly.
 	 */
 	@Override
-	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
-		int columnIndex = getColumnIndexByPosition(columnPosition);
+	public ILayerCell getCellByPosition(long columnPosition, long rowPosition) {
+		long columnIndex = getColumnIndexByPosition(columnPosition);
 		String displayMode = getDisplayModeByPosition(columnPosition, rowPosition, columnIndex);
 
 		// Column group header cell
@@ -243,7 +243,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 			// the ColumnGroupGroupHeaderLayer wouldn't work anymore
 			ILayerCell cell = columnHeaderLayer.getCellByPosition(columnPosition, 0);
 			if (cell != null) {
-				final int rowSpan;
+				final long rowSpan;
 				
 				if (calculateHeight && model.size() == 0) {
 					rowSpan = 1;
@@ -267,22 +267,22 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	 *
 	 * @param columnPosition position of any column belonging to the group
 	 */
-	protected int getColumnSpan(int columnPosition) {
-		int columnIndex = getColumnIndexByPosition(columnPosition);
+	protected long getColumnSpan(long columnPosition) {
+		long columnIndex = getColumnIndexByPosition(columnPosition);
 		ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
 		
 		if (columnGroup.isCollapsed()) {
-			int sizeOfStaticColumns = columnGroup.getStaticColumnIndexes().size();
+			long sizeOfStaticColumns = columnGroup.getStaticColumnIndexes().size();
 			return sizeOfStaticColumns == 0 ? 1 : sizeOfStaticColumns;
 		} else {
-			int startPositionOfGroup = getStartPositionOfGroup(columnPosition);
-			int sizeOfGroup = columnGroup.getSize();
-			int endPositionOfGroup = startPositionOfGroup + sizeOfGroup;
-			List<Integer> columnIndexesInGroup = columnGroup.getMembers();
+			long startPositionOfGroup = getStartPositionOfGroup(columnPosition);
+			long sizeOfGroup = columnGroup.getSize();
+			long endPositionOfGroup = startPositionOfGroup + sizeOfGroup;
+			List<Long> columnIndexesInGroup = columnGroup.getMembers();
 
-			for (int i = startPositionOfGroup; i < endPositionOfGroup; i++) {
-				int index = getColumnIndexByPosition(i);
-				if (!columnIndexesInGroup.contains(Integer.valueOf(index))) {
+			for (long i = startPositionOfGroup; i < endPositionOfGroup; i++) {
+				long index = getColumnIndexByPosition(i);
+				if (!columnIndexesInGroup.contains(Long.valueOf(index))) {
 					sizeOfGroup--;
 				}
 			}
@@ -296,12 +296,12 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	 * @param selectionLayerColumnPosition of any column belonging to the group
 	 * @return first position of the column group
 	 */
-	private int getStartPositionOfGroup(int columnPosition) {
-		int bodyColumnIndex = getColumnIndexByPosition(columnPosition);
+	private long getStartPositionOfGroup(long columnPosition) {
+		long bodyColumnIndex = getColumnIndexByPosition(columnPosition);
 		ColumnGroup columnGroup = model.getColumnGroupByIndex(bodyColumnIndex);
 
-		int leastPossibleStartPositionOfGroup = columnPosition - columnGroup.getSize();
-		int i = 0;
+		long leastPossibleStartPositionOfGroup = columnPosition - columnGroup.getSize();
+		long i = 0;
 		for (i = leastPossibleStartPositionOfGroup; i < columnPosition; i++) {
 			if (ColumnGroupUtils.isInTheSameGroup(getColumnIndexByPosition(i), bodyColumnIndex, model)) {
 				break;
@@ -310,7 +310,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 		return i;
 	}
 
-	public String getDisplayModeByPosition(int columnPosition, int rowPosition, int columnIndex) {
+	public String getDisplayModeByPosition(long columnPosition, long rowPosition, long columnIndex) {
 		if (rowPosition == 0 && model.isPartOfAGroup(columnIndex)) {
 			return DisplayMode.NORMAL;
 		} else {
@@ -320,8 +320,8 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	}
 
 	@Override
-	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
-		int columnIndex = getColumnIndexByPosition(columnPosition);
+	public LabelStack getConfigLabelsByPosition(long columnPosition, long rowPosition) {
+		long columnIndex = getColumnIndexByPosition(columnPosition);
 		if (rowPosition == 0 && model.isPartOfAGroup(columnIndex)) {
 			return new LabelStack(GridRegion.COLUMN_GROUP_HEADER);
 		} else {
@@ -330,8 +330,8 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	}
 
 	@Override
-	public Object getDataValueByPosition(int columnPosition, int rowPosition) {
-		int columnIndex = getColumnIndexByPosition(columnPosition);
+	public Object getDataValueByPosition(long columnPosition, long rowPosition) {
+		long columnIndex = getColumnIndexByPosition(columnPosition);
 		if (rowPosition == 0 && model.isPartOfAGroup(columnIndex)) {
 			return model.getColumnGroupByIndex(columnIndex).getName();
 		} else {
@@ -340,8 +340,8 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 	}
 
 	@Override
-	public LabelStack getRegionLabelsByXY(int x, int y) {
-		int columnIndex = getColumnIndexByPosition(getColumnPositionByX(x));
+	public LabelStack getRegionLabelsByXY(long x, long y) {
+		long columnIndex = getColumnIndexByPosition(getColumnPositionByX(x));
 		if (model.isPartOfAGroup(columnIndex) && y < getRowHeightByPosition(0)) {
 			return new LabelStack(GridRegion.COLUMN_GROUP_HEADER);
 		} else {
@@ -351,7 +351,7 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 
 	// ColumnGroupModel delegates
 
-	public void addColumnsIndexesToGroup(String colGroupName, int... colIndexes) {
+	public void addColumnsIndexesToGroup(String colGroupName, long... colIndexes) {
 		model.addColumnsIndexesToGroup(colGroupName, colIndexes);
 	}
 
@@ -359,23 +359,23 @@ public class ColumnGroupHeaderLayer extends AbstractLayerTransform {
 		model.clear();
 	}
 	
-	public void setStaticColumnIndexesByGroup(String colGroupName, int... staticColumnIndexes) {
+	public void setStaticColumnIndexesByGroup(String colGroupName, long... staticColumnIndexes) {
 		model.setStaticColumnIndexesByGroup(colGroupName, staticColumnIndexes);
 	}
 
-	public boolean isColumnInGroup(int bodyColumnIndex) {
+	public boolean isColumnInGroup(long bodyColumnIndex) {
 		return model.isPartOfAGroup(bodyColumnIndex);
 	}
 
 	/**
 	 * @see ColumnGroup#setUnbreakable(boolean)
 	 */
-	public void setGroupUnbreakable(int columnIndex){
+	public void setGroupUnbreakable(long columnIndex){
 		ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
 		columnGroup.setUnbreakable(true);
 	}
 
-	public void setGroupAsCollapsed(int columnIndex) {
+	public void setGroupAsCollapsed(long columnIndex) {
 		ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
 		columnGroup.setCollapsed(true);
 	}

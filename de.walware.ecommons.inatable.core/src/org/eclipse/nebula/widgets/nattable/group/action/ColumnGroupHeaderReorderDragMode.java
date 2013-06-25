@@ -44,18 +44,18 @@ public class ColumnGroupHeaderReorderDragMode extends ColumnReorderDragMode {
 	 * 'to' column positions (for on screen semantics)
 	 */
 	@Override
-	protected boolean isValidTargetColumnPosition(ILayer natLayer, int fromGridColumnPosition, int toGridColumnPosition) {
+	protected boolean isValidTargetColumnPosition(ILayer natLayer, long fromGridColumnPosition, long toGridColumnPosition) {
 		if (this.currentEvent != null) {
 			//if this method was triggered by a mouse event, we determine the to column position by the event
 			//if there is no current mouse event referenced it means the reorder is triggered programmatically
 			toGridColumnPosition = natLayer.getColumnPositionByX(this.currentEvent.x);
 		}
-		int toColumnIndex = natLayer.getColumnIndexByPosition(toGridColumnPosition);
+		long toColumnIndex = natLayer.getColumnIndexByPosition(toGridColumnPosition);
 
 		boolean betweenGroups = false;
 		if(this.currentEvent != null){
-			int minX = this.currentEvent.x -  GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
-			int maxX = this.currentEvent.x +  GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
+			long minX = this.currentEvent.x -  GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
+			long maxX = this.currentEvent.x +  GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
 			betweenGroups = ColumnGroupUtils.isBetweenTwoGroups(natLayer, minX, maxX, model);
 		}
 
@@ -63,12 +63,12 @@ public class ColumnGroupHeaderReorderDragMode extends ColumnReorderDragMode {
 	}
 	
 	@Override
-	protected void fireMoveStartCommand(NatTable natTable, int dragFromGridColumnPosition) {
+	protected void fireMoveStartCommand(NatTable natTable, long dragFromGridColumnPosition) {
 		natTable.doCommand(new ReorderColumnGroupStartCommand(natTable, dragFromGridColumnPosition));
 	}
 	
 	@Override
-	protected void fireMoveEndCommand(NatTable natTable, int dragToGridColumnPosition) {
+	protected void fireMoveEndCommand(NatTable natTable, long dragToGridColumnPosition) {
 		natTable.doCommand(new ReorderColumnGroupEndCommand(natTable, dragToGridColumnPosition));
 	}
 }

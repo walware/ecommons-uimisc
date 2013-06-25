@@ -11,20 +11,23 @@
 package org.eclipse.nebula.widgets.nattable.painter.cell.decorator;
 
 
+import static org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils.safe;
+
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Pattern;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Region;
+import org.eclipse.swt.widgets.Display;
+
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
 import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Pattern;
-import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.graphics.Region;
-import org.eclipse.swt.widgets.Display;
 
 /**
  * Draws a rectangular bar in cell proportional to the value of the cell.
@@ -49,7 +52,8 @@ public class PercentageBarDecorator extends CellPainterWrapper {
 		double factor = Math.min(1.0, ((Double) cell.getDataValue()).doubleValue());
 		factor = Math.max(0.0, factor);
 
-		Rectangle bar = new Rectangle(rectangle.x, rectangle.y, (int)(rectangle.width * factor), rectangle.height);
+		Rectangle bar = new Rectangle(rectangle.x, rectangle.y, (long) (rectangle.width * factor), rectangle.height);
+		org.eclipse.swt.graphics.Rectangle rect = safe(bar);
 		Rectangle bounds = cell.getBounds();
 		
 		Color color1 = CellStyleUtil.getCellStyle(cell, configRegistry).getAttributeValue(PERCENTAGE_BAR_COMPLETE_REGION_START_COLOR);
@@ -62,7 +66,7 @@ public class PercentageBarDecorator extends CellPainterWrapper {
 				color1,
 				color2);
 		gc.setBackgroundPattern(pattern);
-		gc.fillRectangle(bar);
+		gc.fillRectangle(rect);
 
 		gc.setBackgroundPattern(originalBackgroundPattern);
 		pattern.dispose();
@@ -71,8 +75,8 @@ public class PercentageBarDecorator extends CellPainterWrapper {
 		if (incompleteRegionColor != null) {
 			Region incompleteRegion = new Region();
 			
-			incompleteRegion.add(rectangle);
-			incompleteRegion.subtract(bar);
+			incompleteRegion.add(safe(rectangle));
+			incompleteRegion.subtract(rect);
 			Color originalBackgroundColor = gc.getBackground();
 			gc.setBackground(incompleteRegionColor);
 			gc.fillRectangle(incompleteRegion.getBounds());

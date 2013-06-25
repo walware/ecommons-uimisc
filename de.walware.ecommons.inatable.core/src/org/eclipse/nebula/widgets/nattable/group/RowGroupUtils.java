@@ -31,12 +31,12 @@ import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
  */
 public class RowGroupUtils {
 			
-	public static <T> IRowGroup<T> getRowGroupForRowIndex(final IRowGroupModel<T> model, final int rowIndex) {	
+	public static <T> IRowGroup<T> getRowGroupForRowIndex(final IRowGroupModel<T> model, final long rowIndex) {	
 		final T row = model.getRowFromIndexCache(rowIndex);
 		return model.getRowGroupForRow(row);
 	}
 	
-	public static <T> IRowGroup<T> getOwnRowGroupForRowIndex(final IRowGroupModel<T> model, final int rowIndex) {	
+	public static <T> IRowGroup<T> getOwnRowGroupForRowIndex(final IRowGroupModel<T> model, final long rowIndex) {	
 		final T row = model.getRowFromIndexCache(rowIndex);
 		IRowGroup<T> rowGroup = model.getRowGroupForRow(row);
 		
@@ -49,7 +49,7 @@ public class RowGroupUtils {
 		return rowGroup;
 	}
 	
-	public static <T> boolean isPartOfAGroup(final IRowGroupModel<T> model, final int rowIndex) {
+	public static <T> boolean isPartOfAGroup(final IRowGroupModel<T> model, final long rowIndex) {
 		final T row = model.getRowFromIndexCache(rowIndex);
 		
 		if (row != null) {
@@ -59,7 +59,7 @@ public class RowGroupUtils {
 		return false;
 	}
 
-	public static <T> boolean isInTheSameGroup(final int fromRowIndex, final int toRowIndex, final IRowGroupModel<T> model) {
+	public static <T> boolean isInTheSameGroup(final long fromRowIndex, final long toRowIndex, final IRowGroupModel<T> model) {
 		final T fromRow = model.getRowFromIndexCache(fromRowIndex);
 		final T toRow = model.getRowFromIndexCache(toRowIndex);
 		
@@ -105,7 +105,7 @@ public class RowGroupUtils {
 	/**
      * Number of rows in the Group which the bodyRowIndex belongs to.
      */
-    public static <T> int sizeOfGroup(final IRowGroupModel<T> model, final int bodyRowIndex) {
+    public static <T> long sizeOfGroup(final IRowGroupModel<T> model, final long bodyRowIndex) {
     	IRowGroup<T> group = getRowGroupForRowIndex(model, bodyRowIndex);
     	
     	if (group != null) {
@@ -127,7 +127,7 @@ public class RowGroupUtils {
      * @return TRUE if <code>bodyRowIndex</code> is contained in the list
      * of static rows of the row group this index belongs to
      */
-    public static <T> boolean isStaticRow(final IRowGroupModel<T> model, final int bodyRowIndex) {    	
+    public static <T> boolean isStaticRow(final IRowGroupModel<T> model, final long bodyRowIndex) {    	
     	final T row = model.getRowFromIndexCache(bodyRowIndex);
     	
     	if (row != null) {
@@ -141,8 +141,8 @@ public class RowGroupUtils {
         return false;
     }
     
-	public static boolean isRowIndexHiddenInUnderLyingLayer(final int rowIndex, final ILayer layer, final IUniqueIndexLayer underlyingLayer) {
-		return underlyingLayer.getRowPositionByIndex(rowIndex) == Integer.MIN_VALUE;
+	public static boolean isRowIndexHiddenInUnderLyingLayer(final long rowIndex, final ILayer layer, final IUniqueIndexLayer underlyingLayer) {
+		return underlyingLayer.getRowPositionByIndex(rowIndex) == Long.MIN_VALUE;
 	}	
 	
     /**
@@ -155,10 +155,10 @@ public class RowGroupUtils {
      * @param bodyRowIndexes
      * @return
      */
-    public static List<Integer> getRowPositionsInGroup(final IUniqueIndexLayer layer, final Collection<Integer> bodyRowIndexes) {
-        final List<Integer> rowPositions = new ArrayList<Integer>();
-        for( Integer bodyRowIndex : bodyRowIndexes ) {
-            final int rowPosition = layer.getRowPositionByIndex(bodyRowIndex);
+    public static List<Long> getRowPositionsInGroup(final IUniqueIndexLayer layer, final Collection<Long> bodyRowIndexes) {
+        final List<Long> rowPositions = new ArrayList<Long>();
+        for( Long bodyRowIndex : bodyRowIndexes ) {
+            final long rowPosition = layer.getRowPositionByIndex(bodyRowIndex);
             if( rowPosition != -1 ) {
                 rowPositions.add( rowPosition );
             }
@@ -170,13 +170,13 @@ public class RowGroupUtils {
 	 * @return Unmodifiable list of row indexes and static row indexes in the
 	 *         same group as this index
 	 */    
-	public static <T> List<Integer> getRowIndexesInGroup(final IRowGroupModel<T> model, final int rowIndex) {		
+	public static <T> List<Long> getRowIndexesInGroup(final IRowGroupModel<T> model, final long rowIndex) {		
 		final IRowGroup<T> group = getRowGroupForRowIndex(model, rowIndex);
 		return getRowIndexesInGroup(model, group, true);
 	}
 	
-	public static <T> List<Integer> getRowIndexesInGroup(final IRowGroupModel<T> model, final IRowGroup<T> group, final boolean includeStatic) {
-		List<Integer> indexes = new ArrayList<Integer>();
+	public static <T> List<Long> getRowIndexesInGroup(final IRowGroupModel<T> model, final IRowGroup<T> group, final boolean includeStatic) {
+		List<Long> indexes = new ArrayList<Long>();
 		
 		for (T row : group.getMemberRows(includeStatic)) {
 			indexes.add(model.getIndexFromRowCache(row));
@@ -185,7 +185,7 @@ public class RowGroupUtils {
 		return indexes;
 	}
 
-	public static <T> String getRowGroupNameForIndex(IRowGroupModel<T> model, int bodyRowIndex) {
+	public static <T> String getRowGroupNameForIndex(IRowGroupModel<T> model, long bodyRowIndex) {
 		IRowGroup<T> group = getRowGroupForRowIndex(model, bodyRowIndex);
 		if (group != null) {
 			return group.getGroupName();

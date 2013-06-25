@@ -30,13 +30,13 @@ public class ToggleCheckBoxColumnAction implements IMouseAction {
 	}
 	
 	public void run(NatTable natTable, MouseEvent event) {
-		int sourceColumnPosition = natTable.getColumnPositionByX(event.x);
-		int columnPosition = LayerUtil.convertColumnPosition(natTable, sourceColumnPosition, bodyDataLayer);
+		long sourceColumnPosition = natTable.getColumnPositionByX(event.x);
+		long columnPosition = LayerUtil.convertColumnPosition(natTable, sourceColumnPosition, bodyDataLayer);
 		
-		int checkedCellsCount = columnHeaderCheckBoxPainter.getCheckedCellsCount(columnPosition, natTable.getConfigRegistry());
+		long checkedCellsCount = columnHeaderCheckBoxPainter.getCheckedCellsCount(columnPosition, natTable.getConfigRegistry());
 		boolean targetState = checkedCellsCount < bodyDataLayer.getRowCount();
 		
-		for (int rowPosition = 0; rowPosition < bodyDataLayer.getRowCount(); rowPosition++) {
+		for (long rowPosition = 0; rowPosition < bodyDataLayer.getRowCount(); rowPosition++) {
 			bodyDataLayer.doCommand(new UpdateDataCommand(bodyDataLayer, columnPosition, rowPosition, targetState));
 		}
 	}

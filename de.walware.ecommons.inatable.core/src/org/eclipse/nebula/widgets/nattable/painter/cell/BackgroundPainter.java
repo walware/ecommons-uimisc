@@ -10,14 +10,18 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
+import static org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils.safe;
+
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
+
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
+
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 
 /**
  * Paints the background of the cell using the color from the cell style.
@@ -44,7 +48,7 @@ public class BackgroundPainter extends CellPainterWrapper {
 			Color originalBackground = gc.getBackground();
 
 			gc.setBackground(backgroundColor);
-			gc.fillRectangle(bounds);
+			gc.fillRectangle(safe(bounds));
 
 			gc.setBackground(originalBackground);
 		}

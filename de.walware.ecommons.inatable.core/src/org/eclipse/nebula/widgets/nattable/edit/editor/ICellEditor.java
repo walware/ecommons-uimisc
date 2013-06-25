@@ -69,22 +69,22 @@ public interface ICellEditor {
 	/**
 	 * @return The column index of the cell to which this editor is attached.
 	 */
-	int getColumnIndex();
+	long getColumnIndex();
 	
 	/**
 	 * @return The row index of the cell to which this editor is attached.
 	 */
-	int getRowIndex();
+	long getRowIndex();
 	
 	/**
 	 * @return The column position of the cell to which this editor is attached.
 	 */
-	int getColumnPosition();
+	long getColumnPosition();
 	
 	/**
 	 * @return The row position of the cell to which this editor is attached.
 	 */
-	int getRowPosition();
+	long getRowPosition();
 	
 	/**
 	 * Returns the current value in this editor prior to conversion.

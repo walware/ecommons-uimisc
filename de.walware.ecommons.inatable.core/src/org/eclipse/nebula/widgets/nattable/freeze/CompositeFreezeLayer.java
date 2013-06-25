@@ -13,13 +13,13 @@ package org.eclipse.nebula.widgets.nattable.freeze;
 
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
+import static org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils.safe;
 
 import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -137,7 +137,7 @@ public class CompositeFreezeLayer extends CompositeLayer {
 			String columnPosition = tok.nextToken();
 			String rowPosition = tok.nextToken();
 			topLeftPosition = new PositionCoordinate(this.freezeLayer, 
-					Integer.valueOf(columnPosition), Integer.valueOf(rowPosition));
+					Long.valueOf(columnPosition), Long.valueOf(rowPosition));
 		}
 		
 		property = properties.getProperty(prefix + FreezeLayer.PERSISTENCE_BOTTOM_RIGHT_POSITION);
@@ -147,7 +147,7 @@ public class CompositeFreezeLayer extends CompositeLayer {
 			String columnPosition = tok.nextToken();
 			String rowPosition = tok.nextToken();
 			bottomRightPosition = new PositionCoordinate(this.freezeLayer, 
-					Integer.valueOf(columnPosition), Integer.valueOf(rowPosition));
+					Long.valueOf(columnPosition), Long.valueOf(rowPosition));
 		}
 		
 		//only restore a freeze state if there is one persisted
@@ -170,7 +170,7 @@ public class CompositeFreezeLayer extends CompositeLayer {
 		}
 		
 		@Override
-		public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
+		public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, org.eclipse.swt.graphics.Rectangle rectangle, IConfigRegistry configRegistry) {
 			super.paintLayer(natLayer, gc, xOffset, yOffset, rectangle, configRegistry);
 			
 			Color separatorColor = configRegistry.getConfigAttribute(IFreezeConfigAttributes.SEPARATOR_COLOR, DisplayMode.NORMAL);
@@ -181,13 +181,13 @@ public class CompositeFreezeLayer extends CompositeLayer {
 			gc.setClipping(rectangle);
 			Color oldFg = gc.getForeground();
 			gc.setForeground(separatorColor);
-			final int freezeWidth = freezeLayer.getWidth() - 1;
+			final long freezeWidth = freezeLayer.getWidth() - 1;
 			if (freezeWidth > 0) {
-				gc.drawLine(xOffset + freezeWidth, yOffset, xOffset + freezeWidth, yOffset + getHeight() - 1);
+				gc.drawLine(safe(xOffset + freezeWidth), yOffset, safe(xOffset + freezeWidth), safe(yOffset + getHeight() - 1));
 			}
-			final int freezeHeight = freezeLayer.getHeight() - 1;
+			final long freezeHeight = freezeLayer.getHeight() - 1;
 			if (freezeHeight > 0) {
-				gc.drawLine(xOffset, yOffset + freezeHeight, xOffset + getWidth() - 1, yOffset + freezeHeight);
+				gc.drawLine(xOffset, safe(yOffset + freezeHeight), safe(xOffset + getWidth() - 1), safe(yOffset + freezeHeight));
 			}
 			gc.setForeground(oldFg);
 		}

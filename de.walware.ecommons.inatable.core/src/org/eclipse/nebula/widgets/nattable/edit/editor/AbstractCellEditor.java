@@ -174,7 +174,7 @@ public abstract class AbstractCellEditor implements ICellEditor {
 	 * @see ILayerCell#getColumnIndex()
 	 */
 	@Override
-	public int getColumnIndex() {
+	public long getColumnIndex() {
 		return layerCell.getColumnIndex();
 	}
 
@@ -182,7 +182,7 @@ public abstract class AbstractCellEditor implements ICellEditor {
 	 * @see ILayerCell#getRowIndex()
 	 */
 	@Override
-	public int getRowIndex() {
+	public long getRowIndex() {
 		return layerCell.getRowIndex();
 	}
 	
@@ -190,7 +190,7 @@ public abstract class AbstractCellEditor implements ICellEditor {
 	 * @see ILayerCell#getColumnPosition()
 	 */
 	@Override
-	public int getColumnPosition() {
+	public long getColumnPosition() {
 		return layerCell.getColumnPosition();
 	}
 
@@ -198,7 +198,7 @@ public abstract class AbstractCellEditor implements ICellEditor {
 	 * @see ILayerCell#getRowPosition()
 	 */
 	@Override
-	public int getRowPosition() {
+	public long getRowPosition() {
 		return layerCell.getRowPosition();
 	}
 	

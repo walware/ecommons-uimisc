@@ -62,13 +62,13 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 	 * <p>
 	 * <b>Note: </b>If this list is empty, all columns will do auto row spanning.  
 	 */
-	private List<Integer> autoSpanColumns = new ArrayList<Integer>();
+	private List<Long> autoSpanColumns = new ArrayList<Long>();
 	/**
 	 * List of row positions for which automatic spanning is enabled. 
 	 * <p>
 	 * <b>Note: </b>If this list is empty, all rows will do auto column spanning.  
 	 */
-	private List<Integer> autoSpanRows = new ArrayList<Integer>();
+	private List<Long> autoSpanRows = new ArrayList<Long>();
 	
 	/**
 	 * 
@@ -87,35 +87,35 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 	}
 	
 	@Override
-	public Object getDataValue(int columnIndex, int rowIndex) {
+	public Object getDataValue(long columnIndex, long rowIndex) {
 		return this.underlyingDataProvider.getDataValue(columnIndex, rowIndex);
 	}
 
 	@Override
-	public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
+	public void setDataValue(long columnIndex, long rowIndex, Object newValue) {
 		this.underlyingDataProvider.setDataValue(columnIndex, rowIndex, newValue);
 	}
 
 	@Override
-	public int getColumnCount() {
+	public long getColumnCount() {
 		return this.underlyingDataProvider.getColumnCount();
 	}
 
 	@Override
-	public int getRowCount() {
+	public long getRowCount() {
 		return this.underlyingDataProvider.getRowCount();
 	}
 
 	@Override
-	public DataCell getCellByPosition(int columnPosition, int rowPosition) {
-		int cellColumnPosition = isAutoSpanEnabledForColumn(columnPosition, rowPosition) ? 
+	public DataCell getCellByPosition(long columnPosition, long rowPosition) {
+		long cellColumnPosition = isAutoSpanEnabledForColumn(columnPosition, rowPosition) ? 
 				getStartColumnPosition(columnPosition, rowPosition) : columnPosition;
-		int cellRowPosition = isAutoSpanEnabledForRow(columnPosition, rowPosition) ? 
+		long cellRowPosition = isAutoSpanEnabledForRow(columnPosition, rowPosition) ? 
 				getStartRowPosition(columnPosition, rowPosition) : rowPosition;
 
-		int columnSpan = isAutoSpanEnabledForColumn(columnPosition, rowPosition) ?
+		long columnSpan = isAutoSpanEnabledForColumn(columnPosition, rowPosition) ?
 				getColumnSpan(cellColumnPosition, cellRowPosition) : 1;
-		int rowSpan = isAutoSpanEnabledForRow(columnPosition, rowPosition) ? 
+		long rowSpan = isAutoSpanEnabledForRow(columnPosition, rowPosition) ? 
 				getRowSpan(cellColumnPosition, cellRowPosition) : 1;
 		
 		return new DataCell(cellColumnPosition, cellRowPosition, columnSpan, rowSpan);
@@ -127,7 +127,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 	 * @param rowPosition The row position for which the column spanning should be checked
 	 * @return <code>true</code> if for that column position auto spanning is enabled
 	 */
-	protected boolean isAutoSpanEnabledForColumn(int columnPosition, int rowPosition) {
+	protected boolean isAutoSpanEnabledForColumn(long columnPosition, long rowPosition) {
 		return (this.autoColumnSpan && isAutoSpanRow(rowPosition));
 	}
 
@@ -137,7 +137,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 	 * @param rowPosition The row position to check for auto spanning
 	 * @return <code>true</code> if for that row position auto spanning is enabled
 	 */
-	protected boolean isAutoSpanEnabledForRow(int columnPosition, int rowPosition) {
+	protected boolean isAutoSpanEnabledForRow(long columnPosition, long rowPosition) {
 		return (this.autoRowSpan && isAutoSpanColumn(columnPosition));
 	}
 	
@@ -146,7 +146,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 	 * @param columnPosition The column position to check
 	 * @return <code>true</code> if the given column position is configured as a auto span column.
 	 */
-	private boolean isAutoSpanColumn(int columnPosition) {
+	private boolean isAutoSpanColumn(long columnPosition) {
 		return (this.autoSpanColumns.isEmpty() || this.autoSpanColumns.contains(columnPosition));
 	}
 	
@@ -155,7 +155,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 	 * @param rowPosition The row position to check
 	 * @return <code>true</code> if the given row position is configured as a auto span row.
 	 */
-	private boolean isAutoSpanRow(int rowPosition) {
+	private boolean isAutoSpanRow(long rowPosition) {
 		return (this.autoSpanRows.isEmpty() || this.autoSpanRows.contains(rowPosition));
 	}
 	
@@ -166,7 +166,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 	 * won't be auto spanned anymore.
 	 * @param columnPositions The column positions to add for auto spanning.
 	 */
-	public void addAutoSpanningColumnPositions(Integer... columnPositions) {
+	public void addAutoSpanningColumnPositions(Long... columnPositions) {
 		this.autoSpanColumns.addAll(Arrays.asList(columnPositions));
 	}
 	
@@ -177,7 +177,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 	 * be auto spanned anymore.
 	 * @param rowPositions The row positions to add for auto spanning.
 	 */
-	public void addAutoSpanningRowPositions(Integer... rowPositions) {
+	public void addAutoSpanningRowPositions(Long... rowPositions) {
 		this.autoSpanRows.addAll(Arrays.asList(rowPositions));
 	}
 	
@@ -185,7 +185,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 	 * Removes the given column positions for auto spanning. 
 	 * @param columnPositions The column positions to remove for auto spanning.
 	 */
-	public void removeAutoSpanningColumnPositions(Integer... columnPositions) {
+	public void removeAutoSpanningColumnPositions(Long... columnPositions) {
 		this.autoSpanColumns.removeAll(Arrays.asList(columnPositions));
 	}
 	
@@ -193,7 +193,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 	 * Removes the given row positions for auto spanning. 
 	 * @param rowPositions The row positions to remove for auto spanning.
 	 */
-	public void removeAutoSpanningRowPositions(Integer... rowPositions) {
+	public void removeAutoSpanningRowPositions(Long... rowPositions) {
 		this.autoSpanRows.removeAll(Arrays.asList(rowPositions));
 	}
 	
@@ -224,7 +224,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 	 * @return The column position where the spanning starts or the given column position
 	 * 			if it is not spanned with the columns to the left.
 	 */
-	protected int getStartColumnPosition(int columnPosition, int rowPosition) {
+	protected long getStartColumnPosition(long columnPosition, long rowPosition) {
 		if (columnPosition <= 0 || !isAutoSpanColumn(columnPosition) || !isAutoSpanColumn(columnPosition-1)) {
 			return columnPosition;
 		}
@@ -252,7 +252,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 	 * @return The row position where the spanning starts or the given row position
 	 * 			if it is not spanned with rows above.
 	 */
-	protected int getStartRowPosition(int columnPosition, int rowPosition) {
+	protected long getStartRowPosition(long columnPosition, long rowPosition) {
 		if (rowPosition <= 0 || !isAutoSpanRow(rowPosition) || !isAutoSpanRow(rowPosition - 1)) {
 			return rowPosition;
 		}
@@ -276,8 +276,8 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 	 * @param rowPosition The row position for which the column spanning should be checked
 	 * @return The number of columns to span
 	 */
-	protected int getColumnSpan(int columnPosition, int rowPosition) {
-		int span = 1;
+	protected long getColumnSpan(long columnPosition, long rowPosition) {
+		long span = 1;
 		
 		while (columnPosition < getColumnCount()-1
 				&& isAutoSpanColumn(columnPosition)
@@ -298,8 +298,8 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 	 * @param rowPosition The row position to start the check for spanning
 	 * @return The number of rows to span
 	 */
-	protected int getRowSpan(int columnPosition, int rowPosition) {
-		int span = 1;
+	protected long getRowSpan(long columnPosition, long rowPosition) {
+		long span = 1;
 		
 		while (rowPosition < getRowCount()-1
 				&& isAutoSpanRow(rowPosition)
@@ -362,7 +362,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 
 		if (autoSpanColumns.size() > 0) {
 			StringBuilder strBuilder = new StringBuilder();
-			for (Integer index : autoSpanColumns) {
+			for (Long index : autoSpanColumns) {
 				strBuilder.append(index);
 				strBuilder.append(IPersistable.VALUE_SEPARATOR);
 			}
@@ -371,7 +371,7 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 
 		if (autoSpanRows.size() > 0) {
 			StringBuilder strBuilder = new StringBuilder();
-			for (Integer index : autoSpanRows) {
+			for (Long index : autoSpanRows) {
 				strBuilder.append(index);
 				strBuilder.append(IPersistable.VALUE_SEPARATOR);
 			}
@@ -394,11 +394,11 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 		this.autoSpanColumns.clear();
 		property = properties.getProperty(prefix + PERSISTENCE_KEY_AUTO_SPAN_COLUMNS);
 		if (property != null) {
-			List<Integer> newAutoSpanColumns = new ArrayList<Integer>();
+			List<Long> newAutoSpanColumns = new ArrayList<Long>();
 			StringTokenizer tok = new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
 			while (tok.hasMoreTokens()) {
 				String index = tok.nextToken();
-				newAutoSpanColumns.add(Integer.valueOf(index));
+				newAutoSpanColumns.add(Long.valueOf(index));
 			}
 			
 			this.autoSpanColumns.addAll(newAutoSpanColumns);
@@ -407,11 +407,11 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 		this.autoSpanRows.clear();
 		property = properties.getProperty(prefix + PERSISTENCE_KEY_AUTO_SPAN_ROWS);
 		if (property != null) {
-			List<Integer> newAutoSpanRows = new ArrayList<Integer>();
+			List<Long> newAutoSpanRows = new ArrayList<Long>();
 			StringTokenizer tok = new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
 			while (tok.hasMoreTokens()) {
 				String index = tok.nextToken();
-				newAutoSpanRows.add(Integer.valueOf(index));
+				newAutoSpanRows.add(Long.valueOf(index));
 			}
 			
 			this.autoSpanRows.addAll(newAutoSpanRows);

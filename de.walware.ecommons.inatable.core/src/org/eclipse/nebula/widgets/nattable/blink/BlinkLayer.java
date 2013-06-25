@@ -69,7 +69,7 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements IUniqueInde
 	private final UpdateEventsCache<T> updateEventsCache;
 
 	/** Duration of a single blink */
-	private int blinkDurationInMilis = 1000;
+	private long blinkDurationInMilis = 1000;
 
 	/** Track the updates which are currently blinking */
 	Map<String, PropertyUpdateEvent<T>> blinkingUpdates = new HashMap<String, PropertyUpdateEvent<T>>();
@@ -123,17 +123,17 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements IUniqueInde
     }
 	
 	@Override
-	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
+	public LabelStack getConfigLabelsByPosition(long columnPosition, long rowPosition) {
 		if (!blinkingEnabled) {
 			return getUnderlyingLayer().getConfigLabelsByPosition(columnPosition, rowPosition);
 		}
 		
 		ILayerCell cell = underlyingLayer.getCellByPosition(columnPosition, rowPosition);
 
-		int columnIndex = getUnderlyingLayer().getColumnIndexByPosition(columnPosition);
+		long columnIndex = getUnderlyingLayer().getColumnIndexByPosition(columnPosition);
 		String columnProperty = columnPropertyResolver.getColumnProperty(columnIndex);
 
-		int rowIndex = getUnderlyingLayer().getRowIndexByPosition(rowPosition);
+		long rowIndex = getUnderlyingLayer().getRowIndexByPosition(rowPosition);
 		String rowId = rowIdAccessor.getRowId(rowDataProvider.getRowObject(rowIndex)).toString();
 		
 		String key = updateEventsCache.getKey(columnProperty, rowId);
@@ -236,15 +236,15 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements IUniqueInde
 		this.blinkingEnabled = enabled;
 	}
 
-	public int getColumnPositionByIndex(int columnIndex) {
+	public long getColumnPositionByIndex(long columnIndex) {
 		return dataLayer.getColumnPositionByIndex(columnIndex);
 	}
 
-	public int getRowPositionByIndex(int rowIndex) {
+	public long getRowPositionByIndex(long rowIndex) {
 		return dataLayer.getRowPositionByIndex(rowIndex);
 	}
 
-	public void setBlinkDurationInMilis(int blinkDurationInMilis) {
+	public void setBlinkDurationInMilis(long blinkDurationInMilis) {
 		this.blinkDurationInMilis = blinkDurationInMilis;
 	}
 

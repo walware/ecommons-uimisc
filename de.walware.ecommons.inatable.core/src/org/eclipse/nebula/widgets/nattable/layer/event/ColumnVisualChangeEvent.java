@@ -17,7 +17,7 @@ import java.util.Collection;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 
 public abstract class ColumnVisualChangeEvent implements IVisualChangeEvent {
 
@@ -62,7 +62,7 @@ public abstract class ColumnVisualChangeEvent implements IVisualChangeEvent {
 	public Collection<Rectangle> getChangedPositionRectangles() {
 		Collection<Rectangle> changedPositionRectangles = new ArrayList<Rectangle>();
 		
-		int rowCount = layer.getRowCount();
+		long rowCount = layer.getRowCount();
 		for (Range range : columnPositionRanges) {
 			changedPositionRectangles.add(new Rectangle(range.start, 0, range.end - range.start, rowCount));
 		}

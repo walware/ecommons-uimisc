@@ -23,7 +23,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEn
 
 public class HideRowPositionsEvent extends RowStructuralChangeEvent {
 
-	public HideRowPositionsEvent(ILayer layer, Collection<Integer> rowPositions) {
+	public HideRowPositionsEvent(ILayer layer, Collection<Long> rowPositions) {
 		super(layer, PositionUtil.getRanges(rowPositions));
 	}
 	

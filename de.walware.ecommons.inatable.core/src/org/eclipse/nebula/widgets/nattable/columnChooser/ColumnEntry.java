@@ -24,10 +24,10 @@ import org.eclipse.nebula.widgets.nattable.Messages;
 public class ColumnEntry {
 
 	private final String label;
-	private final Integer index;
-	private Integer position;
+	private final Long index;
+	private Long position;
 
-	public ColumnEntry(String label, Integer index, Integer position) {
+	public ColumnEntry(String label, Long index, Long position) {
 		this.label = label;
 		this.index = index;
 		this.position = position;
@@ -38,15 +38,15 @@ public class ColumnEntry {
 		return label != null ? label : Messages.getString("ColumnEntry.0"); //$NON-NLS-1$
 	}
 
-	public Integer getPosition() {
+	public Long getPosition() {
 		return position;
 	}
 
-	public void setPosition(Integer position) {
+	public void setPosition(Long position) {
 		this.position = position;
 	}
 
-	public Integer getIndex() {
+	public Long getIndex() {
 		return index;
 	}
 
@@ -58,7 +58,7 @@ public class ColumnEntry {
 	public boolean equals(Object obj) {
 		if (obj instanceof ColumnEntry) {
 			ColumnEntry that = (ColumnEntry) obj;
-			return index.intValue() == that.index.intValue();
+			return index.longValue() == that.index.longValue();
 		}
 
 		return super.equals(obj);

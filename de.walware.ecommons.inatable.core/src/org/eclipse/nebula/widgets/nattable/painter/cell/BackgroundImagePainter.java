@@ -10,14 +10,16 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
+import static org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils.safe;
+
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Pattern;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 
@@ -43,12 +45,12 @@ public class BackgroundImagePainter extends CellPainterWrapper {
 	}
 
 	@Override
-	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public long getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return super.getPreferredWidth(cell, gc, configRegistry) + 4;
 	}
 
 	@Override
-	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public long getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return super.getPreferredHeight(cell, gc, configRegistry) + 4;
 	}
 
@@ -61,15 +63,15 @@ public class BackgroundImagePainter extends CellPainterWrapper {
 		Pattern pattern = new Pattern(Display.getCurrent(), bgImage);
 		gc.setBackgroundPattern(pattern);
 
-		gc.fillRectangle(rectangle);
+		gc.fillRectangle(safe(rectangle));
 		
 		gc.setBackgroundPattern(null);
 		pattern.dispose();
 
 		if (separatorColor != null) {
 			gc.setForeground(separatorColor);
-			gc.drawLine(rectangle.x - 1, rectangle.y, rectangle.x - 1, rectangle.y + rectangle.height);
-			gc.drawLine(rectangle.x - 1 + rectangle.width, rectangle.y, rectangle.x - 1 + rectangle.width, rectangle.y + rectangle.height);
+			gc.drawLine(safe(rectangle.x - 1), safe(rectangle.y), safe(rectangle.x - 1), safe(rectangle.y + rectangle.height));
+			gc.drawLine(safe(rectangle.x - 1 + rectangle.width), safe(rectangle.y), safe(rectangle.x - 1 + rectangle.width), safe(rectangle.y + rectangle.height));
 		}
 
 		// Restore original GC settings
@@ -77,7 +79,7 @@ public class BackgroundImagePainter extends CellPainterWrapper {
 		gc.setForeground(originalForeground);
 
 		// Draw interior
-		Rectangle interiorBounds = new Rectangle(rectangle.x + 2, rectangle.y + 2, rectangle.width - 4,	rectangle.height - 4);
+		Rectangle interiorBounds = new Rectangle(safe(rectangle.x + 2), safe(rectangle.y + 2), safe(rectangle.width - 4), safe(rectangle.height - 4));
 		super.paintCell(cell, gc, interiorBounds, configRegistry);
 	}
 

@@ -31,7 +31,7 @@ public abstract class DimBasedLayer extends AbstractLayer {
 	protected abstract void updateDims();
 	
 	
-	public int getColumnIndexByPosition(int columnPosition) {
+	public long getColumnIndexByPosition(long columnPosition) {
 		if (columnPosition < 0 || columnPosition >= getColumnCount()) {
 			return NO_INDEX;
 		}
@@ -40,23 +40,23 @@ public abstract class DimBasedLayer extends AbstractLayer {
 	
 	
 	@Override
-	public final int getColumnCount() {
+	public final long getColumnCount() {
 		return super.getDim(HORIZONTAL).getPositionCount();
 	}
 	
 	@Override
-	public final int getPreferredColumnCount() {
+	public final long getPreferredColumnCount() {
 		return super.getDim(HORIZONTAL).getPreferredPositionCount();
 	}
 	
 	@Override
-	public final int localToUnderlyingColumnPosition(final int localColumnPosition) {
+	public final long localToUnderlyingColumnPosition(final long localColumnPosition) {
 		return LayerUtil.localToUnderlyingPosition(super.getDim(HORIZONTAL), localColumnPosition);
 	}
 	
 	@Override
-	public final int underlyingToLocalColumnPosition(final ILayer sourceUnderlyingLayer,
-			final int underlyingColumnPosition) {
+	public final long underlyingToLocalColumnPosition(final ILayer sourceUnderlyingLayer,
+			final long underlyingColumnPosition) {
 		return super.getDim(HORIZONTAL).underlyingToLocalPosition(sourceUnderlyingLayer,
 				underlyingColumnPosition );
 	}
@@ -69,43 +69,43 @@ public abstract class DimBasedLayer extends AbstractLayer {
 	}
 	
 	@Override
-	public final int getWidth() {
+	public final long getWidth() {
 		return super.getDim(HORIZONTAL).getSize();
 	}
 	
 	@Override
-	public final int getPreferredWidth() {
+	public final long getPreferredWidth() {
 		return super.getDim(HORIZONTAL).getPreferredSize();
 	}
 	
 	@Override
-	public final int getColumnWidthByPosition(final int columnPosition) {
+	public final int getColumnWidthByPosition(final long columnPosition) {
 		return super.getDim(HORIZONTAL).getPositionSize(columnPosition, columnPosition);
 	}
 	
 	@Override
-	public final boolean isColumnPositionResizable(final int columnPosition) {
+	public final boolean isColumnPositionResizable(final long columnPosition) {
 		return super.getDim(HORIZONTAL).isPositionResizable(columnPosition);
 	}
 	
 	@Override
-	public final int getColumnPositionByX(final int x) {
+	public final long getColumnPositionByX(final long x) {
 		return super.getDim(HORIZONTAL).getPositionByPixel(x);
 	}
 	
 	@Override
-	public final int getStartXOfColumnPosition(final int columnPosition) {
+	public final long getStartXOfColumnPosition(final long columnPosition) {
 		return super.getDim(HORIZONTAL).getPositionStart(columnPosition, columnPosition);
 	}
 	
 	@Override
 	public final Collection<ILayer> getUnderlyingLayersByColumnPosition(
-			final int columnPosition) {
+			final long columnPosition) {
 		return super.getDim(HORIZONTAL).getUnderlyingLayersByPosition(columnPosition);
 	}
 	
 	
-	public final int getRowIndexByPosition(int rowPosition) {
+	public final long getRowIndexByPosition(long rowPosition) {
 		if (rowPosition < 0 || rowPosition >= getRowCount()) {
 			return NO_INDEX;
 		}
@@ -114,23 +114,23 @@ public abstract class DimBasedLayer extends AbstractLayer {
 	
 	
 	@Override
-	public final int getRowCount() {
+	public final long getRowCount() {
 		return super.getDim(VERTICAL).getPositionCount();
 	}
 	
 	@Override
-	public final int getPreferredRowCount() {
+	public final long getPreferredRowCount() {
 		return super.getDim(VERTICAL).getPreferredPositionCount();
 	}
 	
 	@Override
-	public final int localToUnderlyingRowPosition(final int localRowPosition) {
+	public final long localToUnderlyingRowPosition(final long localRowPosition) {
 		return LayerUtil.localToUnderlyingPosition(super.getDim(VERTICAL), localRowPosition);
 	}
 	
 	@Override
-	public final int underlyingToLocalRowPosition(final ILayer sourceUnderlyingLayer,
-			final int underlyingRowPosition) {
+	public final long underlyingToLocalRowPosition(final ILayer sourceUnderlyingLayer,
+			final long underlyingRowPosition) {
 		return super.getDim(VERTICAL).underlyingToLocalPosition(sourceUnderlyingLayer,
 				underlyingRowPosition );
 	}
@@ -143,37 +143,37 @@ public abstract class DimBasedLayer extends AbstractLayer {
 	}
 	
 	@Override
-	public final int getHeight() {
+	public final long getHeight() {
 		return super.getDim(VERTICAL).getSize();
 	}
 	
 	@Override
-	public final int getPreferredHeight() {
+	public final long getPreferredHeight() {
 		return super.getDim(VERTICAL).getPreferredSize();
 	}
 	
 	@Override
-	public final int getRowHeightByPosition(final int rowPosition) {
+	public final int getRowHeightByPosition(final long rowPosition) {
 		return super.getDim(VERTICAL).getPositionSize(rowPosition, rowPosition);
 	}
 	
 	@Override
-	public final boolean isRowPositionResizable(final int rowPosition) {
+	public final boolean isRowPositionResizable(final long rowPosition) {
 		return super.getDim(VERTICAL).isPositionResizable(rowPosition);
 	}
 	
 	@Override
-	public final int getRowPositionByY(final int y) {
+	public final long getRowPositionByY(final long y) {
 		return super.getDim(VERTICAL).getPositionByPixel(y);
 	}
 	
 	@Override
-	public final int getStartYOfRowPosition(final int rowPosition) {
+	public final long getStartYOfRowPosition(final long rowPosition) {
 		return super.getDim(VERTICAL).getPositionStart(rowPosition, rowPosition);
 	}
 	
 	@Override
-	public final Collection<ILayer> getUnderlyingLayersByRowPosition(final int rowPosition) {
+	public final Collection<ILayer> getUnderlyingLayersByRowPosition(final long rowPosition) {
 		return super.getDim(VERTICAL).getUnderlyingLayersByPosition(rowPosition);
 	}
 	

@@ -76,11 +76,11 @@ public class ExcelExporter implements ILayerExporter {
 		outputStream.write(asBytes("</table></body></html>")); //$NON-NLS-1$
 	}
 
-	public void exportRowBegin(OutputStream outputStream, int rowPosition) throws IOException {
+	public void exportRowBegin(OutputStream outputStream, long rowPosition) throws IOException {
 		outputStream.write(asBytes("<tr>\n")); //$NON-NLS-1$
 	}
 
-	public void exportRowEnd(OutputStream outputStream, int rowPosition) throws IOException {
+	public void exportRowEnd(OutputStream outputStream, long rowPosition) throws IOException {
 		outputStream.write(asBytes("</tr>\n")); //$NON-NLS-1$
 	}
 
@@ -127,9 +127,9 @@ public class ExcelExporter implements ILayerExporter {
 
 	private String getColorInCSSFormat(Color color) {
 		return String.format("rgb(%d,%d,%d)", //$NON-NLS-1$
-		                     Integer.valueOf(color.getRed()),
-		                     Integer.valueOf(color.getGreen()),
-		                     Integer.valueOf(color.getBlue()));
+		                     Long.valueOf(color.getRed()),
+		                     Long.valueOf(color.getGreen()),
+		                     Long.valueOf(color.getBlue()));
 	}
 	
 }

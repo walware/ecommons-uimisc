@@ -27,7 +27,7 @@ public class AlternatingRowConfigLabelAccumulator implements IConfigLabelAccumul
 
 	public static final String EVEN_ROW_CONFIG_TYPE = "EVEN_" + GridRegion.BODY; //$NON-NLS-1$
 
-	public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
+	public void accumulateConfigLabels(LabelStack configLabels, long columnPosition, long rowPosition) {
 		configLabels.addLabel((rowPosition % 2 == 0 ? EVEN_ROW_CONFIG_TYPE : ODD_ROW_CONFIG_TYPE));
 	}
 }

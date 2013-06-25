@@ -15,7 +15,7 @@ import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderEndComma
 
 public class ReorderColumnGroupEndCommand extends ColumnReorderEndCommand {
 
-	public ReorderColumnGroupEndCommand(ILayer layer, int toColumnPosition) {
+	public ReorderColumnGroupEndCommand(ILayer layer, long toColumnPosition) {
 		super(layer, toColumnPosition);
 	}
 

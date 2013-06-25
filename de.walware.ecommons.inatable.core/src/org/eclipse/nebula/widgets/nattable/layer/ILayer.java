@@ -14,7 +14,7 @@ package org.eclipse.nebula.widgets.nattable.layer;
 import java.util.Collection;
 import java.util.Properties;
 
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
@@ -80,7 +80,7 @@ public interface ILayer extends ILayerListener, IPersistable {
 	
 	// Dispose
 	
-	public void dispose();
+	void dispose();
 	
 	
 	ILayerDim getDim(Orientation orientation);
@@ -93,9 +93,9 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 * {@link Properties} instance when the layer is persisted.
 	 * @param persistable the persistable to be registered
 	 */
-	public void registerPersistable(IPersistable persistable);
+	void registerPersistable(IPersistable persistable);
 	
-	public void unregisterPersistable(IPersistable persistable);
+	void unregisterPersistable(IPersistable persistable);
 	
 	// Configuration
 	
@@ -107,7 +107,7 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 * @param configRegistry instance owned by {@link NatTable}
 	 * @param uiBindingRegistry instance owned by {@link NatTable}
 	 */
-	public void configure(ConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry);
+	void configure(ConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry);
 	
 	// Region
 	
@@ -117,7 +117,7 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 * @param y the y pixel coordinate
 	 * @return a LabelStack containing the region labels for the cell at the given pixel position
 	 */
-	public LabelStack getRegionLabelsByXY(int x, int y);
+	LabelStack getRegionLabelsByXY(long x, long y);
 	
 	// Commands
 	
@@ -132,11 +132,11 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 * @param command the command to perform
 	 * @return true if the command has been handled, false otherwise
 	 */
-	public boolean doCommand(ILayerCommand command);
+	boolean doCommand(ILayerCommand command);
 	
-	public void registerCommandHandler(ILayerCommandHandler<?> commandHandler);
+	void registerCommandHandler(ILayerCommandHandler<?> commandHandler);
 	
-	public void unregisterCommandHandler(Class<? extends ILayerCommand> commandClass);
+	void unregisterCommandHandler(Class<? extends ILayerCommand> commandClass);
 	
 	// Events
 	
@@ -149,19 +149,19 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 * 
 	 * @param event the event to fire
 	 */
-	public void fireLayerEvent(ILayerEvent event);
+	void fireLayerEvent(ILayerEvent event);
 	
-	public void addLayerListener(ILayerListener listener);
+	void addLayerListener(ILayerListener listener);
 	
-	public void removeLayerListener(ILayerListener listener);
+	void removeLayerListener(ILayerListener listener);
 	
-	public ILayerPainter getLayerPainter();
+	ILayerPainter getLayerPainter();
 	
 	// Client area
 	
-	public IClientAreaProvider getClientAreaProvider();
+	IClientAreaProvider getClientAreaProvider();
 	
-	public void setClientAreaProvider(IClientAreaProvider clientAreaProvider);
+	void setClientAreaProvider(IClientAreaProvider clientAreaProvider);
 	
 	// Horizontal features
 	
@@ -170,9 +170,9 @@ public interface ILayer extends ILayerListener, IPersistable {
 	/**
 	 * @return the number of columns in this coordinate model
 	 */
-	public int getColumnCount();
+	long getColumnCount();
 	
-	public int getPreferredColumnCount();
+	long getPreferredColumnCount();
 	
 	/**
 	 * Gets the underlying non-transformed column index for the given column position.
@@ -180,7 +180,7 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 * @return an underlying non-transformed column index, or -1 if the given column position does not exist within this
 	 * coordinate system
 	 */
-	public int getColumnIndexByPosition(int columnPosition);
+	long getColumnIndexByPosition(long columnPosition);
 	
 	/**
 	 * Convert a column position to the coordinates of the underlying layer.
@@ -188,11 +188,11 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 * @param localColumnPosition column position in local (the layer's own) coordinates
 	 * @return column position in the underlying layer's coordinates
 	 */
-	public int localToUnderlyingColumnPosition(int localColumnPosition);
+	long localToUnderlyingColumnPosition(long localColumnPosition);
 	
-	public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, int underlyingColumnPosition);
+	long underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, long underlyingColumnPosition);
 	
-	public Collection<Range> underlyingToLocalColumnPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingColumnPositionRanges);
+	Collection<Range> underlyingToLocalColumnPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingColumnPositionRanges);
 	
 	// Width
 	
@@ -201,9 +201,9 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 * 
 	 * @return the width of this layer
 	 */
-	public int getWidth();
+	long getWidth();
 	
-	public int getPreferredWidth();
+	long getPreferredWidth();
 	
 	/**
 	 * Returns the width in pixels of the given column.
@@ -214,11 +214,11 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 * 
 	 * @return the width of the column
 	 */
-	public int getColumnWidthByPosition(int columnPosition);
+	int getColumnWidthByPosition(long columnPosition);
 	
 	// Column resize
 	
-	public boolean isColumnPositionResizable(int columnPosition);
+	boolean isColumnPositionResizable(long columnPosition);
 	
 	// X
 	
@@ -227,7 +227,7 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 * @param x a horizontal pixel location relative to the pixel boundary of this layer
 	 * @return a column position relative to the associated coordinate system, or -1 if there is no column that contains x
 	 */
-	public int getColumnPositionByX(int x);
+	long getColumnPositionByX(long x);
 	
 	/**
 	 * Returns the x offset in pixels of the given column.
@@ -235,11 +235,11 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 * @param columnPosition the column position in this layer
 	 * @return the x offset of the column, or -1
 	 */
-	public int getStartXOfColumnPosition(int columnPosition);
+	long getStartXOfColumnPosition(long columnPosition);
 	
 	// Underlying
 	
-	public Collection<ILayer> getUnderlyingLayersByColumnPosition(int columnPosition);
+	Collection<ILayer> getUnderlyingLayersByColumnPosition(long columnPosition);
 	
 	// Vertical features
 	
@@ -248,9 +248,9 @@ public interface ILayer extends ILayerListener, IPersistable {
 	/**
 	 * @return the number of rows in this coordinate model
 	 */
-	public int getRowCount();
+	long getRowCount();
 	
-	public int getPreferredRowCount();
+	long getPreferredRowCount();
 	
 	/**
 	 * Gets the underlying non-transformed row index for the given row position.
@@ -258,13 +258,13 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 * @return an underlying non-transformed row index, or -1 if the given row position does not exist within this
 	 * coordinate system
 	 */
-	public int getRowIndexByPosition(int rowPosition);
+	long getRowIndexByPosition(long rowPosition);
 	
-	public int localToUnderlyingRowPosition(int localRowPosition);
+	long localToUnderlyingRowPosition(long localRowPosition);
 	
-	public int underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer, int underlyingRowPosition);
+	long underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer, long underlyingRowPosition);
 	
-	public Collection<Range> underlyingToLocalRowPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingRowPositionRanges);
+	Collection<Range> underlyingToLocalRowPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingRowPositionRanges);
 	
 	// Height
 	
@@ -273,9 +273,9 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 * 
 	 * @return the height of this layer
 	 */
-	public int getHeight();
+	long getHeight();
 	
-	public int getPreferredHeight();
+	long getPreferredHeight();
 	
 	/**
 	 * Returns the height in pixels of the given row.
@@ -286,11 +286,11 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 * 
 	 * @return the height of the row
 	 */
-	public int getRowHeightByPosition(int rowPosition);
+	int getRowHeightByPosition(long rowPosition);
 	
 	// Row resize
 	
-	public boolean isRowPositionResizable(int rowPosition);
+	boolean isRowPositionResizable(long rowPosition);
 	
 	// Y
 	
@@ -299,7 +299,7 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 * @param y a vertical pixel location relative to the pixel boundary of this layer
 	 * @return a row position relative to the associated coordinate system, or -1 if there is no row that contains y
 	 */
-	public int getRowPositionByY(int y);
+	long getRowPositionByY(long y);
 	
 	/**
 	 * Returns the y offset in pixels of the given row.
@@ -308,15 +308,15 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 * 
 	 * @return the y offset of the row, or -1
 	 */
-	public int getStartYOfRowPosition(int rowPosition);
+	long getStartYOfRowPosition(long rowPosition);
 	
 	// Underlying
 	
-	public Collection<ILayer> getUnderlyingLayersByRowPosition(int rowPosition);
+	Collection<ILayer> getUnderlyingLayersByRowPosition(long rowPosition);
 	
 	// Cell features
 	
-	public ILayerCell getCellByPosition(int columnPosition, int rowPosition);
+	ILayerCell getCellByPosition(long columnPosition, long rowPosition);
 	
 	/**
 	 * Calculates the bounds in pixel for the given cell position.
@@ -326,14 +326,15 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 * 
 	 * @return the bounds, or <code>null</code> if there are no valid bounds
 	 */
-	public Rectangle getBoundsByPosition(int columnPosition, int rowPosition);
+	Rectangle getBoundsByPosition(long columnPosition, long rowPosition);
 	
-	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition);
+	LabelStack getConfigLabelsByPosition(long columnPosition, long rowPosition);
 	
-	public Object getDataValueByPosition(int columnPosition, int rowPosition);
+	Object getDataValueByPosition(long columnPosition, long rowPosition);
 	
-	public ILayer getUnderlyingLayerByPosition(int columnPosition, int rowPosition);
+	ILayer getUnderlyingLayerByPosition(long columnPosition, long rowPosition);
 	
-	public ICellPainter getCellPainter(int columnPosition, int rowPosition, ILayerCell cell, IConfigRegistry configRegistry);
+	ICellPainter getCellPainter(long columnPosition, long rowPosition,
+			ILayerCell cell, IConfigRegistry configRegistry);
 	
 }

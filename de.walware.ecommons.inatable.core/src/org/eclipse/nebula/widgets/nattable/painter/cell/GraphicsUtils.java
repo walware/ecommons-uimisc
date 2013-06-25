@@ -17,6 +17,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 /**
@@ -25,7 +26,30 @@ import org.eclipse.swt.widgets.Display;
  * @see <a href="http://java-gui.info/Apress-The.Definitive.Guide.to.SWT.and.JFace/8886final/LiB0095.html">GC snippets</a>
  */
 public class GraphicsUtils {
-	  
+	
+	
+	public static final int check(final long pixel) {
+		if (pixel < Integer.MIN_VALUE || pixel > Integer.MAX_VALUE) {
+			throw new IndexOutOfBoundsException();
+		}
+		return (int) pixel;
+	}
+	
+	public static final int safe(final long pixel) {
+		return (pixel <= Integer.MIN_VALUE) ? Integer.MIN_VALUE :
+			((pixel >= Integer.MAX_VALUE) ? Integer.MAX_VALUE : (int) pixel);
+	}
+	
+	public static final Rectangle safe(final long x, final long y, final long width, final long height) {
+		final int sx = safe(x);
+		final int sy = safe(y);
+		return new Rectangle(sx, sy, safe(x + width) - sx, safe(y + height) - sy);
+	}
+	
+	public static final Rectangle safe(final org.eclipse.nebula.widgets.nattable.coordinate.Rectangle rect) {
+		return safe(rect.x, rect.y, rect.width, rect.height);
+	}
+	
   /**
    * Draws text vertically (rotates plus or minus 90 degrees). Uses the current
    * font, color, and background.

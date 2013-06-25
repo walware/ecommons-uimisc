@@ -39,7 +39,7 @@ public class RowReorderEndCommand implements ILayerCommand {
 	 * @param layer The layer the position is related to
 	 * @param toRowPosition The position of the row to which the dragged row should be dropped
 	 */
-	public RowReorderEndCommand(ILayer layer, int toRowPosition) {
+	public RowReorderEndCommand(ILayer layer, long toRowPosition) {
 		if (toRowPosition < layer.getRowCount()) {
  			reorderToTopEdge = true;
 		} else {
@@ -62,7 +62,7 @@ public class RowReorderEndCommand implements ILayerCommand {
 	/**
 	 * @return The position of the row to which the dragged row should be dropped
 	 */
-	public int getToRowPosition() {
+	public long getToRowPosition() {
 		return toRowPositionCoordinate.getRowPosition();
 	}
 	

@@ -423,7 +423,7 @@ public abstract class AbstractDialogCellEditor implements ICellEditor, ICellEdit
 	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor#getColumnIndex()
 	 */
 	@Override
-	public int getColumnIndex() {
+	public long getColumnIndex() {
 		return layerCell.getColumnIndex();
 	}
 
@@ -431,7 +431,7 @@ public abstract class AbstractDialogCellEditor implements ICellEditor, ICellEdit
 	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor#getRowIndex()
 	 */
 	@Override
-	public int getRowIndex() {
+	public long getRowIndex() {
 		return layerCell.getRowIndex();
 	}
 	
@@ -439,7 +439,7 @@ public abstract class AbstractDialogCellEditor implements ICellEditor, ICellEdit
 	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor#getColumnPosition()
 	 */
 	@Override
-	public int getColumnPosition() {
+	public long getColumnPosition() {
 		return layerCell.getColumnPosition();
 	}
 
@@ -447,7 +447,7 @@ public abstract class AbstractDialogCellEditor implements ICellEditor, ICellEdit
 	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor#getRowPosition()
 	 */
 	@Override
-	public int getRowPosition() {
+	public long getRowPosition() {
 		return layerCell.getRowPosition();
 	}
 }

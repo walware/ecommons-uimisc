@@ -22,14 +22,14 @@ public class NatEventData {
 	private Object originalEvent;
 	private final NatTable natTable;
 	private final LabelStack regionLabels;
-	int columnPosition;
-	int rowPosition;
+	long columnPosition;
+	long rowPosition;
 
 	public static NatEventData createInstanceFromEvent(MouseEvent event) {
 		NatTable natTable = (NatTable) event.widget;
 		
-		int columnPosition = natTable.getColumnPositionByX(event.x);
-		int rowPosition = natTable.getRowPositionByY(event.y);
+		long columnPosition = natTable.getColumnPositionByX(event.x);
+		long rowPosition = natTable.getRowPositionByY(event.y);
         
         return new NatEventData(
 				natTable,
@@ -40,7 +40,7 @@ public class NatEventData {
 		);
 	}
 	
-	public NatEventData(NatTable natTable, LabelStack regionLabels, int columnPosition, int rowPosition, Object originalEvent) {
+	public NatEventData(NatTable natTable, LabelStack regionLabels, long columnPosition, long rowPosition, Object originalEvent) {
 		this.natTable = natTable;
 		this.regionLabels = regionLabels;
 		this.columnPosition = columnPosition;
@@ -56,11 +56,11 @@ public class NatEventData {
 		return regionLabels;
 	}
 
-	public int getColumnPosition() {
+	public long getColumnPosition() {
 		return columnPosition;
 	}
 
-	public int getRowPosition() {
+	public long getRowPosition() {
 		return rowPosition;
 	}
 	

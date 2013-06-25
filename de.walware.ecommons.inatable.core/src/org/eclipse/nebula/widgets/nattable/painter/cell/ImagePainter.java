@@ -10,14 +10,17 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
+import static org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils.safe;
+
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * Paints an image. If no image is provided, it will attempt to look up an image from the cell style.
@@ -41,7 +44,7 @@ public class ImagePainter extends BackgroundPainter {
 	}
 
 	@Override
-	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public long getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		Image image = getImage(cell, configRegistry);
 		if (image != null) {
 			return image.getBounds().width;
@@ -51,7 +54,7 @@ public class ImagePainter extends BackgroundPainter {
 	}
 
 	@Override
-	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public long getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		Image image = getImage(cell, configRegistry);
 		if (image != null) {
 			return image.getBounds().height;
@@ -61,13 +64,13 @@ public class ImagePainter extends BackgroundPainter {
 	}
 
 	@Override
-	public ICellPainter getCellPainterAt(int x, int y, ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
+	public ICellPainter getCellPainterAt(long x, long y, ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
 		Image image = getImage(cell, configRegistry);
 		if (image != null) {
-			Rectangle imageBounds = image.getBounds();
+			org.eclipse.swt.graphics.Rectangle imageBounds = image.getBounds();
 			IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
-			int x0 = bounds.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, bounds, imageBounds.width);
-			int y0 = bounds.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, bounds, imageBounds.height);
+			long x0 = bounds.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, bounds, imageBounds.width);
+			long y0 = bounds.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, bounds, imageBounds.height);
 			if (	x >= x0 &&
 					x < x0 + imageBounds.width &&
 					y >= y0 &&
@@ -86,12 +89,11 @@ public class ImagePainter extends BackgroundPainter {
 
 		Image image = getImage(cell, configRegistry);
 		if (image != null) {
-			Rectangle imageBounds = image.getBounds();
+			org.eclipse.swt.graphics.Rectangle imageBounds = image.getBounds();
 			IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
-			gc.drawImage(
-					image,
-					bounds.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, bounds, imageBounds.width),
-					bounds.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, bounds, imageBounds.height));
+			gc.drawImage(image,
+					safe(bounds.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, bounds, imageBounds.width)),
+					safe(bounds.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, bounds, imageBounds.height)));
 		}
 	}
 	

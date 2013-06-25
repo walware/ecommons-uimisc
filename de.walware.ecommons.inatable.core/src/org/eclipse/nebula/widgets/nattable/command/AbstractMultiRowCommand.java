@@ -24,18 +24,18 @@ public abstract class AbstractMultiRowCommand implements ILayerCommand {
 	private Collection<RowPositionCoordinate> rowPositionCoordinates;
 	
 	
-	protected AbstractMultiRowCommand(ILayer layer, int rowPositions) {
+	protected AbstractMultiRowCommand(ILayer layer, long rowPositions) {
 		if (rowPositions < 0) {
 			throw new IllegalArgumentException("rowPosition (" + rowPositions + ')'); //$NON-NLS-1$
 		}
 		setRowPositions(layer, rowPositions);
 	}
 	
-	protected AbstractMultiRowCommand(ILayer layer, int... rowPositions) {
+	protected AbstractMultiRowCommand(ILayer layer, long... rowPositions) {
 		setRowPositions(layer, rowPositions);
 	}
 	
-	protected AbstractMultiRowCommand(ILayer layer, Collection<Integer> rowPositions) {
+	protected AbstractMultiRowCommand(ILayer layer, Collection<Long> rowPositions) {
 		setRowPositions(layer, rowPositions);
 	}
 	
@@ -43,24 +43,24 @@ public abstract class AbstractMultiRowCommand implements ILayerCommand {
 		this.rowPositionCoordinates = new HashSet<RowPositionCoordinate>(command.rowPositionCoordinates);
 	}
 	
-	public Collection<Integer> getRowPositions() {
-		Collection<Integer> rowPositions = new HashSet<Integer>();
+	public Collection<Long> getRowPositions() {
+		Collection<Long> rowPositions = new HashSet<Long>();
 		for (RowPositionCoordinate rowPositionCoordinate : rowPositionCoordinates) {
-			rowPositions.add(Integer.valueOf(rowPositionCoordinate.rowPosition));
+			rowPositions.add(Long.valueOf(rowPositionCoordinate.rowPosition));
 		}
 		return rowPositions;
 	}
 	
-	protected final void setRowPositions(ILayer layer, int...rowPositions) {
+	protected final void setRowPositions(ILayer layer, long...rowPositions) {
 		rowPositionCoordinates = new HashSet<RowPositionCoordinate>();
-		for (int rowPosition : rowPositions) {
+		for (long rowPosition : rowPositions) {
 			rowPositionCoordinates.add(new RowPositionCoordinate(layer, rowPosition));
 		}
 	}
 	
-	protected final void setRowPositions(ILayer layer, Collection<Integer> columnPositions) {
+	protected final void setRowPositions(ILayer layer, Collection<Long> columnPositions) {
 		rowPositionCoordinates = new HashSet<RowPositionCoordinate>();
-		for (int columnPosition : columnPositions) {
+		for (long columnPosition : columnPositions) {
 			rowPositionCoordinates.add(new RowPositionCoordinate(layer, columnPosition));
 		}
 	}

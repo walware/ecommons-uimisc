@@ -17,10 +17,10 @@ import static org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum.RIGHT;
 import static org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum.TOP;
 import static org.eclipse.nebula.widgets.nattable.util.GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
 
+import org.eclipse.nebula.widgets.nattable.coordinate.Point;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 
 public class CellEdgeDetectUtil {
 
@@ -29,8 +29,8 @@ public class CellEdgeDetectUtil {
 	 * on the left/right edges of the cell.
 	 * Does <i>not</i> take into account columns which are not allowed to be resized.
 	 */
-	public static int getColumnPositionToResize(ILayer layer, Point clickPoint) {
-		int columnPosition = layer.getColumnPositionByX(clickPoint.x);
+	public static long getColumnPositionToResize(ILayer layer, Point clickPoint) {
+		long columnPosition = layer.getColumnPositionByX(clickPoint.x);
 		if (columnPosition >= 0) {
 			switch (getHorizontalCellEdge(layer, clickPoint, DEFAULT_RESIZE_HANDLE_SIZE)) {
 			case LEFT:
@@ -43,7 +43,7 @@ public class CellEdgeDetectUtil {
 				return columnPosition;
 			}
 		}
-		return Integer.MIN_VALUE;
+		return Long.MIN_VALUE;
 	}
 	
 	/**
@@ -51,8 +51,8 @@ public class CellEdgeDetectUtil {
 	 * on the top/bottom edges of the cell.
 	 * Does not take into account rows which are not allowed to be resized.
 	 */
-	public static int getRowPositionToResize(ILayer layer, Point clickPt) {
-		int rowPosition = layer.getRowPositionByY(clickPt.y);
+	public static long getRowPositionToResize(ILayer layer, Point clickPt) {
+		long rowPosition = layer.getRowPositionByY(clickPt.y);
 		if (rowPosition >= 0) {
 			switch (getVerticalCellEdge(layer, clickPt, DEFAULT_RESIZE_HANDLE_SIZE)) {
 			case TOP:
@@ -65,7 +65,7 @@ public class CellEdgeDetectUtil {
 				return rowPosition;
 			}
 		}
-		return Integer.MIN_VALUE;
+		return Long.MIN_VALUE;
 	}
 	
 	/**
@@ -81,7 +81,7 @@ public class CellEdgeDetectUtil {
 		return getHorizontalCellEdge(layer, clickPt, -1);
 	}
 	
-	public static CellEdgeEnum getHorizontalCellEdge(ILayer layer, Point clickPt, int handleWidth) {
+	public static CellEdgeEnum getHorizontalCellEdge(ILayer layer, Point clickPt, long handleWidth) {
 		ILayerCell cell = layer.getCellByPosition(
 				layer.getColumnPositionByX(clickPt.x),
 				layer.getRowPositionByY(clickPt.y)
@@ -99,7 +99,7 @@ public class CellEdgeDetectUtil {
 	 * @param clickPt
 	 * @param distanceFromEdge distance from the edge to qualify as <i>close</i> to the cell edge
 	 */
-	public static CellEdgeEnum getHorizontalCellEdge(Rectangle cellBounds, Point clickPt, int distanceFromEdge) {
+	public static CellEdgeEnum getHorizontalCellEdge(Rectangle cellBounds, Point clickPt, long distanceFromEdge) {
 		if (distanceFromEdge < 0) {
 			distanceFromEdge = cellBounds.width / 2;
 		}
@@ -130,7 +130,7 @@ public class CellEdgeDetectUtil {
 		return getVerticalCellEdge(layer, clickPt, -1);
 	}
 
-	public static CellEdgeEnum getVerticalCellEdge(ILayer layer, Point clickPt, int handleHeight) {
+	public static CellEdgeEnum getVerticalCellEdge(ILayer layer, Point clickPt, long handleHeight) {
 		ILayerCell cell = layer.getCellByPosition(
 				layer.getColumnPositionByX(clickPt.x), 
 				layer.getRowPositionByY(clickPt.y)
@@ -141,7 +141,7 @@ public class CellEdgeDetectUtil {
 	/**
 	 * @see CellEdgeDetectUtil#getHorizontalCellEdge(Rectangle, Point, int)
 	 */
-	private static CellEdgeEnum getVerticalCellEdge(Rectangle cellBounds, Point clickPt, int distanceFromEdge) {
+	private static CellEdgeEnum getVerticalCellEdge(Rectangle cellBounds, Point clickPt, long distanceFromEdge) {
 		if (distanceFromEdge < 0) {
 			distanceFromEdge = cellBounds.height / 2;
 		}

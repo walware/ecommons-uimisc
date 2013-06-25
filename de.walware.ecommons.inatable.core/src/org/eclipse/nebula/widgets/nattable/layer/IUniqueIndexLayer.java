@@ -19,8 +19,8 @@ package org.eclipse.nebula.widgets.nattable.layer;
 public interface IUniqueIndexLayer extends ILayer {
 	
 	
-	public int getColumnPositionByIndex(int columnIndex);
+	long getColumnPositionByIndex(long columnIndex);
 	
-	public int getRowPositionByIndex(int rowIndex);
+	long getRowPositionByIndex(long rowIndex);
 	
 }

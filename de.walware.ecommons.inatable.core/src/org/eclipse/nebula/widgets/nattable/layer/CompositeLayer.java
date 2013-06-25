@@ -13,6 +13,7 @@ package org.eclipse.nebula.widgets.nattable.layer;
 
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
+import static org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils.safe;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,12 +21,12 @@ import java.util.Properties;
 
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.layer.cell.AggregrateConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
@@ -179,7 +180,7 @@ public class CompositeLayer extends DimBasedLayer {
 	// Cell features
 	
 	@Override
-	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
+	public ILayerCell getCellByPosition(long columnPosition, long rowPosition) {
 		Point layoutCoordinate = getLayoutXYByPosition(columnPosition, rowPosition);
 		
 		if (layoutCoordinate == null) {
@@ -187,8 +188,8 @@ public class CompositeLayer extends DimBasedLayer {
 		}
 		
 		ILayer childLayer = childLayerLayout[layoutCoordinate.x][layoutCoordinate.y];
-		int childColumnPosition = columnPosition - get(HORIZONTAL).getLayoutPosition(layoutCoordinate.x);
-		int childRowPosition = rowPosition - get(VERTICAL).getLayoutPosition(layoutCoordinate.y);
+		long childColumnPosition = columnPosition - get(HORIZONTAL).getLayoutPosition(layoutCoordinate.x);
+		long childRowPosition = rowPosition - get(VERTICAL).getLayoutPosition(layoutCoordinate.y);
 		
 		ILayerCell cell = childLayer.getCellByPosition(childColumnPosition, childRowPosition);
 		
@@ -201,8 +202,8 @@ public class CompositeLayer extends DimBasedLayer {
 		return cell;
 	}
 	
-	protected LayerCellDim transformCellDim(final LayerCellDim underlyingDim, final int position) {
-		final int originPosition = (underlyingDim.getPosition() == underlyingDim.getOriginPosition()) ?
+	protected LayerCellDim transformCellDim(final LayerCellDim underlyingDim, final long position) {
+		final long originPosition = (underlyingDim.getPosition() == underlyingDim.getOriginPosition()) ?
 				position :
 				getDim(underlyingDim.getOrientation()).underlyingToLocalPosition(
 						position, underlyingDim.getOriginPosition() );
@@ -211,7 +212,7 @@ public class CompositeLayer extends DimBasedLayer {
 	}
 	
 	@Override
-	public Rectangle getBoundsByPosition(int compositeColumnPosition, int compositeRowPosition) {
+	public Rectangle getBoundsByPosition(long compositeColumnPosition, long compositeRowPosition) {
 		Point layoutCoordinate = getLayoutXYByPosition(compositeColumnPosition, compositeRowPosition);
 		
 		if (layoutCoordinate == null) {
@@ -219,8 +220,8 @@ public class CompositeLayer extends DimBasedLayer {
 		}
 		
 		ILayer childLayer = childLayerLayout[layoutCoordinate.x][layoutCoordinate.y];
-		int childColumnPosition = compositeColumnPosition - get(HORIZONTAL).getLayoutPosition(layoutCoordinate.x);
-		int childRowPosition = compositeRowPosition - get(VERTICAL).getLayoutPosition(layoutCoordinate.y);
+		long childColumnPosition = compositeColumnPosition - get(HORIZONTAL).getLayoutPosition(layoutCoordinate.x);
+		long childRowPosition = compositeRowPosition - get(VERTICAL).getLayoutPosition(layoutCoordinate.y);
 		
 		final Rectangle bounds = childLayer.getBoundsByPosition(childColumnPosition, childRowPosition);
 		
@@ -233,15 +234,15 @@ public class CompositeLayer extends DimBasedLayer {
 	}
 	
 	@Override
-	public LabelStack getConfigLabelsByPosition(int compositeColumnPosition, int compositeRowPosition) {
+	public LabelStack getConfigLabelsByPosition(long compositeColumnPosition, long compositeRowPosition) {
 		Point layoutCoordinate = getLayoutXYByPosition(compositeColumnPosition, compositeRowPosition);
 		if (layoutCoordinate == null) {
 			return new LabelStack();
 		}
 		ILayer childLayer = childLayerLayout[layoutCoordinate.x][layoutCoordinate.y];
 		
-		int childColumnPosition = compositeColumnPosition - get(HORIZONTAL).getLayoutPosition(layoutCoordinate.x);
-		int childRowPosition = compositeRowPosition - get(VERTICAL).getLayoutPosition(layoutCoordinate.y);
+		long childColumnPosition = compositeColumnPosition - get(HORIZONTAL).getLayoutPosition(layoutCoordinate.x);
+		long childRowPosition = compositeRowPosition - get(VERTICAL).getLayoutPosition(layoutCoordinate.y);
 		LabelStack configLabels = childLayer.getConfigLabelsByPosition(childColumnPosition, childRowPosition);
 		
 		String regionName = childLayerToRegionNameMap.get(childLayer);
@@ -254,7 +255,7 @@ public class CompositeLayer extends DimBasedLayer {
 		return configLabels;
 	}
 	
-	public Object getDataValueByPosition(int compositeColumnPosition, int compositeRowPosition) {
+	public Object getDataValueByPosition(long compositeColumnPosition, long compositeRowPosition) {
 		Point layoutCoordinate = getLayoutXYByPosition(compositeColumnPosition, compositeRowPosition);
 		if (layoutCoordinate == null) {
 			return null;
@@ -267,7 +268,7 @@ public class CompositeLayer extends DimBasedLayer {
 	}
 	
 	@Override
-	public ICellPainter getCellPainter(int compositeColumnPosition, int compositeRowPosition, ILayerCell cell, IConfigRegistry configRegistry) {
+	public ICellPainter getCellPainter(long compositeColumnPosition, long compositeRowPosition, ILayerCell cell, IConfigRegistry configRegistry) {
 		Point layoutCoordinate = getLayoutXYByPosition(compositeColumnPosition, compositeRowPosition);
 		if (layoutCoordinate == null) {
 			return null;
@@ -366,15 +367,15 @@ public class CompositeLayer extends DimBasedLayer {
 	 * @return Region which the given position is in
 	 */
 	@Override
-	public LabelStack getRegionLabelsByXY(int x, int y) {
+	public LabelStack getRegionLabelsByXY(long x, long y) {
 		Point layoutCoordinate = getLayoutXYByPixelXY(x, y);
 		if (layoutCoordinate == null) {
 			return null;
 		}
 		
 		ILayer childLayer = childLayerLayout[layoutCoordinate.x][layoutCoordinate.y];
-		int childX = x - get(HORIZONTAL).getLayoutStart(layoutCoordinate.x);
-		int childY = y - get(VERTICAL).getLayoutStart(layoutCoordinate.y);
+		long childX = x - get(HORIZONTAL).getLayoutStart(layoutCoordinate.x);
+		long childY = y - get(VERTICAL).getLayoutStart(layoutCoordinate.y);
 		LabelStack regionLabels = childLayer.getRegionLabelsByXY(childX, childY);
 		
 		String regionName = childLayerToRegionNameMap.get(childLayer);
@@ -383,7 +384,7 @@ public class CompositeLayer extends DimBasedLayer {
 		return regionLabels;
 	}
 	
-	public ILayer getUnderlyingLayerByPosition(int columnPosition, int rowPosition) {
+	public ILayer getUnderlyingLayerByPosition(long columnPosition, long rowPosition) {
 		Point layoutCoordinate = getLayoutXYByPosition(columnPosition, rowPosition);
 		return childLayerLayout[layoutCoordinate.x][layoutCoordinate.y];
 	}
@@ -401,7 +402,7 @@ public class CompositeLayer extends DimBasedLayer {
 		return null;
 	}
 	
-	protected final Point getLayoutXYByPixelXY(int x, int y) {
+	protected final Point getLayoutXYByPixelXY(long x, long y) {
 		int layoutX = get(HORIZONTAL).getLayoutByPixel(x);
 		if (layoutX < 0) {
 			return null;
@@ -413,7 +414,7 @@ public class CompositeLayer extends DimBasedLayer {
 		return new Point(layoutX, layoutY);
 	}
 	
-	protected final Point getLayoutXYByPosition(int compositeColumnPosition, int compositeRowPosition) {
+	protected final Point getLayoutXYByPosition(long compositeColumnPosition, long compositeRowPosition) {
 		int layoutX = get(HORIZONTAL).getLayoutByPosition(compositeColumnPosition);
 		if (layoutX < 0) {
 			return null;
@@ -428,18 +429,18 @@ public class CompositeLayer extends DimBasedLayer {
 	
 	protected class CompositeLayerPainter implements ILayerPainter {
 		
-		public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle rectangle, IConfigRegistry configuration) {
+		public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, org.eclipse.swt.graphics.Rectangle rectangle, IConfigRegistry configuration) {
 			int x = xOffset;
 			for (int layoutX = 0; layoutX < layoutXCount; layoutX++) {
 				int y = yOffset;
 				for (int layoutY = 0; layoutY < layoutYCount; layoutY++) {
 					ILayer childLayer = childLayerLayout[layoutX][layoutY];
 					
-					Rectangle childLayerRectangle = new Rectangle(x, y, childLayer.getWidth(), childLayer.getHeight());
+					org.eclipse.swt.graphics.Rectangle childLayerRectangle = safe(new Rectangle(x, y, childLayer.getWidth(), childLayer.getHeight()));
 					
 					childLayerRectangle = rectangle.intersection(childLayerRectangle);
 					
-					Rectangle originalClipping = gc.getClipping();
+					org.eclipse.swt.graphics.Rectangle originalClipping = gc.getClipping();
 					gc.setClipping(childLayerRectangle);
 					
 					childLayer.getLayerPainter().paintLayer(natLayer, gc, x, y, childLayerRectangle, configuration);
@@ -452,7 +453,7 @@ public class CompositeLayer extends DimBasedLayer {
 			}
 		}
 		
-		public Rectangle adjustCellBounds(int columnPosition, int rowPosition, Rectangle cellBounds) {
+		public Rectangle adjustCellBounds(long columnPosition, long rowPosition, Rectangle cellBounds) {
 			Point layoutCoordinate = getLayoutXYByPosition(columnPosition, rowPosition);
 			ILayer childLayer = childLayerLayout[layoutCoordinate.x][layoutCoordinate.y];
 			
@@ -460,16 +461,16 @@ public class CompositeLayer extends DimBasedLayer {
 				return null;
 			}
 			
-			int widthOffset = get(HORIZONTAL).getLayoutStart(layoutCoordinate.x);
-			int heightOffset = get(VERTICAL).getLayoutStart(layoutCoordinate.y);
+			long widthOffset = get(HORIZONTAL).getLayoutStart(layoutCoordinate.x);
+			long heightOffset = get(VERTICAL).getLayoutStart(layoutCoordinate.y);
 			
 //			Rectangle bounds = new Rectangle(cellBounds.x - widthOffset, cellBounds.y - heightOffset, cellBounds.width, cellBounds.height);
 			cellBounds.x -= widthOffset;
 			cellBounds.y -= heightOffset;
 			
 			ILayerPainter childLayerPainter = childLayer.getLayerPainter();
-			int childColumnPosition = columnPosition - get(HORIZONTAL).getLayoutPosition(layoutCoordinate.x);
-			int childRowPosition = rowPosition - get(VERTICAL).getLayoutPosition(layoutCoordinate.y);
+			long childColumnPosition = columnPosition - get(HORIZONTAL).getLayoutPosition(layoutCoordinate.x);
+			long childRowPosition = rowPosition - get(VERTICAL).getLayoutPosition(layoutCoordinate.y);
 			Rectangle adjustedChildCellBounds = childLayerPainter.adjustCellBounds(childColumnPosition, childRowPosition, cellBounds);
 //			Rectangle adjustedChildCellBounds = childLayerPainter.adjustCellBounds(childColumnPosition, childRowPosition, bounds);
 			

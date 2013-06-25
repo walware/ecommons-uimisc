@@ -27,7 +27,7 @@ public class MultiRowResizeCommandHandler extends AbstractLayerCommandHandler<Mu
 
 	@Override
 	protected boolean doCommand(MultiRowResizeCommand command) {
-		for (int rowPosition : command.getRowPositions()) {
+		for (long rowPosition : command.getRowPositions()) {
 			dataLayer.setRowHeightByPosition(rowPosition, command.getRowHeight(rowPosition));
 		}
 		return true;

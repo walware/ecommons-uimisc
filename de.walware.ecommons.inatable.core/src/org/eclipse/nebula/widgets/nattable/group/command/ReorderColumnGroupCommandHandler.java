@@ -27,8 +27,8 @@ public class ReorderColumnGroupCommandHandler extends AbstractLayerCommandHandle
 
 	@Override
 	protected boolean doCommand(ReorderColumnGroupCommand command) {
-		int fromColumnPosition = command.getFromColumnPosition();
-		int toColumnPosition = command.getToColumnPosition();
+		long fromColumnPosition = command.getFromColumnPosition();
+		long toColumnPosition = command.getToColumnPosition();
 		
 		return columnGroupReorderLayer.reorderColumnGroup(fromColumnPosition, toColumnPosition);
 	}

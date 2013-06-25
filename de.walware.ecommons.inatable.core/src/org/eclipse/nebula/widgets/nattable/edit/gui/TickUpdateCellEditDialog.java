@@ -268,7 +268,7 @@ public class TickUpdateCellEditDialog extends CellEditDialog {
 		}
 		
 		@Override
-		public boolean validate(int columnIndex, int rowIndex, Object newValue) {
+		public boolean validate(long columnIndex, long rowIndex, Object newValue) {
 			if (editType == EditTypeEnum.SET) {
 				return this.wrappedValidator.validate(columnIndex, rowIndex, newValue);
 			}

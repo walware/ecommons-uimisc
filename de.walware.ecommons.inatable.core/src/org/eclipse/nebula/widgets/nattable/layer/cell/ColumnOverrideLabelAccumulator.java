@@ -44,9 +44,9 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
 	/**
 	 * {@inheritDoc}
 	 */
-	public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
-		int columnIndex = layer.getColumnIndexByPosition(columnPosition);
-		List<String> overrides = getOverrides(Integer.valueOf(columnIndex));
+	public void accumulateConfigLabels(LabelStack configLabels, long columnPosition, long rowPosition) {
+		long columnIndex = layer.getColumnIndexByPosition(columnPosition);
+		List<String> overrides = getOverrides(Long.valueOf(columnIndex));
 		if (overrides != null) {
 			for (String configLabel : overrides) {
 				configLabels.addLabel(configLabel);
@@ -58,16 +58,16 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
 	 * Register labels to be contributed a column. This label will be applied to
 	 * all cells in the column.
 	 */
-	public void registerColumnOverrides(int columnIndex, String... configLabels) {
-		super.registerOverrides(Integer.valueOf(columnIndex), configLabels);
+	public void registerColumnOverrides(long columnIndex, String... configLabels) {
+		super.registerOverrides(Long.valueOf(columnIndex), configLabels);
 	}
 	
 	/**
 	 * Register labels to be contributed a column. This label will be applied to
 	 * all cells in the column.
 	 */
-	public void registerColumnOverridesOnTop(int columnIndex, String... configLabels) {
-		super.registerOverridesOnTop(Integer.valueOf(columnIndex), configLabels);
+	public void registerColumnOverridesOnTop(long columnIndex, String... configLabels) {
+		super.registerOverridesOnTop(Long.valueOf(columnIndex), configLabels);
 	}
 	
 	/** 
@@ -106,7 +106,7 @@ public class ColumnOverrideLabelAccumulator extends AbstractOverrider implements
 			if(keyString.contains(PERSISTENCE_KEY)){
 				String labelsFromPropertyValue = properties.getProperty(keyString).trim();
 				String columnIndexFromKey = keyString.substring(keyString.lastIndexOf(DOT) + 1);
-				registerColumnOverrides(Integer.parseInt(columnIndexFromKey), labelsFromPropertyValue.split(VALUE_SEPARATOR));
+				registerColumnOverrides(Long.parseLong(columnIndexFromKey), labelsFromPropertyValue.split(VALUE_SEPARATOR));
 			}
 		}
 	}	

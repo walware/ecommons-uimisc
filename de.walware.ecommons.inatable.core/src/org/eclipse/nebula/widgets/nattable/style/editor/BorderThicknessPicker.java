@@ -44,7 +44,7 @@ public class BorderThicknessPicker extends Composite {
     }
 
     public int getSelectedThickness() {
-        int idx = combo.getSelectionIndex();
+        long idx = combo.getSelectionIndex();
         if (idx == 0) return 1;
         else if (idx == 1) return 3;
         else if (idx == 2) return 6;

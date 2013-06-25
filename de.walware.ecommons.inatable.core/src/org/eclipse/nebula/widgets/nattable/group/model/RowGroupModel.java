@@ -58,11 +58,11 @@ public class RowGroupModel<T> implements IRowGroupModel<T> {
 		suppressNoficiations = false;
 	}
 	
-	public T getRowFromIndexCache(final int rowIndex) {
+	public T getRowFromIndexCache(final long rowIndex) {
 		return this.rowCache.getRowFromIndexCache(rowIndex);
 	}	
 	
-	public int getIndexFromRowCache(final T row) {
+	public long getIndexFromRowCache(final T row) {
 		return this.rowCache.getIndexFromRowCache(row);
 	};
 	
@@ -216,12 +216,12 @@ public class RowGroupModel<T> implements IRowGroupModel<T> {
 		
 		private IRowDataProvider<E> dataProvider;	
 		
-		private final Map<Integer, E> indexesToRows;
-		private final Map<E, Integer> rowsToIndexes;
+		private final Map<Long, E> indexesToRows;
+		private final Map<E, Long> rowsToIndexes;
 
 		public RowCache() {
-			this.indexesToRows = new LinkedHashMap<Integer, E>();
-			this.rowsToIndexes = new LinkedHashMap<E, Integer>();
+			this.indexesToRows = new LinkedHashMap<Long, E>();
+			this.rowsToIndexes = new LinkedHashMap<E, Long>();
 		}
 		
 		public IRowDataProvider<E> getDataProvider() {
@@ -232,7 +232,7 @@ public class RowGroupModel<T> implements IRowGroupModel<T> {
 			this.dataProvider = dataProvider;
 		}
 		
-		public E getRowFromIndexCache(final int rowIndex) {
+		public E getRowFromIndexCache(final long rowIndex) {
 			if (this.indexesToRows.containsKey(rowIndex)) {
 				return this.indexesToRows.get(rowIndex);
 			}
@@ -249,12 +249,12 @@ public class RowGroupModel<T> implements IRowGroupModel<T> {
 			return row;			
 		}
 		
-		public int getIndexFromRowCache(final E row) {
+		public long getIndexFromRowCache(final E row) {
 			if (this.rowsToIndexes.containsKey(row)) {
 				return this.rowsToIndexes.get(row);
 			}
 			
-			final int rowIndex = this.dataProvider.indexOfRowObject(row);
+			final long rowIndex = this.dataProvider.indexOfRowObject(row);
 			
 			// If the index we want to use is already in use, then clear the cache.
 			if (this.indexesToRows.containsKey(rowIndex)) {

@@ -47,11 +47,11 @@ public class ReflectiveColumnPropertyAccessor<R> implements IColumnPropertyAcces
 		this.propertyNames = Arrays.asList(propertyNames);
 	}
 
-	public int getColumnCount() {
+	public long getColumnCount() {
 		return propertyNames.size();
 	}
 
-	public Object getDataValue(R rowObj, int columnIndex) {
+	public Object getDataValue(R rowObj, long columnIndex) {
 		try {
 			PropertyDescriptor propertyDesc = getPropertyDescriptor(rowObj, columnIndex);
 			Method readMethod = propertyDesc.getReadMethod();
@@ -61,7 +61,7 @@ public class ReflectiveColumnPropertyAccessor<R> implements IColumnPropertyAcces
 		}
 	}
 
-	public void setDataValue(R rowObj, int columnIndex, Object newValue) {
+	public void setDataValue(R rowObj, long columnIndex, Object newValue) {
 		try {
 			PropertyDescriptor propertyDesc = getPropertyDescriptor(rowObj, columnIndex);
 			Method writeMethod = propertyDesc.getWriteMethod();
@@ -79,15 +79,21 @@ public class ReflectiveColumnPropertyAccessor<R> implements IColumnPropertyAcces
 		}
 	};
 
-	public String getColumnProperty(int columnIndex) {
-		return propertyNames.get(columnIndex);
+	public String getColumnProperty(long columnIndex) {
+		if (columnIndex >= Integer.MAX_VALUE) {
+			throw new IndexOutOfBoundsException();
+		}
+		return propertyNames.get((int) columnIndex);
 	}
 
-	public int getColumnIndex(String propertyName) {
+	public long getColumnIndex(String propertyName) {
 		return propertyNames.indexOf(propertyName);
 	}
 
-	private PropertyDescriptor getPropertyDescriptor(R rowObj, int columnIndex) throws IntrospectionException {
+	private PropertyDescriptor getPropertyDescriptor(R rowObj, long columnIndex) throws IntrospectionException {
+		if (columnIndex >= Integer.MAX_VALUE) {
+			throw new IndexOutOfBoundsException();
+		}
 		if (propertyDescriptorMap == null) {
 			propertyDescriptorMap = new HashMap<String, PropertyDescriptor>();
 			PropertyDescriptor[] propertyDescriptors = Introspector.getBeanInfo(rowObj.getClass()).getPropertyDescriptors();
@@ -96,7 +102,7 @@ public class ReflectiveColumnPropertyAccessor<R> implements IColumnPropertyAcces
 			}
 		}
 
-		final String propertyName = propertyNames.get(columnIndex);
+		final String propertyName = propertyNames.get((int) columnIndex);
 		return propertyDescriptorMap.get(propertyName);
 	}
 

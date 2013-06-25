@@ -11,14 +11,19 @@
 package org.eclipse.nebula.widgets.nattable.painter.cell.decorator;
 
 
+import static org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils.safe;
+
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
+import org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
+
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 
 /**
  * Decorator for rendering the cell with beveled borders (button look).
@@ -52,11 +57,11 @@ public class BeveledBorderDecorator extends CellPainterWrapper {
 		this.uplift = uplift;
 	}
 	
-	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public long getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return super.getPreferredWidth(cell, gc, configRegistry) + 4;
 	}
 	
-	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public long getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return super.getPreferredHeight(cell, gc, configRegistry) + 4;
 	}
 
@@ -74,23 +79,24 @@ public class BeveledBorderDecorator extends CellPainterWrapper {
 		
 		//TODO: Need to look at the border style
 		
+		org.eclipse.swt.graphics.Rectangle rect = safe(adjustedCellBounds);
 		// Up
 		gc.setForeground(uplift ? GUIHelper.COLOR_WIDGET_LIGHT_SHADOW : GUIHelper.COLOR_WIDGET_DARK_SHADOW);
-		gc.drawLine(adjustedCellBounds.x, adjustedCellBounds.y, adjustedCellBounds.x + adjustedCellBounds.width - 1, adjustedCellBounds.y);
-		gc.drawLine(adjustedCellBounds.x, adjustedCellBounds.y, adjustedCellBounds.x, adjustedCellBounds.y + adjustedCellBounds.height - 1);
+		gc.drawLine(rect.x, rect.y, rect.x + rect.width - 1, rect.y);
+		gc.drawLine(rect.x, rect.y, rect.x, rect.y + rect.height - 1);
 
 		gc.setForeground(uplift ? GUIHelper.COLOR_WIDGET_HIGHLIGHT_SHADOW : GUIHelper.COLOR_WIDGET_NORMAL_SHADOW);
-		gc.drawLine(adjustedCellBounds.x + 1, adjustedCellBounds.y + 1, adjustedCellBounds.x + adjustedCellBounds.width - 1, adjustedCellBounds.y + 1);
-		gc.drawLine(adjustedCellBounds.x + 1, adjustedCellBounds.y + 1, adjustedCellBounds.x + 1, adjustedCellBounds.y + adjustedCellBounds.height - 1);
+		gc.drawLine(rect.x + 1, rect.y + 1, rect.x + rect.width - 1, rect.y + 1);
+		gc.drawLine(rect.x + 1, rect.y + 1, rect.x + 1, rect.y + rect.height - 1);
 
 		// Down
 		gc.setForeground(uplift ? GUIHelper.COLOR_WIDGET_DARK_SHADOW : GUIHelper.COLOR_WIDGET_LIGHT_SHADOW);
-		gc.drawLine(adjustedCellBounds.x, adjustedCellBounds.y + adjustedCellBounds.height - 1, adjustedCellBounds.x + adjustedCellBounds.width - 1, adjustedCellBounds.y + adjustedCellBounds.height - 1);
-		gc.drawLine(adjustedCellBounds.x + adjustedCellBounds.width - 1, adjustedCellBounds.y, adjustedCellBounds.x + adjustedCellBounds.width - 1, adjustedCellBounds.y + adjustedCellBounds.height - 1);
+		gc.drawLine(rect.x, rect.y + rect.height - 1, rect.x + rect.width - 1, rect.y + rect.height - 1);
+		gc.drawLine(rect.x + rect.width - 1, rect.y, rect.x + rect.width - 1, rect.y + rect.height - 1);
 
 		gc.setForeground(uplift ? GUIHelper.COLOR_WIDGET_NORMAL_SHADOW : GUIHelper.COLOR_WIDGET_HIGHLIGHT_SHADOW);
-		gc.drawLine(adjustedCellBounds.x, adjustedCellBounds.y + adjustedCellBounds.height - 2, adjustedCellBounds.x + adjustedCellBounds.width - 1, adjustedCellBounds.y + adjustedCellBounds.height - 2);
-		gc.drawLine(adjustedCellBounds.x + adjustedCellBounds.width - 2, adjustedCellBounds.y, adjustedCellBounds.x + adjustedCellBounds.width - 2, adjustedCellBounds.y + adjustedCellBounds.height - 2);
+		gc.drawLine(rect.x, rect.y + rect.height - 2, rect.x + rect.width - 1, rect.y + rect.height - 2);
+		gc.drawLine(rect.x + rect.width - 2, rect.y, rect.x + rect.width - 2, rect.y + rect.height - 2);
 		
 		// Restore GC settings
 		gc.setForeground(originalForeground);

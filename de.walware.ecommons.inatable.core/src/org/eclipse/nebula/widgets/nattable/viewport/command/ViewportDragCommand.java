@@ -15,19 +15,19 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public class ViewportDragCommand implements ILayerCommand {
 
-	private int x;
-	private int y;
+	private long x;
+	private long y;
 
-	public ViewportDragCommand(int x, int y) {
+	public ViewportDragCommand(long x, long y) {
 		this.x = x;
 		this.y = y;
 	}
 	
-	public int getX() {
+	public long getX() {
 		return x;
 	}
 	
-	public int getY() {
+	public long getY() {
 		return y;
 	}
 	

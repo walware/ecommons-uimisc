@@ -23,13 +23,13 @@ public class MultiRowShowCommand extends AbstractContextFreeCommand {
 	/**
 	 * The indexes of the rows that should be showed again.
 	 */
-	private final Collection<Integer> rowIndexes;
+	private final Collection<Long> rowIndexes;
 
 	/**
 	 * 
 	 * @param rowIndexes The indexes of the rows that should be showed again.
 	 */
-	public MultiRowShowCommand(Collection<Integer> rowIndexes) {
+	public MultiRowShowCommand(Collection<Long> rowIndexes) {
 		this.rowIndexes = rowIndexes;
 	}
 
@@ -37,12 +37,12 @@ public class MultiRowShowCommand extends AbstractContextFreeCommand {
 	 * 
 	 * @return The indexes of the rows that should be showed again.
 	 */
-	public Collection<Integer> getRowIndexes() {
+	public Collection<Long> getRowIndexes() {
 		return rowIndexes;
 	}
 	
 	@Override
 	public MultiRowShowCommand cloneCommand() {
-		return new MultiRowShowCommand(new ArrayList<Integer>(this.rowIndexes));
+		return new MultiRowShowCommand(new ArrayList<Long>(this.rowIndexes));
 	}
 }

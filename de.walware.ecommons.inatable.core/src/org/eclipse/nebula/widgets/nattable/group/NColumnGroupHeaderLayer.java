@@ -56,7 +56,7 @@ public class NColumnGroupHeaderLayer extends DimensionallyDependentIndexLayer {
 	}
 	
 	@Override
-	public LabelStack getConfigLabelsByPosition(final int columnPosition, final int rowPosition) {
+	public LabelStack getConfigLabelsByPosition(final long columnPosition, final long rowPosition) {
 		final LabelStack labelStack = super.getConfigLabelsByPosition(columnPosition, rowPosition);
 		
 		if (isFullySelected(columnPosition, rowPosition)) {
@@ -68,15 +68,15 @@ public class NColumnGroupHeaderLayer extends DimensionallyDependentIndexLayer {
 	
 	protected boolean isSelected(final LayerCellDim hDim, final LayerCellDim vDim) {
 		final ILayerDim dim = getDim(HORIZONTAL);
-		final int columnPosition = hDim.getPosition();
+		final long columnPosition = hDim.getPosition();
 		if (this.selectionLayer.isColumnPositionSelected(
 				LayerUtil.convertPosition(dim, columnPosition, columnPosition, this.selectionLayer) )) {
 			return true;
 		}
 		if (hDim.getPositionSpan() > 1) {
-			int position = hDim.getOriginPosition();
-			final int span = hDim.getPositionSpan();
-			for (int i = 0; i < span; i++, position++) {
+			long position = hDim.getOriginPosition();
+			final long span = hDim.getPositionSpan();
+			for (long i = 0; i < span; i++, position++) {
 				if (position != columnPosition && this.selectionLayer.isColumnPositionSelected(
 						LayerUtil.convertPosition(dim, columnPosition, position, this.selectionLayer) )) {
 					return true;
@@ -86,7 +86,7 @@ public class NColumnGroupHeaderLayer extends DimensionallyDependentIndexLayer {
 		return false;
 	}
 	
-	protected boolean isFullySelected(final int columnPosition, final int rowPosition) {
+	protected boolean isFullySelected(final long columnPosition, final long rowPosition) {
 		final ILayerDim dim = getDim(HORIZONTAL);
 		if (!this.selectionLayer.isColumnPositionFullySelected(
 				LayerUtil.convertPosition(dim, columnPosition, columnPosition, this.selectionLayer) )) {
@@ -94,9 +94,9 @@ public class NColumnGroupHeaderLayer extends DimensionallyDependentIndexLayer {
 		}
 		final ILayerCell cell = getCellByPosition(columnPosition, rowPosition);
 		if (cell.isSpannedCell()) {
-			int position = cell.getOriginColumnPosition();
-			final int span = cell.getColumnSpan();
-			for (int i = 0; i < span; i++, position++) {
+			long position = cell.getOriginColumnPosition();
+			final long span = cell.getColumnSpan();
+			for (long i = 0; i < span; i++, position++) {
 				if (position != columnPosition && !this.selectionLayer.isColumnPositionFullySelected(
 						LayerUtil.convertPosition(dim, columnPosition, position, this.selectionLayer) )) {
 					return false;

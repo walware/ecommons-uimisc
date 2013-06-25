@@ -28,8 +28,8 @@ import org.eclipse.swt.events.MouseEvent;
  */
 public class CellEditDragMode extends CellSelectionDragMode {
 
-	private int originalColumnPosition;
-	private int originalRowPosition;
+	private long originalColumnPosition;
+	private long originalRowPosition;
 
 	@Override
 	public void mouseDown(NatTable natTable, MouseEvent event) {
@@ -43,8 +43,8 @@ public class CellEditDragMode extends CellSelectionDragMode {
 	public void mouseMove(NatTable natTable, MouseEvent event) {
 		super.mouseMove(natTable, event);
 		
-		int columnPosition = natTable.getColumnPositionByX(event.x);
-		int rowPosition = natTable.getRowPositionByY(event.y);
+		long columnPosition = natTable.getColumnPositionByX(event.x);
+		long rowPosition = natTable.getRowPositionByY(event.y);
 		
 		if (columnPosition != originalColumnPosition || rowPosition != originalRowPosition) {
 			// Left original cell, cancel edit
@@ -57,8 +57,8 @@ public class CellEditDragMode extends CellSelectionDragMode {
 	public void mouseUp(NatTable natTable, MouseEvent event) {
 		super.mouseUp(natTable, event);
 		
-		int columnPosition = natTable.getColumnPositionByX(event.x);
-		int rowPosition = natTable.getRowPositionByY(event.y);
+		long columnPosition = natTable.getColumnPositionByX(event.x);
+		long rowPosition = natTable.getRowPositionByY(event.y);
 		
 		if (columnPosition == originalColumnPosition && rowPosition == originalRowPosition) {
 			natTable.doCommand(

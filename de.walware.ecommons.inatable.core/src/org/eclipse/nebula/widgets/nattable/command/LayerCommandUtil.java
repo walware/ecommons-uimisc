@@ -33,15 +33,15 @@ public class LayerCommandUtil {
 			return positionCoordinate;
 		}
 		
-		int columnPosition = positionCoordinate.getColumnPosition();
-		int underlyingColumnPosition = LayerUtil.localToUnderlyingPosition(layer.getDim(HORIZONTAL), columnPosition);
-		if (underlyingColumnPosition == Integer.MIN_VALUE) {
+		long columnPosition = positionCoordinate.getColumnPosition();
+		long underlyingColumnPosition = LayerUtil.localToUnderlyingPosition(layer.getDim(HORIZONTAL), columnPosition);
+		if (underlyingColumnPosition == Long.MIN_VALUE) {
 			return null;
 		}
 		
-		int rowPosition = positionCoordinate.getRowPosition();
-		int underlyingRowPosition = LayerUtil.localToUnderlyingPosition(layer.getDim(VERTICAL), rowPosition);
-		if (underlyingRowPosition == Integer.MIN_VALUE) {
+		long rowPosition = positionCoordinate.getRowPosition();
+		long underlyingRowPosition = LayerUtil.localToUnderlyingPosition(layer.getDim(VERTICAL), rowPosition);
+		if (underlyingRowPosition == Long.MIN_VALUE) {
 			return null;
 		}
 		
@@ -62,18 +62,18 @@ public class LayerCommandUtil {
 				return columnPositionCoordinate;
 			}
 			if (targetLayer instanceof IUniqueIndexLayer) {
-				int index = layer.getColumnIndexByPosition(columnPositionCoordinate.columnPosition);
+				long index = layer.getColumnIndexByPosition(columnPositionCoordinate.columnPosition);
 				if (index >= 0) {
-					int targetPosition = ((IUniqueIndexLayer) targetLayer).getColumnPositionByIndex(index);
-					return (targetPosition != Integer.MIN_VALUE) ?
+					long targetPosition = ((IUniqueIndexLayer) targetLayer).getColumnPositionByIndex(index);
+					return (targetPosition != Long.MIN_VALUE) ?
 							new ColumnPositionCoordinate(targetLayer, targetPosition) :
 							null;
 				}
 			}
 			
-			int columnPosition = columnPositionCoordinate.getColumnPosition();
-			int underlyingColumnPosition = LayerUtil.localToUnderlyingPosition(dim, columnPosition);
-			if (underlyingColumnPosition == Integer.MIN_VALUE) {
+			long columnPosition = columnPositionCoordinate.getColumnPosition();
+			long underlyingColumnPosition = LayerUtil.localToUnderlyingPosition(dim, columnPosition);
+			if (underlyingColumnPosition == Long.MIN_VALUE) {
 				return null;
 			}
 			
@@ -101,18 +101,18 @@ public class LayerCommandUtil {
 				return rowPositionCoordinate;
 			}
 			if (targetLayer instanceof IUniqueIndexLayer) {
-				int index = layer.getRowIndexByPosition(rowPositionCoordinate.rowPosition);
+				long index = layer.getRowIndexByPosition(rowPositionCoordinate.rowPosition);
 				if (index >= 0) {
-					int targetPosition = ((IUniqueIndexLayer) targetLayer).getRowPositionByIndex(index);
-					return (targetPosition != Integer.MIN_VALUE) ?
+					long targetPosition = ((IUniqueIndexLayer) targetLayer).getRowPositionByIndex(index);
+					return (targetPosition != Long.MIN_VALUE) ?
 							new RowPositionCoordinate(targetLayer, targetPosition) :
 							null;
 				}
 			}
 			
-			int rowPosition = rowPositionCoordinate.getRowPosition();
-			int underlyingRowPosition = LayerUtil.localToUnderlyingPosition(dim, rowPosition);
-			if (underlyingRowPosition == Integer.MIN_VALUE) {
+			long rowPosition = rowPositionCoordinate.getRowPosition();
+			long underlyingRowPosition = LayerUtil.localToUnderlyingPosition(dim, rowPosition);
+			if (underlyingRowPosition == Long.MIN_VALUE) {
 				return null;
 			}
 			
@@ -131,31 +131,31 @@ public class LayerCommandUtil {
 		return null;
 	}
 	
-	public static int convertPositionToTargetContext(ILayerDim dim, int refPosition,
-			int position, ILayerDim targetDim) {
+	public static long convertPositionToTargetContext(ILayerDim dim, long refPosition,
+			long position, ILayerDim targetDim) {
 		if (dim == targetDim) {
 			return position;
 		}
 		
-		int underlyingRefPosition = dim.localToUnderlyingPosition(refPosition, refPosition);
-		int underlyingPosition = dim.localToUnderlyingPosition(refPosition, position);
-		if (underlyingPosition == Integer.MIN_VALUE) {
-			return Integer.MIN_VALUE;
+		long underlyingRefPosition = dim.localToUnderlyingPosition(refPosition, refPosition);
+		long underlyingPosition = dim.localToUnderlyingPosition(refPosition, position);
+		if (underlyingPosition == Long.MIN_VALUE) {
+			return Long.MIN_VALUE;
 		}
 		
 		final Collection<ILayer> underlyingLayers = dim.getUnderlyingLayersByPosition(refPosition);
 		if (underlyingLayers != null) {
 			for (ILayer underlyingLayer : underlyingLayers) {
 				if (underlyingLayer != null) {
-					int targetPosition = convertPositionToTargetContext(underlyingLayer.getDim(dim.getOrientation()),
+					long targetPosition = convertPositionToTargetContext(underlyingLayer.getDim(dim.getOrientation()),
 							underlyingRefPosition, underlyingPosition, targetDim );
-					if (targetPosition != Integer.MIN_VALUE) {
+					if (targetPosition != Long.MIN_VALUE) {
 						return targetPosition;
 					}
 				}
 			}
 		}
-		return Integer.MIN_VALUE;
+		return Long.MIN_VALUE;
 	}
 	
 }

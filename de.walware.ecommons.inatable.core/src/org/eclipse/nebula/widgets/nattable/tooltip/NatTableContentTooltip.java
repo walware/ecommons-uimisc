@@ -12,8 +12,11 @@ package org.eclipse.nebula.widgets.nattable.tooltip;
 
 import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.jface.window.ToolTip;
+import org.eclipse.swt.widgets.Event;
+
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.coordinate.Point;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.CellDisplayConversionUtils;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
@@ -21,8 +24,6 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.PasswordTextPainter;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Event;
 
 /**
  * {@link ToolTip} implementation for the {@link NatTable} which will show the display
@@ -54,7 +55,7 @@ public class NatTableContentTooltip extends DefaultToolTip {
 	public NatTableContentTooltip(NatTable natTable, String... tooltipRegions) {
 		super(natTable, ToolTip.NO_RECREATE, false);
 		setPopupDelay(500);
-		setShift(new Point(10, 10));
+		setShift(new org.eclipse.swt.graphics.Point(10, 10));
 		activate();
 		this.natTable = natTable;
 		this.tooltipRegions = tooltipRegions;
@@ -67,8 +68,8 @@ public class NatTableContentTooltip extends DefaultToolTip {
 	 * current cell (the combination of ToolTip.NO_RECREATE style and override of this method).
 	 */
 	protected Object getToolTipArea(Event event) {
-		int col = natTable.getColumnPositionByX(event.x);
-		int row = natTable.getRowPositionByY(event.y);
+		long col = natTable.getColumnPositionByX(event.x);
+		long row = natTable.getRowPositionByY(event.y);
 		
 		return new Point(col, row);
 	}
@@ -82,8 +83,8 @@ public class NatTableContentTooltip extends DefaultToolTip {
 	 */
 	@Override
 	protected String getText(Event event) {
-		int col = natTable.getColumnPositionByX(event.x);
-		int row = natTable.getRowPositionByY(event.y);
+		long col = natTable.getColumnPositionByX(event.x);
+		long row = natTable.getRowPositionByY(event.y);
 		
 		ILayerCell cell = natTable.getCellByPosition(col, row);
 		if (cell != null) {

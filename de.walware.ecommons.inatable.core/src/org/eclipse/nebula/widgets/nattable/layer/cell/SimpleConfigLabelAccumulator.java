@@ -20,7 +20,7 @@ public class SimpleConfigLabelAccumulator implements IConfigLabelAccumulator {
 		this.configLabel = configLabel;
 	}
 
-	public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
+	public void accumulateConfigLabels(LabelStack configLabels, long columnPosition, long rowPosition) {
 		configLabels.addLabel(configLabel);
 	}
 	

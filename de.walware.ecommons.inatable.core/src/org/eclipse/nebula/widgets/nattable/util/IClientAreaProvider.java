@@ -10,10 +10,10 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.util;
 
-
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.swt.graphics.Rectangle;
+
 
 /**
  * Specifies the rectangular area available to an {@link ILayer}

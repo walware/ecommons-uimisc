@@ -36,7 +36,7 @@ public class ColumnCategoriesLabelProvider extends LabelProvider {
 		case CATEGORY:
 			return node.getData();
 		case COLUMN:
-			int index = Integer.parseInt(node.getData());
+			long index = Long.parseLong(node.getData());
 			ColumnEntry columnEntry = ColumnChooserUtils.find(hiddenEntries, index);
 			if(columnEntry == null) {
 				System.err.println(

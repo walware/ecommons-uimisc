@@ -19,11 +19,11 @@ public interface IColumnPropertyResolver {
 	/**
 	 * @param columnIndex i.e the order of the column in the backing bean
 	 */
-	public String getColumnProperty(int columnIndex);
+	public String getColumnProperty(long columnIndex);
 
 	/**
 	 * @param propertyName i.e the name of the column in the backing bean
 	 */
-	public int getColumnIndex(String propertyName);
+	public long getColumnIndex(String propertyName);
 	
 }

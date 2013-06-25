@@ -34,12 +34,12 @@ public class GroupMultiColumnReorderCommandHandler extends AbstractLayerCommandH
 
 	@Override
 	protected boolean doCommand(MultiColumnReorderCommand command) {
-		int toColumnPosition = command.getToColumnPosition();
+		long toColumnPosition = command.getToColumnPosition();
 		
 		ILayer underlyingLayer = columnGroupReorderLayer.getUnderlyingLayer();
-		int toColumnIndex = underlyingLayer.getColumnIndexByPosition(toColumnPosition);
+		long toColumnIndex = underlyingLayer.getColumnIndexByPosition(toColumnPosition);
 
-		List<Integer> fromColumnPositions = command.getFromColumnPositions();
+		List<Long> fromColumnPositions = command.getFromColumnPositions();
 		
 		ColumnGroupModel model = columnGroupReorderLayer.getModel();
 		
@@ -50,7 +50,7 @@ public class GroupMultiColumnReorderCommandHandler extends AbstractLayerCommandH
 		}
 	}
 
-	private boolean updateModel(ILayer underlyingLayer, int toColumnIndex, List<Integer> fromColumnPositions, ColumnGroupModel model) {
+	private boolean updateModel(ILayer underlyingLayer, long toColumnIndex, List<Long> fromColumnPositions, ColumnGroupModel model) {
 		// Moving INTO a group
 		if (model.isPartOfAGroup(toColumnIndex)) {
 			ColumnGroup toColumnGroup = model.getColumnGroupByIndex(toColumnIndex);
@@ -59,8 +59,8 @@ public class GroupMultiColumnReorderCommandHandler extends AbstractLayerCommandH
 				return false;
 			}
 			
-			for (Integer fromColumnPosition : fromColumnPositions) {
-				int fromColumnIndex = underlyingLayer.getColumnIndexByPosition(fromColumnPosition.intValue());
+			for (Long fromColumnPosition : fromColumnPositions) {
+				long fromColumnIndex = underlyingLayer.getColumnIndexByPosition(fromColumnPosition.longValue());
 				ColumnGroup fromColumnGroup = model.getColumnGroupByIndex(fromColumnIndex);
 
 				// If 'from' index not already present in the 'to' group
@@ -76,9 +76,9 @@ public class GroupMultiColumnReorderCommandHandler extends AbstractLayerCommandH
 		
 		// Moving OUT OF a group
 		if (!model.isPartOfAGroup(toColumnIndex)) {
-			for (Integer fromColumnPosition : fromColumnPositions) {
+			for (Long fromColumnPosition : fromColumnPositions) {
 				// Remove from model - if present
-				int fromColumnIndex = underlyingLayer.getColumnIndexByPosition(fromColumnPosition.intValue());
+				long fromColumnIndex = underlyingLayer.getColumnIndexByPosition(fromColumnPosition.longValue());
 				ColumnGroup fromColumnGroup = model.getColumnGroupByIndex(fromColumnIndex);
 				
 				if (fromColumnGroup != null && !fromColumnGroup.removeColumn(fromColumnIndex)) {

@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.eclipse.swt.graphics.Rectangle;
-
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -32,6 +30,7 @@ import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
 import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.internal.LayerListenerList;
 import org.eclipse.nebula.widgets.nattable.layer.cell.IConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
@@ -122,7 +121,7 @@ public abstract class AbstractLayer implements ILayer {
 	
 	// Regions
 	
-	public LabelStack getRegionLabelsByXY(int x, int y) {
+	public LabelStack getRegionLabelsByXY(long x, long y) {
 		LabelStack regionLabels = new LabelStack();
 		if (regionName != null) {
 			regionLabels.addLabel(regionName);
@@ -140,7 +139,7 @@ public abstract class AbstractLayer implements ILayer {
 	
 	// Config lables
 	
-	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
+	public LabelStack getConfigLabelsByPosition(long columnPosition, long rowPosition) {
 		LabelStack configLabels = new LabelStack();
 		if (configLabelAccumulator != null) {
 			configLabelAccumulator.accumulateConfigLabels(configLabels, columnPosition, rowPosition);
@@ -316,7 +315,7 @@ public abstract class AbstractLayer implements ILayer {
 		return getClass().getSimpleName();
 	}
 	
-	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
+	public ILayerCell getCellByPosition(long columnPosition, long rowPosition) {
 		if (columnPosition < 0 || columnPosition >= getColumnCount()
 				|| rowPosition < 0 || rowPosition >= getRowCount()) {
 			return null;
@@ -329,32 +328,32 @@ public abstract class AbstractLayer implements ILayer {
 						rowPosition ));
 	}
 	
-	public Rectangle getBoundsByPosition(int columnPosition, int rowPosition) {
+	public Rectangle getBoundsByPosition(long columnPosition, long rowPosition) {
 		ILayerCell cell = getCellByPosition(columnPosition, rowPosition);
 		
-		int xOffset = -1;
-		int yOffset = -1;
-		int width = 0;
-		int height = 0;
+		long xOffset = -1;
+		long yOffset = -1;
+		long width = 0;
+		long height = 0;
 		{	final ILayerDim dim = cell.getLayer().getDim(HORIZONTAL);
-			int cellPosition = cell.getColumnPosition();
-			final int start = cell.getOriginColumnPosition();
-			final int end = start + cell.getColumnSpan();
+			long cellPosition = cell.getColumnPosition();
+			final long start = cell.getOriginColumnPosition();
+			final long end = start + cell.getColumnSpan();
 			
 			xOffset = dim.getPositionStart(cellPosition, cell.getOriginColumnPosition());
 			
-			for (int position = cell.getOriginColumnPosition(); position < end; position++) {
+			for (long position = cell.getOriginColumnPosition(); position < end; position++) {
 				width += dim.getPositionSize(cellPosition, position);
 			}
 		}
 		{	final ILayerDim dim = cell.getLayer().getDim(VERTICAL);
-			int cellPosition = cell.getRowPosition();
-			final int start = cell.getOriginRowPosition();
-			final int end = start + cell.getRowSpan();
+			long cellPosition = cell.getRowPosition();
+			final long start = cell.getOriginRowPosition();
+			final long end = start + cell.getRowSpan();
 			
 			yOffset = dim.getPositionStart(cellPosition, cell.getOriginRowPosition());
 			
-			for (int position = cell.getOriginRowPosition(); position < end; position++) {
+			for (long position = cell.getOriginRowPosition(); position < end; position++) {
 				height += dim.getPositionSize(cellPosition, position);
 			}
 		}
@@ -362,7 +361,7 @@ public abstract class AbstractLayer implements ILayer {
 		return new Rectangle(xOffset, yOffset, width, height);
 	}
 	
-	public ICellPainter getCellPainter(int columnPosition, int rowPosition, ILayerCell cell, IConfigRegistry configRegistry) {
+	public ICellPainter getCellPainter(long columnPosition, long rowPosition, ILayerCell cell, IConfigRegistry configRegistry) {
 		return configRegistry.getConfigAttribute(CellConfigAttributes.CELL_PAINTER, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
 	}
 	

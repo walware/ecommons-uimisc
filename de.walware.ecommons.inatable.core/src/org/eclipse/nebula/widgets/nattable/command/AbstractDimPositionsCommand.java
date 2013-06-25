@@ -27,13 +27,13 @@ public abstract class AbstractDimPositionsCommand implements ILayerCommand {
 	
 	private ILayer layer;
 	
-	private int refPosition;
+	private long refPosition;
 	
 	private Collection<Range> positions;
 	
 	
 	protected AbstractDimPositionsCommand(final Orientation orientation,
-			final ILayer layer, final int refPosition, final Collection<Range> positions) {
+			final ILayer layer, final long refPosition, final Collection<Range> positions) {
 		this.orientation = orientation;
 		this.layer = layer;
 		this.refPosition = refPosition;
@@ -60,7 +60,7 @@ public abstract class AbstractDimPositionsCommand implements ILayerCommand {
 		return orientation;
 	}
 	
-	public int getRefPosition() {
+	public long getRefPosition() {
 		return this.refPosition;
 	}
 	
@@ -79,28 +79,28 @@ public abstract class AbstractDimPositionsCommand implements ILayerCommand {
 		return convertToTargetLayer(dim, this.refPosition, targetDim);
 	}
 	
-	protected boolean convertToTargetLayer(final ILayerDim dim, final int refPosition,
+	protected boolean convertToTargetLayer(final ILayerDim dim, final long refPosition,
 			ILayerDim targetDim) {
-		final int targetRefPosition;
+		final long targetRefPosition;
 		final RangeList targetPositions = new RangeList();
-		if (refPosition != Integer.MIN_VALUE) {
+		if (refPosition != Long.MIN_VALUE) {
 			targetRefPosition = LayerCommandUtil.convertPositionToTargetContext(dim,
 					refPosition, refPosition, targetDim );
-			if (targetRefPosition == Integer.MIN_VALUE) {
+			if (targetRefPosition == Long.MIN_VALUE) {
 				return false;
 			}
 			for (final Range range : positions) {
-				for (int position = range.start; position < range.end; position++) {
-					int targetPosition = LayerCommandUtil.convertPositionToTargetContext(dim,
+				for (long position = range.start; position < range.end; position++) {
+					long targetPosition = LayerCommandUtil.convertPositionToTargetContext(dim,
 							refPosition, position, targetDim );
-					if (targetPosition != Integer.MIN_VALUE) {
+					if (targetPosition != Long.MIN_VALUE) {
 						targetPositions.addValue(targetPosition);
 					}
 				}
 			}
 		}
 		else {
-			targetRefPosition = Integer.MIN_VALUE;
+			targetRefPosition = Long.MIN_VALUE;
 		}
 		
 		if (!targetPositions.isEmpty()) {

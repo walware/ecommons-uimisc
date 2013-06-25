@@ -32,11 +32,11 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
 	
 	public static final String PERSISTENCE_KEY_HIDDEN_COLUMN_INDEXES = ".hiddenColumnIndexes"; //$NON-NLS-1$
 	
-	private final Set<Integer> hiddenColumnIndexes;
+	private final Set<Long> hiddenColumnIndexes;
 
 	public ColumnHideShowLayer(IUniqueIndexLayer underlyingLayer) {
 		super(underlyingLayer);
-		this.hiddenColumnIndexes = new TreeSet<Integer>();
+		this.hiddenColumnIndexes = new TreeSet<Long>();
 		
 		registerCommandHandler(new MultiColumnHideCommandHandler(this));
 		registerCommandHandler(new ColumnHideCommandHandler(this));
@@ -50,7 +50,7 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
 	public void saveState(String prefix, Properties properties) {
 		if (hiddenColumnIndexes.size() > 0) {
 			StringBuilder strBuilder = new StringBuilder();
-			for (Integer index : hiddenColumnIndexes) {
+			for (Long index : hiddenColumnIndexes) {
 				strBuilder.append(index);
 				strBuilder.append(IPersistable.VALUE_SEPARATOR);
 			}
@@ -69,7 +69,7 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
 			StringTokenizer tok = new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
 			while (tok.hasMoreTokens()) {
 				String index = tok.nextToken();
-				hiddenColumnIndexes.add(Integer.valueOf(index));
+				hiddenColumnIndexes.add(Long.valueOf(index));
 			}
 		}
 		
@@ -79,33 +79,33 @@ public class ColumnHideShowLayer extends AbstractColumnHideShowLayer {
 	// Hide/show
 
 	@Override
-	public boolean isColumnIndexHidden(int columnIndex) {
-		return hiddenColumnIndexes.contains(Integer.valueOf(columnIndex));
+	public boolean isColumnIndexHidden(long columnIndex) {
+		return hiddenColumnIndexes.contains(Long.valueOf(columnIndex));
 	}
 
 	@Override
-	public Collection<Integer> getHiddenColumnIndexes(){
+	public Collection<Long> getHiddenColumnIndexes(){
 		return hiddenColumnIndexes;
 	}
 
-	public void hideColumnPositions(Collection<Integer> columnPositions) {
-		Set<Integer> columnIndexes = new HashSet<Integer>();
-		for (Integer columnPosition : columnPositions) {
-			columnIndexes.add(Integer.valueOf(getColumnIndexByPosition(columnPosition.intValue())));
+	public void hideColumnPositions(Collection<Long> columnPositions) {
+		Set<Long> columnIndexes = new HashSet<Long>();
+		for (Long columnPosition : columnPositions) {
+			columnIndexes.add(Long.valueOf(getColumnIndexByPosition(columnPosition.longValue())));
 		}
 		hiddenColumnIndexes.addAll(columnIndexes);
 		invalidateCache();
 		fireLayerEvent(new HideColumnPositionsEvent(this, columnPositions));
 	}
 
-	public void showColumnIndexes(Collection<Integer> columnIndexes) {
+	public void showColumnIndexes(Collection<Long> columnIndexes) {
 		hiddenColumnIndexes.removeAll(columnIndexes);
 		invalidateCache();
 		fireLayerEvent(new ShowColumnPositionsEvent(this, getColumnPositionsByIndexes(columnIndexes)));
 	}
 
 	public void showAllColumns() {
-		Collection<Integer> hiddenColumns = new ArrayList<Integer>(hiddenColumnIndexes);
+		Collection<Long> hiddenColumns = new ArrayList<Long>(hiddenColumnIndexes);
 		hiddenColumnIndexes.clear();
 		invalidateCache();
 		fireLayerEvent(new ShowColumnPositionsEvent(this, hiddenColumns));

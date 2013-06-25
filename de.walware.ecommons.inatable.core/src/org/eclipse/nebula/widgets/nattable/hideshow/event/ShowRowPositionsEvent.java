@@ -23,7 +23,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEn
 
 public class ShowRowPositionsEvent extends RowStructuralChangeEvent {
 
-	public ShowRowPositionsEvent(ILayer layer, Collection<Integer> rowPositions) {
+	public ShowRowPositionsEvent(ILayer layer, Collection<Long> rowPositions) {
 		super(layer, PositionUtil.getRanges(rowPositions));
 	}
 	
@@ -35,7 +35,7 @@ public class ShowRowPositionsEvent extends RowStructuralChangeEvent {
 	public Collection<StructuralDiff> getRowDiffs() {
 		Collection<StructuralDiff> rowDiffs = new ArrayList<StructuralDiff>();
 
-		int offset = 0;
+		long offset = 0;
 		for (Range range : getRowPositionRanges()) {
 			rowDiffs.add(new StructuralDiff(DiffTypeEnum.ADD, new Range(range.start - offset, range.start - offset), range));
 			offset += range.size();

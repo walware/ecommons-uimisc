@@ -10,12 +10,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.columnRename;
 
+import org.eclipse.swt.widgets.Display;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
+import org.eclipse.nebula.widgets.nattable.coordinate.Point;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.SWTUtil;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Display;
 
 public class DisplayColumnRenameDialogCommandHandler extends
 		AbstractLayerCommandHandler<DisplayColumnRenameDialogCommand> {
@@ -28,14 +29,14 @@ public class DisplayColumnRenameDialogCommandHandler extends
 
 	@Override
 	protected boolean doCommand(DisplayColumnRenameDialogCommand command) {
-		int columnPosition = command.getColumnPosition();
+		long columnPosition = command.getColumnPosition();
 		String originalLabel = columnHeaderLayer.getOriginalColumnLabel(columnPosition);
 		String renamedLabel = columnHeaderLayer.getRenamedColumnLabel(columnPosition);
 
 		ColumnRenameDialog dialog = new ColumnRenameDialog(Display.getDefault().getActiveShell(), originalLabel, renamedLabel);
 		Rectangle colHeaderBounds = columnHeaderLayer.getBoundsByPosition(columnPosition, 0);
 		Point point = new Point(colHeaderBounds.x, colHeaderBounds.y + colHeaderBounds.height);
-        dialog.setLocation(command.toDisplayCoordinates(point));
+        dialog.setLocation(command.toDisplayCoordinates(SWTUtil.toSWT(point)));
 		dialog.open();
 
 		if (dialog.isCancelPressed()) {

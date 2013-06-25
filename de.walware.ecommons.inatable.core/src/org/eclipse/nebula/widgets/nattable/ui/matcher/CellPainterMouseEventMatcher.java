@@ -17,7 +17,7 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 
 /**
  * Matches a mouse click on a given cell painter within a cell.
@@ -40,8 +40,8 @@ public class CellPainterMouseEventMatcher extends MouseEventMatcher {
 	@Override
     public boolean matches(NatTable natTable, MouseEvent event, LabelStack regionLabels) {
 		if (super.matches(natTable, event, regionLabels)) {
-			int columnPosition = natTable.getColumnPositionByX(event.x);
-			int rowPosition = natTable.getRowPositionByY(event.y);
+			long columnPosition = natTable.getColumnPositionByX(event.x);
+			long rowPosition = natTable.getRowPositionByY(event.y);
 			
 			ILayerCell cell = natTable.getCellByPosition(columnPosition, rowPosition);
 			

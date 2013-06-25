@@ -40,7 +40,7 @@ public class FreezeColumnCommand extends AbstractColumnCommand implements IFreez
 	 * @param columnPosition The column position that will be the right most
 	 * 			column in the frozen part.
 	 */
-	public FreezeColumnCommand(ILayer layer, int columnPosition) {
+	public FreezeColumnCommand(ILayer layer, long columnPosition) {
 		this(layer, columnPosition, false);
 	}
 	
@@ -54,7 +54,7 @@ public class FreezeColumnCommand extends AbstractColumnCommand implements IFreez
 	 * @param toggle whether this command should toggle the frozen state between
 	 * 			frozen and unfrozen, or if it should always result in a frozen state.
 	 */
-	public FreezeColumnCommand(ILayer layer, int columnPosition, boolean toggle) {
+	public FreezeColumnCommand(ILayer layer, long columnPosition, boolean toggle) {
 		this(layer, columnPosition, toggle, false);
 	}
 	
@@ -69,7 +69,7 @@ public class FreezeColumnCommand extends AbstractColumnCommand implements IFreez
 	 * @param overrideFreeze whether this command should override a current frozen state
 	 * 			or if it should be skipped if a frozen state is already applied.
 	 */
-	public FreezeColumnCommand(ILayer layer, int columnPosition, boolean toggle, boolean overrideFreeze) {
+	public FreezeColumnCommand(ILayer layer, long columnPosition, boolean toggle, boolean overrideFreeze) {
 		super(layer, columnPosition);
 		this.toggle = toggle;
 		this.overrideFreeze = overrideFreeze;

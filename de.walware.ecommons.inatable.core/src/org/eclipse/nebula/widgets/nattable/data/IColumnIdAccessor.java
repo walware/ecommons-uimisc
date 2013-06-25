@@ -16,8 +16,8 @@ package org.eclipse.nebula.widgets.nattable.data;
  */
 public interface IColumnIdAccessor {
 
-	public String getColumnId(int columnIndex);
+	public String getColumnId(long columnIndex);
 
-	public int getColumnIndex(String columnId);
+	public long getColumnIndex(String columnId);
 
 }

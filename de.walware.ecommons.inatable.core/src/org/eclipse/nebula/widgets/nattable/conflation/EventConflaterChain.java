@@ -25,8 +25,8 @@ import org.eclipse.nebula.widgets.nattable.util.Scheduler;
  */
 public class EventConflaterChain implements IEventConflater {
 
-	public static final int DEFAULT_INITIAL_DELAY = 100;
-	public static final int DEFAULT_REFRESH_INTERVAL = 100;
+	public static final long DEFAULT_INITIAL_DELAY = 100;
+	public static final long DEFAULT_REFRESH_INTERVAL = 100;
 	private static final Scheduler scheduler = new Scheduler("EventConflaterChain"); //$NON-NLS-1$
 
 	private final List<IEventConflater> chain = new LinkedList<IEventConflater>();
@@ -39,7 +39,7 @@ public class EventConflaterChain implements IEventConflater {
 		this(DEFAULT_REFRESH_INTERVAL, DEFAULT_INITIAL_DELAY);
 	}
 
-	public EventConflaterChain(int refreshInterval, int initialDelay) {
+	public EventConflaterChain(long refreshInterval, long initialDelay) {
 		this.refreshInterval = refreshInterval;
 		this.initialDelay = initialDelay;
 	}
@@ -74,8 +74,8 @@ public class EventConflaterChain implements IEventConflater {
 		}
 	}
 
-	public int getCount() {
-		int count = 0;
+	public long getCount() {
+		long count = 0;
 		for (IEventConflater eventConflater : chain) {
 			count = count + eventConflater.getCount();
 		}

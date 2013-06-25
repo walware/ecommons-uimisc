@@ -17,7 +17,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
 
 /**
@@ -168,8 +167,8 @@ public class ControlDecorationProvider {
 						
 						controlToDecorate.removePaintListener(this);
 						int position = SWT.TOP;
-						final Rectangle textBounds = controlToDecorate.getBounds();
-						final Rectangle parentClientArea = controlToDecorate.getParent().getClientArea();
+						final org.eclipse.swt.graphics.Rectangle textBounds = controlToDecorate.getBounds();
+						final org.eclipse.swt.graphics.Rectangle parentClientArea = controlToDecorate.getParent().getClientArea();
 						if ((parentClientArea.x + parentClientArea.width) > (textBounds.x + textBounds.width + errorImage.getBounds().width)) {
 							position |= SWT.RIGHT;
 						} else {

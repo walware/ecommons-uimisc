@@ -23,7 +23,7 @@ import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 
 public class ColumnGroupUtils {
 
-	public static Direction getMoveDirection(int fromColumnPosition, int toColumnPosition) {
+	public static Direction getMoveDirection(long fromColumnPosition, long toColumnPosition) {
 		if (fromColumnPosition > toColumnPosition){
 			return Direction.LEFT;
 		} else if(fromColumnPosition < toColumnPosition){
@@ -33,7 +33,7 @@ public class ColumnGroupUtils {
 		}
 	}
 
-	public static boolean isInTheSameGroup(int fromColumnIndex, int toColumnIndex, ColumnGroupModel model) {
+	public static boolean isInTheSameGroup(long fromColumnIndex, long toColumnIndex, ColumnGroupModel model) {
 		ColumnGroup fromColumnGroup = model.getColumnGroupByIndex(fromColumnIndex);
 		ColumnGroup toColumnGroup = model.getColumnGroupByIndex(toColumnIndex);
 
@@ -58,7 +58,7 @@ public class ColumnGroupUtils {
 	 * a defined static column or (if not) the first visible column the it's
 	 * group
 	 */
-	public static boolean isStaticOrFirstVisibleColumn(int columnIndex, ILayer layer, IUniqueIndexLayer underlyingLayer, ColumnGroupModel model) {
+	public static boolean isStaticOrFirstVisibleColumn(long columnIndex, ILayer layer, IUniqueIndexLayer underlyingLayer, ColumnGroupModel model) {
 		ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
 
 		if (columnGroup.getStaticColumnIndexes().size() == 0) {
@@ -69,20 +69,20 @@ public class ColumnGroupUtils {
 		}
 	}
 
-	public static boolean isFirstVisibleColumnIndexInGroup(int columnIndex, ILayer layer, IUniqueIndexLayer underlyingLayer, ColumnGroupModel model){
+	public static boolean isFirstVisibleColumnIndexInGroup(long columnIndex, ILayer layer, IUniqueIndexLayer underlyingLayer, ColumnGroupModel model){
 		if (isColumnIndexHiddenInUnderLyingLayer(columnIndex, layer, underlyingLayer)) {
 			return false;
 		}
 
-		int columnPosition = underlyingLayer.getColumnPositionByIndex(columnIndex);
-		List<Integer> columnIndexesInGroup = model.getColumnGroupByIndex(columnIndex).getMembers();
-		List<Integer> previousVisibleColumnIndexes = new ArrayList<Integer>();
+		long columnPosition = underlyingLayer.getColumnPositionByIndex(columnIndex);
+		List<Long> columnIndexesInGroup = model.getColumnGroupByIndex(columnIndex).getMembers();
+		List<Long> previousVisibleColumnIndexes = new ArrayList<Long>();
 
 		//All other indexes in the column group which are visible and
 		//are positioned before me
-		for (Integer currentIndex : columnIndexesInGroup) {
-			int currentPosition = underlyingLayer.getColumnPositionByIndex(currentIndex.intValue());
-			if(!isColumnIndexHiddenInUnderLyingLayer(currentIndex.intValue(), layer, underlyingLayer)
+		for (Long currentIndex : columnIndexesInGroup) {
+			long currentPosition = underlyingLayer.getColumnPositionByIndex(currentIndex.longValue());
+			if(!isColumnIndexHiddenInUnderLyingLayer(currentIndex.longValue(), layer, underlyingLayer)
 					&& currentPosition < columnPosition){
 				previousVisibleColumnIndexes.add(currentIndex);
 			}
@@ -91,32 +91,32 @@ public class ColumnGroupUtils {
 		return previousVisibleColumnIndexes.isEmpty();
 	}
 
-	public static boolean isLastVisibleColumnIndexInGroup(int columnIndex, ILayer layer, IUniqueIndexLayer underlyingLayer, ColumnGroupModel model) {
+	public static boolean isLastVisibleColumnIndexInGroup(long columnIndex, ILayer layer, IUniqueIndexLayer underlyingLayer, ColumnGroupModel model) {
 		if (isColumnIndexHiddenInUnderLyingLayer(columnIndex, layer, underlyingLayer)) {
 			return false;
 		}
 
-		List<Integer> visibleIndexesToTheRight = getVisibleIndexesToTheRight(columnIndex, layer, underlyingLayer, model);
-		return visibleIndexesToTheRight.size() == 1 && visibleIndexesToTheRight.get(0).intValue() == columnIndex;
+		List<Long> visibleIndexesToTheRight = getVisibleIndexesToTheRight(columnIndex, layer, underlyingLayer, model);
+		return visibleIndexesToTheRight.size() == 1 && visibleIndexesToTheRight.get(0).longValue() == columnIndex;
 	}
 
 	/**
 	 * Inclusive of the columnIndex passed as the parameter.
 	 */
-	public static List<Integer> getVisibleIndexesToTheRight(int columnIndex, ILayer layer, IUniqueIndexLayer underlyingLayer, ColumnGroupModel model){
+	public static List<Long> getVisibleIndexesToTheRight(long columnIndex, ILayer layer, IUniqueIndexLayer underlyingLayer, ColumnGroupModel model){
 		ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
 		
 		if(columnGroup.isCollapsed()){
 			return Collections.emptyList();
 		}
 
-		List<Integer> columnIndexesInGroup = columnGroup.getMembers();
-		int columnPosition = underlyingLayer.getColumnPositionByIndex(columnIndex);
-		List<Integer> visibleColumnIndexesOnRight = new ArrayList<Integer>();
+		List<Long> columnIndexesInGroup = columnGroup.getMembers();
+		long columnPosition = underlyingLayer.getColumnPositionByIndex(columnIndex);
+		List<Long> visibleColumnIndexesOnRight = new ArrayList<Long>();
 
-		for (Integer currentIndex : columnIndexesInGroup) {
-			int currentPosition = underlyingLayer.getColumnPositionByIndex(currentIndex.intValue());
-			if(!isColumnIndexHiddenInUnderLyingLayer(currentIndex.intValue(), layer, underlyingLayer)
+		for (Long currentIndex : columnIndexesInGroup) {
+			long currentPosition = underlyingLayer.getColumnPositionByIndex(currentIndex.longValue());
+			if(!isColumnIndexHiddenInUnderLyingLayer(currentIndex.longValue(), layer, underlyingLayer)
 					&& currentPosition >= columnPosition){
 				visibleColumnIndexesOnRight.add(currentIndex);
 			}
@@ -125,13 +125,13 @@ public class ColumnGroupUtils {
 		return visibleColumnIndexesOnRight;
 	}
 
-	public static boolean isColumnIndexHiddenInUnderLyingLayer(int columnIndex, ILayer layer, IUniqueIndexLayer underlyingLayer) {
-		return underlyingLayer.getColumnPositionByIndex(columnIndex) == Integer.MIN_VALUE;
+	public static boolean isColumnIndexHiddenInUnderLyingLayer(long columnIndex, ILayer layer, IUniqueIndexLayer underlyingLayer) {
+		return underlyingLayer.getColumnPositionByIndex(columnIndex) == Long.MIN_VALUE;
 	}
 
-	public static boolean isColumnPositionHiddenInUnderLyingLayer(int columnPosition, ILayer layer, IUniqueIndexLayer underlyingLayer) {
+	public static boolean isColumnPositionHiddenInUnderLyingLayer(long columnPosition, ILayer layer, IUniqueIndexLayer underlyingLayer) {
 		if (columnPosition < underlyingLayer.getColumnCount() && columnPosition >= 0) {
-			int columnIndex = underlyingLayer.getColumnIndexByPosition(columnPosition);
+			long columnIndex = underlyingLayer.getColumnIndexByPosition(columnPosition);
 			return isColumnIndexHiddenInUnderLyingLayer(columnIndex, layer, underlyingLayer);
 		}
 		return true;
@@ -141,11 +141,11 @@ public class ColumnGroupUtils {
 	 * See ColumnGroupUtilsTest
 	 * @return TRUE if the given column is the <i>right</i> most column in a group
 	 */
-	public static boolean isRightEdgeOfAColumnGroup(ILayer natLayer, int columnPosition, int columnIndex, ColumnGroupModel model) {
-		int nextColumnPosition = columnPosition + 1;
+	public static boolean isRightEdgeOfAColumnGroup(ILayer natLayer, long columnPosition, long columnIndex, ColumnGroupModel model) {
+		long nextColumnPosition = columnPosition + 1;
 
 		if (nextColumnPosition < natLayer.getColumnCount()) {
-			int nextColumnIndex = natLayer.getColumnIndexByPosition(nextColumnPosition);
+			long nextColumnIndex = natLayer.getColumnIndexByPosition(nextColumnPosition);
 			if ((model.isPartOfAGroup(columnIndex) && !model.isPartOfAGroup(nextColumnIndex))) {
 				return true;
 			}
@@ -161,8 +161,8 @@ public class ColumnGroupUtils {
 	 * See ColumnGroupUtilsTest
 	 * @return TRUE if the given column is the <i>left</i> most column in a group
 	 */
-	public static boolean isLeftEdgeOfAColumnGroup(ILayer natLayer, int columnPosition, int columnIndex, ColumnGroupModel model) {
-		int previousColumnPosition = columnPosition - 1;
+	public static boolean isLeftEdgeOfAColumnGroup(ILayer natLayer, long columnPosition, long columnIndex, ColumnGroupModel model) {
+		long previousColumnPosition = columnPosition - 1;
 
 		// First column && in a group
 		if(columnPosition == 0 && model.isPartOfAGroup(columnIndex)){
@@ -170,7 +170,7 @@ public class ColumnGroupUtils {
 		}
 
 		if (previousColumnPosition >= 0) {
-			int previousColumnIndex = natLayer.getColumnIndexByPosition(previousColumnPosition);
+			long previousColumnIndex = natLayer.getColumnIndexByPosition(previousColumnPosition);
 			if ((model.isPartOfAGroup(columnIndex) && !model.isPartOfAGroup(previousColumnIndex))) {
 				return true;
 			}
@@ -185,7 +185,7 @@ public class ColumnGroupUtils {
 	/**
 	 * @return TRUE if there is a column group boundary between startX and endX
 	 */
-	public static boolean isBetweenTwoGroups(ILayer natLayer, int startX, int endX, ColumnGroupModel model) {
+	public static boolean isBetweenTwoGroups(ILayer natLayer, long startX, long endX, ColumnGroupModel model) {
 		return !ColumnGroupUtils.isInTheSameGroup(
 				natLayer.getColumnIndexByPosition(natLayer.getColumnPositionByX(startX)),
 				natLayer.getColumnIndexByPosition(natLayer.getColumnPositionByX(endX)),

@@ -11,8 +11,12 @@
 // -GC
 package org.eclipse.nebula.widgets.nattable.resize.command;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.eclipse.nebula.widgets.nattable.command.AbstractColumnCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -27,10 +31,10 @@ public class InitializeAutoResizeColumnsCommand extends AbstractColumnCommand {
 
 
 	private final ILayer sourceLayer;
-	private int[] selectedColumnPositions = new int[0];
+	private List<Range> selectedColumnPositions = Collections.emptyList();
 
 
-	public InitializeAutoResizeColumnsCommand(ILayer layer, int columnPosition) {
+	public InitializeAutoResizeColumnsCommand(ILayer layer, long columnPosition) {
 		super(layer, columnPosition);
 
 		this.sourceLayer = layer;
@@ -52,11 +56,11 @@ public class InitializeAutoResizeColumnsCommand extends AbstractColumnCommand {
 		return sourceLayer;
 	}
 
-	public void setSelectedColumnPositions(int[] selectedColumnPositions) {
+	public void setSelectedColumnPositions(List<Range> selectedColumnPositions) {
 		this.selectedColumnPositions = selectedColumnPositions;
 	}
 
-	public int[] getColumnPositions() {
+	public List<Range> getColumnPositions() {
 		return selectedColumnPositions;
 	}
 }

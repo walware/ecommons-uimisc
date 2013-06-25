@@ -26,12 +26,12 @@ public class RangeList extends ArrayList<Range> {
 	}
 	
 	
-	private int indexOfStart(final int value) {
+	private int indexOfStart(final long value) {
 		int low = 0;
 		int high = super.size() - 1;
 		while (low <= high) {
 			final int mid = (low + high) >>> 1;
-			final int midValue = get(mid).start;
+			final long midValue = get(mid).start;
 			if (value > midValue) {
 				low = mid + 1;
 			}
@@ -46,7 +46,7 @@ public class RangeList extends ArrayList<Range> {
 	}
 	
 	
-	public boolean addValue(final int value) {
+	public boolean addValue(final long value) {
 		int idx = indexOfStart(value);
 		if (idx >= 0) { // value == range1.start
 			return false;
@@ -181,7 +181,7 @@ public class RangeList extends ArrayList<Range> {
 		return changed;
 	}
 	
-	public boolean containsValue(final int value) {
+	public boolean containsValue(final long value) {
 		int idx = indexOfStart(value);
 		if (idx >= 0) {
 			return true;
@@ -194,7 +194,7 @@ public class RangeList extends ArrayList<Range> {
 		return false;
 	}
 	
-	public Range getRange(final int value) {
+	public Range getRange(final long value) {
 		int idx = indexOfStart(value);
 		if (idx >= 0) { // value == range1.start
 			return get(idx);
@@ -209,8 +209,8 @@ public class RangeList extends ArrayList<Range> {
 		return null;
 	}
 	
-	public int getValueCount() {
-		int count = 0;
+	public long getValueCount() {
+		long count = 0;
 		final int size = size();
 		for (int i = 0; i < size; i++) {
 			count += get(i).size();
@@ -220,8 +220,8 @@ public class RangeList extends ArrayList<Range> {
 	
 	
 	@Deprecated // not recommend
-	public static Collection<Integer> listRanges(final Collection<Range> positions) {
-		final ArrayList<Integer> list = new ArrayList<Integer>();
+	public static Collection<Long> listRanges(final Collection<Range> positions) {
+		final ArrayList<Long> list = new ArrayList<Long>();
 		for (final Iterator<Range> iter = positions.iterator(); iter.hasNext(); ) {
 			final Range range = iter.next();
 			final long sum = (long) list.size() + range.size();
@@ -229,7 +229,7 @@ public class RangeList extends ArrayList<Range> {
 				throw new IndexOutOfBoundsException("" + sum); // TODO implement ranges
 			}
 			list.ensureCapacity((int) sum);
-			for (int position = range.start; position < range.end; position++) {
+			for (long position = range.start; position < range.end; position++) {
 				list.add(position);
 			}
 		}

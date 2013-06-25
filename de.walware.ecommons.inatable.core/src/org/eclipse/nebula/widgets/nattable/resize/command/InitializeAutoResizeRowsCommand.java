@@ -10,9 +10,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.command;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.eclipse.nebula.widgets.nattable.command.AbstractRowCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.util.GCFactory;
 
@@ -25,9 +29,9 @@ public class InitializeAutoResizeRowsCommand extends AbstractRowCommand {
 	private final IConfigRegistry configRegistry;
 	private final GCFactory gcFactory;
 	private final ILayer sourceLayer;
-	private int[] selectedRowPositions = new int[0];
+	private List<Range> selectedRowPositions = Collections.emptyList();
 
-	public InitializeAutoResizeRowsCommand(ILayer layer, int rowPosition, IConfigRegistry configRegistry, GCFactory gcFactory) {
+	public InitializeAutoResizeRowsCommand(ILayer layer, long rowPosition, IConfigRegistry configRegistry, GCFactory gcFactory) {
 		super(layer, rowPosition);
 		this.configRegistry = configRegistry;
 		this.gcFactory = gcFactory;
@@ -59,11 +63,11 @@ public class InitializeAutoResizeRowsCommand extends AbstractRowCommand {
 		return sourceLayer;
 	}
 
-	public void setSelectedRowPositions(int[] selectedRowPositions) {
+	public void setSelectedRowPositions(List<Range> selectedRowPositions) {
 		this.selectedRowPositions = selectedRowPositions;
 	}
 
-	public int[] getRowPositions() {
+	public List<Range> getRowPositions() {
 		return selectedRowPositions;
 	}
 }

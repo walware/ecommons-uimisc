@@ -40,14 +40,14 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 
 	public static final String TREE_COLUMN_CELL = "TREE_COLUMN_CELL"; //$NON-NLS-1$
 
-	public static final int TREE_COLUMN_NUMBER = 0;
+	public static final long TREE_COLUMN_NUMBER = 0;
 
 	/**
 	 * The ITreeRowModelListener that is used to get information about the tree structure.
 	 */
 	private final ITreeRowModel<?> treeRowModel;
 
-	private final Set<Integer> hiddenRowIndexes;
+	private final Set<Long> hiddenRowIndexes;
 
 	/**
 	 * The IndentedTreeImagePainter that paints indentation to the left of the configured base painter
@@ -106,7 +106,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 		super(underlyingLayer);
 		this.treeRowModel = treeRowModel;
 
-		this.hiddenRowIndexes = new TreeSet<Integer>();
+		this.hiddenRowIndexes = new TreeSet<Long>();
 		
 		if (useDefaultConfiguration) {
 			addConfiguration(new DefaultTreeLayerConfiguration(this));
@@ -114,7 +114,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 		
 		setConfigLabelAccumulator(new IConfigLabelAccumulator() {
 			@Override
-			public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
+			public void accumulateConfigLabels(LabelStack configLabels, long columnPosition, long rowPosition) {
 				if (isTreeColumn(columnPosition)) {
 					configLabels.addLabelOnTop(TREE_COLUMN_CELL);
 				}
@@ -156,12 +156,12 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 	 * @return <code>true</code> if the given column position is the tree column, <code>false</code>
 	 * 			if not.
 	 */
-	private boolean isTreeColumn(int columnPosition) {
+	private boolean isTreeColumn(long columnPosition) {
 		return columnPosition == TREE_COLUMN_NUMBER;
 	}
 	
 	@Override
-	public ICellPainter getCellPainter(int columnPosition, int rowPosition, ILayerCell cell, IConfigRegistry configRegistry) {
+	public ICellPainter getCellPainter(long columnPosition, long rowPosition, ILayerCell cell, IConfigRegistry configRegistry) {
 		ICellPainter cellPainter = super.getCellPainter(columnPosition, rowPosition, cell, configRegistry);
 		
 		if (cell.getConfigLabels().hasLabel(TREE_COLUMN_CELL)) {
@@ -173,12 +173,12 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 	}
 
 	@Override
-	public boolean isRowIndexHidden(int rowIndex) {
-		return this.hiddenRowIndexes.contains(Integer.valueOf(rowIndex)) || isHiddenInUnderlyingLayer(rowIndex);
+	public boolean isRowIndexHidden(long rowIndex) {
+		return this.hiddenRowIndexes.contains(Long.valueOf(rowIndex)) || isHiddenInUnderlyingLayer(rowIndex);
 	}
 
 	@Override
-	public Collection<Integer> getHiddenRowIndexes() {
+	public Collection<Long> getHiddenRowIndexes() {
 		return this.hiddenRowIndexes;
 	}
 
@@ -188,7 +188,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 	 * @param parentIndex The index of the row that shows the tree node for which the
 	 * 			expand/collapse action should be performed.
 	 */
-	public void expandOrCollapseIndex(int parentIndex) {
+	public void expandOrCollapseIndex(long parentIndex) {
 		if (this.treeRowModel.isCollapsed(parentIndex)) {
 			expandTreeRow(parentIndex);
 		} else {
@@ -200,11 +200,11 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 	 * Collapses the tree node for the given row index.
 	 * @param parentIndex The index of the row that shows the node that should be collapsed
 	 */
-	public void collapseTreeRow(int parentIndex) {
-		List<Integer> rowIndexes = this.treeRowModel.collapse(parentIndex);
-		List<Integer> rowPositions = new ArrayList<Integer>();
-		for (Integer rowIndex : rowIndexes) {
-			int rowPos = getRowPositionByIndex(rowIndex);
+	public void collapseTreeRow(long parentIndex) {
+		List<Long> rowIndexes = this.treeRowModel.collapse(parentIndex);
+		List<Long> rowPositions = new ArrayList<Long>();
+		for (Long rowIndex : rowIndexes) {
+			long rowPos = getRowPositionByIndex(rowIndex);
 			//if the rowPos is negative, it is not visible because of hidden state in an underlying layer
 			if (rowPos >= 0) {
 				rowPositions.add(rowPos);
@@ -219,8 +219,8 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 	 * Expands the tree node for the given row index.
 	 * @param parentIndex The index of the row that shows the node that should be expanded
 	 */
-	public void expandTreeRow(int parentIndex) {
-		List<Integer> rowIndexes = 	this.treeRowModel.expand(parentIndex);
+	public void expandTreeRow(long parentIndex) {
+		List<Long> rowIndexes = 	this.treeRowModel.expand(parentIndex);
 		this.hiddenRowIndexes.removeAll(rowIndexes);
 		invalidateCache();
 		fireLayerEvent(new ShowRowPositionsEvent(this, rowIndexes));
@@ -232,7 +232,7 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 	 * @return <code>true</code> if the row at the given index is hidden in the underlying layer
 	 * 			<code>false</code> if not.
 	 */
-	private boolean isHiddenInUnderlyingLayer(int rowIndex) {
+	private boolean isHiddenInUnderlyingLayer(long rowIndex) {
 		IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
 		return (underlyingLayer.getRowPositionByIndex(rowIndex) == -1);
 	}
@@ -257,13 +257,13 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 	protected boolean handleRowHideCommand(RowHideCommand command) {
 		//transform position to index
 		if (command.convertToTargetLayer(this)) {
-			int rowIndex = getRowIndexByPosition(command.getRowPosition());
+			long rowIndex = getRowIndexByPosition(command.getRowPosition());
 			if (this.treeRowModel.hasChildren(rowIndex) && !this.treeRowModel.isCollapsed(rowIndex)) {
-				List<Integer> childIndexes = this.treeRowModel.getChildIndexes(rowIndex);
-				int[] childPositions = new int[childIndexes.size()+1];
+				List<Long> childIndexes = this.treeRowModel.getChildIndexes(rowIndex);
+				long[] childPositions = new long[childIndexes.size()+1];
 				childPositions[0] = command.getRowPosition();
 				for (int i = 1; i < childIndexes.size()+1; i++) {
-					int childPos = getRowPositionByIndex(childIndexes.get(i-1));
+					long childPos = getRowPositionByIndex(childIndexes.get(i-1));
 					childPositions[i] = childPos;
 				}
 				return super.doCommand(new MultiRowHideCommand(this, childPositions));
@@ -281,19 +281,19 @@ public class TreeLayer extends AbstractRowHideShowLayer {
 	protected boolean handleMultiRowHideCommand(MultiRowHideCommand command) {
 		//transform position to index
 		if (command.convertToTargetLayer(this)) {
-			List<Integer> rowPositionsToHide = new ArrayList<Integer>();
-			for (Integer rowPos : command.getRowPositions()) {
+			List<Long> rowPositionsToHide = new ArrayList<Long>();
+			for (Long rowPos : command.getRowPositions()) {
 				rowPositionsToHide.add(rowPos);
-				int rowIndex = getRowIndexByPosition(rowPos);
+				long rowIndex = getRowIndexByPosition(rowPos);
 				if (this.treeRowModel.hasChildren(rowIndex) && !this.treeRowModel.isCollapsed(rowIndex)) {
-					List<Integer> childIndexes = this.treeRowModel.getChildIndexes(rowIndex);
-					for (Integer childIndex : childIndexes) {
+					List<Long> childIndexes = this.treeRowModel.getChildIndexes(rowIndex);
+					for (Long childIndex : childIndexes) {
 						rowPositionsToHide.add(getRowPositionByIndex(childIndex));
 					}
 				}
 			}
 			
-			int[] childPositions = new int[rowPositionsToHide.size()];
+			long[] childPositions = new long[rowPositionsToHide.size()];
 			for (int i = 0; i < rowPositionsToHide.size(); i++) {
 				childPositions[i] = rowPositionsToHide.get(i);
 			}

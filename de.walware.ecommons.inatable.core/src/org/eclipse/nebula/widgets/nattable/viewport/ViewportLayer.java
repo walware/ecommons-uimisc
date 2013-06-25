@@ -14,11 +14,12 @@ package org.eclipse.nebula.widgets.nattable.viewport;
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
 
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.coordinate.SWTUtil;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractTransformIndexLayer;
@@ -61,7 +62,7 @@ public class ViewportLayer extends AbstractTransformIndexLayer {
 	
 	// The viewport current origin
 	private boolean viewportOff = false;
-	private final int[] savedOriginPixel = new int[2];
+	private final long[] savedOriginPixel = new long[2];
 	
 	// Edge hover scrolling
 	
@@ -144,9 +145,9 @@ public class ViewportLayer extends AbstractTransformIndexLayer {
 	// Cell features
 	
 	@Override
-	public Rectangle getBoundsByPosition(final int columnPosition, final int rowPosition) {
-		final int underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
-		final int underlyingRowPosition = localToUnderlyingRowPosition(rowPosition);
+	public Rectangle getBoundsByPosition(final long columnPosition, final long rowPosition) {
+		final long underlyingColumnPosition = localToUnderlyingColumnPosition(columnPosition);
+		final long underlyingRowPosition = localToUnderlyingRowPosition(rowPosition);
 		final Rectangle bounds = getUnderlyingLayer().getBoundsByPosition(underlyingColumnPosition, underlyingRowPosition);
 		
 		bounds.x -= get(HORIZONTAL).getOriginPixel();
@@ -166,8 +167,8 @@ public class ViewportLayer extends AbstractTransformIndexLayer {
 			
 			//remember the difference from client area to body region area
 			//needed because the scrollbar will be removed and therefore the client area will become bigger
-			final int widthDiff = clientAreaResizeCommand.getScrollable().getClientArea().width - clientAreaResizeCommand.getCalcArea().width;
-			final int heightDiff = clientAreaResizeCommand.getScrollable().getClientArea().height - clientAreaResizeCommand.getCalcArea().height;
+			final long widthDiff = clientAreaResizeCommand.getScrollable().getClientArea().width - clientAreaResizeCommand.getCalcArea().width;
+			final long heightDiff = clientAreaResizeCommand.getScrollable().getClientArea().height - clientAreaResizeCommand.getCalcArea().height;
 			
 			get(HORIZONTAL).checkScrollBar(clientAreaResizeCommand.getScrollable());
 			get(VERTICAL).checkScrollBar(clientAreaResizeCommand.getScrollable());
@@ -176,7 +177,7 @@ public class ViewportLayer extends AbstractTransformIndexLayer {
 			get(VERTICAL).handleResize();
 			
 			//after handling the scrollbars recalculate the area to use for percentage calculation
-			final Rectangle possibleArea = clientAreaResizeCommand.getScrollable().getClientArea();
+			final Rectangle possibleArea = SWTUtil.toNatTable(clientAreaResizeCommand.getScrollable().getClientArea());
 			possibleArea.width = possibleArea.width - widthDiff;
 			possibleArea.height = possibleArea.height - heightDiff;
 			clientAreaResizeCommand.setCalcArea(possibleArea);
@@ -256,7 +257,7 @@ public class ViewportLayer extends AbstractTransformIndexLayer {
 	 * @param selectionEvent
 	 */
 	private void processColumnSelection(final ColumnSelectionEvent selectionEvent) {
-		final int explicitePosition = selectionEvent.getColumnPositionToReveal();
+		final long explicitePosition = selectionEvent.getColumnPositionToReveal();
 		if (explicitePosition >= 0) {
 			get(HORIZONTAL).movePositionIntoViewport(explicitePosition);
 			return;
@@ -268,7 +269,7 @@ public class ViewportLayer extends AbstractTransformIndexLayer {
 	 * @param selectionEvent
 	 */
 	private void processRowSelection(final RowSelectionEvent selectionEvent) {
-		final int explicitePosition = selectionEvent.getRowPositionToReveal();
+		final long explicitePosition = selectionEvent.getRowPositionToReveal();
 		if (explicitePosition >= 0) {
 			get(VERTICAL).movePositionIntoViewport(explicitePosition);
 			return;
@@ -296,7 +297,7 @@ public class ViewportLayer extends AbstractTransformIndexLayer {
 	 * @param x
 	 * @param y
 	 */
-	public void drag(final int x, final int y) {
+	public void drag(final long x, final long y) {
 		if (x < 0 && y < 0) {
 			cancelEdgeHoverScroll();
 			return;
@@ -312,18 +313,17 @@ public class ViewportLayer extends AbstractTransformIndexLayer {
 		
 		final Rectangle clientArea = getClientAreaProvider().getClientArea();
 		for (final Orientation orientation : Orientation.values()) {
-			final int min = SWTUtil.getStart(clientArea, orientation);
-			final int max = min + SWTUtil.getSize(clientArea, orientation);
-			final int pixel = x;
+			Range range = clientArea.getRange(orientation);
+			final long pixel = (orientation == HORIZONTAL) ? x : y;
 			int change = 0;
-			if (pixel >= min && pixel < min + EDGE_HOVER_REGION_SIZE) {
+			if (pixel >= range.start && pixel < range.start + EDGE_HOVER_REGION_SIZE) {
 				change = -1;
-				if (pixel >= min + EDGE_HOVER_REGION_SIZE/2) {
+				if (pixel >= range.start + EDGE_HOVER_REGION_SIZE/2) {
 					move.fast = false;
 				}
-			} else if (pixel >= max - EDGE_HOVER_REGION_SIZE && pixel < max) {
+			} else if (pixel >= range.end - EDGE_HOVER_REGION_SIZE && pixel < range.end) {
 				change = 1;
-				if (pixel < max - EDGE_HOVER_REGION_SIZE/2) {
+				if (pixel < range.end - EDGE_HOVER_REGION_SIZE/2) {
 					move.fast = false;
 				}
 			}

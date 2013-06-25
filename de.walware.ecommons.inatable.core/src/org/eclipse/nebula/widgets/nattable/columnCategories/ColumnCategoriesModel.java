@@ -41,17 +41,17 @@ public class ColumnCategoriesModel implements Serializable {
 		return newNode;
 	}
 
-	public void addColumnsToCategory(Node parentCategory, int... columnIndexes){
+	public void addColumnsToCategory(Node parentCategory, long... columnIndexes){
 		if(parentCategory.getType() != Type.CATEGORY){
 			throw new IllegalStateException("Columns can be added to a category node only."); //$NON-NLS-1$
 		}
 		
-		for (Integer columnIndex : columnIndexes) {
+		for (long columnIndex : columnIndexes) {
 			parentCategory.addChild(new Node(String.valueOf(columnIndex), Type.COLUMN));
 		}
 	}
 
-	public void removeColumnIndex(Integer hiddenColumnIndex) {
+	public void removeColumnIndex(Long hiddenColumnIndex) {
 		tree.remove(String.valueOf(hiddenColumnIndex));
 	}
 	

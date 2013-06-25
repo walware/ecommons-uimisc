@@ -28,7 +28,7 @@ public abstract class AbstractEventConflater implements IEventConflater {
 		queue.clear();
 	}
 	
-	public int getCount() {
+	public long getCount() {
 		return queue.size();
 	}
 

@@ -35,7 +35,7 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
 	
 	private final ColumnGroupModel model;
 
-	private int reorderFromColumnPosition;
+	private long reorderFromColumnPosition;
 	
 	public ColumnGroupReorderLayer(IUniqueIndexLayer underlyingLayer, ColumnGroupModel model) {
 		setUnderlyingLayer(underlyingLayer);
@@ -45,10 +45,10 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
 		registerCommandHandlers();
 	}
 	
-	public boolean reorderColumnGroup(int fromColumnPosition, int toColumnPosition) {
-		int fromColumnIndex = underlyingLayer.getColumnIndexByPosition(fromColumnPosition);
+	public boolean reorderColumnGroup(long fromColumnPosition, long toColumnPosition) {
+		long fromColumnIndex = underlyingLayer.getColumnIndexByPosition(fromColumnPosition);
 		
-		List<Integer> fromColumnPositions = getColumnGroupPositions(fromColumnIndex);
+		List<Long> fromColumnPositions = getColumnGroupPositions(fromColumnIndex);
 		return underlyingLayer.doCommand(new MultiColumnReorderCommand(this, fromColumnPositions, toColumnPosition));
 	}
 	
@@ -77,7 +77,7 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
 	
 	// Columns
 	
-	public int getColumnPositionByIndex(int columnIndex) {
+	public long getColumnPositionByIndex(long columnIndex) {
 		return underlyingLayer.getColumnPositionByIndex(columnIndex);
 	}
 	
@@ -85,7 +85,7 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
 	
 	// Rows
 	
-	public int getRowPositionByIndex(int rowIndex) {
+	public long getRowPositionByIndex(long rowIndex) {
 		return underlyingLayer.getRowPositionByIndex(rowIndex);
 	}
 	
@@ -94,24 +94,24 @@ public class ColumnGroupReorderLayer extends AbstractLayerTransform implements I
 	/**
 	 * @return the column positions for all the columns in this group
 	 */
-	public List<Integer> getColumnGroupPositions(int fromColumnIndex) {
-		List<Integer> fromColumnIndexes = model.getColumnGroupByIndex(fromColumnIndex).getMembers();
-		List<Integer> fromColumnPositions = new ArrayList<Integer>();
+	public List<Long> getColumnGroupPositions(long fromColumnIndex) {
+		List<Long> fromColumnIndexes = model.getColumnGroupByIndex(fromColumnIndex).getMembers();
+		List<Long> fromColumnPositions = new ArrayList<Long>();
 		
-		for (Integer columnIndex : fromColumnIndexes) {
+		for (Long columnIndex : fromColumnIndexes) {
 			fromColumnPositions.add(
-					Integer.valueOf(underlyingLayer.getColumnPositionByIndex(columnIndex.intValue())));
+					Long.valueOf(underlyingLayer.getColumnPositionByIndex(columnIndex.longValue())));
 		}
 		//These positions are actually consecutive but the Column Group does not know about the order 
 		Collections.sort(fromColumnPositions);
 		return fromColumnPositions;
 	}
 	
-	public int getReorderFromColumnPosition() {
+	public long getReorderFromColumnPosition() {
 		return reorderFromColumnPosition;
 	}
 
-	public void setReorderFromColumnPosition(int fromColumnPosition) {
+	public void setReorderFromColumnPosition(long fromColumnPosition) {
 		this.reorderFromColumnPosition = fromColumnPosition;
 	}
 	

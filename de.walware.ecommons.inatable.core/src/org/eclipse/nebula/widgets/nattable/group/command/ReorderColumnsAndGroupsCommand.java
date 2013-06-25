@@ -26,7 +26,7 @@ public class ReorderColumnsAndGroupsCommand extends MultiColumnReorderCommand {
 	 * If any of the fromColumnPositions contain a group 
 	 *    - the group will be moved.
 	 */
-	public ReorderColumnsAndGroupsCommand(ILayer layer, List<Integer> fromColumnPositions, int toColumnPositions) {
+	public ReorderColumnsAndGroupsCommand(ILayer layer, List<Long> fromColumnPositions, long toColumnPositions) {
 		super(layer, fromColumnPositions, toColumnPositions);
 	}
 }

@@ -17,7 +17,7 @@ import java.util.Collection;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 
 /**
  * @see ColumnStructuralChangeEvent
@@ -40,8 +40,8 @@ public abstract class RowStructuralChangeEvent extends RowVisualChangeEvent impl
 	public Collection<Rectangle> getChangedPositionRectangles() {
 		Collection<Rectangle> changedPositionRectangles = new ArrayList<Rectangle>();
 		
-		int columnCount = getLayer().getColumnCount();
-		int rowCount = getLayer().getRowCount();
+		long columnCount = getLayer().getColumnCount();
+		long rowCount = getLayer().getRowCount();
 		for (Range range : getRowPositionRanges()) {
 			changedPositionRectangles.add(new Rectangle(0, range.start, columnCount, rowCount - range.start));
 		}

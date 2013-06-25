@@ -16,13 +16,13 @@ import java.util.List;
 
 public interface ITreeData <T> {
 	
-	public String formatDataForDepth(int depth, T object);
+	public String formatDataForDepth(long depth, T object);
 	
-	public T getDataAtIndex(int index);
+	public T getDataAtIndex(long index);
 
-	public int getDepthOfData(T object);
+	public long getDepthOfData(T object);
 
-	public int indexOf(T child);
+	public long indexOf(T child);
 	
 	public boolean hasChildren(T object);
 	

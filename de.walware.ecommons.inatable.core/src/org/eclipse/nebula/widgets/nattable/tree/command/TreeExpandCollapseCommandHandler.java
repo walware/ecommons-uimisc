@@ -27,7 +27,7 @@ public class TreeExpandCollapseCommandHandler extends AbstractLayerCommandHandle
 
 	@Override
 	protected boolean doCommand(TreeExpandCollapseCommand command) {
-		int parentIndex = command.getParentIndex();
+		long parentIndex = command.getParentIndex();
 		this.treeLayer.expandOrCollapseIndex(parentIndex);
 		return true;
 	}

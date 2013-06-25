@@ -47,7 +47,7 @@ public class VerticalAlignmentPicker extends Composite {
     }
 
     public VerticalAlignmentEnum getSelectedAlignment() {
-        int idx = combo.getSelectionIndex();
+        long idx = combo.getSelectionIndex();
         if (idx == 0)
             return VerticalAlignmentEnum.TOP;
         else if (idx == 1)

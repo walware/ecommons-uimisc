@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.columnChooser;
 
-import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.asIntArray;
+import static org.eclipse.nebula.widgets.nattable.util.ObjectUtils.asLongArray;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,12 +29,12 @@ public class ColumnChooserUtils {
 
 	public static void hideColumnEntries(List<ColumnEntry> removedItems, ColumnHideShowLayer hideShowLayer) {
 		MultiColumnHideCommand hideCommand = new MultiColumnHideCommand(
-				hideShowLayer, asIntArray(getColumnEntryPositions(removedItems)));
+				hideShowLayer, asLongArray(getColumnEntryPositions(removedItems)));
 		hideShowLayer.doCommand(hideCommand);
 	}
 
-	public static void hideColumnPositions(List<Integer> removedPositions, ColumnHideShowLayer hideShowLayer) {
-		MultiColumnHideCommand hideCommand = new MultiColumnHideCommand(hideShowLayer, asIntArray(removedPositions));
+	public static void hideColumnPositions(List<Long> removedPositions, ColumnHideShowLayer hideShowLayer) {
+		MultiColumnHideCommand hideCommand = new MultiColumnHideCommand(hideShowLayer, asLongArray(removedPositions));
 		hideShowLayer.doCommand(hideCommand);
 	}
 
@@ -42,17 +42,17 @@ public class ColumnChooserUtils {
 		hideShowLayer.doCommand(new MultiColumnShowCommand(getColumnEntryIndexes(addedItems)));
 	}
 
-	public static void showColumnIndexes(List<Integer> addedColumnIndexes, ColumnHideShowLayer hideShowLayer) {
+	public static void showColumnIndexes(List<Long> addedColumnIndexes, ColumnHideShowLayer hideShowLayer) {
 		hideShowLayer.doCommand(new MultiColumnShowCommand(addedColumnIndexes));
 	}
 
 	public static List<ColumnEntry> getHiddenColumnEntries(ColumnHideShowLayer columnHideShowLayer, ColumnHeaderLayer columnHeaderLayer, DataLayer columnHeaderDataLayer) {
-		Collection<Integer> hiddenColumnIndexes = columnHideShowLayer.getHiddenColumnIndexes();
+		Collection<Long> hiddenColumnIndexes = columnHideShowLayer.getHiddenColumnIndexes();
 		ArrayList<ColumnEntry> hiddenColumnEntries= new ArrayList<ColumnEntry>();
 
-		for (Integer hiddenColumnIndex : hiddenColumnIndexes) {
+		for (Long hiddenColumnIndex : hiddenColumnIndexes) {
 			String label = getColumnLabel(columnHeaderLayer, columnHeaderDataLayer, hiddenColumnIndex);
-			ColumnEntry columnEntry = new ColumnEntry(label, hiddenColumnIndex, Integer.valueOf(-1));
+			ColumnEntry columnEntry = new ColumnEntry(label, hiddenColumnIndex, Long.valueOf(-1));
 			hiddenColumnEntries.add(columnEntry);
 		}
 
@@ -66,12 +66,12 @@ public class ColumnChooserUtils {
 	 * @return The renamed column header name for the given column index (if the column has been renamed),
 	 * 	the original column name otherwise.
 	 */
-	public static String getColumnLabel(ColumnHeaderLayer columnHeaderLayer, DataLayer columnHeaderDataLayer, Integer columnIndex) {
+	public static String getColumnLabel(ColumnHeaderLayer columnHeaderLayer, DataLayer columnHeaderDataLayer, Long columnIndex) {
 		String label = ""; //$NON-NLS-1$
 		if (columnHeaderLayer.isColumnRenamed(columnIndex)) {
 			label = columnHeaderLayer.getRenamedColumnLabelByIndex(columnIndex) + RENAMED_COLUMN_INDICATOR;
 		} else {
-			int position = columnHeaderDataLayer.getColumnPositionByIndex(columnIndex.intValue());
+			long position = columnHeaderDataLayer.getColumnPositionByIndex(columnIndex.longValue());
 			label = columnHeaderDataLayer.getDataValueByPosition(position, 0).toString();
 		}
 		return label;
@@ -81,13 +81,13 @@ public class ColumnChooserUtils {
 	 * Get all visible columns from the selection layer and the corresponding labels in the header
 	 */
 	public static List<ColumnEntry> getVisibleColumnsEntries(ColumnHideShowLayer columnHideShowLayer, ColumnHeaderLayer columnHeaderLayer, DataLayer columnHeaderDataLayer) {
-		int visibleColumnCount = columnHideShowLayer.getColumnCount();
+		long visibleColumnCount = columnHideShowLayer.getColumnCount();
 		ArrayList<ColumnEntry> visibleColumnEntries= new ArrayList<ColumnEntry>();
 
-		for (int i = 0; i < visibleColumnCount; i++) {
-			int index = columnHideShowLayer.getColumnIndexByPosition(i);
+		for (long i = 0; i < visibleColumnCount; i++) {
+			long index = columnHideShowLayer.getColumnIndexByPosition(i);
 			String label = getColumnLabel(columnHeaderLayer, columnHeaderDataLayer, index);
-			ColumnEntry columnEntry = new ColumnEntry(label, Integer.valueOf(index), Integer.valueOf(i));
+			ColumnEntry columnEntry = new ColumnEntry(label, Long.valueOf(index), Long.valueOf(i));
 			visibleColumnEntries.add(columnEntry);
 		}
 		return visibleColumnEntries;
@@ -96,7 +96,7 @@ public class ColumnChooserUtils {
 	/**
 	 * Search the collection for the entry with the given index.
 	 */
-	public static ColumnEntry find(List<ColumnEntry> entries, int indexToFind) {
+	public static ColumnEntry find(List<ColumnEntry> entries, long indexToFind) {
 		for (ColumnEntry columnEntry : entries) {
 			if(columnEntry.getIndex().equals(indexToFind)){
 				return columnEntry;
@@ -108,8 +108,8 @@ public class ColumnChooserUtils {
 	/**
 	 * Get ColumnEntry positions for the ColumnEntry objects.
 	 */
-	public static List<Integer> getColumnEntryPositions(List<ColumnEntry> columnEntries) {
-		List<Integer> columnEntryPositions = new ArrayList<Integer>();
+	public static List<Long> getColumnEntryPositions(List<ColumnEntry> columnEntries) {
+		List<Long> columnEntryPositions = new ArrayList<Long>();
 		for (ColumnEntry columnEntry : columnEntries) {
 			columnEntryPositions.add(columnEntry.getPosition());
 		}
@@ -119,8 +119,8 @@ public class ColumnChooserUtils {
 	/**
 	 * Get ColumnEntry positions for the ColumnEntry objects.
 	 */
-	public static List<Integer> getColumnEntryIndexes(List<ColumnEntry> columnEntries) {
-		List<Integer> columnEntryIndexes = new ArrayList<Integer>();
+	public static List<Long> getColumnEntryIndexes(List<ColumnEntry> columnEntries) {
+		List<Long> columnEntryIndexes = new ArrayList<Long>();
 		for (ColumnEntry columnEntry : columnEntries) {
 			columnEntryIndexes.add(columnEntry.getIndex());
 		}
@@ -130,7 +130,7 @@ public class ColumnChooserUtils {
 	/**
 	 * @return TRUE if the list contains an entry with the given index
 	 */
-	public static boolean containsIndex(List<ColumnEntry> entries, int indexToFind) {
+	public static boolean containsIndex(List<ColumnEntry> entries, long indexToFind) {
 		return find(entries, indexToFind) != null;
 	}
 

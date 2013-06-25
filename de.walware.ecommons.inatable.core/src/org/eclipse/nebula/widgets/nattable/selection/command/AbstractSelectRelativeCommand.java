@@ -21,7 +21,7 @@ public abstract class AbstractSelectRelativeCommand extends AbstractRelativeComm
 	private final int selectionFlags;
 
 
-	protected AbstractSelectRelativeCommand(final Direction direction, int stepCount, final int selectionFlags) {
+	protected AbstractSelectRelativeCommand(final Direction direction, long stepCount, final int selectionFlags) {
 		super(direction, stepCount);
 		
 		this.selectionFlags = selectionFlags;

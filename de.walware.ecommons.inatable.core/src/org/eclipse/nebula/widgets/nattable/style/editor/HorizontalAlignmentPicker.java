@@ -48,7 +48,7 @@ public class HorizontalAlignmentPicker extends Composite {
     }
 
     public HorizontalAlignment getSelectedAlignment() {
-        int idx = combo.getSelectionIndex();
+        long idx = combo.getSelectionIndex();
         if (idx == 0)
             return HorizontalAlignment.CENTER;
         else if (idx == 1)

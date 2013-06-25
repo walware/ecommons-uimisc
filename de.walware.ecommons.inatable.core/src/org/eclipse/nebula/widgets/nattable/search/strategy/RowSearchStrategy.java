@@ -23,14 +23,14 @@ import org.eclipse.nebula.widgets.nattable.search.ISearchDirection;
 public class RowSearchStrategy extends AbstractSearchStrategy {
 
 	private final IConfigRegistry configRegistry;
-	private final int[] rowPositions;
+	private final long[] rowPositions;
 	private final String searchDirection;
 
-	public RowSearchStrategy(int[] rowPositions, IConfigRegistry configRegistry) {
+	public RowSearchStrategy(long[] rowPositions, IConfigRegistry configRegistry) {
 		this(rowPositions, configRegistry, ISearchDirection.SEARCH_FORWARD);
 	}
 	
-	public RowSearchStrategy(int[] rowPositions, IConfigRegistry configRegistry, String searchDirection) {
+	public RowSearchStrategy(long[] rowPositions, IConfigRegistry configRegistry, String searchDirection) {
 		this.rowPositions = rowPositions;
 		this.configRegistry = configRegistry;
 		this.searchDirection = searchDirection;
@@ -40,14 +40,14 @@ public class RowSearchStrategy extends AbstractSearchStrategy {
 		return CellDisplayValueSearchUtil.findCell(getContextLayer(), configRegistry, getRowCellsToSearch(getContextLayer()), valueToMatch, getComparator(), isCaseSensitive());
 	}
 
-	protected PositionCoordinate[] getRowCellsToSearch(ILayer contextLayer) {
+	protected List<PositionCoordinate> getRowCellsToSearch(ILayer contextLayer) {
 		List<PositionCoordinate> cellsToSearch = new ArrayList<PositionCoordinate>();
-		for (int rowPosition : rowPositions) {
+		for (long rowPosition : rowPositions) {
 			cellsToSearch.addAll(CellDisplayValueSearchUtil.getCellCoordinates(getContextLayer(), 0, rowPosition, contextLayer.getColumnCount(), 1));
 		}
 		if (searchDirection.equals(ISearchDirection.SEARCH_BACKWARDS)) {
 			Collections.reverse(cellsToSearch);
 		}
-		return cellsToSearch.toArray(new PositionCoordinate[0]);
+		return cellsToSearch;
 	}
 }

@@ -12,14 +12,12 @@ package org.eclipse.nebula.widgets.nattable.selection;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import org.eclipse.swt.graphics.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.group.RowGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.RowGroupUtils;
 import org.eclipse.nebula.widgets.nattable.group.model.IRowGroupModel;
@@ -48,31 +46,25 @@ public class SelectRowGroupCommandHandler<T> extends AbstractLayerCommandHandler
 
 	@Override
 	protected boolean doCommand(SelectRowGroupsCommand command) {
-		final List<Integer> rowIndexes = RowGroupUtils.getRowIndexesInGroup(model, rowGroupHeaderLayer.getRowIndexByPosition( command.getRowPosition() ) );
-		final List<Integer> rowPositions = RowGroupUtils.getRowPositionsInGroup( selectionLayer, rowIndexes );
+		final List<Long> rowIndexes = RowGroupUtils.getRowIndexesInGroup(model, rowGroupHeaderLayer.getRowIndexByPosition( command.getRowPosition() ) );
+		final List<Long> rowPositions = RowGroupUtils.getRowPositionsInGroup( selectionLayer, rowIndexes );
 		selectRows(command.getColumnPosition(), rowPositions, command.getSelectionFlags(), command.getRowPositionToReveal(), command.isMoveAnchorToTopOfGroup());
 		return true;
 	}
 	
-	protected void selectRows(int columnPosition, List<Integer> rowPositions, int selectionFlags, int rowPositionToMoveIntoViewport, boolean moveAnchorToTopOfGroup) {
-		Set<Range> changedRowRanges = new HashSet<Range>();
+	protected void selectRows(long columnPosition, List<Long> rowPositions, int selectionFlags, long rowPositionToMoveIntoViewport, boolean moveAnchorToTopOfGroup) {
+		final RangeList changedRowRanges = new RangeList();
 		
 		if( rowPositions.size() > 0 ) {
-			changedRowRanges.addAll(internalSelectRow(columnPosition, rowPositions.get(0), rowPositions.size(), selectionFlags, moveAnchorToTopOfGroup));
+			internalSelectRow(columnPosition, rowPositions.get(0), rowPositions.size(),
+					selectionFlags, moveAnchorToTopOfGroup, changedRowRanges );
 		}
-
-		Set<Integer> changedRows = new HashSet<Integer>();
-		for (Range range : changedRowRanges) {
-			for (int i = range.start; i < range.end; i++) {
-				changedRows.add(Integer.valueOf(i));
-			}
-		}
-		selectionLayer.fireLayerEvent(new RowSelectionEvent(selectionLayer, changedRows, rowPositionToMoveIntoViewport));
+		
+		selectionLayer.fireLayerEvent(new RowSelectionEvent(selectionLayer, changedRowRanges, rowPositionToMoveIntoViewport));
 	}
 	
-	private Set<Range> internalSelectRow(int columnPosition, int rowPosition, int rowCount, int selectionFlags, boolean moveAnchorToTopOfGroup) {
-		Set<Range> changedRowRanges = new HashSet<Range>();
-		
+	private void internalSelectRow(long columnPosition, long rowPosition, long rowCount,
+			int selectionFlags, boolean moveAnchorToTopOfGroup, final RangeList changedRowRanges) {
 		if ((selectionFlags & (SelectionFlags.RETAIN_SELECTION | SelectionFlags.RANGE_SELECTION)) == 0) {
 			changedRowRanges.addAll(selectionLayer.getSelectedRowPositions());
 			selectionLayer.clear();
@@ -91,11 +83,9 @@ public class SelectRowGroupCommandHandler<T> extends AbstractLayerCommandHandler
 		}	
 		selectionLayer.lastSelectedCell.columnPosition = selectionLayer.getColumnCount() - 1;
 		selectionLayer.lastSelectedCell.rowPosition = rowPosition;
-		
-		return changedRowRanges;
 	}
 	
-	private Range selectRowWithCtrlKey(int columnPosition, int rowPosition, int rowCount) {
+	private Range selectRowWithCtrlKey(long columnPosition, long rowPosition, long rowCount) {
 		Rectangle selectedRowRectangle = new Rectangle(0, rowPosition, selectionLayer.getColumnCount(), rowCount);
 
 		if (selectionLayer.isRowPositionFullySelected(rowPosition)) {
@@ -118,15 +108,15 @@ public class SelectRowGroupCommandHandler<T> extends AbstractLayerCommandHandler
 		return new Range(rowPosition);
 	}
 
-	private Range selectRowWithShiftKey(int columnPosition, int rowPosition, int rowCount) {
+	private Range selectRowWithShiftKey(long columnPosition, long rowPosition, long rowCount) {
 		if (selectionLayer.lastSelectedRegion != null) {
-			int start = Math.min(selectionLayer.lastSelectedRegion.y, rowPosition);
-			int end = Math.max(selectionLayer.lastSelectedRegion.y, rowPosition);
+			long start = Math.min(selectionLayer.lastSelectedRegion.y, rowPosition);
+			long end = Math.max(selectionLayer.lastSelectedRegion.y, rowPosition);
 		
-			for(int i = start; i <= end; i++){
-				int index = selectionLayer.getRowIndexByPosition(i);
+			for(long i = start; i <= end; i++){
+				long index = selectionLayer.getRowIndexByPosition(i);
 				if(RowGroupUtils.isPartOfAGroup(model, index) && !selectionLayer.isRowPositionFullySelected(i)){
-					List <Integer> rowPositions = new ArrayList<Integer>(RowGroupUtils.getRowPositionsInGroup(selectionLayer, RowGroupUtils.getRowIndexesInGroup(model, index)));
+					List <Long> rowPositions = new ArrayList<Long>(RowGroupUtils.getRowPositionsInGroup(selectionLayer, RowGroupUtils.getRowIndexesInGroup(model, index)));
 					Collections.sort(rowPositions);
 					selectionLayer.selectRegion(0, rowPositions.get(0), selectionLayer.getColumnCount(), rowPositions.size());
 					i=ObjectUtils.getLastElement(rowPositions);

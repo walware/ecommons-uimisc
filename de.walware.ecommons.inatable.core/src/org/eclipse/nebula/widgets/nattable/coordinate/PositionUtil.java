@@ -19,8 +19,8 @@ import java.util.List;
 public class PositionUtil {
 	
 	
-	public static List<Integer> concat(List<Integer> list, Integer add) {
-		ArrayList<Integer> newList = new ArrayList<Integer>(list.size() + 1);
+	public static List<Long> concat(List<Long> list, Long add) {
+		ArrayList<Long> newList = new ArrayList<Long>(list.size() + 1);
 		newList.addAll(list);
 		newList.add(add);
 		return newList;
@@ -31,18 +31,18 @@ public class PositionUtil {
 	 * <p>
 	 * See ColumnChooserDialogTest#getGroupedByContiguous()
 	 */
-	public static List<List<Integer>> getGroupedByContiguous(Collection<Integer> numberCollection) {
-		List<Integer> numbers = new ArrayList<Integer>(numberCollection);
+	public static List<List<Long>> getGroupedByContiguous(Collection<Long> numberCollection) {
+		List<Long> numbers = new ArrayList<Long>(numberCollection);
 		Collections.sort(numbers);
 
-		List<Integer> contiguous = new ArrayList<Integer>();
-		List<List<Integer>> grouped =  new ArrayList<List<Integer>>();
+		List<Long> contiguous = new ArrayList<Long>();
+		List<List<Long>> grouped =  new ArrayList<List<Long>>();
 
 		for(int i = 0; i < numbers.size()-1; i++) {
-			if(numbers.get(i).intValue()+1 != numbers.get(i+1).intValue()){
+			if(numbers.get(i).longValue()+1 != numbers.get(i+1).longValue()){
 				contiguous.add(numbers.get(i));
 				grouped.add(contiguous);
-				contiguous = new ArrayList<Integer>();
+				contiguous = new ArrayList<Long>();
 			} else {
 				contiguous.add(numbers.get(i));
 			}
@@ -61,13 +61,13 @@ public class PositionUtil {
 	 * <p>Example: 0, 1, 2, 4, 5, 6 will return [[Range(0 - 3)][Range(4 - 7)]]</p>
 	 * <p>The last number in the Range is not inclusive.</p>
 	 */
-	public static List<Range> getRanges(Collection<Integer> numbers) {
+	public static List<Range> getRanges(Collection<Long> numbers) {
 		List<Range> ranges = new ArrayList<Range>();
 
 		if (numbers != null) {
-			for (List<Integer> number : PositionUtil.getGroupedByContiguous(numbers)) {
-				int start = number.get(0).intValue();
-				int end = number.get(number.size() - 1).intValue() + 1;
+			for (List<Long> number : PositionUtil.getGroupedByContiguous(numbers)) {
+				long start = number.get(0).longValue();
+				long end = number.get(number.size() - 1).longValue() + 1;
 
 				ranges.add(new Range(start, end));
 			}

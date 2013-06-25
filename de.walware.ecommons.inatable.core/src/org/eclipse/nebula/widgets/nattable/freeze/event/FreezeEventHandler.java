@@ -38,8 +38,8 @@ public class FreezeEventHandler implements ILayerEventHandler<IStructuralChangeE
 		
 		Collection<StructuralDiff> columnDiffs = event.getColumnDiffs();
 		if (columnDiffs != null) {
-			int leftOffset = 0;
-			int rightOffset = 0;
+			long leftOffset = 0;
+			long rightOffset = 0;
 			
 			for (StructuralDiff columnDiff : columnDiffs) {
 				switch (columnDiff.getDiffType()) {
@@ -70,8 +70,8 @@ public class FreezeEventHandler implements ILayerEventHandler<IStructuralChangeE
 		
 		Collection<StructuralDiff> rowDiffs = event.getRowDiffs();
 		if (rowDiffs != null) {
-			int leftOffset = 0;
-			int rightOffset = 0;
+			long leftOffset = 0;
+			long rightOffset = 0;
 			
 			for (StructuralDiff rowDiff : rowDiffs) {
 				switch (rowDiff.getDiffType()) {

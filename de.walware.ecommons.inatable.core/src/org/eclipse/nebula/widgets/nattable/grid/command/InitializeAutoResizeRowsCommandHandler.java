@@ -11,6 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.grid.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.resize.command.AutoResizeRowsCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.InitializeAutoResizeRowsCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -30,12 +31,14 @@ public class InitializeAutoResizeRowsCommandHandler extends AbstractLayerCommand
 
 	@Override
 	protected boolean doCommand(InitializeAutoResizeRowsCommand initCommand) {
-		int rowPosition = initCommand.getRowPosition();
+		long rowPosition = initCommand.getRowPosition();
 		
 		if (selectionLayer.isRowPositionFullySelected(rowPosition)) {
 			initCommand.setSelectedRowPositions(selectionLayer.getFullySelectedRowPositions());
 		} else {
-			initCommand.setSelectedRowPositions(new int[] { rowPosition });
+			RangeList list = new RangeList();
+			list.addValue(rowPosition);
+			initCommand.setSelectedRowPositions(list);
 		}
 
 		// Fire command carrying the selected columns

@@ -34,9 +34,9 @@ public class CopyDataToClipboardSerializer implements ISerializer {
 		
 		final TextTransfer textTransfer = TextTransfer.getInstance();
 		final StringBuilder textData = new StringBuilder();
-		int currentRow = 0;
+		long currentRow = 0;
 		for (ILayerCell[] cells : copiedCells) {
-			int currentCell = 0;
+			long currentCell = 0;
 			for (ILayerCell cell : cells) {
 				final String delimeter = ++currentCell < cells.length ? cellDelimeter : ""; //$NON-NLS-1$
 				if (cell != null) {

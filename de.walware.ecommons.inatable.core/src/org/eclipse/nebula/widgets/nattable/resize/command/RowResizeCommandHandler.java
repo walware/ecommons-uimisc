@@ -27,9 +27,8 @@ public class RowResizeCommandHandler extends AbstractLayerCommandHandler<RowResi
 
 	@Override
 	protected boolean doCommand(RowResizeCommand command) {
-		final int rowPosition = command.getRowPosition();
 		final int newRowHeight = command.getNewHeight();
-		dataLayer.setRowHeightByPosition(rowPosition, newRowHeight);
+		dataLayer.setRowHeightByPosition(command.getRowPosition(), newRowHeight);
 		return true;
 	}
 

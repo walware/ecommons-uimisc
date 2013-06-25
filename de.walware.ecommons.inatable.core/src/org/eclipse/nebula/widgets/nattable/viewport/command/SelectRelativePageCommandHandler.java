@@ -23,7 +23,7 @@ public class SelectRelativePageCommandHandler extends AbstractLayerCommandHandle
 	@Override
 	protected boolean doCommand(SelectRelativePageCommand command) {
 		if (command.convertToTargetLayer(this.viewportLayer)) {
-			int stepCount;
+			long stepCount;
 			switch (command.getDirection()) {
 			case UP:
 			case DOWN:

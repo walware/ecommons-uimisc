@@ -10,9 +10,11 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.grid.command;
 
-import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Scrollable;
+
+import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.SWTUtil;
 
 /**
  * Command that gives the layers access to ClientArea and the Scrollable 
@@ -42,7 +44,7 @@ public class ClientAreaResizeCommand extends AbstractContextFreeCommand {
 	
 	public Rectangle getCalcArea() {
 		if (calcArea == null) {
-			return scrollable.getClientArea();
+			return SWTUtil.toNatTable(scrollable.getClientArea());
 		}
 		return calcArea;
 	}

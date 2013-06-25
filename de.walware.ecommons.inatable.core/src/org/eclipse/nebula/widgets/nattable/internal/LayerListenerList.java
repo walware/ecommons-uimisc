@@ -153,7 +153,7 @@ public class LayerListenerList {
 	 *
 	 * @return the number of registered listeners
 	 */
-	public int size() {
+	public long size() {
 		return listeners.length;
 	}
 	

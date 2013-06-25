@@ -20,7 +20,7 @@ public abstract class AbstractColumnCommand implements ILayerCommand {
 	private ColumnPositionCoordinate columnPositionCoordinate;
 	
 	
-	protected AbstractColumnCommand(ILayer layer, int columnPosition) {
+	protected AbstractColumnCommand(ILayer layer, long columnPosition) {
 		columnPositionCoordinate = new ColumnPositionCoordinate(layer, columnPosition);
 	}
 	
@@ -33,7 +33,7 @@ public abstract class AbstractColumnCommand implements ILayerCommand {
 		return columnPositionCoordinate.getLayer();
 	}
 	
-	public int getColumnPosition() {
+	public long getColumnPosition() {
 		return columnPositionCoordinate.getColumnPosition();
 	}
 	

@@ -10,11 +10,13 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.layer;
 
+import static org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils.safe;
+
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 
@@ -35,7 +37,7 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
 		return gridColor;
 	}
 	
-	public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
+	public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, org.eclipse.swt.graphics.Rectangle rectangle, IConfigRegistry configRegistry) {
 		//Draw GridLines
 		drawGridLines(natLayer, gc, rectangle);
 		
@@ -43,39 +45,39 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
 	}
 	
 	@Override
-	public Rectangle adjustCellBounds(int columnPosition, int rowPosition, Rectangle bounds) {
+	public Rectangle adjustCellBounds(long columnPosition, long rowPosition, Rectangle bounds) {
 		return new Rectangle(bounds.x, bounds.y, Math.max(bounds.width - 1, 0), Math.max(bounds.height - 1, 0));
 	}
 	
-	protected void drawGridLines(ILayer natLayer, GC gc, Rectangle rectangle) {
+	protected void drawGridLines(ILayer natLayer, GC gc, org.eclipse.swt.graphics.Rectangle rectangle) {
 		gc.setForeground(gridColor);
 		
 		drawHorizontalLines(natLayer, gc, rectangle);
 		drawVerticalLines(natLayer, gc, rectangle);
 	}
 	
-	private void drawHorizontalLines(ILayer natLayer, GC gc, Rectangle rectangle) {
-		int endX = rectangle.x + Math.min(natLayer.getWidth() - 1, rectangle.width);
+	private void drawHorizontalLines(ILayer natLayer, GC gc, org.eclipse.swt.graphics.Rectangle rectangle) {
+		int endX = safe(rectangle.x + Math.min(natLayer.getWidth() - 1, rectangle.width));
 		
-		int maxRowPosition = Math.min(natLayer.getRowCount(), natLayer.getRowPositionByY(rectangle.y + rectangle.height - 1) + 1);
-		for (int rowPosition = natLayer.getRowPositionByY(rectangle.y); rowPosition < maxRowPosition; rowPosition++) {
+		long maxRowPosition = Math.min(natLayer.getRowCount(), natLayer.getRowPositionByY(rectangle.y + rectangle.height - 1) + 1);
+		for (long rowPosition = natLayer.getRowPositionByY(rectangle.y); rowPosition < maxRowPosition; rowPosition++) {
 			final int size = natLayer.getRowHeightByPosition(rowPosition);
 			if (size > 0) {
-				int y = natLayer.getStartYOfRowPosition(rowPosition) + size - 1;
-				gc.drawLine(rectangle.x, y, endX, y);
+				int y = safe(natLayer.getStartYOfRowPosition(rowPosition) + size - 1);
+				gc.drawLine(safe(rectangle.x), y, endX, y);
 			}
 		}
 	}
 	
-	private void drawVerticalLines(ILayer natLayer, GC gc, Rectangle rectangle) {
-		int endY = rectangle.y + Math.min(natLayer.getHeight() - 1, rectangle.height);
+	private void drawVerticalLines(ILayer natLayer, GC gc, org.eclipse.swt.graphics.Rectangle rectangle) {
+		int endY = safe(rectangle.y + Math.min(natLayer.getHeight() - 1, rectangle.height));
 		
-		int maxColumnPosition = Math.min(natLayer.getColumnCount(), natLayer.getColumnPositionByX(rectangle.x + rectangle.width - 1) + 1);
-		for (int columnPosition = natLayer.getColumnPositionByX(rectangle.x); columnPosition < maxColumnPosition; columnPosition++) {
-			final int size = natLayer.getColumnWidthByPosition(columnPosition);
+		long maxColumnPosition = Math.min(natLayer.getColumnCount(), natLayer.getColumnPositionByX(rectangle.x + rectangle.width - 1) + 1);
+		for (long columnPosition = natLayer.getColumnPositionByX(rectangle.x); columnPosition < maxColumnPosition; columnPosition++) {
+			final long size = natLayer.getColumnWidthByPosition(columnPosition);
 			if (size > 0) {
-				int x = natLayer.getStartXOfColumnPosition(columnPosition) + size - 1;
-				gc.drawLine(x, rectangle.y, x, endY);
+				int x = safe(natLayer.getStartXOfColumnPosition(columnPosition) + size - 1);
+				gc.drawLine(x, safe(rectangle.y), x, endY);
 			}
 		}
 	}

@@ -44,17 +44,17 @@ public class GridSearchStrategy extends AbstractSearchStrategy {
 			selectionAnchor.rowPosition = 0;
 			hadSelectionAnchor = false;
 		}
-		int anchorColumnPosition = selectionAnchor.columnPosition;
+		long anchorColumnPosition = selectionAnchor.columnPosition;
 		
-		int startingRowPosition;
-		int[] columnsToSearch = null;
-		final int columnCount = selectionLayer.getColumnCount();
+		long startingRowPosition;
+		long[] columnsToSearch = null;
+		final long columnCount = selectionLayer.getColumnCount();
 		if (searchDirection.equals(ISearchDirection.SEARCH_FORWARD)) {
-			int rowPosition = hadSelectionAnchor ? selectionAnchor.rowPosition + 1 : selectionAnchor.rowPosition;
+			long rowPosition = hadSelectionAnchor ? selectionAnchor.rowPosition + 1 : selectionAnchor.rowPosition;
 			if (rowPosition > (contextLayer.getRowCount() - 1)) {
 				rowPosition = wrapSearch ? 0 : contextLayer.getRowCount() - 1;
 			}
-			int rowCount = selectionLayer.getRowCount();
+			long rowCount = selectionLayer.getRowCount();
 			startingRowPosition = rowPosition < rowCount ? rowPosition : 0;
 			if (selectionAnchor.rowPosition + 1 >= rowCount && anchorColumnPosition + 1 >= columnCount && hadSelectionAnchor) {
 				if (wrapSearch) {
@@ -67,7 +67,7 @@ public class GridSearchStrategy extends AbstractSearchStrategy {
 			}
 			columnsToSearch = getColumnsToSearchArray(columnCount, anchorColumnPosition);
 		} else {
-			int rowPosition = selectionAnchor.rowPosition - 1;
+			long rowPosition = selectionAnchor.rowPosition - 1;
 			if (rowPosition < 0) {
 				rowPosition  = wrapSearch ? contextLayer.getRowCount() - 1 : 0;
 			}
@@ -91,7 +91,7 @@ public class GridSearchStrategy extends AbstractSearchStrategy {
 	}
 
 	private PositionCoordinate searchGrid(Object valueToMatch, ILayer contextLayer, SelectionLayer selectionLayer,
-			final int anchorColumnPosition, int startingRowPosition, int[] columnsToSearch) {
+			final long anchorColumnPosition, long startingRowPosition, long[] columnsToSearch) {
 		// Search for value across columns		
 		ColumnSearchStrategy columnSearcher = new ColumnSearchStrategy(columnsToSearch, startingRowPosition, configRegistry, searchDirection);
 		columnSearcher.setCaseSensitive(caseSensitive);
@@ -101,7 +101,7 @@ public class GridSearchStrategy extends AbstractSearchStrategy {
 		PositionCoordinate executeSearch = columnSearcher.executeSearch(valueToMatch);
 		
 		if (executeSearch == null && wrapSearch) {
-			if (searchDirection.equals(ISearchDirection.SEARCH_FORWARD)) {				
+			if (searchDirection.equals(ISearchDirection.SEARCH_FORWARD)) {
 				columnSearcher.setColumnPositions(getColumnsToSearchArray(anchorColumnPosition + 1, 0));
 			} else {
 				columnSearcher.setColumnPositions(getDescendingColumnsToSearchArray(anchorColumnPosition));
@@ -112,18 +112,24 @@ public class GridSearchStrategy extends AbstractSearchStrategy {
 		return executeSearch;
 	}
 
-	protected int[] getColumnsToSearchArray(int columnCount, int startingColumnPosition) {
-		final int numberOfColumnsToSearch = (columnCount - startingColumnPosition);
-		final int[] columnPositions = new int[numberOfColumnsToSearch];
-		for (int columnPosition = 0; columnPosition < numberOfColumnsToSearch; columnPosition++) {
+	protected long[] getColumnsToSearchArray(long columnCount, long startingColumnPosition) {
+		final long numberOfColumnsToSearch = (columnCount - startingColumnPosition);
+		if (numberOfColumnsToSearch > Integer.MAX_VALUE) {
+			throw new UnsupportedOperationException();
+		}
+		final long[] columnPositions = new long[(int) numberOfColumnsToSearch];
+		for (int columnPosition = 0; columnPosition < columnPositions.length; columnPosition++) {
 			columnPositions[columnPosition] = startingColumnPosition + columnPosition;
 		}
 		return columnPositions;
 	}
 	
-	protected int[] getDescendingColumnsToSearchArray(int startingColumnPosition) {
-		final int[] columnPositions = new int[startingColumnPosition + 1];
-		for (int columnPosition = 0; startingColumnPosition >= 0; columnPosition++) {
+	protected long[] getDescendingColumnsToSearchArray(long startingColumnPosition) {
+		if (startingColumnPosition >= Integer.MAX_VALUE) {
+			throw new UnsupportedOperationException();
+		}
+		final long[] columnPositions = new long[(int) startingColumnPosition + 1];
+		for (int columnPosition = 0; columnPosition < columnPositions.length; columnPosition++) {
 			columnPositions[columnPosition] = startingColumnPosition-- ;
 		}
 		return columnPositions;

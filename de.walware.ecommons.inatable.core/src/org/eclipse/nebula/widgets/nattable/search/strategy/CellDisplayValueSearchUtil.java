@@ -11,7 +11,6 @@
 package org.eclipse.nebula.widgets.nattable.search.strategy;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -23,12 +22,13 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 
+
 public class CellDisplayValueSearchUtil {
 	
-	static List<PositionCoordinate> getCellCoordinates(ILayer contextLayer, int startingColumnPosition, int startingRowPosition, int width, int height) {
+	static List<PositionCoordinate> getCellCoordinates(ILayer contextLayer, long startingColumnPosition, long startingRowPosition, long width, long height) {
 		List<PositionCoordinate> coordinates = new ArrayList<PositionCoordinate>();
-		for (int columnPosition = 0; columnPosition < width; columnPosition++) {
-			for (int rowPosition = 0; rowPosition < height; rowPosition++) {
+		for (long columnPosition = 0; columnPosition < width; columnPosition++) {
+			for (long rowPosition = 0; rowPosition < height; rowPosition++) {
 				PositionCoordinate coordinate = new PositionCoordinate(contextLayer, startingColumnPosition, startingRowPosition++);
 				coordinates.add(coordinate);
 			}
@@ -37,10 +37,10 @@ public class CellDisplayValueSearchUtil {
 		return coordinates;
 	}
 	
-	static List<PositionCoordinate> getDescendingCellCoordinates(ILayer contextLayer, int startingColumnPosition, int startingRowPosition, int width, int height) {
+	static List<PositionCoordinate> getDescendingCellCoordinates(ILayer contextLayer, long startingColumnPosition, long startingRowPosition, long width, long height) {
 		List<PositionCoordinate> coordinates = new ArrayList<PositionCoordinate>();
-		for (int columnPosition = width; columnPosition >= 0 && startingColumnPosition >= 0; columnPosition--) {
-			for (int rowPosition = height; rowPosition >= 0 && startingRowPosition >= 0; rowPosition--) {
+		for (long columnPosition = width; columnPosition >= 0 && startingColumnPosition >= 0; columnPosition--) {
+			for (long rowPosition = height; rowPosition >= 0 && startingRowPosition >= 0; rowPosition--) {
 				PositionCoordinate coordinate = new PositionCoordinate(contextLayer, startingColumnPosition, startingRowPosition--);
 				coordinates.add(coordinate);
 			}
@@ -51,16 +51,16 @@ public class CellDisplayValueSearchUtil {
 	
 	
 	@SuppressWarnings("unchecked")
-	static PositionCoordinate findCell(final ILayer layer, final IConfigRegistry configRegistry, final PositionCoordinate[] cellsToSearch, final Object valueToMatch, final Comparator comparator, final boolean caseSensitive) {	
-		final List<PositionCoordinate> cellCoordinates = Arrays.asList(cellsToSearch);		
+	static PositionCoordinate findCell(final ILayer layer, final IConfigRegistry configRegistry, final List<PositionCoordinate> cellsToSearch, final Object valueToMatch, final Comparator comparator, final boolean caseSensitive) {	
+		final List<PositionCoordinate> cellCoordinates = cellsToSearch;
 		// Find cell
 		PositionCoordinate targetCoordinate = null;
 		
 		String stringValue = caseSensitive ? valueToMatch.toString() : valueToMatch.toString().toLowerCase();
 		for (int cellIndex = 0; cellIndex < cellCoordinates.size(); cellIndex++) {
 			final PositionCoordinate cellCoordinate = cellCoordinates.get(cellIndex);
-			final int columnPosition = cellCoordinate.columnPosition;
-			final int rowPosition = cellCoordinate.rowPosition;
+			final long columnPosition = cellCoordinate.columnPosition;
+			final long rowPosition = cellCoordinate.rowPosition;
 			
 			// Convert cell's data
 			final IDisplayConverter displayConverter = configRegistry.getConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, DisplayMode.NORMAL, layer.getConfigLabelsByPosition(columnPosition, rowPosition).getLabels());

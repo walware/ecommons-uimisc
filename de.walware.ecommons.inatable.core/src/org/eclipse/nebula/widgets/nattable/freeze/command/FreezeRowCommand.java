@@ -40,7 +40,7 @@ public class FreezeRowCommand extends AbstractRowCommand implements IFreezeComma
 	 * @param rowPosition The row position that will be the bottom
 	 * 			row in the frozen part.
 	 */
-	public FreezeRowCommand(ILayer layer, int rowPosition) {
+	public FreezeRowCommand(ILayer layer, long rowPosition) {
 		this(layer, rowPosition, false);
 	}
 	
@@ -54,7 +54,7 @@ public class FreezeRowCommand extends AbstractRowCommand implements IFreezeComma
 	 * @param toggle whether this command should toggle the frozen state between
 	 * 			frozen and unfrozen, or if it should always result in a frozen state.
 	 */
-	public FreezeRowCommand(ILayer layer, int rowPosition, boolean toggle) {
+	public FreezeRowCommand(ILayer layer, long rowPosition, boolean toggle) {
 		this(layer, rowPosition, toggle, false);
 	}
 	
@@ -69,7 +69,7 @@ public class FreezeRowCommand extends AbstractRowCommand implements IFreezeComma
 	 * @param overrideFreeze whether this command should override a current frozen state
 	 * 			or if it should be skipped if a frozen state is already applied.
 	 */
-	public FreezeRowCommand(ILayer layer, int rowPosition, boolean toggle, boolean overrideFreeze) {
+	public FreezeRowCommand(ILayer layer, long rowPosition, boolean toggle, boolean overrideFreeze) {
 		super(layer, rowPosition);
 		this.toggle = toggle;
 		this.overrideFreeze = overrideFreeze;

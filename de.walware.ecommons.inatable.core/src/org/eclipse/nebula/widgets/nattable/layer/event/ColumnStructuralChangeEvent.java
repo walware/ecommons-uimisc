@@ -17,7 +17,7 @@ import java.util.Collection;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 
 /**
  * Event indicating a change in the structure of the columns. 
@@ -43,15 +43,15 @@ public abstract class ColumnStructuralChangeEvent extends ColumnVisualChangeEven
 		
 		Collection<Range> columnPositionRanges = getColumnPositionRanges();
 		if (columnPositionRanges != null && columnPositionRanges.size() > 0) {
-			int leftmostColumnPosition = Integer.MAX_VALUE;
+			long leftmostColumnPosition = Long.MAX_VALUE;
 			for (Range range : columnPositionRanges) {
 				if (range.start < leftmostColumnPosition) {
 					leftmostColumnPosition = range.start;
 				}
 			}
 			
-			int columnCount = getLayer().getColumnCount();
-			int rowCount = getLayer().getRowCount();
+			long columnCount = getLayer().getColumnCount();
+			long rowCount = getLayer().getRowCount();
 			changedPositionRectangles.add(new Rectangle(leftmostColumnPosition, 0, columnCount - leftmostColumnPosition, rowCount));
 		}
 		

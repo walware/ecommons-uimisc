@@ -11,15 +11,15 @@
 package org.eclipse.nebula.widgets.nattable.selection;
 
 public class RowObjectIndexHolder <T> implements Comparable<RowObjectIndexHolder<T>> {
-	private int index;
+	private long index;
 	private T row;
 
-	public RowObjectIndexHolder(int index, T row) {
+	public RowObjectIndexHolder(long index, T row) {
 		this.index = index;
 		this.row = row;
 	}
 
-	public Integer getIndex() {
+	public Long getIndex() {
 		return index;
 	}
 

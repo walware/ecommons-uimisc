@@ -33,29 +33,38 @@ public class ListDataProvider<T> implements IRowDataProvider<T> {
 		this.columnAccessor = columnAccessor;
 	}
 	
-	public int getColumnCount() {
+	public long getColumnCount() {
 		return columnAccessor.getColumnCount();
 	}
 	
-	public int getRowCount() {
+	public long getRowCount() {
 		return list.size();
 	}
 
-	public Object getDataValue(int columnIndex, int rowIndex) {
-		T rowObj = list.get(rowIndex);
+	public Object getDataValue(long columnIndex, long rowIndex) {
+		if (rowIndex >= Integer.MAX_VALUE) {
+			throw new IndexOutOfBoundsException();
+		}
+		T rowObj = list.get((int) rowIndex);
 		return columnAccessor.getDataValue(rowObj, columnIndex);
 	}
 	
-	public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
-		T rowObj = list.get(rowIndex);
+	public void setDataValue(long columnIndex, long rowIndex, Object newValue) {
+		if (rowIndex >= Integer.MAX_VALUE) {
+			throw new IndexOutOfBoundsException();
+		}
+		T rowObj = list.get((int) rowIndex);
 		columnAccessor.setDataValue(rowObj, columnIndex, newValue);
 	}
 
-	public T getRowObject(int rowIndex) {
-		return list.get(rowIndex);
+	public T getRowObject(long rowIndex) {
+		if (rowIndex >= Integer.MAX_VALUE) {
+			throw new IndexOutOfBoundsException();
+		}
+		return list.get((int) rowIndex);
 	}
 	
-	public int indexOfRowObject(T rowObject) {
+	public long indexOfRowObject(T rowObject) {
 		return list.indexOf(rowObject);
 	}
 	

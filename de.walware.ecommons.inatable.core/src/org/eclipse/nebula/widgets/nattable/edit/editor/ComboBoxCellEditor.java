@@ -30,7 +30,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
-import org.eclipse.nebula.widgets.nattable.coordinate.Direction;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.eclipse.nebula.widgets.nattable.widget.EditModeEnum;

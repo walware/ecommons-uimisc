@@ -21,7 +21,7 @@ public class SelectRelativeCellCommand extends AbstractSelectRelativeCommand {
 		this(direction, 1, 0);
 	}
 	
-	public SelectRelativeCellCommand(final Direction direction, int stepCount, final int selectionFlags) {
+	public SelectRelativeCellCommand(final Direction direction, long stepCount, final int selectionFlags) {
 		super(direction, stepCount, selectionFlags);
 	}
 

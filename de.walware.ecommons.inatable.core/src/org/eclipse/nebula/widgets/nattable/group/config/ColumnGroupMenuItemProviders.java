@@ -41,7 +41,7 @@ public class ColumnGroupMenuItemProviders {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
 						NatEventData natEventData = MenuItemProviders.getNatEventData(e);
-						int columnPosition = natEventData.getColumnPosition();
+						long columnPosition = natEventData.getColumnPosition();
 						natTable.doCommand(new DisplayColumnGroupRenameDialogCommand(natTable, columnPosition));
 					}
 				});
@@ -65,8 +65,8 @@ public class ColumnGroupMenuItemProviders {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
 						NatEventData natEventData = MenuItemProviders.getNatEventData(e);
-						int columnPosition = natEventData.getColumnPosition();
-						int columnIndex = natEventData.getNatTable().getColumnIndexByPosition(columnPosition);
+						long columnPosition = natEventData.getColumnPosition();
+						long columnIndex = natEventData.getNatTable().getColumnIndexByPosition(columnPosition);
 						natTable.doCommand(new RemoveColumnGroupCommand(columnIndex));
 					}
 				});

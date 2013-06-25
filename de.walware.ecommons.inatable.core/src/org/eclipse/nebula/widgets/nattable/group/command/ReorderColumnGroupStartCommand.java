@@ -15,7 +15,7 @@ import org.eclipse.nebula.widgets.nattable.reorder.command.ColumnReorderStartCom
 
 public class ReorderColumnGroupStartCommand extends ColumnReorderStartCommand {
 
-	public ReorderColumnGroupStartCommand(ILayer layer, int fromColumnPosition) {
+	public ReorderColumnGroupStartCommand(ILayer layer, long fromColumnPosition) {
 		super(layer, fromColumnPosition);
 	}
 

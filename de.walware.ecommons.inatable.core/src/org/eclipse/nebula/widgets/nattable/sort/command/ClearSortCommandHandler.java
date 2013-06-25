@@ -45,11 +45,11 @@ public class ClearSortCommandHandler extends AbstractLayerCommandHandler<ClearSo
 		Runnable sortRunner = new Runnable() {
 			public void run() {
 				// collect sorted columns for event
-				final int columnCount = sortHeaderLayer.getColumnCount();
-				Collection<Integer> sortedColumns = new ArrayList<Integer>();
-				for (int i = 0; i < columnCount; i++) {
+				final long columnCount = sortHeaderLayer.getColumnCount();
+				Collection<Long> sortedColumns = new ArrayList<Long>();
+				for (long i = 0; i < columnCount; i++) {
 					if (sortModel.isColumnIndexSorted(i)) {
-						sortedColumns.add(Integer.valueOf(i));
+						sortedColumns.add(Long.valueOf(i));
 					}
 				}
 				

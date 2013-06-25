@@ -36,11 +36,11 @@ public class SummationSummaryProvider implements ISummaryProvider {
 	 * @return sum of all the numbers in the column (as Floats), or
 	 * 	DEFAULT_SUMMARY_VALUE for non-numeric columns if strict is set to true
 	 */
-	public Object summarize(int columnIndex) {
-		int rowCount = dataProvider.getRowCount();
+	public Object summarize(long columnIndex) {
+		long rowCount = dataProvider.getRowCount();
 		float summaryValue = 0;
 		
-		for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+		for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 			Object dataValue = dataProvider.getDataValue(columnIndex, rowIndex);
 
 			if (dataValue instanceof Number) {

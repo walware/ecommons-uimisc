@@ -35,7 +35,7 @@ public class AggregrateConfigLabelAccumulator implements IConfigLabelAccumulator
     	accumulators.addAll(Arrays.asList(r));
     }
 
-    public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
+    public void accumulateConfigLabels(LabelStack configLabels, long columnPosition, long rowPosition) {
         for (IConfigLabelAccumulator accumulator : accumulators) {
         	accumulator.accumulateConfigLabels(configLabels, columnPosition, rowPosition);
         }

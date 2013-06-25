@@ -50,7 +50,7 @@ public class TreeImagePainter extends ImagePainter {
 
 	@Override
 	protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
-		int index = cell.getLayer().getRowIndexByPosition(cell.getRowPosition());
+		long index = cell.getLayer().getRowIndexByPosition(cell.getRowPosition());
 		return !this.treeRowModel.hasChildren(index) ? this.leafImage : this.treeRowModel.isCollapsed(index) ? this.plusImage : this.minusImage;
 	}
 	

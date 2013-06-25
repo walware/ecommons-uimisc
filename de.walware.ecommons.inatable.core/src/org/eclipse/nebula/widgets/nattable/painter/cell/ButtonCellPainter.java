@@ -25,7 +25,7 @@ import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 /**
@@ -37,8 +37,8 @@ public class ButtonCellPainter extends AbstractCellPainter implements IMouseActi
 
 	private int buttonFlashTime = 150;
 
-	private int columnPosClicked;
-	private int rowPosClicked;
+	private long columnPosClicked;
+	private long rowPosClicked;
 	private boolean recentlyClicked;
 	private final List<IMouseAction> clickLiseners = new ArrayList<IMouseAction>();
 
@@ -68,11 +68,11 @@ public class ButtonCellPainter extends AbstractCellPainter implements IMouseActi
 		}
 	}
 
-	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public long getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return cell.getBounds().height;
 	}
 
-	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public long getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return cell.getBounds().width;
 	}
 

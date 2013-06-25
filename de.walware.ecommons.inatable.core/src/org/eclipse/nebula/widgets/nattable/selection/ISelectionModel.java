@@ -12,11 +12,9 @@
 package org.eclipse.nebula.widgets.nattable.selection;
 
 import java.util.List;
-import java.util.Set;
-
-import org.eclipse.swt.graphics.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 /**
@@ -27,13 +25,13 @@ public interface ISelectionModel {
 	public boolean isMultipleSelectionAllowed();
 	
 
-	public void addSelection(int columnPosition, int rowPosition);
+	public void addSelection(long columnPosition, long rowPosition);
 
 	public void addSelection(final Rectangle range);
 
 	public void clearSelection();
 
-	public void clearSelection(int columnPosition, int rowPosition);
+	public void clearSelection(long columnPosition, long rowPosition);
 
 	public void clearSelection(Rectangle removedSelection);
 
@@ -47,30 +45,24 @@ public interface ISelectionModel {
 	
 	// Column features
 
-	public int[] getSelectedColumnPositions();
+	public List<Range> getSelectedColumnPositions();
 
-	public boolean isColumnPositionSelected(int columnPosition);
+	public boolean isColumnPositionSelected(long columnPosition);
 
-	/**
-	 * @param columnHeight the number of rows in a fully selected column
-	 */
-	public int[] getFullySelectedColumnPositions();
+	public List<Range> getFullySelectedColumnPositions();
 
-	/**
-	 * @param columnHeight the number of rows in a fully selected column
-	 */
-	public boolean isColumnPositionFullySelected(int columnPosition);
+	public boolean isColumnPositionFullySelected(long columnPosition);
 
 	// Row features
 
-	public int getSelectedRowCount();
+	public long getSelectedRowCount();
 	
-	public Set<Range> getSelectedRowPositions();
+	public List<Range> getSelectedRowPositions();
 	
-	public boolean isRowPositionSelected(int rowPosition);
+	public boolean isRowPositionSelected(long rowPosition);
 
-	public int[] getFullySelectedRowPositions();
+	public List<Range> getFullySelectedRowPositions();
 
-	public boolean isRowPositionFullySelected(int rowPosition);
+	public boolean isRowPositionFullySelected(long rowPosition);
 	
 }

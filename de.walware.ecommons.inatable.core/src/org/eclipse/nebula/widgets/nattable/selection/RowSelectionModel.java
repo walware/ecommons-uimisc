@@ -13,17 +13,17 @@ package org.eclipse.nebula.widgets.nattable.selection;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.eclipse.swt.graphics.Rectangle;
-
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
@@ -62,7 +62,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		this.multipleSelectionAllowed = multipleSelectionAllowed;
 	}
 
-	public void addSelection(int columnPosition, int rowPosition) {
+	public void addSelection(long columnPosition, long rowPosition) {
 		selectionsLock.writeLock().lock();
 		
 		try {
@@ -99,8 +99,8 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 			
 			Map<Serializable, R> rowsToSelect = new HashMap<Serializable, R>();
 			
-			int maxY = Math.min(range.y + range.height, selectionLayer.getRowCount());
-			for (int rowPosition = range.y; rowPosition < maxY; rowPosition++) {
+			long maxY = Math.min(range.y + range.height, selectionLayer.getRowCount());
+			for (long rowPosition = range.y; rowPosition < maxY; rowPosition++) {
 				R rowObject = getRowObjectByPosition(rowPosition);
 				if (rowObject != null) {
 					Serializable rowId = rowIdAccessor.getRowId(rowObject);
@@ -131,7 +131,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		}
 	}
 
-	public void clearSelection(int columnPosition, int rowPosition) {
+	public void clearSelection(long columnPosition, long rowPosition) {
 		selectionsLock.writeLock().lock();
 		
 		try {
@@ -146,8 +146,8 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		selectionsLock.writeLock().lock();
 		
 		try {
-			int maxY = Math.min(removedSelection.y + removedSelection.height, selectionLayer.getRowCount());
-			for (int rowPosition = removedSelection.y; rowPosition < maxY; rowPosition++) {
+			long maxY = Math.min(removedSelection.y + removedSelection.height, selectionLayer.getRowCount());
+			for (long rowPosition = removedSelection.y; rowPosition < maxY; rowPosition++) {
 				clearSelection(0, rowPosition);
 			}
 		} finally {
@@ -181,9 +181,9 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		selectionsLock.readLock().lock();
 		
 		try {
-			int width = selectionLayer.getColumnCount();
+			long width = selectionLayer.getColumnCount();
 			for (Serializable rowId : selectedRows.keySet()) {
-				int rowPosition = getRowPositionById(rowId);
+				long rowPosition = getRowPositionById(rowId);
 				selectionRectangles.add(new Rectangle(0, rowPosition, width, 1));
 			}
 		} finally {
@@ -196,8 +196,8 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 	// Cell features
 
 	public boolean isCellPositionSelected(final ILayerCell cell) {
-		int cellOriginRowPosition = cell.getOriginRowPosition();
-		for (int testRowPosition = cellOriginRowPosition; testRowPosition < cellOriginRowPosition + cell.getRowSpan(); testRowPosition++) {
+		long cellOriginRowPosition = cell.getOriginRowPosition();
+		for (long testRowPosition = cellOriginRowPosition; testRowPosition < cellOriginRowPosition + cell.getRowSpan(); testRowPosition++) {
 			if (isRowPositionSelected(testRowPosition)) {
 				return true;
 			}
@@ -207,30 +207,24 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 	
 	// Column features
 
-	public int[] getSelectedColumnPositions() {
-		if (!isEmpty()) {
-			selectionsLock.readLock().lock();
-			
-			int columnCount;
-			
-			try {
-				columnCount = selectionLayer.getColumnCount();
-			} finally {
-				selectionsLock.readLock().unlock();
+	public List<Range> getSelectedColumnPositions() {
+		selectionsLock.readLock().lock();
+		
+		try {
+			RangeList selected = new RangeList();
+			if (!selectedRows.isEmpty()) {
+				selected.add(new Range(0, selectionLayer.getColumnCount()));
 			}
-			
-			int[] columns = new int[columnCount];
-			for (int i = 0; i < columnCount; i++) {
-				columns[i] = i;
-			}
-			return columns;
+			return selected;
 		}
-		return new int[] {};
+		finally {
+			selectionsLock.readLock().unlock();
+		}
 	}
 	
-	public boolean isColumnPositionSelected(int columnPosition) {
+	public boolean isColumnPositionSelected(long columnPosition) {
 		selectionsLock.readLock().lock();
-
+		
 		try {
 			return !selectedRows.isEmpty();
 		} finally {
@@ -238,7 +232,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		}
 	}
 
-	public int[] getFullySelectedColumnPositions() {
+	public List<Range> getFullySelectedColumnPositions() {
 		selectionsLock.readLock().lock();
 		
 		try {
@@ -249,14 +243,14 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 			selectionsLock.readLock().unlock();
 		}
 		
-		return new int[] {};
+		return Collections.emptyList();
 	}
 
-	public boolean isColumnPositionFullySelected(int columnPosition) {
+	public boolean isColumnPositionFullySelected(long columnPosition) {
 		selectionsLock.readLock().lock();
-		int fullySelectedColumnRowCount = selectionLayer.getRowCount();
+		long fullySelectedColumnRowCount = selectionLayer.getRowCount();
 		try {
-			int selectedRowCount = selectedRows.size();
+			long selectedRowCount = selectedRows.size();
 			
 			if (selectedRowCount == 0) {
 				return false;
@@ -283,7 +277,7 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		return rowObjects;
 	}
 
-	public int getSelectedRowCount() {
+	public long getSelectedRowCount() {
 		selectionsLock.readLock().lock();
 		
 		try {
@@ -293,24 +287,25 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		}
 	}
 
-	public Set<Range> getSelectedRowPositions() {
-		Set<Range> selectedRowRanges = new HashSet<Range>();
+	public List<Range> getSelectedRowPositions() {
 		
 		selectionsLock.readLock().lock();
 		
 		try {
+			RangeList selected = new RangeList();
+			
 			for (Serializable rowId : selectedRows.keySet()) {
-				int rowPosition = getRowPositionById(rowId);
-				selectedRowRanges.add(new Range(rowPosition));
+				long rowPosition = getRowPositionById(rowId);
+				selected.addValue(rowPosition);
 			}
+			
+			return selected;
 		} finally {
 			selectionsLock.readLock().unlock();
 		}
-		
-		return selectedRowRanges;
 	}
 
-	public boolean isRowPositionSelected(int rowPosition) {
+	public boolean isRowPositionSelected(long rowPosition) {
 		selectionsLock.readLock().lock();
 		
 		try {
@@ -321,28 +316,15 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		}
 	}
 
-	public int[] getFullySelectedRowPositions() {
-		selectionsLock.readLock().lock();
-		
-		try {
-			int selectedRowCount = selectedRows.size();
-			int[] selectedRowPositions = new int[selectedRowCount];
-			int i = 0;
-			for (Serializable rowId : selectedRows.keySet()) {
-				selectedRowPositions[i] = getRowPositionById(rowId);
-				i++;
-			}
-			return selectedRowPositions;
-		} finally {
-			selectionsLock.readLock().unlock();
-		}
+	public List<Range> getFullySelectedRowPositions() {
+		return getSelectedRowPositions();
 	}
 
-	public boolean isRowPositionFullySelected(int rowPosition) {
+	public boolean isRowPositionFullySelected(long rowPosition) {
 		return isRowPositionSelected(rowPosition);
 	}
 
-	private Serializable getRowIdByPosition(int rowPosition) {
+	private Serializable getRowIdByPosition(long rowPosition) {
 		R rowObject = getRowObjectByPosition(rowPosition);
 		if (rowObject != null) {
 			Serializable rowId = rowIdAccessor.getRowId(rowObject);
@@ -351,11 +333,11 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		return null;
 	}
 
-	private R getRowObjectByPosition(int rowPosition) {
+	private R getRowObjectByPosition(long rowPosition) {
 		selectionsLock.readLock().lock();
 		
 		try {
-			int rowIndex = selectionLayer.getRowIndexByPosition(rowPosition);
+			long rowIndex = selectionLayer.getRowIndexByPosition(rowPosition);
 			if (rowIndex >= 0) {
 				try {
 					R rowObject = rowDataProvider.getRowObject(rowIndex);
@@ -371,16 +353,16 @@ public class RowSelectionModel<R> implements IRowSelectionModel<R> {
 		return null;
 	}
 	
-	private int getRowPositionById(Serializable rowId) {
+	private long getRowPositionById(Serializable rowId) {
 		selectionsLock.readLock().lock();
 		
 		try {
 			R rowObject = selectedRows.get(rowId);
-			int rowIndex = rowDataProvider.indexOfRowObject(rowObject);
+			long rowIndex = rowDataProvider.indexOfRowObject(rowObject);
 			if(rowIndex < 0){
-				return Integer.MIN_VALUE;
+				return Long.MIN_VALUE;
 			}
-			int rowPosition = selectionLayer.getRowPositionByIndex(rowIndex);
+			long rowPosition = selectionLayer.getRowPositionByIndex(rowIndex);
 			return rowPosition;
 		} finally {
 			selectionsLock.readLock().unlock();

@@ -41,7 +41,7 @@ public class SortColumnCommandHandler extends AbstractLayerCommandHandler<SortCo
 	@Override
 	protected boolean doCommand(final SortColumnCommand command) {
 
-		final int columnIndex = command.getLayer().getColumnIndexByPosition(command.getColumnPosition());
+		final long columnIndex = command.getLayer().getColumnIndexByPosition(command.getColumnPosition());
 
 		// with busy indicator
 		Runnable sortRunner = new Runnable() {

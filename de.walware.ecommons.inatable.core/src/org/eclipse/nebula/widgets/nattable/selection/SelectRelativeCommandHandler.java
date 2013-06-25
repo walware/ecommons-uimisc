@@ -38,8 +38,8 @@ public class SelectRelativeCommandHandler extends AbstractLayerCommandHandler<Se
 	}
 
 	protected boolean select(SelectRelativeCellCommand command) {
-		int row;
-		int column;
+		long row;
+		long column;
 		PositionCoordinate lastSelectedCell = null;
 		if ((command.getSelectionFlags() & SelectionFlags.RANGE_SELECTION) == SelectionFlags.RANGE_SELECTION) {
 			lastSelectedCell = selectionLayer.getLastSelectedCellPosition();

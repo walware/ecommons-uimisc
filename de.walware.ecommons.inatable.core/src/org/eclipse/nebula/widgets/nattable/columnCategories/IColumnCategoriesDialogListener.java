@@ -18,10 +18,10 @@ import org.eclipse.nebula.widgets.nattable.coordinate.Direction;
 
 public interface IColumnCategoriesDialogListener {
 
-	void itemsSelected(List<Integer> addedColumnIndexes);
+	void itemsSelected(List<Long> addedColumnIndexes);
 
-	void itemsRemoved(List<Integer> removedColumnPositions);
+	void itemsRemoved(List<Long> removedColumnPositions);
 
-	void itemsMoved(Direction direction, List<Integer> selectedPositions);
+	void itemsMoved(Direction direction, List<Long> selectedPositions);
 
 }

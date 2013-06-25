@@ -16,7 +16,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public class RowHideCommand extends AbstractRowCommand {
 
-	public RowHideCommand(ILayer layer, int rowPosition) {
+	public RowHideCommand(ILayer layer, long rowPosition) {
 		super(layer, rowPosition);
 	}
 	

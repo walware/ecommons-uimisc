@@ -36,11 +36,11 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
 
 	public static final String PERSISTENCE_KEY_HIDDEN_ROW_INDEXES = ".hiddenRowIndexes"; //$NON-NLS-1$
 	
-	private final Set<Integer> hiddenRowIndexes;
+	private final Set<Long> hiddenRowIndexes;
 	
 	public RowHideShowLayer(IUniqueIndexLayer underlyingLayer) {
 		super(underlyingLayer);
-		this.hiddenRowIndexes = new TreeSet<Integer>();
+		this.hiddenRowIndexes = new TreeSet<Long>();
 		
 		registerCommandHandler(new MultiRowHideCommandHandler(this));
 		registerCommandHandler(new RowHideCommandHandler(this));
@@ -70,7 +70,7 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
 	public void saveState(String prefix, Properties properties) {
 		if (hiddenRowIndexes.size() > 0) {
 			StringBuilder strBuilder = new StringBuilder();
-			for (Integer index : hiddenRowIndexes) {
+			for (Long index : hiddenRowIndexes) {
 				strBuilder.append(index);
 				strBuilder.append(IPersistable.VALUE_SEPARATOR);
 			}
@@ -88,7 +88,7 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
 			StringTokenizer tok = new StringTokenizer(property, IPersistable.VALUE_SEPARATOR);
 			while (tok.hasMoreTokens()) {
 				String index = tok.nextToken();
-				hiddenRowIndexes.add(Integer.valueOf(index));
+				hiddenRowIndexes.add(Long.valueOf(index));
 			}
 		}
 		
@@ -98,19 +98,19 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
 	// Hide/show	
 	
 	@Override
-	public boolean isRowIndexHidden(int rowIndex) {
-		return hiddenRowIndexes.contains(Integer.valueOf(rowIndex));
+	public boolean isRowIndexHidden(long rowIndex) {
+		return hiddenRowIndexes.contains(Long.valueOf(rowIndex));
 	}
 
 	@Override
-	public Collection<Integer> getHiddenRowIndexes() {
+	public Collection<Long> getHiddenRowIndexes() {
 		return hiddenRowIndexes; 
 	}
 	
 	@Override
-	public void hideRowPositions(Collection<Integer> rowPositions) {
-		Set<Integer> rowIndexes = new HashSet<Integer>();
-		for (Integer rowPosition : rowPositions) {
+	public void hideRowPositions(Collection<Long> rowPositions) {
+		Set<Long> rowIndexes = new HashSet<Long>();
+		for (Long rowPosition : rowPositions) {
 			rowIndexes.add(getRowIndexByPosition(rowPosition));
 		}
 		hiddenRowIndexes.addAll(rowIndexes);
@@ -119,9 +119,9 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
 	}
 
 	@Override
-	public void hideRowIndexes(Collection<Integer> rowIndexes) {
-		Set<Integer> rowPositions = new HashSet<Integer>();
-		for (Integer rowIndex : rowIndexes) {
+	public void hideRowIndexes(Collection<Long> rowIndexes) {
+		Set<Long> rowPositions = new HashSet<Long>();
+		for (Long rowIndex : rowIndexes) {
 			rowPositions.add(getRowPositionByIndex(rowIndex));
 		}
 		hiddenRowIndexes.addAll(rowIndexes);
@@ -130,7 +130,7 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
 	}
 	
 	@Override
-	public void showRowIndexes(Collection<Integer> rowIndexes) {
+	public void showRowIndexes(Collection<Long> rowIndexes) {
 		hiddenRowIndexes.removeAll(rowIndexes);
 		invalidateCache();
 		fireLayerEvent(new ShowRowPositionsEvent(this, getRowPositionsByIndexes(rowIndexes)));
@@ -138,7 +138,7 @@ public class RowHideShowLayer extends AbstractRowHideShowLayer implements IRowHi
 
 	@Override
 	public void showAllRows() {
-		Collection<Integer> hiddenRows = new ArrayList<Integer>(hiddenRowIndexes);
+		Collection<Long> hiddenRows = new ArrayList<Long>(hiddenRowIndexes);
 		hiddenRowIndexes.clear();
 		invalidateCache();
 		fireLayerEvent(new ShowRowPositionsEvent(this, hiddenRows));

@@ -19,11 +19,11 @@ public abstract class AbstractSelectDimPositionsCommand extends AbstractDimPosit
 	
 	private final int selectionFlags;
 	
-	private int positionToReveal;
+	private long positionToReveal;
 	
 	
 	public AbstractSelectDimPositionsCommand(final Orientation orienation,
-			final ILayer layer, final int position,
+			final ILayer layer, final long position,
 			final int selectionFlags) {
 		this(orienation, layer, position,
 				Collections.singletonList(new Range(position)),
@@ -31,8 +31,8 @@ public abstract class AbstractSelectDimPositionsCommand extends AbstractDimPosit
 	}
 	
 	public AbstractSelectDimPositionsCommand(final Orientation orientation,
-			final ILayer layer, final int refPosition, final Collection<Range> positions,
-			final int positionToReveal, final int selectionFlags) {
+			final ILayer layer, final long refPosition, final Collection<Range> positions,
+			final long positionToReveal, final int selectionFlags) {
 		super(orientation, layer, refPosition, positions);
 		
 		this.positionToReveal = positionToReveal;
@@ -51,16 +51,16 @@ public abstract class AbstractSelectDimPositionsCommand extends AbstractDimPosit
 		return this.selectionFlags;
 	}
 	
-	public int getPositionToReveal() {
+	public long getPositionToReveal() {
 		return this.positionToReveal;
 	}
 	
 	
 	@Override
-	protected boolean convertToTargetLayer(final ILayerDim dim, final int refPosition,
+	protected boolean convertToTargetLayer(final ILayerDim dim, final long refPosition,
 			final ILayerDim targetDim) {
 		if (super.convertToTargetLayer(dim, refPosition, targetDim)) {
-			if (this.positionToReveal != Integer.MIN_VALUE) {
+			if (this.positionToReveal != Long.MIN_VALUE) {
 				this.positionToReveal = (this.positionToReveal == refPosition) ?
 						getRefPosition() :
 						LayerCommandUtil.convertPositionToTargetContext(dim,

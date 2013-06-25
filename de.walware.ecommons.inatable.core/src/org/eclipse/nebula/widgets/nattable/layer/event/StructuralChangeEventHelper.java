@@ -42,17 +42,17 @@ public class StructuralChangeEventHelper {
 	 * 			or not. Needed for last row checks
 	 */
 	public static void handleRowDelete(Collection<StructuralDiff> rowDiffs, ILayer underlyingLayer, 
-			Collection<Integer> cachedRowIndexes, boolean handleNotFound) {
+			Collection<Long> cachedRowIndexes, boolean handleNotFound) {
 		
 		//the number of all deleted rows that don't have a corresponding index anymore (last row cases)
-		int numberOfNoIndex = 0;
-		List<Integer> toRemove = new ArrayList<Integer>();
+		long numberOfNoIndex = 0;
+		List<Long> toRemove = new ArrayList<Long>();
 		for (Iterator<StructuralDiff> diffIterator = rowDiffs.iterator(); diffIterator.hasNext();) {
 			StructuralDiff rowDiff = diffIterator.next();
 			if (rowDiff.getDiffType() != null && rowDiff.getDiffType().equals(DiffTypeEnum.DELETE)) {
 				Range beforePositionRange = rowDiff.getBeforePositionRange();
-				for (int i = beforePositionRange.start; i < beforePositionRange.end; i++) {
-					int index = i;//underlyingLayer.getRowIndexByPosition(i);
+				for (long i = beforePositionRange.start; i < beforePositionRange.end; i++) {
+					long index = i;//underlyingLayer.getRowIndexByPosition(i);
 					if (index >= 0)
 						toRemove.add(index);
 					else
@@ -64,16 +64,16 @@ public class StructuralChangeEventHelper {
 		cachedRowIndexes.removeAll(toRemove);
 		
 		//modify row indexes regarding the deleted rows
-		List<Integer> modifiedRows = new ArrayList<Integer>();
-		for (Integer row : cachedRowIndexes) {
+		List<Long> modifiedRows = new ArrayList<Long>();
+		for (Long row : cachedRowIndexes) {
 			//check number of removed indexes that are lower than the current one
-			int deletedBefore = handleNotFound ? numberOfNoIndex : 0;
-			for (Integer removed : toRemove) {
+			long deletedBefore = handleNotFound ? numberOfNoIndex : 0;
+			for (Long removed : toRemove) {
 				if (removed < row) {
 					deletedBefore++;
 				}
 			}
-			int modRow = row-deletedBefore;
+			long modRow = row-deletedBefore;
 			if (modRow >= 0)
 				modifiedRows.add(modRow);
 		}
@@ -100,14 +100,14 @@ public class StructuralChangeEventHelper {
 	 * 			are applied for a specific state (e.g. row hide state)
 	 */
 	public static void handleRowInsert(Collection<StructuralDiff> rowDiffs, ILayer underlyingLayer, 
-			Collection<Integer> cachedRowIndexes, boolean addToCache) {
+			Collection<Long> cachedRowIndexes, boolean addToCache) {
 		
 		for (StructuralDiff rowDiff : rowDiffs) {
-			if (rowDiff.getDiffType() != null && rowDiff.getDiffType().equals(DiffTypeEnum.ADD)) {
+			if (rowDiff.getDiffType() != null && rowDiff.getDiffType() == DiffTypeEnum.ADD) {
 				Range beforePositionRange = rowDiff.getBeforePositionRange();
-				List<Integer> modifiedRows = new ArrayList<Integer>();
-				int beforeIndex = underlyingLayer.getRowIndexByPosition(beforePositionRange.start);
-				for (Integer row : cachedRowIndexes) {
+				List<Long> modifiedRows = new ArrayList<Long>();
+				long beforeIndex = underlyingLayer.getRowIndexByPosition(beforePositionRange.start);
+				for (Long row : cachedRowIndexes) {
 					if (row >= beforeIndex) {
 						modifiedRows.add(row+1);
 					}
@@ -117,7 +117,7 @@ public class StructuralChangeEventHelper {
 				}
 				
 				if (addToCache)
-					modifiedRows.add(beforeIndex, beforePositionRange.start);
+					modifiedRows.add(beforeIndex);
 				
 				cachedRowIndexes.clear();
 				cachedRowIndexes.addAll(modifiedRows);

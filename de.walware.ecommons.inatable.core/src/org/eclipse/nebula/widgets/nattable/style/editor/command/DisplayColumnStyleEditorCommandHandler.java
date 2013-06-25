@@ -14,13 +14,16 @@ import static org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes.CE
 import static org.eclipse.nebula.widgets.nattable.style.DisplayMode.NORMAL;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.eclipse.swt.widgets.Display;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
@@ -29,7 +32,6 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.style.editor.ColumnStyleEditorDialog;
-import org.eclipse.swt.widgets.Display;
 
 /**
  * 
@@ -57,7 +59,7 @@ public class DisplayColumnStyleEditorCommandHandler extends AbstractLayerCommand
 
 	@Override
 	public boolean doCommand(DisplayColumnStyleEditorCommand command) {
-		int columnIndexOfClick = command.getNattableLayer().getColumnIndexByPosition(command.columnPosition);
+		long columnIndexOfClick = command.getNattableLayer().getColumnIndexByPosition(command.columnPosition);
 		
 		LabelStack configLabels = new LabelStack();
 		columnLabelAccumulator.accumulateConfigLabels(configLabels, columnIndexOfClick, 0);
@@ -73,42 +75,38 @@ public class DisplayColumnStyleEditorCommandHandler extends AbstractLayerCommand
 			return true;
 		}
 		
-		applySelectedStyleToColumns(command, getSelectedColumnIndeces());
+		applySelectedStyleToColumns(command);
 		return true;
-	}
-
-	private int[] getSelectedColumnIndeces() {
-		int[] selectedColumnPositions = selectionLayer.getSelectedColumnPositions();
-		int[] selectedColumnIndeces = new int[selectedColumnPositions.length];
-		for (int i=0; i<selectedColumnPositions.length; i++) {
-			selectedColumnIndeces[i] = selectionLayer.getColumnIndexByPosition(selectedColumnPositions[i]);
-		}
-		return selectedColumnIndeces;
 	}
 
 	public Class<DisplayColumnStyleEditorCommand> getCommandClass() {
 		return DisplayColumnStyleEditorCommand.class;
 	}
 
-	protected void applySelectedStyleToColumns(DisplayColumnStyleEditorCommand command, int[] columnIndeces) {
-		for (int i=0; i<columnIndeces.length; i++) {
-			final int columnIndex = columnIndeces[i];
-			// Read the edited styles
-			Style newColumnCellStyle = dialog.getNewColumnCellStyle(); 
-			
-			String configLabel = getConfigLabel(columnIndex);
-			if (newColumnCellStyle == null) {
-				stylesToPersist.remove(configLabel);
-			} else {
-				newColumnCellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, dialog.getNewColumnBorderStyle());
-				stylesToPersist.put(configLabel, newColumnCellStyle);
+	protected void applySelectedStyleToColumns(DisplayColumnStyleEditorCommand command) {
+		final List<Range> selectedColumnPositions = selectionLayer.getSelectedColumnPositions();
+		for (final Range range : selectedColumnPositions) {
+			for (long position = range.start; position < range.end; position++) {
+				long index = selectionLayer.getColumnIndexByPosition(position);
+				if (index >= 0) {
+					// Read the edited styles
+					Style newColumnCellStyle = dialog.getNewColumnCellStyle(); 
+					
+					String configLabel = getConfigLabel(index);
+					if (newColumnCellStyle == null) {
+						stylesToPersist.remove(configLabel);
+					} else {
+						newColumnCellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, dialog.getNewColumnBorderStyle());
+						stylesToPersist.put(configLabel, newColumnCellStyle);
+					}
+					configRegistry.registerConfigAttribute(CELL_STYLE, newColumnCellStyle, NORMAL, configLabel);
+					columnLabelAccumulator.registerColumnOverridesOnTop(index, configLabel);
+				}
 			}
-			configRegistry.registerConfigAttribute(CELL_STYLE, newColumnCellStyle, NORMAL, configLabel);
-			columnLabelAccumulator.registerColumnOverridesOnTop(columnIndex, configLabel);
 		}
 	}
 
-	protected String getConfigLabel(int columnIndex) {
+	protected String getConfigLabel(long columnIndex) {
 		return USER_EDITED_STYLE_LABEL + columnIndex;
 	}
 
@@ -121,7 +119,7 @@ public class DisplayColumnStyleEditorCommandHandler extends AbstractLayerCommand
 
 			// Relevant Key
 			if (keyString.contains(PERSISTENCE_PREFIX)) {
-				int colIndex = parseColumnIndexFromKey(keyString);
+				long colIndex = parseColumnIndexFromKey(keyString);
 
 				// Has the config label been processed
 				if (!stylesToPersist.keySet().contains(getConfigLabel(colIndex))) {
@@ -135,12 +133,12 @@ public class DisplayColumnStyleEditorCommandHandler extends AbstractLayerCommand
 		}
 	}
 
-	protected int parseColumnIndexFromKey(String keyString) {
+	protected long parseColumnIndexFromKey(String keyString) {
 		int colLabelStartIndex = keyString.indexOf(USER_EDITED_STYLE_LABEL);
 		String columnConfigLabel = keyString.substring(colLabelStartIndex, keyString.indexOf('.', colLabelStartIndex));
 		int lastUnderscoreInLabel = columnConfigLabel.lastIndexOf('_', colLabelStartIndex);
 
-		return Integer.parseInt(columnConfigLabel.substring(lastUnderscoreInLabel + 1));
+		return Long.parseLong(columnConfigLabel.substring(lastUnderscoreInLabel + 1));
 	}
 
 	public void saveState(String prefix, Properties properties) {

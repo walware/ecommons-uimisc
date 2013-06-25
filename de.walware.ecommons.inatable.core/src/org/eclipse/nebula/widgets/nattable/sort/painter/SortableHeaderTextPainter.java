@@ -88,7 +88,7 @@ public class SortableHeaderTextPainter extends CellPainterWrapper {
      * 			will cause the bounds of the cell to shrink for the base painter.
      */
     public SortableHeaderTextPainter(ICellPainter interiorPainter, CellEdgeEnum cellEdge,
-    		boolean paintBg, int spacing, boolean paintDecorationDependent) {
+    		boolean paintBg, long spacing, boolean paintDecorationDependent) {
     	
 	    ICellPainter sortPainter = new SortIconPainter(paintBg);
 	    CellPainterDecorator painter = new CellPainterDecorator(interiorPainter, cellEdge, 

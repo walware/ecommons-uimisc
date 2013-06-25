@@ -22,7 +22,7 @@ public class DisplayColumnGroupRenameDialogCommand extends AbstractColumnCommand
     /**
 	 * @param columnPosition of the column group to be renamed 
 	 */
-	public DisplayColumnGroupRenameDialogCommand(NatTable natTable, int columnPosition) {
+	public DisplayColumnGroupRenameDialogCommand(NatTable natTable, long columnPosition) {
 		super(natTable, columnPosition);
         this.natTable = natTable;
 	}

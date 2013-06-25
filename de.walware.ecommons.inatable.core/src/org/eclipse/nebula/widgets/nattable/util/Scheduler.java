@@ -16,13 +16,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Scheduler implements ThreadFactory  {
     
 	private final String threadNamePrefix;
-	private final AtomicInteger counter = new AtomicInteger();
-	private int scheduledTasks;
+	private final AtomicLong counter = new AtomicLong();
+	private long scheduledTasks;
 	private ScheduledExecutorService threadPool;
 	
 	public Scheduler(String threadNamePrefix) {

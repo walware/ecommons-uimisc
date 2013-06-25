@@ -26,7 +26,7 @@ import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 
@@ -132,16 +132,18 @@ public class NatExporter {
 		
 		ProgressBar progressBar = null;
 		
+		double factor = 1.0;
 		if (shell != null) {
 			Shell childShell = new Shell(shell.getDisplay(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 			childShell.setText(Messages.getString("NatExporter.exporting")); //$NON-NLS-1$
 
 			int startRow = 0;
-			int endRow = layer.getRowCount() - 1;
+			long endRow = layer.getRowCount() - 1;
+			factor = (endRow < Integer.MAX_VALUE) ? 1.0 : ((double) 0xfffffff) / endRow;
 			
 			progressBar = new ProgressBar(childShell, SWT.SMOOTH);
 			progressBar.setMinimum(startRow);
-			progressBar.setMaximum(endRow);
+			progressBar.setMaximum((int) (factor * endRow));
 			progressBar.setBounds(0, 0, 400, 25);
 			progressBar.setFocus();
 
@@ -152,13 +154,13 @@ public class NatExporter {
 		try {
 			exporter.exportLayerBegin(outputStream, layerName);
 			
-			for (int rowPosition = 0; rowPosition < layer.getRowCount(); rowPosition++) {
+			for (long rowPosition = 0; rowPosition < layer.getRowCount(); rowPosition++) {
 				exporter.exportRowBegin(outputStream, rowPosition);
 				if (progressBar != null) {
-					progressBar.setSelection(rowPosition);
+					progressBar.setSelection((int) (factor * rowPosition));
 				}
 				
-				for (int columnPosition = 0; columnPosition < layer.getColumnCount(); columnPosition++) {
+				for (long columnPosition = 0; columnPosition < layer.getColumnCount(); columnPosition++) {
 					ILayerCell cell = layer.getCellByPosition(columnPosition, rowPosition);
 					
 					IExportFormatter exportFormatter = configRegistry.getConfigAttribute(CellConfigAttributes.EXPORT_FORMATTER, cell.getDisplayMode(), cell.getConfigLabels().getLabels());

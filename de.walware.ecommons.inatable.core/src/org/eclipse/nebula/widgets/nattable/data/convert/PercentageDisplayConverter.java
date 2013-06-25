@@ -15,7 +15,7 @@ public class PercentageDisplayConverter extends DisplayConverter {
 	public Object canonicalToDisplayValue(Object canonicalValue) {
 		if (canonicalValue != null) {
 			double percentageValue = ((Double) canonicalValue).doubleValue();
-			int displayInt = (int) (percentageValue * 100);
+			long displayInt = (int) (percentageValue * 100);
 			return String.valueOf(displayInt) + "%"; //$NON-NLS-1$
 		}
 		return ""; //$NON-NLS-1$
@@ -28,7 +28,7 @@ public class PercentageDisplayConverter extends DisplayConverter {
 			displayString = displayString.substring(0, displayString.length() - 1);
 		}
 		displayString = displayString.trim();
-		int displayInt = Integer.valueOf(displayString).intValue();
+		long displayInt = Long.valueOf(displayString).longValue();
 		double percentageValue = (double) displayInt / 100;
 		return Double.valueOf(percentageValue);
 	}

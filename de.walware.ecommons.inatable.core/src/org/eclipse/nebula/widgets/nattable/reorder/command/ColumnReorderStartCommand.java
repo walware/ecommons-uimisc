@@ -19,7 +19,7 @@ public class ColumnReorderStartCommand implements ILayerCommand {
 	
 	private ColumnPositionCoordinate fromColumnPositionCoordinate;
 	
-	public ColumnReorderStartCommand(ILayer layer, int fromColumnPosition) {
+	public ColumnReorderStartCommand(ILayer layer, long fromColumnPosition) {
 		fromColumnPositionCoordinate = new ColumnPositionCoordinate(layer, fromColumnPosition);
 	}
 	
@@ -27,7 +27,7 @@ public class ColumnReorderStartCommand implements ILayerCommand {
 		this.fromColumnPositionCoordinate = command.fromColumnPositionCoordinate;
 	}
 	
-	public int getFromColumnPosition() {
+	public long getFromColumnPosition() {
 		return fromColumnPositionCoordinate.getColumnPosition();
 	}
 	

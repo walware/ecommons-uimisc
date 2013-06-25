@@ -11,11 +11,13 @@
 
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
+import static org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils.safe;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
 
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
@@ -41,7 +43,7 @@ public class DiagCellPainter extends BackgroundPainter {
 		
 		gc.setForeground(color);
 		gc.setAntialias(SWT.ON);
-		gc.drawLine(bounds.x, bounds.y, bounds.x + bounds.width - 1, bounds.y + bounds.height - 1);
+		gc.drawLine(safe(bounds.x), safe(bounds.y), safe(bounds.x + bounds.width - 1), safe(bounds.y + bounds.height - 1));
 		gc.setAntialias(GUIHelper.DEFAULT_ANTIALIAS);
 	}
 	

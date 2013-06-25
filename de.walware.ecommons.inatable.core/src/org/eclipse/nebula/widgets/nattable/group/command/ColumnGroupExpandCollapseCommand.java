@@ -15,7 +15,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public class ColumnGroupExpandCollapseCommand extends AbstractColumnCommand {
 
-	public ColumnGroupExpandCollapseCommand(ILayer layer, int columnPosition) {
+	public ColumnGroupExpandCollapseCommand(ILayer layer, long columnPosition) {
 		super(layer, columnPosition);
 	}
 	

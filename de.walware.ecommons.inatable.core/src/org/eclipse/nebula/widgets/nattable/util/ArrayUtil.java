@@ -17,7 +17,7 @@ import java.util.List;
 public class ArrayUtil {
 
 	public static final String[] STRING_TYPE_ARRAY = new String[] {};
-	public static final int[] INT_TYPE_ARRAY = new int[] {};
+	public static final long[] INT_TYPE_ARRAY = new long[] {};
 
 	public static <T> List<T> asList(T[] array) {
 		return new ArrayList<T>(ArrayUtil.asCollection(array));
@@ -31,26 +31,12 @@ public class ArrayUtil {
 		return list;
 	}
 
-	public static int[] asIntArray(int... ints) {
-		return ints;
-	}
-
-	public static List<Integer> asIntegerList(int... ints) {
-		ArrayList<Integer> list = new ArrayList<Integer>();
-		for (Integer integer : ints) {
+	public static List<Long> asLongList(long... ints) {
+		ArrayList<Long> list = new ArrayList<Long>();
+		for (Long integer : ints) {
 			list.add(integer);
 		}
 		return list;
-	}
-
-	public static int[] asIntArray(List<Integer> list) {
-		int[] ints = new int[list.size()];
-		int i = 0;
-		for (int fromSet : list) {
-			ints[i] = fromSet;
-			i++;
-		}
-		return ints;
 	}
 
 }

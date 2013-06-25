@@ -20,7 +20,7 @@ public class ColumnReorderEndCommand implements ILayerCommand {
 	private ColumnPositionCoordinate toColumnPositionCoordinate;
 	private boolean reorderToLeftEdge;
 	
-	public ColumnReorderEndCommand(ILayer layer, int toColumnPosition) {
+	public ColumnReorderEndCommand(ILayer layer, long toColumnPosition) {
 		if (toColumnPosition < layer.getColumnCount()) {
  			reorderToLeftEdge = true;
 		} else {
@@ -36,7 +36,7 @@ public class ColumnReorderEndCommand implements ILayerCommand {
 		this.reorderToLeftEdge = command.reorderToLeftEdge;
 	}
 	
-	public int getToColumnPosition() {
+	public long getToColumnPosition() {
 		return toColumnPositionCoordinate.getColumnPosition();
 	}
 	

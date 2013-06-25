@@ -27,7 +27,7 @@ public class RenameColumnHelper implements IPersistable {
 	private final ColumnHeaderLayer columnHeaderLayer;
 
 	/** Tracks the renamed labels provided by the users */
-	protected Map<Integer, String> renamedColumnsLabelsByIndex = new TreeMap<Integer, String>();
+	protected Map<Long, String> renamedColumnsLabelsByIndex = new TreeMap<Long, String>();
 
 	public RenameColumnHelper(ColumnHeaderLayer columnHeaderLayer) {
 		this.columnHeaderLayer = columnHeaderLayer;
@@ -39,12 +39,12 @@ public class RenameColumnHelper implements IPersistable {
 	 *
 	 * @return
 	 */
-    public boolean renameColumnPosition(int columnPosition, String customColumnName) {
-        int index = columnHeaderLayer.getColumnIndexByPosition(columnPosition);
+    public boolean renameColumnPosition(long columnPosition, String customColumnName) {
+        long index = columnHeaderLayer.getColumnIndexByPosition(columnPosition);
         return renameColumnIndex(index,customColumnName);
     }
     
-    public boolean renameColumnIndex(int index, String customColumnName) {
+    public boolean renameColumnIndex(long index, String customColumnName) {
         if (index >= 0) {
             if (customColumnName == null) {
                 renamedColumnsLabelsByIndex.remove(index);
@@ -60,14 +60,14 @@ public class RenameColumnHelper implements IPersistable {
 	 * @return the custom label for this column as specified by the user
 	 * 	Null if the columns is not renamed
 	 */
-	public String getRenamedColumnLabel(int columnIndex) {
+	public String getRenamedColumnLabel(long columnIndex) {
 		return renamedColumnsLabelsByIndex.get(columnIndex);
 	}
 
 	/**
 	 * @return TRUE if the column has been renamed
 	 */
-	public boolean isColumnRenamed(int columnIndex) {
+	public boolean isColumnRenamed(long columnIndex) {
 		return renamedColumnsLabelsByIndex.get(columnIndex) != null;
 	}
 

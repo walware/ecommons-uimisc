@@ -33,7 +33,7 @@ public class UpdateDataCommand extends AbstractPositionCommand {
 	 * @param rowPosition The row position of the value to update.
 	 * @param newValue The value to update the data model value to.
 	 */
-	public UpdateDataCommand(ILayer layer, int columnPosition, int rowPosition, Object newValue) {
+	public UpdateDataCommand(ILayer layer, long columnPosition, long rowPosition, Object newValue) {
 		super(layer, columnPosition, rowPosition);
 		this.newValue = newValue;
 	}

@@ -29,7 +29,6 @@ import org.eclipse.swt.widgets.Shell;
 
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.coordinate.Direction;
 import org.eclipse.nebula.widgets.nattable.edit.DialogEditHandler;
 import org.eclipse.nebula.widgets.nattable.edit.EditTypeEnum;
 import org.eclipse.nebula.widgets.nattable.edit.ICellEditHandler;

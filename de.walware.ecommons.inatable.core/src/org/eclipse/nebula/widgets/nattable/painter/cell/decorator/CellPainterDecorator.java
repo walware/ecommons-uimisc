@@ -10,12 +10,15 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell.decorator;
 
+import static org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils.safe;
+
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
 
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
@@ -44,7 +47,7 @@ public class CellPainterDecorator implements ICellPainter {
 	 * Note: If you want to add <b>padding</b> between the decoration and the cell border
 	 * 		 you need to add a PaddingDecorator to your painter stack.
 	 */
-	private final int spacing;
+	private final long spacing;
 	/**
 	 * Flag to specify whether the base painter should render dependent to the decoration painter
 	 * or not. This will have effect on the boundary calculation. Setting this flag to <code>true</code>
@@ -88,7 +91,7 @@ public class CellPainterDecorator implements ICellPainter {
      * @param spacing The amount of pixels that should be used as spacing between decoration and base painter
      * @param decoratorCellPainter The {@link ICellPainter} that should be used to render the decoration.
      */
-	public CellPainterDecorator(ICellPainter baseCellPainter, CellEdgeEnum cellEdge, int spacing, ICellPainter decoratorCellPainter) {
+	public CellPainterDecorator(ICellPainter baseCellPainter, CellEdgeEnum cellEdge, long spacing, ICellPainter decoratorCellPainter) {
 		this(baseCellPainter, cellEdge, spacing, decoratorCellPainter, true);
 	}
 	
@@ -102,7 +105,7 @@ public class CellPainterDecorator implements ICellPainter {
      * @param paintDecorationDependent Flag to specify whether the base painter should render dependent to the 
      * 			decoration painter or not.
      */
-	public CellPainterDecorator(ICellPainter baseCellPainter, CellEdgeEnum cellEdge, int spacing, ICellPainter decoratorCellPainter, boolean paintDecorationDependent) {
+	public CellPainterDecorator(ICellPainter baseCellPainter, CellEdgeEnum cellEdge, long spacing, ICellPainter decoratorCellPainter, boolean paintDecorationDependent) {
 		this.baseCellPainter = baseCellPainter;
 		this.cellEdge = cellEdge;
 		this.spacing = spacing;
@@ -120,7 +123,7 @@ public class CellPainterDecorator implements ICellPainter {
 	}
 	
     @Override
-	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public long getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		switch (cellEdge) {
 		case TOP_LEFT:
 		case TOP_RIGHT:
@@ -143,7 +146,7 @@ public class CellPainterDecorator implements ICellPainter {
 	}
 
     @Override
-	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public long getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		switch (cellEdge) {
 		case TOP_LEFT:
 		case TOP_RIGHT:
@@ -174,7 +177,7 @@ public class CellPainterDecorator implements ICellPainter {
 		Color originalBg = gc.getBackground();
 		gc.setBackground(CellStyleUtil.getCellStyle(cell, configRegistry).getAttributeValue(CellStyleAttributes.BACKGROUND_COLOR));
 		
-		gc.fillRectangle(adjustedCellBounds);
+		gc.fillRectangle(safe(adjustedCellBounds));
 		
 		gc.setBackground(originalBg);
 		
@@ -187,12 +190,12 @@ public class CellPainterDecorator implements ICellPainter {
 	 * @return The Rectangle which can be used by the base cell painter. 
 	 */
 	public Rectangle getBaseCellPainterBounds(ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
-		int preferredDecoratorWidth = decoratorCellPainter.getPreferredWidth(cell, gc, configRegistry);
-		int preferredDecoratorHeight = decoratorCellPainter.getPreferredHeight(cell, gc, configRegistry);
+		long preferredDecoratorWidth = decoratorCellPainter.getPreferredWidth(cell, gc, configRegistry);
+		long preferredDecoratorHeight = decoratorCellPainter.getPreferredHeight(cell, gc, configRegistry);
 		
 		// grab any extra space:
-		int grabbedPreferredWidth = adjustedCellBounds.width - preferredDecoratorWidth - spacing;
-		int grabbedPreferredHeight = adjustedCellBounds.height - preferredDecoratorHeight - spacing;
+		long grabbedPreferredWidth = adjustedCellBounds.width - preferredDecoratorWidth - spacing;
+		long grabbedPreferredHeight = adjustedCellBounds.height - preferredDecoratorHeight - spacing;
 		
 		switch (cellEdge) {
 		case LEFT:
@@ -262,8 +265,8 @@ public class CellPainterDecorator implements ICellPainter {
 	 * @return The Rectangle to paint the decoration.
 	 */
 	public Rectangle getDecoratorCellPainterBounds(ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
-		int preferredDecoratorWidth = decoratorCellPainter.getPreferredWidth(cell, gc, configRegistry);
-		int preferredDecoratorHeight = decoratorCellPainter.getPreferredHeight(cell, gc, configRegistry);
+		long preferredDecoratorWidth = decoratorCellPainter.getPreferredWidth(cell, gc, configRegistry);
+		long preferredDecoratorHeight = decoratorCellPainter.getPreferredHeight(cell, gc, configRegistry);
 		
 		switch (cellEdge) {
 		case LEFT:
@@ -322,7 +325,7 @@ public class CellPainterDecorator implements ICellPainter {
 	}
 	
 	@Override
-	public ICellPainter getCellPainterAt(int x, int y, ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
+	public ICellPainter getCellPainterAt(long x, long y, ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
 		Rectangle decoratorCellPainterBounds = getDecoratorCellPainterBounds(cell, gc, adjustedCellBounds, configRegistry);
 		if (decoratorCellPainterBounds.contains(x, y)) {
 			return decoratorCellPainter.getCellPainterAt(x, y, cell, gc, decoratorCellPainterBounds, configRegistry);

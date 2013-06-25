@@ -41,7 +41,7 @@ public class RowGroupExpandCollapseLayer<T> extends AbstractRowHideShowLayer imp
 	// Expand/collapse
 
 	@Override
-	public boolean isRowIndexHidden(int rowIndex) {
+	public boolean isRowIndexHidden(long rowIndex) {
 		
 		// This can happen if a row has just been removed.
 		if (rowIndex >= model.getDataProvider().getRowCount()) {
@@ -68,15 +68,15 @@ public class RowGroupExpandCollapseLayer<T> extends AbstractRowHideShowLayer imp
 	}
 	
 	@Override
-	public Collection<Integer> getHiddenRowIndexes() {
-		Collection<Integer> hiddenRowIndexes = new HashSet<Integer>();
+	public Collection<Long> getHiddenRowIndexes() {
+		Collection<Long> hiddenRowIndexes = new HashSet<Long>();
 
 		IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
-		int underlyingColumnCount = underlyingLayer.getRowCount();
-		for (int i = 0; i < underlyingColumnCount; i++) {
-			int rowIndex = underlyingLayer.getRowIndexByPosition(i);
+		long underlyingColumnCount = underlyingLayer.getRowCount();
+		for (long i = 0; i < underlyingColumnCount; i++) {
+			long rowIndex = underlyingLayer.getRowIndexByPosition(i);
 			if (isRowIndexHidden(rowIndex)) {
-				hiddenRowIndexes.add(Integer.valueOf(rowIndex));
+				hiddenRowIndexes.add(Long.valueOf(rowIndex));
 			}
 		}
 

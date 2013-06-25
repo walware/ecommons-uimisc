@@ -30,6 +30,8 @@ public class ScrollBarHandlerTemplate implements Listener {
 	
 	private final ScrollBar scrollBar;
 	
+	private double factor = 1;
+	
 	/**
 	 * Flag to remember if the scroll bar is moved by dragging.
 	 * Needed because if the scroll bar is moved by dragging, there will be 
@@ -114,7 +116,8 @@ public class ScrollBarHandlerTemplate implements Listener {
 				dim.scrollForwardByStep();
 				return;
 			default:
-				dim.setOriginPixel(dim.getMinimumOriginPixel() + this.scrollBar.getSelection());
+				dim.setOriginPixel(dim.getMinimumOriginPixel()
+						+ (long) (this.scrollBar.getSelection() / this.factor) );
 				return;
 			}
 		}
@@ -130,9 +133,9 @@ public class ScrollBarHandlerTemplate implements Listener {
 		}
 		final IViewportDim dim = this.viewportLayer.getDim(this.orientation);
 		
-		final int startPixel = dim.getOriginPixel() - dim.getMinimumOriginPixel();
+		final long startPixel = dim.getOriginPixel() - dim.getMinimumOriginPixel();
 		
-		this.scrollBar.setSelection(startPixel);
+		this.scrollBar.setSelection((int) (this.factor * startPixel));
 	}
 	
 	void recalculateScrollBarSize() {
@@ -142,25 +145,43 @@ public class ScrollBarHandlerTemplate implements Listener {
 		
 		final IViewportDim dim = this.viewportLayer.getDim(this.orientation);
 		
-		final int max = dim.getScrollable().getSize() - dim.getMinimumOriginPixel();
-		if (!this.scrollBar.isDisposed()) {
-			this.scrollBar.setMaximum(max);
+		final long scrollablePixel = dim.getScrollable().getSize() - dim.getMinimumOriginPixel();
+		final long viewportWindowPixel = dim.getSize();
+		
+		final int max;
+		final int viewportWindowSpan;
+		if (scrollablePixel <= 0x3fffffff) {
+			this.factor = 1.0;
+			viewportWindowSpan = (int) viewportWindowPixel;
+			max = (int) scrollablePixel;
+		}
+		else {
+			this.factor = ((double) 0x3fffffff) / scrollablePixel;
+			final double exactSpan = (this.factor * viewportWindowPixel);
+			viewportWindowSpan = (int) Math.ceil(exactSpan);
+			max = (int) Math.min(0x3fffffff
+						// the thumb will be larger than required, add the diff to adjust this, 
+						// so the user can scroll to the end using the mouse
+						+ (long) ((viewportWindowSpan - exactSpan) / this.factor),
+					Integer.MAX_VALUE ); 
 		}
 		
-		final int viewportWindowSpan = dim.getSize();
-		this.scrollBar.setPageIncrement(viewportWindowSpan / 4);
+		if (this.scrollBar.isDisposed()) {
+			return;
+		}
 		
-		int thumbSize;
-		if (viewportWindowSpan < max && viewportWindowSpan != 0) {
-			thumbSize = viewportWindowSpan;
+		this.scrollBar.setMaximum(max);
+		this.scrollBar.setPageIncrement(Math.max(viewportWindowSpan / 4, 1));
+		
+		if (viewportWindowSpan < max && viewportWindowPixel != 0) {
+			this.scrollBar.setThumb(viewportWindowSpan);
 			this.scrollBar.setEnabled(true);
 			this.scrollBar.setVisible(true);
 		} else {
-			thumbSize = max;
+			this.scrollBar.setThumb(max);
 			this.scrollBar.setEnabled(false);
 			this.scrollBar.setVisible(false);
 		}
-		this.scrollBar.setThumb(thumbSize);
 		
 		adjustScrollBar();
 	}

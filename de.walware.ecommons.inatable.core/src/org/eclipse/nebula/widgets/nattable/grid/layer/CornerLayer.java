@@ -67,7 +67,7 @@ public class CornerLayer extends DimensionallyDependentIndexLayer {
 
 
 	@Override
-	public ILayerCell getCellByPosition(final int columnPosition, final int rowPosition) {
+	public ILayerCell getCellByPosition(final long columnPosition, final long rowPosition) {
 		return new LayerCell(this,
 				new LayerCellDim(HORIZONTAL, NO_INDEX,
 						columnPosition, 0, getHorizontalLayerDependency().getColumnCount() ),

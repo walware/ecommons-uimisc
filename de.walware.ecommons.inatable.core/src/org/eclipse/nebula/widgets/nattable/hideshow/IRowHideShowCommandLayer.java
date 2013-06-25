@@ -23,19 +23,19 @@ public interface IRowHideShowCommandLayer {
 	 * Hide the rows at the given positions. 
 	 * @param rowPositions The positions of the rows to hide.
 	 */
-	void hideRowPositions(Collection<Integer> rowPositions);
+	void hideRowPositions(Collection<Long> rowPositions);
 	
 	/**
 	 * Hide the rows with the given indexes. 
 	 * @param rowIndexes The indexes of the rows to hide.
 	 */
-	void hideRowIndexes(Collection<Integer> rowIndexes);
+	void hideRowIndexes(Collection<Long> rowIndexes);
 	
 	/**
 	 * Show the rows with the given indexes again. 
 	 * @param rowIndexes The indexes of the rows that should be showed again.
 	 */
-	void showRowIndexes(Collection<Integer> rowIndexes);
+	void showRowIndexes(Collection<Long> rowIndexes);
 	
 	/**
 	 * Show all rows that where previously hidden.

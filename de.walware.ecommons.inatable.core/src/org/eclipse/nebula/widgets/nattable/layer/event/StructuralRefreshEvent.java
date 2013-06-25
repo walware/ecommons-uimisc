@@ -15,7 +15,7 @@ import java.util.Collection;
 
 
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 
 /**
  * General event indicating that structures cached by the layers need refreshing.

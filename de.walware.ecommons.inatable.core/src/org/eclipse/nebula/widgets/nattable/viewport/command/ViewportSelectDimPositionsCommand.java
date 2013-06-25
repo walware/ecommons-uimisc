@@ -26,13 +26,13 @@ public class ViewportSelectDimPositionsCommand extends AbstractSelectDimPosition
 	
 	
 	public ViewportSelectDimPositionsCommand(final Orientation orienation,
-			final ILayer layer, final int position, final int selectionFlags) {
+			final ILayer layer, final long position, final int selectionFlags) {
 		super(orienation, layer, position, selectionFlags);
 	}
 	
 	public ViewportSelectDimPositionsCommand(final Orientation orientation,
-			final ILayer layer, final int refPosition, final Collection<Range> positions,
-			final int positionToReveal, final int selectionFlags) {
+			final ILayer layer, final long refPosition, final Collection<Range> positions,
+			final long positionToReveal, final int selectionFlags) {
 		super(orientation, layer, refPosition, positions, positionToReveal, selectionFlags);
 	}
 	

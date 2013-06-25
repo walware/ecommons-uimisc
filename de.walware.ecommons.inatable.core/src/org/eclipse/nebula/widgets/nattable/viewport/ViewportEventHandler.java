@@ -48,9 +48,9 @@ public class ViewportEventHandler implements ILayerEventHandler<IStructuralChang
 	protected void handle(final ViewportDim dim, final Collection<StructuralDiff> diffs) {
 		dim.invalidateStructure();
 		if (diffs != null) {
-			int change = 0;
+			long change = 0;
 			
-			final int minimumOriginPosition = dim.getMinimumOriginPosition();
+			final long minimumOriginPosition = dim.getMinimumOriginPosition();
 			for (final StructuralDiff diff : diffs) {
 				switch (diff.getDiffType()) {
 				case ADD:

@@ -13,7 +13,7 @@ package org.eclipse.nebula.widgets.nattable.painter.cell;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 
 /**
  * Implementations are responsible for painting a cell.
@@ -34,7 +34,7 @@ public interface ICellPainter {
 	 * @param configRegistry
 	 * @return
 	 */
-	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry);
+	public long getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry);
 
 	/**
 	 * Get the preferred height of the cell when rendered by this painter. Used for auto-resize.
@@ -43,8 +43,8 @@ public interface ICellPainter {
 	 * @param configRegistry
 	 * @return
 	 */
-	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry);
+	public long getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry);
 	
-	public ICellPainter getCellPainterAt(int x, int y, ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry);
+	public ICellPainter getCellPainterAt(long x, long y, ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry);
 	
 }

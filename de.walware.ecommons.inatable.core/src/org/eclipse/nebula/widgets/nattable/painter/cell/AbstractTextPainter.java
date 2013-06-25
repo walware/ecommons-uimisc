@@ -224,7 +224,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 		return lines.length;
 	}
 
-	protected int getHorizontalAlignmentIndent(HorizontalAlignment horizontalAlignment, final int width, final int textWidth) {
+	protected long getHorizontalAlignmentIndent(HorizontalAlignment horizontalAlignment, final long width, final long textWidth) {
 		if (horizontalAlignment == null) {
 			horizontalAlignment = HorizontalAlignment.CENTER;
 		}
@@ -270,13 +270,13 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 	 * @param text the text that should be modified for display
 	 * @return the modified text
 	 */
-	protected String getTextToDisplay(ILayerCell cell, GC gc, int availableLength, String text) {
+	protected String getTextToDisplay(ILayerCell cell, GC gc, long availableLength, String text) {
 		StringBuilder output = new StringBuilder();
 
 		text = text.trim();
 
 		//take the whole width of the text
-		int textLength = getWidthFromCache(gc, text);
+		long textLength = getWidthFromCache(gc, text);
 		if (calculateByTextLength && wrapText) {
 			if (availableLength < textLength) {
 				//calculate length by finding the longest word in text
@@ -353,7 +353,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 	 * @param availableSpace the available space
 	 * @return the concatenated String of the first two parameters
 	 */
-	private String computeTextToDisplay(String one, String two, GC gc, int availableSpace) {
+	private String computeTextToDisplay(String one, String two, GC gc, long availableSpace) {
 		String result = one;
 		//if one is empty or one ends with newline just add two
 		if (one == null || one.length() == 0 || one.endsWith(NEW_LINE_SEPARATOR)) {
@@ -398,10 +398,10 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 	 * @return the modified text if it is bigger than the available space or the 
 	 * text as it was given if it fits into the available space
 	 */
-	private String modifyTextToDisplay(String text, GC gc, int availableLength) {
+	private String modifyTextToDisplay(String text, GC gc, long availableLength) {
 		//length of the text on GC taking new lines into account
 		//this means the textLength is the value of the longest line
-		int textLength = getWidthFromCache(gc, text);
+		long textLength = getWidthFromCache(gc, text);
 		if (textLength > availableLength) {
 			//as looking at the text length without taking new lines into account
 			//we have to look at every line itself
@@ -415,13 +415,13 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 				
 				//now modify every line if it is longer than the available space
 				//this way every line will get ... if it doesn't fit
-				int lineLength = getWidthFromCache(gc, line);
+				long lineLength = getWidthFromCache(gc, line);
 				if (lineLength > availableLength) {
 					int numExtraChars = 0;
 
 					int newStringLength = line.length();
 					String trialLabelText = line + DOT;
-					int newTextExtent = getWidthFromCache(gc, trialLabelText);
+					long newTextExtent = getWidthFromCache(gc, trialLabelText);
 
 					while (newTextExtent > availableLength + 1 && newStringLength > 0) {
 						double avgWidthPerChar = (double) newTextExtent / trialLabelText.length();
@@ -473,7 +473,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 //	 * @param cell the current cell that is painted
 //	 * @param contentLength the length of the content
 //	 */
-//	protected abstract void setNewMinLength(ILayerCell cell, int contentLength);
+//	protected abstract void setNewMinLength(ILayerCell cell, long contentLength);
 //	
 //	/**
 //	 * This method is used to determine the padding from the cell to the available length.
@@ -489,7 +489,7 @@ public abstract class AbstractTextPainter extends BackgroundPainter {
 //	 * as Rectangle argument
 //	 * @return the padding between the current cell length - availableLength
 //	 */
-//	protected abstract int calculatePadding(ILayerCell cell, int availableLength);
+//	protected abstract long calculatePadding(ILayerCell cell, long availableLength);
 
 	/**
 	 * Set if the text should be rendered underlined or not.

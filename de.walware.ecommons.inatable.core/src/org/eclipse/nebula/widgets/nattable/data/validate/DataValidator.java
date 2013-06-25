@@ -15,7 +15,7 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
 public abstract class DataValidator implements IDataValidator {
 
-	public abstract boolean validate(int columnIndex, int rowIndex, Object newValue);
+	public abstract boolean validate(long columnIndex, long rowIndex, Object newValue);
 
 	public boolean validate(ILayerCell cell, IConfigRegistry configRegistry, Object newValue) {
 		return validate(cell.getColumnIndex(), cell.getRowIndex(), newValue);

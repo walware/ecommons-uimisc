@@ -41,11 +41,11 @@ public class ReorderColumnsAndGroupsCommandHandler extends AbstractLayerCommandH
 		final ILayer underlyingLayer = columnGroupReorderLayer.getUnderlyingLayer();
 		List<String> groupsProcessed = new ArrayList<String>();
 		
-		List<Integer> fromColumnPositions = command.getFromColumnPositions();
-		List<Integer> fromColumnPositionsWithGroupColumns = new ArrayList<Integer>();
+		List<Long> fromColumnPositions = command.getFromColumnPositions();
+		List<Long> fromColumnPositionsWithGroupColumns = new ArrayList<Long>();
 		
-		for (Integer fromColumnPosition : fromColumnPositions) {
-			int fromColumnIndex = underlyingLayer.getColumnIndexByPosition(fromColumnPosition.intValue());
+		for (Long fromColumnPosition : fromColumnPositions) {
+			long fromColumnIndex = underlyingLayer.getColumnIndexByPosition(fromColumnPosition.longValue());
 			
 			ColumnGroupModel model = columnGroupReorderLayer.getModel();
 			if (model.isPartOfAGroup(fromColumnIndex)) {

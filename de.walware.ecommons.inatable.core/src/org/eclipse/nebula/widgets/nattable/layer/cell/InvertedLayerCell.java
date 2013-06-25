@@ -10,10 +10,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer.cell;
 
-import org.eclipse.swt.graphics.Rectangle;
-
 import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
-import org.eclipse.nebula.widgets.nattable.coordinate.SWTUtil;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 
@@ -26,11 +24,11 @@ public class InvertedLayerCell implements ILayerCell {
 		this.layerCell = layerCell;
 	}
 
-	public int getOriginColumnPosition() {
+	public long getOriginColumnPosition() {
 		return layerCell.getOriginRowPosition();
 	}
 
-	public int getOriginRowPosition() {
+	public long getOriginRowPosition() {
 		return layerCell.getOriginColumnPosition();
 	}
 
@@ -43,27 +41,27 @@ public class InvertedLayerCell implements ILayerCell {
 		return layerCell.getDim(orientation.getOrthogonal());
 	}
 
-	public int getColumnPosition() {
+	public long getColumnPosition() {
 		return layerCell.getRowPosition();
 	}
 
-	public int getRowPosition() {
+	public long getRowPosition() {
 		return layerCell.getColumnPosition();
 	}
 
-	public int getColumnIndex() {
+	public long getColumnIndex() {
 		return layerCell.getRowIndex();
 	}
 
-	public int getRowIndex() {
+	public long getRowIndex() {
 		return layerCell.getColumnIndex();
 	}
 
-	public int getColumnSpan() {
+	public long getColumnSpan() {
 		return layerCell.getRowSpan();
 	}
 
-	public int getRowSpan() {
+	public long getRowSpan() {
 		return layerCell.getColumnSpan();
 	}
 
@@ -84,7 +82,7 @@ public class InvertedLayerCell implements ILayerCell {
 	}
 
 	public Rectangle getBounds() {
-		return SWTUtil.switchOrientation(layerCell.getBounds());
+		return layerCell.getBounds().switchOrientation();
 	}
 	
 }

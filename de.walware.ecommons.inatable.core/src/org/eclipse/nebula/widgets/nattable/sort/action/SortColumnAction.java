@@ -26,7 +26,7 @@ public class SortColumnAction implements IMouseAction {
 	}
 	
 	public void run(NatTable natTable, MouseEvent event) {
-		int columnPosition = ((NatEventData)event.data).getColumnPosition();
+		long columnPosition = ((NatEventData)event.data).getColumnPosition();
 		natTable.doCommand(new SortColumnCommand(natTable, columnPosition, accumulate));
 	}
 }

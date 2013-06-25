@@ -16,7 +16,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -42,8 +42,8 @@ public class WaitDialog extends Dialog {
 
 	private void centerDialogOnScreen(Shell shell) {
 		shell.setSize(250, 75);
-		Rectangle parentSize = getParentShell().getBounds();
-		Rectangle mySize = shell.getBounds();
+		org.eclipse.swt.graphics.Rectangle parentSize = getParentShell().getBounds();
+		org.eclipse.swt.graphics.Rectangle mySize = shell.getBounds();
 		int locationX, locationY;
 		locationX = (parentSize.width - mySize.width)/2+parentSize.x;
 		locationY = (parentSize.height - mySize.height)/2+parentSize.y;

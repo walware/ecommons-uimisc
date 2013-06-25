@@ -11,14 +11,17 @@
 package org.eclipse.nebula.widgets.nattable.painter.cell.decorator;
 
 
+import static org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils.safe;
+
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
 
 public class XPBackgroundDecorator extends BackgroundPainter {
 
@@ -46,11 +49,11 @@ public class XPBackgroundDecorator extends BackgroundPainter {
 		highlightColor3 = GUIHelper.getColor(250, 178, 24);
 	}
 
-	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public long getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return super.getPreferredWidth(cell, gc, configRegistry) + 4;
 	}
 	
-	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public long getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return super.getPreferredHeight(cell, gc, configRegistry) + 4;
 	}
 
@@ -67,13 +70,14 @@ public class XPBackgroundDecorator extends BackgroundPainter {
 		Color originalForeground = gc.getForeground();
 		
 		// Draw separator
-		int x = rectangle.x;
+		final int x0 = safe(rectangle.x);
+		int x = x0;
 		gc.setForeground(GUIHelper.COLOR_WHITE);
-		gc.drawLine(x, rectangle.y + 3, x, rectangle.y + rectangle.height - 6);
-
-		x = rectangle.x + rectangle.width - 1;
+		gc.drawLine(x, safe(rectangle.y + 3), x, safe(rectangle.y + rectangle.height - 6));
+		
+		x = safe(rectangle.x + rectangle.width - 1);
 		gc.setForeground(separatorColor);
-		gc.drawLine(x, rectangle.y + 3, x, rectangle.y + rectangle.height - 6);
+		gc.drawLine(x, safe(rectangle.y + 3), x, safe(rectangle.y + rectangle.height - 6));
 		
 		// Restore GC settings
 		gc.setBackground(originalBackground);
@@ -82,17 +86,21 @@ public class XPBackgroundDecorator extends BackgroundPainter {
 		// Draw bottom edge
 		boolean isHighlight = false;
 		
-		int y = rectangle.y + rectangle.height - 3;
+		final int x1 = safe(rectangle.x + rectangle.width);
+		int y = safe(rectangle.y + rectangle.height - 3);
+		if (y >= Integer.MAX_VALUE - 3) {
+			return;
+		}
 		gc.setForeground(isHighlight ? highlightColor1 : gradientColor1);
-		gc.drawLine(rectangle.x, y, rectangle.x + rectangle.width, y);
+		gc.drawLine(x0, y, x1, y);
 		
 		y++;
 		gc.setForeground(isHighlight ? highlightColor2 : gradientColor2);
-		gc.drawLine(rectangle.x, y, rectangle.x + rectangle.width, y);
-
+		gc.drawLine(x0, y, x1, y);
+		
 		y++;
 		gc.setForeground(isHighlight ? highlightColor3 : gradientColor3);
-		gc.drawLine(rectangle.x, y, rectangle.x + rectangle.width, y);
+		gc.drawLine(x0, y, x1, y);
 	}
 	
 }

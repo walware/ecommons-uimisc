@@ -11,6 +11,8 @@
 // ~
 package org.eclipse.nebula.widgets.nattable.widget;
 
+import static org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils.safe;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -366,9 +368,9 @@ public class NatCombo extends Composite {
 
 				Rectangle iconCanvasBounds = iconCanvas.getBounds();
 				Rectangle iconImageBounds = iconImage.getBounds();
-				int horizontalAlignmentPadding = CellStyleUtil.getHorizontalAlignmentPadding(HorizontalAlignment.CENTER, iconCanvasBounds, iconImageBounds.width);
-				int verticalAlignmentPadding = CellStyleUtil.getVerticalAlignmentPadding(VerticalAlignmentEnum.MIDDLE, iconCanvasBounds, iconImageBounds.height);
-				gc.drawImage(iconImage, horizontalAlignmentPadding, verticalAlignmentPadding);
+				long horizontalAlignmentPadding = CellStyleUtil.getHorizontalAlignmentPadding(HorizontalAlignment.CENTER, iconCanvasBounds.width, iconImageBounds.width);
+				long verticalAlignmentPadding = CellStyleUtil.getVerticalAlignmentPadding(VerticalAlignmentEnum.MIDDLE, iconCanvasBounds.height, iconImageBounds.height);
+				gc.drawImage(iconImage, safe(horizontalAlignmentPadding), safe(verticalAlignmentPadding));
 
 				Color originalFg = gc.getForeground();
 				gc.setForeground(GUIHelper.COLOR_WIDGET_BORDER);

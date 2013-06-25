@@ -34,7 +34,7 @@ public class RowReorderStartCommand implements ILayerCommand {
 	 * @param layer The layer the position is related to
 	 * @param fromRowPosition The position of the row that should be reordered
 	 */
-	public RowReorderStartCommand(ILayer layer, int fromRowPosition) {
+	public RowReorderStartCommand(ILayer layer, long fromRowPosition) {
 		fromRowPositionCoordinate = new RowPositionCoordinate(layer, fromRowPosition);
 	}
 	
@@ -49,7 +49,7 @@ public class RowReorderStartCommand implements ILayerCommand {
 	/**
 	 * @return The position of the row that should be reordered
 	 */
-	public int getFromRowPosition() {
+	public long getFromRowPosition() {
 		return fromRowPositionCoordinate.getRowPosition();
 	}
 	

@@ -10,9 +10,8 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.selection;
 
-import org.eclipse.swt.graphics.Rectangle;
-
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 
 
@@ -42,7 +41,7 @@ public class SelectCellCommandHandler extends AbstractLayerCommandHandler<Select
 	/**
 	 * Toggles the selection state of the given row and column.
 	 */
-	protected void toggleOrSelectCell(final int columnPosition, final int rowPosition,
+	protected void toggleOrSelectCell(final long columnPosition, final long rowPosition,
 			final int selectionFlags, final boolean showCell) {
 		if ((selectionFlags & (SelectionFlags.RETAIN_SELECTION | SelectionFlags.RANGE_SELECTION)) == SelectionFlags.RETAIN_SELECTION) {
 			if (this.selectionLayer.isCellPositionSelected(columnPosition, rowPosition)) {
@@ -57,7 +56,7 @@ public class SelectCellCommandHandler extends AbstractLayerCommandHandler<Select
 	/**
 	 * Selects a cell, optionally clearing current selection
 	 */
-	protected void selectCell(final int columnPosition, final int rowPosition,
+	protected void selectCell(final long columnPosition, final long rowPosition,
 			final int selectionFlags, final boolean show) {
 		if ((selectionFlags & (SelectionFlags.RETAIN_SELECTION | SelectionFlags.RANGE_SELECTION)) == 0) {
 			this.selectionLayer.clearSelections();

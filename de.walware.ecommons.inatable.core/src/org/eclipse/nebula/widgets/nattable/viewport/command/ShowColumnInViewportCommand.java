@@ -15,7 +15,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public class ShowColumnInViewportCommand extends AbstractColumnCommand {
 
-	public ShowColumnInViewportCommand(ILayer layer, int columnPosition) {
+	public ShowColumnInViewportCommand(ILayer layer, long columnPosition) {
 		super(layer, columnPosition);
 	}
 	

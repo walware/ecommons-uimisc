@@ -31,29 +31,29 @@ public class ZoomLayer extends AbstractLayerTransform {
 	// Width
 	
 	@Override
-	public int getWidth() {
+	public long getWidth() {
 		return (int) (zoomFactor * super.getWidth());
 	}
 	
 	@Override
-	public int getPreferredWidth() {
+	public long getPreferredWidth() {
 		return (int) (zoomFactor * super.getPreferredWidth());
 	}
 	
 	@Override
-	public int getColumnWidthByPosition(int columnPosition) {
+	public int getColumnWidthByPosition(long columnPosition) {
 		return (int) (zoomFactor * super.getColumnWidthByPosition(columnPosition));
 	}
 	
 	// X
 	
 	@Override
-	public int getColumnPositionByX(int x) {
+	public long getColumnPositionByX(long x) {
 		return super.getColumnPositionByX((int) (x / zoomFactor));
 	}
 	
 	@Override
-	public int getStartXOfColumnPosition(int columnPosition) {
+	public long getStartXOfColumnPosition(long columnPosition) {
 		return (int) (zoomFactor * super.getStartXOfColumnPosition(columnPosition));
 	}
 	
@@ -62,34 +62,34 @@ public class ZoomLayer extends AbstractLayerTransform {
 	// Height
 	
 	@Override
-	public int getHeight() {
+	public long getHeight() {
 		return (int) (zoomFactor * super.getHeight());
 	}
 	
 	@Override
-	public int getPreferredHeight() {
+	public long getPreferredHeight() {
 		return (int) (zoomFactor * super.getPreferredHeight());
 	}
 	
 	@Override
-	public int getRowHeightByPosition(int rowPosition) {
+	public int getRowHeightByPosition(long rowPosition) {
 		return (int) (zoomFactor * super.getRowHeightByPosition(rowPosition));
 	}
 	
 	// Y
 	
 	@Override
-	public int getRowPositionByY(int y) {
+	public long getRowPositionByY(long y) {
 		return super.getRowPositionByY((int) (y / zoomFactor));
 	}
 	
 	@Override
-	public int getStartYOfRowPosition(int rowPosition) {
+	public long getStartYOfRowPosition(long rowPosition) {
 		return (int) (zoomFactor * super.getStartYOfRowPosition(rowPosition));
 	}
 	
 	@Override
-	public LabelStack getRegionLabelsByXY(int x, int y) {
+	public LabelStack getRegionLabelsByXY(long x, long y) {
 		return super.getRegionLabelsByXY((int) (x / zoomFactor), (int) (y / zoomFactor));
 	}
 	

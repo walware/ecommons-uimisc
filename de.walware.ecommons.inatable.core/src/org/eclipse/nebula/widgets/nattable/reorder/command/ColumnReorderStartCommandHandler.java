@@ -27,7 +27,7 @@ public class ColumnReorderStartCommandHandler extends AbstractLayerCommandHandle
 
 	@Override
 	protected boolean doCommand(ColumnReorderStartCommand command) {
-		int fromColumnPosition = command.getFromColumnPosition();
+		long fromColumnPosition = command.getFromColumnPosition();
 		
 		columnReorderLayer.setReorderFromColumnPosition(fromColumnPosition);
 		

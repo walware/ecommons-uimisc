@@ -88,7 +88,7 @@ public class RowHeaderLayer extends DimensionallyDependentIndexLayer {
 	
 	protected boolean isSelected(final LayerCellDim hDim, final LayerCellDim vDim) {
 		final ILayerDim dim = getDim(VERTICAL);
-		final int rowPosition = vDim.getPosition();
+		final long rowPosition = vDim.getPosition();
 		if (this.selectionLayer.isRowPositionSelected(
 				LayerUtil.convertPosition(dim, rowPosition, rowPosition, this.selectionLayer) )) {
 			return true;
@@ -97,10 +97,10 @@ public class RowHeaderLayer extends DimensionallyDependentIndexLayer {
 	}
 	
 	@Override
-	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
+	public LabelStack getConfigLabelsByPosition(long columnPosition, long rowPosition) {
 		LabelStack labelStack = super.getConfigLabelsByPosition(columnPosition, rowPosition);
 		
-		final int selectionLayerRowPosition = LayerUtil.convertRowPosition(this, rowPosition, selectionLayer);
+		final long selectionLayerRowPosition = LayerUtil.convertRowPosition(this, rowPosition, selectionLayer);
 		if (selectionLayer.isRowPositionFullySelected(selectionLayerRowPosition)) {
 			labelStack.addLabel(SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE);
 		}

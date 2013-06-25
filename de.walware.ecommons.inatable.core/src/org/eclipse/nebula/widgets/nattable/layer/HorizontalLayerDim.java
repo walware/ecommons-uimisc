@@ -43,44 +43,44 @@ public class HorizontalLayerDim<T extends ILayer> implements ILayerDim {
 	
 	
 	@Override
-	public int getPositionIndex(final int refPosition, final int position) {
+	public long getPositionIndex(final long refPosition, final long position) {
 		return this.layer.getColumnIndexByPosition(position);
 	}
 	
 	
 	@Override
-	public int getPositionCount() {
+	public long getPositionCount() {
 		return this.layer.getColumnCount();
 	}
 	
 	@Override
-	public int getPreferredPositionCount() {
+	public long getPreferredPositionCount() {
 		return this.layer.getPreferredColumnCount();
 	}
 	
 	@Override
-	public int localToUnderlyingPosition(final int refPosition, final int position) {
+	public long localToUnderlyingPosition(final long refPosition, final long position) {
 		return this.layer.localToUnderlyingColumnPosition(position);
 	}
 	
 	@Override
-	public int underlyingToLocalPosition(final int refPosition,
-			final int underlyingPosition) {
+	public long underlyingToLocalPosition(final long refPosition,
+			final long underlyingPosition) {
 		final Collection<ILayer> underlyingLayers = getUnderlyingLayersByPosition(refPosition);
 		if (underlyingLayers != null) {
 			for (final ILayer underlyingLayer : underlyingLayers) {
-				final int position = underlyingToLocalPosition(underlyingLayer, underlyingPosition);
-				if (position != Integer.MIN_VALUE) {
+				final long position = underlyingToLocalPosition(underlyingLayer, underlyingPosition);
+				if (position != Long.MIN_VALUE) {
 					return position;
 				}
 			}
 		}
-		return Integer.MIN_VALUE;
+		return Long.MIN_VALUE;
 	}
 	
 	@Override
-	public int underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
-			final int underlyingPosition) {
+	public long underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
+			final long underlyingPosition) {
 		return this.layer.underlyingToLocalColumnPosition(sourceUnderlyingLayer, underlyingPosition);
 	}
 	
@@ -91,39 +91,39 @@ public class HorizontalLayerDim<T extends ILayer> implements ILayerDim {
 	}
 	
 	@Override
-	public Collection<ILayer> getUnderlyingLayersByPosition(final int position) {
+	public Collection<ILayer> getUnderlyingLayersByPosition(final long position) {
 		return this.layer.getUnderlyingLayersByColumnPosition(position);
 	}
 	
 	
 	@Override
-	public int getSize() {
+	public long getSize() {
 		return this.layer.getWidth();
 	}
 	
 	@Override
-	public int getPreferredSize() {
+	public long getPreferredSize() {
 		return this.layer.getPreferredWidth();
 	}
 	
 	@Override
-	public int getPositionByPixel(final int pixel) {
+	public long getPositionByPixel(final long pixel) {
 		return this.layer.getColumnPositionByX(pixel);
 	}
 	
 	@Override
-	public int getPositionStart(final int refPosition, final int position) {
+	public long getPositionStart(final long refPosition, final long position) {
 		return this.layer.getStartXOfColumnPosition(position);
 	}
 	
 	@Override
-	public int getPositionSize(final int refPosition, final int position) {
+	public int getPositionSize(final long refPosition, final long position) {
 		return this.layer.getColumnWidthByPosition(position);
 	}
 	
 	
 	@Override
-	public boolean isPositionResizable(final int position) {
+	public boolean isPositionResizable(final long position) {
 		return this.layer.isColumnPositionResizable(position);
 	}
 	

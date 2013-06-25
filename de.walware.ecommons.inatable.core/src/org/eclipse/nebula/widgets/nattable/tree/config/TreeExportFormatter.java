@@ -25,12 +25,12 @@ public class TreeExportFormatter extends DefaultExportFormatter {
 	
 	@Override
 	public Object formatForExport(ILayerCell cell, IConfigRegistry configRegistry) {
-		int index = cell.getLayer().getRowIndexByPosition(cell.getRowPosition());
-		int depth = treeRowModel.depth(index);
+		long index = cell.getLayer().getRowIndexByPosition(cell.getRowPosition());
+		long depth = treeRowModel.depth(index);
 		
 		StringBuilder str = new StringBuilder();
 		if (depth > 0) {
-			for (int i = 0; i < depth; i++) {
+			for (long i = 0; i < depth; i++) {
 				str.append("  "); //$NON-NLS-1$
 			}
 		}

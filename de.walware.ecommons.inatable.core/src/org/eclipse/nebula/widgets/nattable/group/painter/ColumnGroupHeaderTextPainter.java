@@ -51,12 +51,12 @@ public class ColumnGroupHeaderTextPainter extends CellPainterWrapper {
 	 * done by the column width. Hence, always return 0
 	 */
 	@Override
-	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public long getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return 0;
 	}
 
 	@Override
-	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public long getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return 25;
 	}
 	

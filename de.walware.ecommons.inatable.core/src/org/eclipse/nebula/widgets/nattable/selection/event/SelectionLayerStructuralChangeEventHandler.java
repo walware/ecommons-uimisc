@@ -12,15 +12,14 @@
 package org.eclipse.nebula.widgets.nattable.selection.event;
 
 import java.util.Collection;
-import java.util.Set;
-
+import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEventHandler;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.selection.ISelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.swt.graphics.Rectangle;
 
 public class SelectionLayerStructuralChangeEventHandler implements ILayerEventHandler<IStructuralChangeEvent> {
 
@@ -54,7 +53,7 @@ public class SelectionLayerStructuralChangeEventHandler implements ILayerEventHa
 	}
 	
 	private boolean selectedRowModified(Range changedRange){
-		Set<Range> selectedRows = selectionModel.getSelectedRowPositions();
+		List<Range> selectedRows = selectionModel.getSelectedRowPositions();
 		for (Range rowRange : selectedRows) {
 			if (rowRange.overlap(changedRange)){
 				return true;

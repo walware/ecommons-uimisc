@@ -22,7 +22,7 @@ public class SortColumnCommand extends AbstractColumnCommand {
 	private SortDirectionEnum direction;
 
 
-	public SortColumnCommand(final ILayer layer, final int columnPosition,
+	public SortColumnCommand(final ILayer layer, final long columnPosition,
 			final boolean accumulate) {
 		super(layer, columnPosition);
 		this.accumulate = accumulate;
@@ -35,7 +35,7 @@ public class SortColumnCommand extends AbstractColumnCommand {
 	 * @param direction the sort direction or <code>null</code> for automatic iteration.
 	 * @param accumulate
 	 */
-	public SortColumnCommand(final ILayer layer, final int columnPosition,
+	public SortColumnCommand(final ILayer layer, final long columnPosition,
 			final SortDirectionEnum direction, boolean accumulate) {
 		super(layer, columnPosition);
 		this.direction = direction;

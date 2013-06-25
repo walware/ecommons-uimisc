@@ -13,9 +13,8 @@ package org.eclipse.nebula.widgets.nattable.layer.cell;
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
 
-import org.eclipse.swt.graphics.Rectangle;
-
 import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -72,39 +71,39 @@ public class LayerCell implements ILayerCell {
 	
 	
 	@Override
-	public int getColumnIndex() {
+	public long getColumnIndex() {
 		return this.h.getIndex();
 	}
 	
 	@Override
-	public int getRowIndex() {
+	public long getRowIndex() {
 		return this.v.getIndex();
 	}
 	
 	
-	public int getColumnPosition() {
+	public long getColumnPosition() {
 		return this.h.getPosition();
 	}
 	
-	public int getRowPosition() {
+	public long getRowPosition() {
 		return this.v.getPosition();
 	}
 	
-	public int getOriginColumnPosition() {
+	public long getOriginColumnPosition() {
 		return this.h.getOriginPosition();
 	}
 	
-	public int getOriginRowPosition() {
+	public long getOriginRowPosition() {
 		return this.v.getOriginPosition();
 	}
 	
 	@Override
-	public int getColumnSpan() {
+	public long getColumnSpan() {
 		return this.h.getPositionSpan();
 	}
 	
 	@Override
-	public int getRowSpan() {
+	public long getRowSpan() {
 		return this.v.getPositionSpan();
 	}
 	

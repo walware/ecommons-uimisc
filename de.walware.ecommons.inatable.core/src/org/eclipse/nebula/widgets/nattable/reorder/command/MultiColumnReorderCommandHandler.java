@@ -30,8 +30,8 @@ public class MultiColumnReorderCommandHandler extends AbstractLayerCommandHandle
 
 	@Override
 	protected boolean doCommand(MultiColumnReorderCommand command) {
-		List<Integer> fromColumnPositions = command.getFromColumnPositions();
-		int toColumnPosition = command.getToColumnPosition();
+		List<Long> fromColumnPositions = command.getFromColumnPositions();
+		long toColumnPosition = command.getToColumnPosition();
 		boolean reorderToLeftEdge = command.isReorderToLeftEdge();
 		
 		columnReorderLayer.reorderMultipleColumnPositions(fromColumnPositions, toColumnPosition, reorderToLeftEdge);

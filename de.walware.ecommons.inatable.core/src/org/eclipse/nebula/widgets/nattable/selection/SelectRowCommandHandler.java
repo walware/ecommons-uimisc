@@ -11,17 +11,15 @@
 // ~Selection
 package org.eclipse.nebula.widgets.nattable.selection;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
-
-import org.eclipse.swt.graphics.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.selection.event.RowSelectionEvent;
 
@@ -48,9 +46,9 @@ public class SelectRowCommandHandler extends AbstractLayerCommandHandler<SelectR
 		return true;
 	}
 
-	protected void toggleOrSelectRows(final int columnPosition, final Collection<Integer> rowPositions,
-			final int selectionFlags, final int rowPositionToShow) {
-		int singleRowPosition;
+	protected void toggleOrSelectRows(final long columnPosition, final Collection<Long> rowPositions,
+			final int selectionFlags, final long rowPositionToShow) {
+		long singleRowPosition;
 		if ((selectionFlags & (SelectionFlags.RETAIN_SELECTION | SelectionFlags.RANGE_SELECTION)) == SelectionFlags.RETAIN_SELECTION
 				&& rowPositions.size() == 1
 				&& this.selectionLayer.isRowPositionFullySelected(
@@ -64,15 +62,15 @@ public class SelectRowCommandHandler extends AbstractLayerCommandHandler<SelectR
 		selectRows(columnPosition, rowPositions, selectionFlags, rowPositionToShow);
 	}
 
-	protected void selectRows(final int columnPosition, Collection<Integer> rowPositions,
-			final int selectionFlags, final int rowPositionToShow) {
+	protected void selectRows(final long columnPosition, Collection<Long> rowPositions,
+			final int selectionFlags, final long rowPositionToShow) {
 		if (!(rowPositions instanceof Set)) {
-			rowPositions = new HashSet<Integer>(rowPositions);
+			rowPositions = new HashSet<Long>(rowPositions);
 		}
 		
-		final Set<Range> changedRowRanges = new HashSet<Range>();
+		final RangeList changedRowRanges = new RangeList();
 		
-		int lastPosition = Integer.MIN_VALUE;
+		long lastPosition = Long.MIN_VALUE;
 		if ((selectionFlags & (SelectionFlags.RETAIN_SELECTION | SelectionFlags.RANGE_SELECTION)) == 0) {
 			changedRowRanges.addAll(this.selectionLayer.getSelectedRowPositions());
 			this.selectionLayer.clearSelections();
@@ -85,7 +83,7 @@ public class SelectRowCommandHandler extends AbstractLayerCommandHandler<SelectR
 				this.selectionLayer.lastSelectedRegion = new Rectangle(0, 0, 0, 0);
 			}
 			
-			final int position = rowPositions.iterator().next();
+			final long position = rowPositions.iterator().next();
 			this.selectionLayer.lastSelectedRegion.x = 0;
 			this.selectionLayer.lastSelectedRegion.width = this.selectionLayer.getColumnCount();
 			this.selectionLayer.lastSelectedRegion.y = Math.min(this.selectionLayer.selectionAnchor.rowPosition, position);
@@ -98,17 +96,17 @@ public class SelectRowCommandHandler extends AbstractLayerCommandHandler<SelectR
 					this.selectionLayer.lastSelectedRegion.y + this.selectionLayer.lastSelectedRegion.height ));
 		}
 		else {
-			int position = Integer.MIN_VALUE;
-			for (final Iterator<Integer> iterator = rowPositions.iterator(); iterator.hasNext();) {
+			long position = Long.MIN_VALUE;
+			for (final Iterator<Long> iterator = rowPositions.iterator(); iterator.hasNext();) {
 				position = iterator.next();
 				if (position == rowPositionToShow) {
 					lastPosition = position;
 				}
-				changedRowRanges.add(new Range(position));
+				changedRowRanges.addValue(position);
 				this.selectionLayer.addSelection(new Rectangle(0, position, this.selectionLayer.getColumnCount(), 1));
 			}
 			
-			if (lastPosition == Integer.MIN_VALUE) {
+			if (lastPosition == Long.MIN_VALUE) {
 				lastPosition = position;
 			}
 			this.selectionLayer.selectionAnchor.columnPosition = columnPosition;
@@ -120,13 +118,7 @@ public class SelectRowCommandHandler extends AbstractLayerCommandHandler<SelectR
 			this.selectionLayer.lastSelectedCell.rowPosition = lastPosition;
 		}
 		
-		final List<Integer> changedRowPositions = new ArrayList<Integer>(changedRowRanges.size());
-		for (final Range rowRange : changedRowRanges) {
-			for (int i = rowRange.start; i < rowRange.end; i++) {
-				changedRowPositions.add(Integer.valueOf(i));
-			}
-		}
-		this.selectionLayer.fireLayerEvent(new RowSelectionEvent(this.selectionLayer, changedRowPositions, rowPositionToShow));
+		this.selectionLayer.fireLayerEvent(new RowSelectionEvent(this.selectionLayer, changedRowRanges, rowPositionToShow));
 	}
 
 }

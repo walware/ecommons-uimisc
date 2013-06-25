@@ -13,6 +13,8 @@ package org.eclipse.nebula.widgets.nattable.edit.command;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.swt.widgets.Composite;
+
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
@@ -20,7 +22,6 @@ import org.eclipse.nebula.widgets.nattable.edit.EditController;
 import org.eclipse.nebula.widgets.nattable.edit.event.InlineCellEditEvent;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.swt.widgets.Composite;
 
 /**
  * Command handler for handling {@link EditSelectionCommand}s.
@@ -50,14 +51,14 @@ public class EditSelectionCommandHandler extends AbstractLayerCommandHandler<Edi
 				&& EditUtils.isEditorSame(this.selectionLayer, configRegistry)
 				&& EditUtils.isConverterSame(this.selectionLayer, configRegistry)) {
 			//check how many cells are selected
-			PositionCoordinate[] selectedCellPositions = this.selectionLayer.getSelectedCellPositions();
-			if (selectedCellPositions.length == 1) {
+			List<PositionCoordinate> selectedCellPositions = this.selectionLayer.getSelectedCellPositions();
+			if (selectedCellPositions.size() == 1) {
 				//editing is triggered by key for a single cell
 				//we need to fire the InlineCellEditEvent here because we don't know the correct bounds
 				//of the cell to edit inline corresponding to the NatTable. On firing the event, a
 				//translation process is triggered, converting the information to the correct values
 				//needed for inline editing
-				PositionCoordinate selectedCell = selectedCellPositions[0];
+				PositionCoordinate selectedCell = selectedCellPositions.get(0);
 				ILayerCell cell = this.selectionLayer.getCellByPosition(selectedCell.columnPosition, selectedCell.rowPosition);
 				this.selectionLayer.fireLayerEvent(
 						new InlineCellEditEvent(
@@ -67,7 +68,7 @@ public class EditSelectionCommandHandler extends AbstractLayerCommandHandler<Edi
 								configRegistry, 
 								(initialValue != null ? initialValue : cell.getDataValue())));
 			}
-			else if (selectedCellPositions.length > 1) {
+			else if (selectedCellPositions.size() > 1) {
 				
 				//collect the selected ILayerCells for further processing
 				List<ILayerCell> selectedCells = new ArrayList<ILayerCell>();
@@ -79,7 +80,7 @@ public class EditSelectionCommandHandler extends AbstractLayerCommandHandler<Edi
 				Object initialEditValue = initialValue;
 				if (initialValue == null && EditUtils.isValueSame(this.selectionLayer)) {
 					initialEditValue = this.selectionLayer.getDataValueByPosition(
-							selectedCellPositions[0].columnPosition, selectedCellPositions[0].rowPosition);
+							selectedCellPositions.get(0).columnPosition, selectedCellPositions.get(0).rowPosition);
 				}
 				
 				EditController.editCells(selectedCells, parent, initialEditValue, configRegistry);

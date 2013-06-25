@@ -27,7 +27,7 @@ public class MultiRowResizeCommand extends AbstractMultiRowCommand {
 	/**
 	 * All rows are being resized to the same height e.g. during a drag resize
 	 */
-	public MultiRowResizeCommand(ILayer layer, int[] rowPositions, int commonRowHeight) {
+	public MultiRowResizeCommand(ILayer layer, long[] rowPositions, int commonRowHeight) {
 		super(layer, rowPositions);
 		this.commonRowHeight = commonRowHeight;
 	}
@@ -35,7 +35,7 @@ public class MultiRowResizeCommand extends AbstractMultiRowCommand {
 	/**
 	 * Each row is being resized to a different size e.g. during auto resize
 	 */
-	public MultiRowResizeCommand(ILayer layer, int[] rowPositions, int[] rowHeights) {
+	public MultiRowResizeCommand(ILayer layer, long[] rowPositions, int[] rowHeights) {
 		super(layer, rowPositions);
 		for (int i = 0; i < rowPositions.length; i++) {
 			rowPositionToHeight.put(new RowPositionCoordinate(layer, rowPositions[i]), Integer.valueOf(rowHeights[i]));
@@ -48,11 +48,11 @@ public class MultiRowResizeCommand extends AbstractMultiRowCommand {
 		this.rowPositionToHeight = new HashMap<RowPositionCoordinate, Integer>(command.rowPositionToHeight);
 	}
 
-	public int getCommonRowHeight() {
+	public long getCommonRowHeight() {
 		return commonRowHeight;
 	}
 	
-	public int getRowHeight(int rowPosition) {
+	public int getRowHeight(long rowPosition) {
 		for (RowPositionCoordinate rowPositionCoordinate : rowPositionToHeight.keySet()) {
 			if (rowPositionCoordinate.getRowPosition() == rowPosition) {
 				return rowPositionToHeight.get(rowPositionCoordinate).intValue();

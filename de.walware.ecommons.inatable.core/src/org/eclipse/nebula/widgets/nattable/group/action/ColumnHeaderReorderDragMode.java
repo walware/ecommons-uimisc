@@ -34,14 +34,14 @@ public class ColumnHeaderReorderDragMode extends ColumnReorderDragMode {
 	}
 
 	@Override
-	public boolean isValidTargetColumnPosition(ILayer natLayer, int fromGridColumnPosition, int toGridColumnPosition) {
+	public boolean isValidTargetColumnPosition(ILayer natLayer, long fromGridColumnPosition, long toGridColumnPosition) {
 		if (this.currentEvent != null) {
 			//if this method was triggered by a mouse event, we determine the to column position by the event
 			//if there is no current mouse event referenced it means the reorder is triggered programmatically
 			toGridColumnPosition = natLayer.getColumnPositionByX(this.currentEvent.x);
 		}
-		int toColumnIndex = natLayer.getColumnIndexByPosition(toGridColumnPosition);
-		int fromColumnIndex = natLayer.getColumnIndexByPosition(fromGridColumnPosition);
+		long toColumnIndex = natLayer.getColumnIndexByPosition(toGridColumnPosition);
+		long fromColumnIndex = natLayer.getColumnIndexByPosition(fromGridColumnPosition);
 
 		// Allow moving within the unbreakable group
 		if (model.isPartOfAnUnbreakableGroup(fromColumnIndex)){
@@ -50,8 +50,8 @@ public class ColumnHeaderReorderDragMode extends ColumnReorderDragMode {
 
 		boolean betweenTwoGroups = false;
 		if (this.currentEvent != null) {
-			int minX = this.currentEvent.x - GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
-			int maxX = this.currentEvent.x + GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
+			long minX = this.currentEvent.x - GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
+			long maxX = this.currentEvent.x + GUIHelper.DEFAULT_RESIZE_HANDLE_SIZE;
 			betweenTwoGroups = ColumnGroupUtils.isBetweenTwoGroups(natLayer, minX, maxX, model);
 		}
 

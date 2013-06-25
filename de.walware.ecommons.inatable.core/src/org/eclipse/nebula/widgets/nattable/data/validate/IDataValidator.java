@@ -31,7 +31,7 @@ public interface IDataValidator {
 	 *
 	 * @return true is newValue is valid. False otherwise.
 	 */
-	public boolean validate(int columnIndex, int rowIndex, Object newValue);
+	public boolean validate(long columnIndex, long rowIndex, Object newValue);
 
 	/**
 	 * 
@@ -54,7 +54,7 @@ public interface IDataValidator {
 			return true;
 		}
 
-		public boolean validate(int columnIndex, int rowIndex, Object newValue) {
+		public boolean validate(long columnIndex, long rowIndex, Object newValue) {
 			return true;
 		}
 
@@ -66,7 +66,7 @@ public interface IDataValidator {
 			return false;
 		}
 
-		public boolean validate(int columnIndex, int rowIndex, Object newValue) {
+		public boolean validate(long columnIndex, long rowIndex, Object newValue) {
 			return false;
 		}
 

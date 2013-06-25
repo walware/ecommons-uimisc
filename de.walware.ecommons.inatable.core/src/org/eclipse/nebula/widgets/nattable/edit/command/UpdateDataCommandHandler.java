@@ -48,8 +48,8 @@ public class UpdateDataCommandHandler extends AbstractLayerCommandHandler<Update
 	@Override
 	protected boolean doCommand(UpdateDataCommand command) {
 		try {
-			int columnPosition = command.getColumnPosition();
-			int rowPosition = command.getRowPosition();
+			long columnPosition = command.getColumnPosition();
+			long rowPosition = command.getRowPosition();
 			dataLayer.getDataProvider().setDataValue(columnPosition, rowPosition, command.getNewValue());
 			dataLayer.fireLayerEvent(new CellVisualChangeEvent(dataLayer, columnPosition, rowPosition));
 			return true;

@@ -14,13 +14,13 @@ import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 
 public class RemoveColumnGroupCommand extends AbstractContextFreeCommand implements IColumnGroupCommand {
 
-	private int columnIndex;
+	private long columnIndex;
 
-	public RemoveColumnGroupCommand(int columnIndex) {
+	public RemoveColumnGroupCommand(long columnIndex) {
 		this.columnIndex = columnIndex;
 	}
 	
-	public int getColumnIndex() {
+	public long getColumnIndex() {
 		return columnIndex;
 	}
 	

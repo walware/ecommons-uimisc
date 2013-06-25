@@ -26,7 +26,7 @@ public class DisplayColumnRenameDialogCommand extends AbstractColumnCommand {
     /**
 	 * @param columnPosition of the column to be renamed 
 	 */
-	public DisplayColumnRenameDialogCommand(NatTable natTable, int columnPosition) {
+	public DisplayColumnRenameDialogCommand(NatTable natTable, long columnPosition) {
 		super(natTable, columnPosition);
         this.natTable = natTable;
 	}

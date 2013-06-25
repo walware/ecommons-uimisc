@@ -13,12 +13,13 @@ package org.eclipse.nebula.widgets.nattable.painter.cell.decorator;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.coordinate.SWTUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
+import org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
@@ -40,16 +41,16 @@ public class LineBorderDecorator extends CellPainterWrapper {
 	}
 
 
-	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public long getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		BorderStyle borderStyle = getBorderStyle(cell, configRegistry);
-		int padding = borderStyle != null ? Math.max(borderStyle.getOffset() + borderStyle.getThickness(), 0) : 0;
+		long padding = borderStyle != null ? Math.max(borderStyle.getOffset() + borderStyle.getThickness(), 0) : 0;
 		
 		return super.getPreferredWidth(cell, gc, configRegistry) + (padding * 2);
 	}
 	
-	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public long getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		BorderStyle borderStyle = getBorderStyle(cell, configRegistry);
-		int padding = borderStyle != null ? Math.max(borderStyle.getOffset() + borderStyle.getThickness(), 0) : 0;
+		long padding = borderStyle != null ? Math.max(borderStyle.getOffset() + borderStyle.getThickness(), 0) : 0;
 		
 		return super.getPreferredHeight(cell, gc, configRegistry) + (padding * 2);
 	}
@@ -66,7 +67,7 @@ public class LineBorderDecorator extends CellPainterWrapper {
 	public void paintCell(ILayerCell cell, GC gc, Rectangle rectangle, IConfigRegistry configRegistry) {
 		BorderStyle borderStyle = getBorderStyle(cell, configRegistry);
 		
-		int padding = borderStyle != null ? Math.max(borderStyle.getOffset() + borderStyle.getThickness(), 0) : 0;
+		long padding = borderStyle != null ? Math.max(borderStyle.getOffset() + borderStyle.getThickness(), 0) : 0;
 		Rectangle interiorBounds =
 			new Rectangle(
 					rectangle.x + padding,
@@ -85,7 +86,7 @@ public class LineBorderDecorator extends CellPainterWrapper {
 		int originalLineWidth = gc.getLineWidth();
 		int originalLineStyle = gc.getLineStyle();
 		
-		int borderOffset = borderStyle.getOffset();
+		long borderOffset = borderStyle.getOffset();
 		int borderThickness = borderStyle.getThickness();
 		Rectangle borderArea = new Rectangle(
 						rectangle.x + borderOffset,
@@ -94,8 +95,8 @@ public class LineBorderDecorator extends CellPainterWrapper {
 						rectangle.height - (borderOffset * 2)
 				);
 		{
-			int shift = 0;
-			int areaShift = 0;
+			long shift = 0;
+			long areaShift = 0;
 			if ((borderThickness % 2) == 0) {
 				shift = borderThickness / 2;
 				areaShift = (shift * 2);
@@ -112,7 +113,7 @@ public class LineBorderDecorator extends CellPainterWrapper {
 		gc.setLineWidth(borderThickness);
 		gc.setLineStyle(SWTUtil.toSWT(borderStyle.getLineStyle()));
 		gc.setForeground(borderStyle.getColor());
-		gc.drawRectangle(borderArea);
+		gc.drawRectangle(GraphicsUtils.safe(borderArea));
 
 		// Restore GC settings
 		gc.setForeground(originalForeground);

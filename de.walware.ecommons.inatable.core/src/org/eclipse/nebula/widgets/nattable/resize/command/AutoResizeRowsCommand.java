@@ -13,6 +13,7 @@ package org.eclipse.nebula.widgets.nattable.resize.command;
 import org.eclipse.nebula.widgets.nattable.command.AbstractMultiRowCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.util.GCFactory;
 
 /**
@@ -25,7 +26,7 @@ public class AutoResizeRowsCommand extends AbstractMultiRowCommand {
 	private final GCFactory gcFactory;
 
 	public AutoResizeRowsCommand(InitializeAutoResizeRowsCommand initCommand) {
-		super(initCommand.getSourceLayer(), initCommand.getRowPositions());
+		super(initCommand.getSourceLayer(), RangeList.listRanges(initCommand.getRowPositions()));
 		this.configRegistry = initCommand.getConfigRegistry();
 		this.gcFactory = initCommand.getGCFactory();
 	}

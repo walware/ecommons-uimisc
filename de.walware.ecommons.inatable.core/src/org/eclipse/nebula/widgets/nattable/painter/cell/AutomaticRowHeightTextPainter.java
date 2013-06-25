@@ -11,7 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 
 /**
  * Special {@link TextPainter} that will always calculate the row height of the cell dependent
@@ -40,7 +40,7 @@ public class AutomaticRowHeightTextPainter extends TextPainter {
 	}
 
 	@Override
-	protected boolean performRowResize(int contentHeight, Rectangle rectangle) {
+	protected boolean performRowResize(long contentHeight, Rectangle rectangle) {
 		return ((contentHeight != rectangle.height) && calculateByTextHeight);
 	}
 

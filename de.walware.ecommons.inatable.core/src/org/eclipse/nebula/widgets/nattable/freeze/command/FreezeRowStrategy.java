@@ -18,9 +18,9 @@ public class FreezeRowStrategy implements IFreezeCoordinatesProvider {
 
 	private final FreezeLayer freezeLayer;
 	
-	private final int rowPosition;
+	private final long rowPosition;
 
-	public FreezeRowStrategy(FreezeLayer freezeLayer, int rowPosition) {
+	public FreezeRowStrategy(FreezeLayer freezeLayer, long rowPosition) {
 		this.freezeLayer = freezeLayer;
 		this.rowPosition = rowPosition;
 	}

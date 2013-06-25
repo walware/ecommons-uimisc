@@ -15,24 +15,24 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.DataCell;
 
 public class DummySpanningBodyDataProvider extends DummyBodyDataProvider implements ISpanningDataProvider {
 	
-	private static final int BLOCK_SIZE = 4;
+	private static final long BLOCK_SIZE = 4;
 
-	private static final int CELL_SPAN = 2;
+	private static final long CELL_SPAN = 2;
 	
-	public DummySpanningBodyDataProvider(int columnCount, int rowCount) {
+	public DummySpanningBodyDataProvider(long columnCount, long rowCount) {
 		super(columnCount, rowCount);
 	}
 	
-	public DataCell getCellByPosition(int columnPosition, int rowPosition) {
-		int columnBlock = columnPosition / BLOCK_SIZE;
-		int rowBlock = rowPosition / BLOCK_SIZE;
+	public DataCell getCellByPosition(long columnPosition, long rowPosition) {
+		long columnBlock = columnPosition / BLOCK_SIZE;
+		long rowBlock = rowPosition / BLOCK_SIZE;
 		
 		boolean isSpanned = isEven(columnBlock + rowBlock) && (columnPosition % BLOCK_SIZE) < CELL_SPAN && (rowPosition % BLOCK_SIZE) < CELL_SPAN;
-		int columnSpan = isSpanned ? CELL_SPAN : 1;
-		int rowSpan = isSpanned ? CELL_SPAN : 1;
+		long columnSpan = isSpanned ? CELL_SPAN : 1;
+		long rowSpan = isSpanned ? CELL_SPAN : 1;
 		
-		int cellColumnPosition = columnPosition;
-		int cellRowPosition = rowPosition;
+		long cellColumnPosition = columnPosition;
+		long cellRowPosition = rowPosition;
 		
 		if (isSpanned) {
 			cellColumnPosition -= columnPosition % BLOCK_SIZE;
@@ -42,7 +42,7 @@ public class DummySpanningBodyDataProvider extends DummyBodyDataProvider impleme
 		return new DataCell(cellColumnPosition, cellRowPosition, columnSpan, rowSpan);
 	}
 	
-	private boolean isEven(int i) {
+	private boolean isEven(long i) {
 		return i % 2 == 0;
 	}
 	

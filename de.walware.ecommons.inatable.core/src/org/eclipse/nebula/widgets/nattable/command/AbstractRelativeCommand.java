@@ -19,10 +19,10 @@ public abstract class AbstractRelativeCommand extends AbstractContextFreeCommand
 	
 	private final Direction direction;
 	
-	private int stepCount;
+	private long stepCount;
 	
 	
-	public AbstractRelativeCommand(final Direction direction, final int stepCount) {
+	public AbstractRelativeCommand(final Direction direction, final long stepCount) {
 		if (direction == null) {
 			throw new NullPointerException("direction"); //$NON-NLS-1$
 		}
@@ -43,7 +43,7 @@ public abstract class AbstractRelativeCommand extends AbstractContextFreeCommand
 		return direction;
 	}
 	
-	public int getStepCount() {
+	public long getStepCount() {
 		return stepCount;
 	}
 	

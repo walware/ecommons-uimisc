@@ -11,15 +11,16 @@
 // ~
 package org.eclipse.nebula.widgets.nattable.resize.event;
 
+import org.eclipse.swt.events.MouseEvent;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.coordinate.Point;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeDetectUtil;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.graphics.Point;
+
 
 public class ColumnResizeEventMatcher extends MouseEventMatcher {
 
@@ -33,7 +34,7 @@ public class ColumnResizeEventMatcher extends MouseEventMatcher {
 	}
 
 	private boolean isColumnResizable(ILayer natLayer, MouseEvent event) {
-		int columnPosition = 
+		long columnPosition = 
 			CellEdgeDetectUtil.getColumnPositionToResize(natLayer, new Point(event.x, event.y));
 		
 		if (columnPosition < 0) {

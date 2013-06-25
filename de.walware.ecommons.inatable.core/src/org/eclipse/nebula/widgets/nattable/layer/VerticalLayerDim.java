@@ -42,44 +42,44 @@ public class VerticalLayerDim<T extends ILayer> implements ILayerDim {
 	
 	
 	@Override
-	public int getPositionIndex(final int refPosition, final int position) {
+	public long getPositionIndex(final long refPosition, final long position) {
 		return this.layer.getRowIndexByPosition(position);
 	}
 	
 	
 	@Override
-	public int getPositionCount() {
+	public long getPositionCount() {
 		return this.layer.getRowCount();
 	}
 	
 	@Override
-	public int getPreferredPositionCount() {
+	public long getPreferredPositionCount() {
 		return this.layer.getPreferredRowCount();
 	}
 	
 	@Override
-	public int localToUnderlyingPosition(final int refPosition, final int position) {
+	public long localToUnderlyingPosition(final long refPosition, final long position) {
 		return this.layer.localToUnderlyingRowPosition(position);
 	}
 	
 	@Override
-	public int underlyingToLocalPosition(final int refPosition,
-			final int underlyingPosition) {
+	public long underlyingToLocalPosition(final long refPosition,
+			final long underlyingPosition) {
 		final Collection<ILayer> underlyingLayers = getUnderlyingLayersByPosition(refPosition);
 		if (underlyingLayers != null) {
 			for (final ILayer underlyingLayer : underlyingLayers) {
-				final int position = underlyingToLocalPosition(underlyingLayer, underlyingPosition);
-				if (position != Integer.MIN_VALUE) {
+				final long position = underlyingToLocalPosition(underlyingLayer, underlyingPosition);
+				if (position != Long.MIN_VALUE) {
 					return position;
 				}
 			}
 		}
-		return Integer.MIN_VALUE;
+		return Long.MIN_VALUE;
 	}
 	
 	@Override
-	public int underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
-			final int underlyingPosition) {
+	public long underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
+			final long underlyingPosition) {
 		return this.layer.underlyingToLocalRowPosition(sourceUnderlyingLayer, underlyingPosition);
 	}
 	
@@ -90,38 +90,38 @@ public class VerticalLayerDim<T extends ILayer> implements ILayerDim {
 	}
 	
 	@Override
-	public Collection<ILayer> getUnderlyingLayersByPosition(final int position) {
+	public Collection<ILayer> getUnderlyingLayersByPosition(final long position) {
 		return this.layer.getUnderlyingLayersByRowPosition(position);
 	}
 	
 	
 	@Override
-	public int getSize() {
+	public long getSize() {
 		return this.layer.getHeight();
 	}
 	
 	@Override
-	public int getPreferredSize() {
+	public long getPreferredSize() {
 		return this.layer.getPreferredHeight();
 	}
 	
 	@Override
-	public int getPositionByPixel(final int pixel) {
+	public long getPositionByPixel(final long pixel) {
 		return this.layer.getRowPositionByY(pixel);
 	}
 	
 	@Override
-	public int getPositionStart(final int refPosition, final int position) {
+	public long getPositionStart(final long refPosition, final long position) {
 		return this.layer.getStartYOfRowPosition(position);
 	}
 	
 	@Override
-	public int getPositionSize(final int refPosition, final int position) {
+	public int getPositionSize(final long refPosition, final long position) {
 		return this.layer.getRowHeightByPosition(position);
 	}
 	
 	@Override
-	public boolean isPositionResizable(final int position) {
+	public boolean isPositionResizable(final long position) {
 		return this.layer.isRowPositionResizable(position);
 	}
 	

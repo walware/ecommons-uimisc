@@ -24,7 +24,7 @@ import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 public class RowSelectionDragMode extends CellSelectionDragMode {
 
 	@Override
-	protected void fireSelectionCommand(NatTable natTable, int columnPosition,	int rowPosition, int selectionFlags) {
+	protected void fireSelectionCommand(NatTable natTable, long columnPosition,	long rowPosition, int selectionFlags) {
 		natTable.doCommand(new SelectRowsCommand(natTable, columnPosition, rowPosition, selectionFlags));
 	}
 

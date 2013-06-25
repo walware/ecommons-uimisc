@@ -25,8 +25,8 @@ import org.eclipse.swt.events.MouseEvent;
 public class MouseEditAction implements IMouseAction {
 
 	public void run(NatTable natTable, MouseEvent event) {
-		int columnPosition = natTable.getColumnPositionByX(event.x);
-		int rowPosition = natTable.getRowPositionByY(event.y);
+		long columnPosition = natTable.getColumnPositionByX(event.x);
+		long rowPosition = natTable.getRowPositionByY(event.y);
 
 		natTable.doCommand(
 				new EditCellCommand(

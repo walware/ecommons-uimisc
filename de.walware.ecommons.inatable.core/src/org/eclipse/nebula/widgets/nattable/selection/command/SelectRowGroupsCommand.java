@@ -24,19 +24,19 @@ public class SelectRowGroupsCommand extends AbstractRowCommand {
 	private ColumnPositionCoordinate columnPositionCoordinate;
 
 	private boolean moveAnchorToTopOfGroup = false;
-	private int rowPositionToReveal; 
+	private long rowPositionToReveal; 
 
 
-	public SelectRowGroupsCommand(ILayer layer, int columnPosition, int rowPosition, int selectionFlags, boolean moveAnchortoTopOfGroup) {
+	public SelectRowGroupsCommand(ILayer layer, long columnPosition, long rowPosition, int selectionFlags, boolean moveAnchortoTopOfGroup) {
 		this(layer, columnPosition, rowPosition, selectionFlags, moveAnchortoTopOfGroup, -1);
 	}
 
-	public SelectRowGroupsCommand(ILayer layer, int columnPosition, int rowPosition, int selectionFlags) {
+	public SelectRowGroupsCommand(ILayer layer, long columnPosition, long rowPosition, int selectionFlags) {
 		this(layer, columnPosition, rowPosition, selectionFlags, false, -1);
 	}
 
-	public SelectRowGroupsCommand(ILayer layer, int columnPosition, int rowPosition, int selectionFlags,
-			boolean moveAnchortoTopOfGroup, int rowPositionToReveal) {
+	public SelectRowGroupsCommand(ILayer layer, long columnPosition, long rowPosition, int selectionFlags,
+			boolean moveAnchortoTopOfGroup, long rowPositionToReveal) {
 		super(layer, rowPosition);
 		this.selectionFlags = selectionFlags;
 		this.columnPositionCoordinate = new ColumnPositionCoordinate(layer, columnPosition);
@@ -63,7 +63,7 @@ public class SelectRowGroupsCommand extends AbstractRowCommand {
 		return selectionFlags;
 	}
 
-	public int getColumnPosition() {
+	public long getColumnPosition() {
 		return columnPositionCoordinate.columnPosition;
 	}
 
@@ -71,7 +71,7 @@ public class SelectRowGroupsCommand extends AbstractRowCommand {
 		return moveAnchorToTopOfGroup;
 	}
 
-	public int getRowPositionToReveal() {
+	public long getRowPositionToReveal() {
 		return rowPositionToReveal;
 	}
 

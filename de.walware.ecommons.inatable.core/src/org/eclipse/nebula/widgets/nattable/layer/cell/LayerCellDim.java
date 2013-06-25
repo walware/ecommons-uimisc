@@ -19,21 +19,21 @@ public final class LayerCellDim {
 	
 	private final Orientation orientation;
 	
-	private final int index;
+	private final long index;
 	
-	private final int position;
+	private final long position;
 	
-	private final int originPosition;
-	private final int positionSpan;
+	private final long originPosition;
+	private final long positionSpan;
 	
 	
-	public LayerCellDim(final Orientation orientation, final int index,
-			final int position) {
+	public LayerCellDim(final Orientation orientation, final long index,
+			final long position) {
 		this(orientation, index, position, position, 1);
 	}
 	
-	public LayerCellDim(final Orientation orientation, final int index,
-			final int position, final int originPosition, final int positionSpan) {
+	public LayerCellDim(final Orientation orientation, final long index,
+			final long position, final long originPosition, final long positionSpan) {
 		if (orientation == null) {
 			throw new NullPointerException("orientation"); //$NON-NLS-1$
 		}
@@ -52,26 +52,26 @@ public final class LayerCellDim {
 		return this.orientation;
 	}
 	
-	public int getIndex() {
+	public long getIndex() {
 		return this.index;
 	}
 	
-	public int getPosition() {
+	public long getPosition() {
 		return this.position;
 	}
 	
-	public int getOriginPosition() {
+	public long getOriginPosition() {
 		return this.originPosition;
 	}
 	
-	public int getPositionSpan() {
+	public long getPositionSpan() {
 		return this.positionSpan;
 	}
 	
 	
 	@Override
 	public int hashCode() {
-		int h = this.originPosition;
+		int h = (int) (this.originPosition ^ (this.originPosition >>> 32));
 		if (this.orientation == Orientation.VERTICAL) {
 			h = 17 + Integer.rotateRight(h, 15);
 		}

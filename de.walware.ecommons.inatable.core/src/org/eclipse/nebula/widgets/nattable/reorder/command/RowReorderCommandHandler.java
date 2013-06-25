@@ -28,8 +28,8 @@ public class RowReorderCommandHandler extends AbstractLayerCommandHandler<RowReo
 
 	@Override
 	protected boolean doCommand(RowReorderCommand command) {
-		int fromRowPosition = command.getFromRowPosition();
-		int toRowPosition = command.getToRowPosition();
+		long fromRowPosition = command.getFromRowPosition();
+		long toRowPosition = command.getToRowPosition();
 		boolean reorderToTopEdge = command.isReorderToTopEdge();
 		
 		rowReorderLayer.reorderRowPosition(fromRowPosition, toRowPosition, reorderToTopEdge);

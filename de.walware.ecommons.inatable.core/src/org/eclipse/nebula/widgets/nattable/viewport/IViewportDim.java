@@ -20,22 +20,22 @@ public interface IViewportDim extends ILayerDim {
 	ILayerDim getScrollable();
 	
 	
-	int getMinimumOriginPixel();
+	long getMinimumOriginPixel();
 	
-	int getMinimumOriginPosition();
+	long getMinimumOriginPosition();
 	
-	void setMinimumOriginPosition(int scrollablePosition);
+	void setMinimumOriginPosition(long scrollablePosition);
 	
 	
-	int getOriginPixel();
+	long getOriginPixel();
 	
-	int getOriginPosition();
+	long getOriginPosition();
 	
-	void setOriginPixel(int scrollablePixel);
+	void setOriginPixel(long scrollablePixel);
 	
-	void setOriginPosition(int scrollablePosition);
+	void setOriginPosition(long scrollablePosition);
 	
-	void reset(int scrollablePosition);
+	void reset(long scrollablePosition);
 	
 	
 	/**
@@ -43,7 +43,7 @@ public interface IViewportDim extends ILayerDim {
 	 * 
 	 * @param scrollablePosition column/row position in terms of the Scrollable Layer
 	 */
-	void movePositionIntoViewport(int scrollablePosition);
+	void movePositionIntoViewport(long scrollablePosition);
 	
 	void scrollBackwardByStep();
 	void scrollForwardByStep();

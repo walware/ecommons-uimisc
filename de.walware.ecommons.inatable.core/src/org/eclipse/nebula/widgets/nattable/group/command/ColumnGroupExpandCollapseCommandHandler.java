@@ -38,7 +38,7 @@ public class ColumnGroupExpandCollapseCommandHandler extends AbstractLayerComman
 	@Override
 	protected boolean doCommand(ColumnGroupExpandCollapseCommand command) {
 		
-		int columnIndex = columnGroupExpandCollapseLayer.getColumnIndexByPosition(command.getColumnPosition());
+		long columnIndex = columnGroupExpandCollapseLayer.getColumnIndexByPosition(command.getColumnPosition());
 		ColumnGroupModel model = columnGroupExpandCollapseLayer.getModel();
 		ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
 		
@@ -48,7 +48,7 @@ public class ColumnGroupExpandCollapseCommandHandler extends AbstractLayerComman
 			return true;
 		}
 		
-		List<Integer> columnIndexes = new ArrayList<Integer>(columnGroup.getMembers());
+		List<Long> columnIndexes = new ArrayList<Long>(columnGroup.getMembers());
 		columnIndexes.removeAll(columnGroup.getStaticColumnIndexes());
 		
 		boolean wasCollapsed = columnGroup.isCollapsed();
@@ -86,9 +86,9 @@ public class ColumnGroupExpandCollapseCommandHandler extends AbstractLayerComman
 	 * events.
 	 * @param columnIndexes The column indexes to cleanup.
 	 */
-	private void cleanupColumnIndexes(List<Integer> columnIndexes) {
-		for (Iterator<Integer> it = columnIndexes.iterator(); it.hasNext();) {
-			Integer columnIndex = it.next();
+	private void cleanupColumnIndexes(List<Long> columnIndexes) {
+		for (Iterator<Long> it = columnIndexes.iterator(); it.hasNext();) {
+			Long columnIndex = it.next();
 			
 			if (!columnGroupExpandCollapseLayer.isColumnIndexHidden(columnIndex)) {
 				it.remove();

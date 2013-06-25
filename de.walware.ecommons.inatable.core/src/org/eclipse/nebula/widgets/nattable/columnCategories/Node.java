@@ -70,7 +70,7 @@ public class Node implements Serializable {
      * Returns the number of immediate children of this Node.
      * @return the number of immediate children.
      */
-    public int getNumberOfChildren() {
+    public long getNumberOfChildren() {
         if (children == null) {
             return 0;
         }
@@ -96,8 +96,8 @@ public class Node implements Serializable {
 		return addChild(new Node(categoryName, Type.CATEGORY));
 	}
 
-	public void addChildColumnIndexes(int... columnIndexes) {
-		for (int columnIndex : columnIndexes) {
+	public void addChildColumnIndexes(long... columnIndexes) {
+		for (long columnIndex : columnIndexes) {
 			addChild(new Node(String.valueOf(columnIndex), Type.COLUMN));
 		}
 	}
@@ -125,7 +125,7 @@ public class Node implements Serializable {
      * @param index the index of the element to delete.
      * @throws IndexOutOfBoundsException if thrown.
      */
-    public void removeChildAt(int index) throws IndexOutOfBoundsException {
+    public void removeChildAt(long index) throws IndexOutOfBoundsException {
         children.remove(index);
     }
 
@@ -141,7 +141,7 @@ public class Node implements Serializable {
 	public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{").append(type).append(",").append(getData().toString()).append(",["); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        int i = 0;
+        long i = 0;
         for (Node e : getChildren()) {
             if (i > 0) {
                 sb.append(","); //$NON-NLS-1$

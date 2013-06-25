@@ -14,10 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.coordinate.SWTUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
@@ -32,27 +32,20 @@ public class CellStyleUtil {
 		return (horizontalAlignment != null) ? SWTUtil.toSWT(horizontalAlignment) : swtDefault;
 	}
 
-	public static int getHorizontalAlignmentPadding(IStyle cellStyle, Rectangle rectangle, int contentWidth) {
+	public static long getHorizontalAlignmentPadding(IStyle cellStyle, Rectangle rectangle, long contentWidth) {
 		HorizontalAlignment horizontalAlignment = cellStyle.getAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT);
-		return getHorizontalAlignmentPadding(horizontalAlignment, rectangle, contentWidth);
-	}
-	
-	/**
-	 * Calculate padding needed at the left to align horizontally. Defaults to CENTER horizontal alignment.
-	 */
-	public static int getHorizontalAlignmentPadding(HorizontalAlignment horizontalAlignment, Rectangle rectangle, int contentWidth) {
 		return getHorizontalAlignmentPadding(horizontalAlignment, rectangle.width, contentWidth);
 	}
 	
 	/**
 	 * Calculate padding needed at the left to align horizontally. Defaults to CENTER horizontal alignment.
 	 */
-	public static int getHorizontalAlignmentPadding(HorizontalAlignment horizontalAlignment, int width, int contentWidth) {
+	public static long getHorizontalAlignmentPadding(HorizontalAlignment horizontalAlignment, long width, long contentWidth) {
 		if (horizontalAlignment == null) {
 			horizontalAlignment = HorizontalAlignment.CENTER;
 		}
 		
-		int padding;
+		long padding;
 		
 		switch (horizontalAlignment) {
 		case CENTER:
@@ -73,27 +66,27 @@ public class CellStyleUtil {
 		return padding;
 	}
 
-	public static int getVerticalAlignmentPadding(IStyle cellStyle, Rectangle rectangle, int contentHeight) {
+	public static long getVerticalAlignmentPadding(IStyle cellStyle, Rectangle rectangle, long contentHeight) {
 		VerticalAlignmentEnum verticalAlignment = cellStyle.getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT);
-		return getVerticalAlignmentPadding(verticalAlignment, rectangle, contentHeight);
+		return getVerticalAlignmentPadding(verticalAlignment, rectangle.height, contentHeight);
 	}
 	
 	/**
 	 * Calculate padding needed at the top to align vertically. Defaults to MIDDLE vertical alignment.
 	 */
-	public static int getVerticalAlignmentPadding(VerticalAlignmentEnum verticalAlignment, Rectangle rectangle, int contentHeight) {
+	public static long getVerticalAlignmentPadding(VerticalAlignmentEnum verticalAlignment, long height, long contentHeight) {
 		if (verticalAlignment == null) {
 			verticalAlignment = VerticalAlignmentEnum.MIDDLE;
 		}
 		
-		int padding = 0;
+		long padding = 0;
 
 		switch (verticalAlignment) {
 		case MIDDLE:
-			padding = (rectangle.height - contentHeight) / 2;
+			padding = (height - contentHeight) / 2;
 			break;
 		case BOTTOM:
-			padding = rectangle.height - contentHeight;
+			padding = height - contentHeight;
 			break;
 		}
 		

@@ -67,8 +67,8 @@ public class TransformDim<T extends ILayer> implements ILayerDim {
 	
 	
 	@Override
-	public int getPositionIndex(final int refPosition, final int position) {
-		final int underlyingRefPosition = localToUnderlyingPosition(refPosition, refPosition);
+	public long getPositionIndex(final long refPosition, final long position) {
+		final long underlyingRefPosition = localToUnderlyingPosition(refPosition, refPosition);
 		return this.underlyingDim.getPositionIndex(underlyingRefPosition,
 				(refPosition == position) ?
 						underlyingRefPosition :
@@ -77,30 +77,30 @@ public class TransformDim<T extends ILayer> implements ILayerDim {
 	
 	
 	@Override
-	public int getPositionCount() {
+	public long getPositionCount() {
 		return this.underlyingDim.getPositionCount();
 	}
 	
 	@Override
-	public int getPreferredPositionCount() {
+	public long getPreferredPositionCount() {
 		return this.underlyingDim.getPreferredPositionCount();
 	}
 	
 	@Override
-	public int localToUnderlyingPosition(final int refPosition, final int position) {
+	public long localToUnderlyingPosition(final long refPosition, final long position) {
 		return position;
 	}
 	
 	@Override
-	public int underlyingToLocalPosition(final int refPosition,
-			final int underlyingPosition) {
+	public long underlyingToLocalPosition(final long refPosition,
+			final long underlyingPosition) {
 		
 		return underlyingPosition;
 	}
 	
 	@Override
-	public int underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
-			final int underlyingPosition) {
+	public long underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
+			final long underlyingPosition) {
 		if (sourceUnderlyingLayer != this.underlyingDim.getLayer()) {
 			throw new IllegalArgumentException("underlyingLayer"); //$NON-NLS-1$
 		}
@@ -123,30 +123,30 @@ public class TransformDim<T extends ILayer> implements ILayerDim {
 	}
 	
 	@Override
-	public Collection<ILayer> getUnderlyingLayersByPosition(final int position) {
+	public Collection<ILayer> getUnderlyingLayersByPosition(final long position) {
 		return Collections.singletonList(this.underlyingDim.getLayer());
 	}
 	
 	
 	@Override
-	public int getSize() {
+	public long getSize() {
 		return this.underlyingDim.getSize();
 	}
 	
 	@Override
-	public int getPreferredSize() {
+	public long getPreferredSize() {
 		return this.underlyingDim.getPreferredSize();
 	}
 	
 	@Override
-	public int getPositionByPixel(final int pixel) {
+	public long getPositionByPixel(final long pixel) {
 		return underlyingToLocalPosition(this.underlyingDim.getLayer(),
 				this.underlyingDim.getPositionByPixel(pixel) );
 	}
 	
 	@Override
-	public int getPositionStart(final int refPosition, final int position) {
-		final int underlyingRefPosition = localToUnderlyingPosition(refPosition, refPosition);
+	public long getPositionStart(final long refPosition, final long position) {
+		final long underlyingRefPosition = localToUnderlyingPosition(refPosition, refPosition);
 		return this.underlyingDim.getPositionStart(underlyingRefPosition,
 				(refPosition == position) ?
 						underlyingRefPosition : 
@@ -154,8 +154,8 @@ public class TransformDim<T extends ILayer> implements ILayerDim {
 	}
 	
 	@Override
-	public int getPositionSize(final int refPosition, final int position) {
-		final int underlyingRefPosition = localToUnderlyingPosition(refPosition, refPosition);
+	public int getPositionSize(final long refPosition, final long position) {
+		final long underlyingRefPosition = localToUnderlyingPosition(refPosition, refPosition);
 		return this.underlyingDim.getPositionSize(underlyingRefPosition,
 				(refPosition == position) ?
 						underlyingRefPosition : 
@@ -163,7 +163,7 @@ public class TransformDim<T extends ILayer> implements ILayerDim {
 	}
 	
 	@Override
-	public boolean isPositionResizable(final int position) {
+	public boolean isPositionResizable(final long position) {
 		return this.underlyingDim.isPositionResizable(
 				localToUnderlyingPosition(position, position) );
 	}

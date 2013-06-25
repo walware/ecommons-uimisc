@@ -63,9 +63,9 @@ public class LabelCornerLayer extends CornerLayer {
 
 
 	@Override
-	public ILayerCell getCellByPosition(final int columnPosition, final int rowPosition) {
-		final int columnCount = getColumnCount();
-		final int rowCount = getRowCount();
+	public ILayerCell getCellByPosition(final long columnPosition, final long rowPosition) {
+		final long columnCount = getColumnCount();
+		final long rowCount = getRowCount();
 		if (rowPosition < rowCount - 1) {
 			return new LayerCell(this,
 					new LayerCellDim(HORIZONTAL, NO_INDEX, columnPosition, 0, columnCount),
@@ -79,7 +79,7 @@ public class LabelCornerLayer extends CornerLayer {
 	}
 
 	@Override
-	public LabelStack getConfigLabelsByPosition(final int columnPosition, final int rowPosition) {
+	public LabelStack getConfigLabelsByPosition(final long columnPosition, final long rowPosition) {
 		final LabelStack labelStack = super.getConfigLabelsByPosition(columnPosition, rowPosition);
 		if (rowPosition < getRowCount() - 1) {
 			labelStack.addLabelOnTop(COLUMN_HEADER_LABEL);
@@ -94,7 +94,7 @@ public class LabelCornerLayer extends CornerLayer {
 	}
 
 	@Override
-	public Object getDataValueByPosition(final int columnPosition, final int rowPosition) {
+	public Object getDataValueByPosition(final long columnPosition, final long rowPosition) {
 		if (rowPosition < getRowCount() - 1) {
 			return (this.columnHeaderLabelProvider != null) ? 
 					this.columnHeaderLabelProvider.getDataValue(0, rowPosition) : ""; //$NON-NLS-1$

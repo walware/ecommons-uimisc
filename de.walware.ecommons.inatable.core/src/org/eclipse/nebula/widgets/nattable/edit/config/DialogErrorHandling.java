@@ -159,7 +159,7 @@ public class DialogErrorHandling extends AbstractEditErrorHandler {
 						0);
 				
 				//if discard was selected close the editor
-				int returnCode = warningDialog.open();
+				long returnCode = warningDialog.open();
 				if (returnCode == 1) {
 					this.editor.close();
 				}

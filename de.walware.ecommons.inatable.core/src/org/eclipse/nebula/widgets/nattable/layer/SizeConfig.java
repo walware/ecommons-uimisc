@@ -40,15 +40,15 @@ public class SizeConfig implements IPersistable {
 	/**
 	 * Map that contains default sizes per column.
 	 */
-	private final Map<Integer, Integer> defaultSizeMap = new TreeMap<Integer, Integer>();
+	private final Map<Long, Integer> defaultSizeMap = new TreeMap<Long, Integer>();
 	/**
 	 * Map that contains sizes per column.
 	 */
-	private final Map<Integer, Integer> sizeMap = new TreeMap<Integer, Integer>();
+	private final Map<Long, Integer> sizeMap = new TreeMap<Long, Integer>();
 	/**
 	 * Map that contains the resizable information per row/column.
 	 */
-	private final Map<Integer, Boolean> resizablesMap = new TreeMap<Integer, Boolean>();
+	private final Map<Long, Boolean> resizablesMap = new TreeMap<Long, Boolean>();
 	/**
 	 * The global resizable information of this {@link SizeConfig}.
 	 */
@@ -60,12 +60,12 @@ public class SizeConfig implements IPersistable {
 	/**
 	 * The available space needed for percentage calculation on resizing.
 	 */
-	private int availableSpace = -1;
+	private long availableSpace = -1;
 	/**
 	 * Map that contains the real pixel size. Will only be used on percentage sizing.
 	 * This map is not persisted as it will be calculated on resize.
 	 */
-	private final Map<Integer, Integer> realSizeMap = new TreeMap<Integer, Integer>();
+	private final Map<Long, Integer> realSizeMap = new TreeMap<Long, Integer>();
 
 	/**
 	 * Create a new {@link SizeConfig} with the given default size.
@@ -87,10 +87,10 @@ public class SizeConfig implements IPersistable {
 		properties.put(prefix + PERSISTENCE_KEY_PERCENTAGE_SIZING, String.valueOf(percentageSizing));
 	}
 
-	private void saveMap(Map<Integer, ?> map, String key, Properties properties) {
+	private void saveMap(Map<Long, ?> map, String key, Properties properties) {
 		if (map.size() > 0) {
 			StringBuilder strBuilder = new StringBuilder();
-			for (Integer index : map.keySet()) {
+			for (Long index : map.keySet()) {
 				strBuilder.append(index);
 				strBuilder.append(':');
 				strBuilder.append(map.get(index));
@@ -127,7 +127,7 @@ public class SizeConfig implements IPersistable {
 		loadIntegerMap(prefix + PERSISTENCE_KEY_SIZES, properties, sizeMap);
 	}
 
-	private void loadIntegerMap(String key, Properties properties, Map<Integer, Integer> map) {
+	private void loadIntegerMap(String key, Properties properties, Map<Long, Integer> map) {
 		String property = properties.getProperty(key);
 		if (property != null) {
 			map.clear();
@@ -136,19 +136,19 @@ public class SizeConfig implements IPersistable {
 			while (tok.hasMoreTokens()) {
 				String token = tok.nextToken();
 				int separatorIndex = token.indexOf(':');
-				map.put(Integer.valueOf(token.substring(0, separatorIndex)), Integer.valueOf(token.substring(separatorIndex + 1)));
+				map.put(Long.valueOf(token.substring(0, separatorIndex)), Integer.valueOf(token.substring(separatorIndex + 1)));
 			}
 		}
 	}
 
-	private void loadBooleanMap(String key, Properties properties, Map<Integer, Boolean> map) {
+	private void loadBooleanMap(String key, Properties properties, Map<Long, Boolean> map) {
 		String property = properties.getProperty(key);
 		if (property != null) {
 			StringTokenizer tok = new StringTokenizer(property, ","); //$NON-NLS-1$
 			while (tok.hasMoreTokens()) {
 				String token = tok.nextToken();
 				int separatorIndex = token.indexOf(':');
-				map.put(Integer.valueOf(token.substring(0, separatorIndex)), Boolean.valueOf(token.substring(separatorIndex + 1)));
+				map.put(Long.valueOf(token.substring(0, separatorIndex)), Boolean.valueOf(token.substring(separatorIndex + 1)));
 			}
 		}
 	}
@@ -162,15 +162,15 @@ public class SizeConfig implements IPersistable {
 		this.defaultSize = size;
 	}
 
-	public void setDefaultSize(int position, int size) {
+	public void setDefaultSize(long position, int size) {
 		if (defaultSize < 0) {
 			throw new IllegalArgumentException("size < 0"); //$NON-NLS-1$
 		}
-		defaultSizeMap.put(Integer.valueOf(position), Integer.valueOf(size));
+		defaultSizeMap.put(Long.valueOf(position), Integer.valueOf(size));
 	}
 
-	private int getDefaultSize(int position) {
-		Integer size = defaultSizeMap.get(Integer.valueOf(position));
+	private int getDefaultSize(long position) {
+		Integer size = defaultSizeMap.get(Long.valueOf(position));
 		if (size != null) {
 			return size.intValue();
 		} else {
@@ -180,7 +180,7 @@ public class SizeConfig implements IPersistable {
 
 	// Size
 
-	public int getAggregateSize(int position) {
+	public long getAggregateSize(long position) {
 		if (position < 0) {
 			throw new IndexOutOfBoundsException("position: " + position); //$NON-NLS-1$
 		} else if (position == 0) {
@@ -188,14 +188,14 @@ public class SizeConfig implements IPersistable {
 		} else if (isAllPositionsSameSize() && !percentageSizing) {
 			return position * defaultSize;
 		} else {
-			int resizeAggregate = 0;
+			long resizeAggregate = 0;
 
-			int resizedColumns = 0;
+			long resizedColumns = 0;
 			
-			Map<Integer, Integer> mapToUse = percentageSizing ? realSizeMap : sizeMap;
+			Map<Long, Integer> mapToUse = percentageSizing ? realSizeMap : sizeMap;
 			
-			for (Integer resizedPosition : mapToUse.keySet()) {
-				if (resizedPosition.intValue() < position) {
+			for (Long resizedPosition : mapToUse.keySet()) {
+				if (resizedPosition.longValue() < position) {
 					resizedColumns++;
 					resizeAggregate += mapToUse.get(resizedPosition);
 				} else {
@@ -207,12 +207,12 @@ public class SizeConfig implements IPersistable {
 		}
 	}
 
-	public int getSize(int position) {
+	public int getSize(long position) {
 		Integer size;
 		if (percentageSizing) {
-			size = realSizeMap.get(Integer.valueOf(position));
+			size = realSizeMap.get(Long.valueOf(position));
 		} else {
-			size = sizeMap.get(Integer.valueOf(position));
+			size = sizeMap.get(Long.valueOf(position));
 		}
 		if (size != null) {
 			return size.intValue();
@@ -234,14 +234,14 @@ public class SizeConfig implements IPersistable {
 	 * @param position The position for which the size should be set.
 	 * @param size The size in pixels to set for the given position.
 	 */
-	public void setSize(int position, int size) {
+	public void setSize(long position, int size) {
 		if (size < 0) {
 			throw new IllegalArgumentException("size < 0"); //$NON-NLS-1$
 		}
 		if (isPositionResizable(position)) {
 			//check whether the given value should be remembered as is or if it needs to be calculated
 			if (!isPercentageSizing()) {
-				sizeMap.put(Integer.valueOf(position), Integer.valueOf(size));
+				sizeMap.put(Long.valueOf(position), Integer.valueOf(size));
 			} else {
 				if (availableSpace > 0) {
 					Double percentage = ((double) size * 100)/ availableSpace;
@@ -259,12 +259,12 @@ public class SizeConfig implements IPersistable {
 	 * @param position
 	 * @param percentage
 	 */
-	public void setPercentage(int position, int percentage) {
+	public void setPercentage(long position, int percentage) {
 		if (percentage < 0) {
 			throw new IllegalArgumentException("percentage < 0"); //$NON-NLS-1$
 		}
 		if (isPositionResizable(position) && isPercentageSizing()) {
-			sizeMap.put(Integer.valueOf(position), Integer.valueOf(percentage));
+			sizeMap.put(Long.valueOf(position), Integer.valueOf(percentage));
 			realSizeMap.put(position, calculatePercentageValue(percentage, availableSpace));
 			calculatePercentages(availableSpace, realSizeMap.size());
 		}
@@ -286,8 +286,8 @@ public class SizeConfig implements IPersistable {
 	 * @return <code>true</code> if the given row/column position is resizable,
 	 * 			<code>false</code> if not.
 	 */
-	public boolean isPositionResizable(int position) {
-		Boolean resizable = resizablesMap.get(Integer.valueOf(position));
+	public boolean isPositionResizable(long position) {
+		Boolean resizable = resizablesMap.get(Long.valueOf(position));
 		if (resizable != null) {
 			return resizable.booleanValue();
 		}
@@ -300,11 +300,11 @@ public class SizeConfig implements IPersistable {
 	 * @param resizable <code>true</code> if the given row/column position should be resizable,
 	 * 			<code>false</code> if not.
 	 */
-	public void setPositionResizable(int position, boolean resizable) {
+	public void setPositionResizable(long position, boolean resizable) {
 		if (percentageSizing && resizable) {
 			throw new IllegalStateException("Resizable columns are not allowed when using percentaged sizing."); //$NON-NLS-1$
 		}
-		resizablesMap.put(Integer.valueOf(position), Boolean.valueOf(resizable));
+		resizablesMap.put(Long.valueOf(position), Boolean.valueOf(resizable));
 	}
 
 	/**
@@ -348,15 +348,15 @@ public class SizeConfig implements IPersistable {
 	 * @param space The space that is available for rendering.
 	 * @param positionCount The number of positions that should be handled by this {@link SizeConfig}
 	 */
-	public void calculatePercentages(int space, int positionCount) {
+	public void calculatePercentages(long space, long positionCount) {
 		if (this.percentageSizing) {
 			this.availableSpace = space;
-			int sum = 0;
+			long sum = 0;
 			int real = 0;
-			int realSum = 0;
-			List<Integer> noInfoPositions = new ArrayList<Integer>();
+			long realSum = 0;
+			List<Long> noInfoPositions = new ArrayList<Long>();
 			Integer positionValue = null;
-			for (int i = 0; i < positionCount; i++) {
+			for (long i = 0; i < positionCount; i++) {
 				positionValue = this.sizeMap.get(i);
 				if (positionValue != null) {
 					sum += positionValue;
@@ -375,7 +375,7 @@ public class SizeConfig implements IPersistable {
 				//now calculate the size for the remaining columns
 				double remaining = new Double(space) - realSum;
 				Double remainingColSpace = remaining / noInfoPositions.size();
-				for (Integer position : noInfoPositions) {
+				for (Long position : noInfoPositions) {
 					sum += (remainingColSpace / space) * 100;
 					this.realSizeMap.put(position, remainingColSpace.intValue());
 				}
@@ -388,16 +388,16 @@ public class SizeConfig implements IPersistable {
 				//check if the sum of the calculated values is the same as the given space
 				//if not add the missing pixels to the last value
 				//this is needed because of rounding issues on 100% with odd-numbered pixel values
-				int valueSum = 0;
-				int lastPos = -1;
-				for (Map.Entry<Integer, Integer> entry : this.realSizeMap.entrySet()) {
+				long valueSum = 0;
+				long lastPos = -1;
+				for (Map.Entry<Long, Integer> entry : this.realSizeMap.entrySet()) {
 					valueSum += entry.getValue();
 					lastPos = Math.max(lastPos, entry.getKey());
 				}
 				
 				if (valueSum < space) {
 					int lastPosValue = this.realSizeMap.get(lastPos);
-					this.realSizeMap.put(lastPos, lastPosValue + (space - valueSum));
+					this.realSizeMap.put(lastPos, lastPosValue + (int) (space - valueSum));
 				}
 			}
 			
@@ -409,7 +409,7 @@ public class SizeConfig implements IPersistable {
 	 * @param space The available space
 	 * @return The percentaged value of the given space.
 	 */
-	private int calculatePercentageValue(int percentage, int space) {
+	private int calculatePercentageValue(int percentage, long space) {
 		double factor = (double) percentage / 100;
 		return new Double(space * factor).intValue();
 	}

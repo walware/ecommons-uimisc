@@ -10,7 +10,15 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.reorder.action;
 
+import static org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils.safe;
+
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.coordinate.Point;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
@@ -22,11 +30,6 @@ import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeDetectUtil;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.command.ViewportDragCommand;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * Default {@link IDragMode} invoked for 'left click + drag' on the column header.
@@ -41,7 +44,7 @@ public class ColumnReorderDragMode implements IDragMode {
 	protected NatTable natTable;
 	protected MouseEvent initialEvent;
 	protected MouseEvent currentEvent;
-	protected int dragFromGridColumnPosition;
+	protected long dragFromGridColumnPosition;
 	
 	protected ColumnReorderOverlayPainter targetOverlayPainter = new ColumnReorderOverlayPainter();
 	
@@ -69,7 +72,7 @@ public class ColumnReorderDragMode implements IDragMode {
 	public void mouseUp(NatTable natTable, MouseEvent event) {
 		natTable.removeOverlayPainter(targetOverlayPainter);
 		
-		int dragToGridColumnPosition = getDragToGridColumnPosition(getMoveDirection(event.x), natTable.getColumnPositionByX(event.x));
+		long dragToGridColumnPosition = getDragToGridColumnPosition(getMoveDirection(event.x), natTable.getColumnPositionByX(event.x));
 		
 		if (!isValidTargetColumnPosition(natTable, dragFromGridColumnPosition, dragToGridColumnPosition)) {
 			dragToGridColumnPosition = -1;
@@ -82,12 +85,12 @@ public class ColumnReorderDragMode implements IDragMode {
 		natTable.redraw();
 	}
 	
-	private int getDragFromGridColumnPosition() {
+	private long getDragFromGridColumnPosition() {
 		return natTable.getColumnPositionByX(initialEvent.x);
 	}
 	
-	private int getDragToGridColumnPosition(CellEdgeEnum moveDirection, int gridColumnPosition) {
-		int dragToGridColumnPosition = -1;
+	private long getDragToGridColumnPosition(CellEdgeEnum moveDirection, long gridColumnPosition) {
+		long dragToGridColumnPosition = -1;
 		
 		if (moveDirection != null) {
 			switch (moveDirection) {
@@ -103,7 +106,7 @@ public class ColumnReorderDragMode implements IDragMode {
 		return dragToGridColumnPosition;
 	}
 	
-	private CellEdgeEnum getMoveDirection(int x) {
+	private CellEdgeEnum getMoveDirection(long x) {
 	    ILayerCell cell = getColumnCell(x);
 	    if (cell != null) {
 			Rectangle selectedColumnHeaderRect = cell.getBounds();
@@ -113,38 +116,38 @@ public class ColumnReorderDragMode implements IDragMode {
 		return null;
 	}
 	
-	private ILayerCell getColumnCell(int x) {
-	    int gridColumnPosition = natTable.getColumnPositionByX(x);
-	    int gridRowPosition = natTable.getRowPositionByY(initialEvent.y);
+	private ILayerCell getColumnCell(long x) {
+	    long gridColumnPosition = natTable.getColumnPositionByX(x);
+	    long gridRowPosition = natTable.getRowPositionByY(initialEvent.y);
 	    return natTable.getCellByPosition(gridColumnPosition, gridRowPosition);
 	}
 
-	protected boolean isValidTargetColumnPosition(ILayer natLayer, int dragFromGridColumnPosition, int dragToGridColumnPosition) {
+	protected boolean isValidTargetColumnPosition(ILayer natLayer, long dragFromGridColumnPosition, long dragToGridColumnPosition) {
 		return dragFromGridColumnPosition >= 0 && dragToGridColumnPosition >= 0;
 	}
 	
-	protected void fireMoveStartCommand(NatTable natTable, int dragFromGridColumnPosition) {
+	protected void fireMoveStartCommand(NatTable natTable, long dragFromGridColumnPosition) {
 		natTable.doCommand(new ColumnReorderStartCommand(natTable, dragFromGridColumnPosition));
 	}
 	
-	protected void fireMoveEndCommand(NatTable natTable, int dragToGridColumnPosition) {
+	protected void fireMoveEndCommand(NatTable natTable, long dragToGridColumnPosition) {
 		natTable.doCommand(new ColumnReorderEndCommand(natTable, dragToGridColumnPosition));
 	}
 
 	private class ColumnReorderOverlayPainter implements IOverlayPainter {
 
 		public void paintOverlay(GC gc, ILayer layer) {
-			int dragFromGridColumnPosition = getDragFromGridColumnPosition();
+			long dragFromGridColumnPosition = getDragFromGridColumnPosition();
 			
 			if (currentEvent.x > natTable.getWidth()) {
 				return;
 			}
 			
 			CellEdgeEnum moveDirection = getMoveDirection(currentEvent.x);
-			int dragToGridColumnPosition = getDragToGridColumnPosition(moveDirection, natTable.getColumnPositionByX(currentEvent.x));
+			long dragToGridColumnPosition = getDragToGridColumnPosition(moveDirection, natTable.getColumnPositionByX(currentEvent.x));
 			
 			if (isValidTargetColumnPosition(natTable, dragFromGridColumnPosition, dragToGridColumnPosition)) {
-				int dragToColumnHandleX = -1;
+				long dragToColumnHandleX = -1;
 				
 				if (moveDirection != null) {
 					Rectangle selectedColumnHeaderRect = getColumnCell(currentEvent.x).getBounds();
@@ -159,11 +162,11 @@ public class ColumnReorderDragMode implements IDragMode {
 					}
 				}
 				
-				if (dragToColumnHandleX > 0) {
+				if (dragToColumnHandleX > 0 && dragToColumnHandleX < Integer.MAX_VALUE) {
 					Color orgBgColor = gc.getBackground();
 					gc.setBackground(GUIHelper.COLOR_DARK_GRAY);
 					
-					gc.fillRectangle(dragToColumnHandleX - 1, 0, 2, layer.getHeight());
+					gc.fillRectangle(safe(dragToColumnHandleX - 1, 0, 2, layer.getHeight()));
 					
 					gc.setBackground(orgBgColor);
 				}

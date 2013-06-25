@@ -105,7 +105,7 @@ public class ColumnChooser {
 				columnChooserDialog.setSelectionIncludingNested(ColumnChooserUtils.getColumnEntryIndexes(addedItems));
 			}
 
-			public void itemsMoved(Direction direction, List<ColumnGroupEntry> movedColumnGroupEntries, List<ColumnEntry> movedColumnEntries, List<List<Integer>> fromPositions, List<Integer> toPositions) {
+			public void itemsMoved(Direction direction, List<ColumnGroupEntry> movedColumnGroupEntries, List<ColumnEntry> movedColumnEntries, List<List<Long>> fromPositions, List<Long> toPositions) {
 				moveItems(direction, movedColumnGroupEntries, movedColumnEntries, fromPositions, toPositions);
 			}
 
@@ -117,7 +117,7 @@ public class ColumnChooser {
 			 * @param fromPositions
 			 * @param toPositions
 			 */
-			private void moveItems(Direction direction, List<ColumnGroupEntry> movedColumnGroupEntries, List<ColumnEntry> movedColumnEntries, List<List<Integer>> fromPositions, List<Integer> toPositions) {
+			private void moveItems(Direction direction, List<ColumnGroupEntry> movedColumnGroupEntries, List<ColumnEntry> movedColumnEntries, List<List<Long>> fromPositions, List<Long> toPositions) {
 
 				for (int i = 0; i < fromPositions.size(); i++) {
 					boolean columnGroupMoved = columnGroupMoved(fromPositions.get(i), movedColumnGroupEntries);
@@ -125,8 +125,8 @@ public class ColumnChooser {
 
 					ILayerCommand command = null;
 					if (!columnGroupMoved && !multipleColumnsMoved) {
-						int fromPosition = fromPositions.get(i).get(0).intValue();
-						int toPosition = adjustToPosition(direction, toPositions.get(i).intValue());
+						long fromPosition = fromPositions.get(i).get(0).longValue();
+						long toPosition = adjustToPosition(direction, toPositions.get(i).longValue());
 						command = new ColumnReorderCommand(columnHideShowLayer, fromPosition, toPosition);
 					} else if (columnGroupMoved && multipleColumnsMoved) {
 						command = new ReorderColumnsAndGroupsCommand(columnHideShowLayer, fromPositions.get(i), adjustToPosition(direction, toPositions.get(i)));
@@ -142,7 +142,7 @@ public class ColumnChooser {
 				columnChooserDialog.setSelectionIncludingNested(ColumnChooserUtils.getColumnEntryIndexes(movedColumnEntries));
 			}
 
-			private int adjustToPosition(Direction direction, Integer toColumnPosition) {
+			private long adjustToPosition(Direction direction, Long toColumnPosition) {
 				if (Direction.DOWN == direction) {
 					return toColumnPosition + 1;
 				} else {
@@ -150,7 +150,7 @@ public class ColumnChooser {
 				}
 			}
 
-			private boolean columnGroupMoved(List<Integer> fromPositions, List<ColumnGroupEntry> movedColumnGroupEntries) {
+			private boolean columnGroupMoved(List<Long> fromPositions, List<ColumnGroupEntry> movedColumnGroupEntries) {
 				for (ColumnGroupEntry columnGroupEntry : movedColumnGroupEntries) {
 					if(fromPositions.contains(columnGroupEntry.getFirstElementPosition())) return true;
 				}
@@ -158,14 +158,14 @@ public class ColumnChooser {
 			}
 
 			public void itemsCollapsed(ColumnGroupEntry columnGroupEntry) {
-				int index = columnGroupEntry.getFirstElementIndex().intValue();
-				int position = selectionLayer.getColumnPositionByIndex(index);
+				long index = columnGroupEntry.getFirstElementIndex().longValue();
+				long position = selectionLayer.getColumnPositionByIndex(index);
 				selectionLayer.doCommand(new ColumnGroupExpandCollapseCommand(selectionLayer, position));
 			}
 
 			public void itemsExpanded(ColumnGroupEntry columnGroupEntry) {
-				int index = columnGroupEntry.getFirstElementIndex().intValue();
-				int position = selectionLayer.getColumnPositionByIndex(index);
+				long index = columnGroupEntry.getFirstElementIndex().longValue();
+				long position = selectionLayer.getColumnPositionByIndex(index);
 				selectionLayer.doCommand(new ColumnGroupExpandCollapseCommand(selectionLayer, position));
 			}
 		});

@@ -46,7 +46,7 @@ public class MultiRowReorderCommand implements ILayerCommand {
 	 * @param fromRowPositions The positions of the rows that should be reordered
 	 * @param toRowPosition The position of the row to which the dragged row should be dropped
 	 */
-	public MultiRowReorderCommand(ILayer layer, List<Integer> fromRowPositions, int toRowPosition) {
+	public MultiRowReorderCommand(ILayer layer, List<Long> fromRowPositions, long toRowPosition) {
 		this(layer, fromRowPositions, toRowPosition < layer.getRowCount() ? toRowPosition : toRowPosition - 1, toRowPosition < layer.getRowCount());
 	}
 	
@@ -57,9 +57,9 @@ public class MultiRowReorderCommand implements ILayerCommand {
 	 * @param toRowPosition The position of the row to which the dragged row should be dropped
 	 * @param reorderToTopEdge Flag to indicate if the row is dragged to the top edge of the layer
 	 */
-	public MultiRowReorderCommand(ILayer layer, List<Integer> fromRowPositions, int toRowPosition, boolean reorderToTopEdge) {
+	public MultiRowReorderCommand(ILayer layer, List<Long> fromRowPositions, long toRowPosition, boolean reorderToTopEdge) {
 		fromRowPositionCoordinates = new ArrayList<RowPositionCoordinate>();
-		for (Integer fromRowPosition : fromRowPositions) {
+		for (Long fromRowPosition : fromRowPositions) {
 			fromRowPositionCoordinates.add(new RowPositionCoordinate(layer, fromRowPosition));
 		}
 		
@@ -81,8 +81,8 @@ public class MultiRowReorderCommand implements ILayerCommand {
 	/**
 	 * @return The positions of the rows that should be reordered
 	 */
-	public List<Integer> getFromRowPositions() {
-		List<Integer> fromRowPositions = new ArrayList<Integer>();
+	public List<Long> getFromRowPositions() {
+		List<Long> fromRowPositions = new ArrayList<Long>();
 		for (RowPositionCoordinate fromRowPositionCoordinate : fromRowPositionCoordinates) {
 			fromRowPositions.add(fromRowPositionCoordinate.getRowPosition());
 		}
@@ -92,7 +92,7 @@ public class MultiRowReorderCommand implements ILayerCommand {
 	/**
 	 * @return The position of the row to which the dragged rows should be dropped
 	 */
-	public int getToRowPosition() {
+	public long getToRowPosition() {
 		return toRowPositionCoordinate.getRowPosition();
 	}
 	

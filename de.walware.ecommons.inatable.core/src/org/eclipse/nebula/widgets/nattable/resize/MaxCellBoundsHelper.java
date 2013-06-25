@@ -11,7 +11,7 @@
 package org.eclipse.nebula.widgets.nattable.resize;
 
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -29,8 +29,8 @@ public class MaxCellBoundsHelper {
 	 * @return Preferred widths for columns. Preferred width is the minimum width
 	 *    required to horizontally fit all the contents of the column (including header)
 	 */
-	public static int[] getPreferredColumnWidths(IConfigRegistry configRegistry, GCFactory gcFactory, ILayer layer, int[]columnPositions) {
-		int[] columnWidths = new int[columnPositions.length];
+	public static long[] getPreferredColumnWidths(IConfigRegistry configRegistry, GCFactory gcFactory, ILayer layer, int[]columnPositions) {
+		long[] columnWidths = new long[columnPositions.length];
 		
 		GC gc = gcFactory.createGC();
 		for (int i = 0; i < columnPositions.length; i++) {
@@ -46,19 +46,19 @@ public class MaxCellBoundsHelper {
 	 *    contents of the cells in a column. Takes into account the font settings 
 	 *    and display type conversion. 
 	 */
-	private static int getPreferredColumnWidth(ILayer layer, int columnPosition, IConfigRegistry configRegistry, GC gc) {
+	private static long getPreferredColumnWidth(ILayer layer, long columnPosition, IConfigRegistry configRegistry, GC gc) {
 		ICellPainter painter;
-		int maxWidth = 0;
+		long maxWidth = 0;
 		ILayerCell cell;
 		
-		for (int rowPosition = 0; rowPosition < layer.getRowCount(); rowPosition++) {
+		for (long rowPosition = 0; rowPosition < layer.getRowCount(); rowPosition++) {
 			cell = layer.getCellByPosition(columnPosition, rowPosition);
 			if (cell != null) {
 				boolean atEndOfCellSpan = cell.getOriginColumnPosition() + cell.getColumnSpan() - 1 == columnPosition;
 				if (atEndOfCellSpan) {
 					painter = layer.getCellPainter(cell.getColumnPosition(), cell.getRowPosition(), cell, configRegistry);
 					if (painter != null) {
-						int preferredWidth = painter.getPreferredWidth(cell, gc, configRegistry);
+						long preferredWidth = painter.getPreferredWidth(cell, gc, configRegistry);
 						
 						// Adjust width
 						Rectangle bounds = cell.getBounds();
@@ -67,8 +67,8 @@ public class MaxCellBoundsHelper {
 						preferredWidth += preferredWidth - adjustedCellBounds.width;
 						
 						if (cell.getColumnSpan() > 1) {
-							int columnStartX = layer.getStartXOfColumnPosition(columnPosition);
-							int cellStartX = layer.getStartXOfColumnPosition(cell.getOriginColumnPosition());
+							long columnStartX = layer.getStartXOfColumnPosition(columnPosition);
+							long cellStartX = layer.getStartXOfColumnPosition(cell.getOriginColumnPosition());
 							preferredWidth = Math.max(0, preferredWidth - (columnStartX - cellStartX));
 						}
 						
@@ -81,8 +81,8 @@ public class MaxCellBoundsHelper {
 		return maxWidth;
 	}
 	
-	public static int[] getPreferredRowHeights(IConfigRegistry configRegistry, GCFactory gcFactory, ILayer layer, int[]rows) {
-		int[] rowHeights = new int[rows.length];
+	public static long[] getPreferredRowHeights(IConfigRegistry configRegistry, GCFactory gcFactory, ILayer layer, int[]rows) {
+		long[] rowHeights = new long[rows.length];
 		
 		GC gc = gcFactory.createGC();
 		for (int i = 0; i < rows.length; i++) {
@@ -93,19 +93,19 @@ public class MaxCellBoundsHelper {
 		return rowHeights;
 	}
 
-	private static int getPreferredRowHeight(ILayer layer, int rowPosition, IConfigRegistry configRegistry, GC gc) {
-		int maxHeight = 0;
+	private static long getPreferredRowHeight(ILayer layer, long rowPosition, IConfigRegistry configRegistry, GC gc) {
+		long maxHeight = 0;
 		ICellPainter painter;
 		ILayerCell cell;
 		
-		for (int columnPosition = 0; columnPosition < layer.getColumnCount(); columnPosition++) {
+		for (long columnPosition = 0; columnPosition < layer.getColumnCount(); columnPosition++) {
 			cell = layer.getCellByPosition(columnPosition, rowPosition);
 			if (cell != null) {
 				boolean atEndOfCellSpan = cell.getOriginRowPosition() + cell.getRowSpan() - 1 == rowPosition;
 				if (atEndOfCellSpan) {
 					painter = layer.getCellPainter(cell.getColumnPosition(), cell.getRowPosition(), cell, configRegistry);
 					if (painter != null) {
-						int preferredHeight = painter.getPreferredHeight(cell, gc, configRegistry);
+						long preferredHeight = painter.getPreferredHeight(cell, gc, configRegistry);
 						
 						// Adjust height
 						Rectangle bounds = cell.getBounds();
@@ -114,8 +114,8 @@ public class MaxCellBoundsHelper {
 						preferredHeight += preferredHeight - adjustedCellBounds.height;
 						
 						if (cell.getColumnSpan() > 1) {
-							int rowStartY = layer.getStartYOfRowPosition(rowPosition);
-							int cellStartY = layer.getStartYOfRowPosition(cell.getOriginRowPosition());
+							long rowStartY = layer.getStartYOfRowPosition(rowPosition);
+							long cellStartY = layer.getStartYOfRowPosition(cell.getOriginRowPosition());
 							preferredHeight = Math.max(0, preferredHeight - (rowStartY - cellStartY));
 						}
 						
@@ -131,9 +131,9 @@ public class MaxCellBoundsHelper {
 	/**
 	 * Traverse the two arrays and return the greater element in each index position. 
 	 */
-	public static int[] greater(int[] array1, int[] array2) {
+	public static long[] greater(long[] array1, long[] array2) {
 		int resultSize = (array1.length < array2.length) ? array1.length : array2.length;
-		int[] result = new int[resultSize];
+		long[] result = new long[resultSize];
 		
 		for(int i=0; i<resultSize; i++){
 			result[i] = (array1[i] > array2[i]) ? array1[i] : array2[i];

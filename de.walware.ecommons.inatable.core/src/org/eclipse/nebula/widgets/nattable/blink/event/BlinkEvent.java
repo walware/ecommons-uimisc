@@ -13,11 +13,10 @@ package org.eclipse.nebula.widgets.nattable.blink.event;
 import java.util.Arrays;
 import java.util.Collection;
 
-
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IVisualChangeEvent;
-import org.eclipse.swt.graphics.Rectangle;
 
 public class BlinkEvent implements IVisualChangeEvent {
 

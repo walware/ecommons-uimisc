@@ -15,22 +15,22 @@ import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZON
 
 public class LayerUtil {
 	
-	public static final int getColumnPositionByX(ILayer layer, int x) {
-		int width = layer.getWidth();
+	public static final long getColumnPositionByX(ILayer layer, long x) {
+		long width = layer.getWidth();
 		
 		if (x < 0 || x >= width) {
-			return Integer.MIN_VALUE;
+			return Long.MIN_VALUE;
 		}
 
 		return findColumnPosition(0, 0, layer, x, width, layer.getColumnCount());
 	}
 	
-	protected static final int findColumnPosition(int xOffset, int columnOffset, ILayer layer, int x, int totalWidth, int columnCount) {
+	protected static final long findColumnPosition(long xOffset, long columnOffset, ILayer layer, long x, long totalWidth, long columnCount) {
 		double size = (double) (totalWidth - xOffset) / (columnCount - columnOffset);
-		int columnPosition = columnOffset + (int) ((x - xOffset) / size);
+		long columnPosition = columnOffset + (int) ((x - xOffset) / size);
 		
-		int startX = layer.getStartXOfColumnPosition(columnPosition);
-		int endX = startX + layer.getColumnWidthByPosition(columnPosition);
+		long startX = layer.getStartXOfColumnPosition(columnPosition);
+		long endX = startX + layer.getColumnWidthByPosition(columnPosition);
 		if (x < startX) {
 			return findColumnPosition(xOffset, columnOffset, layer, x, startX, columnPosition);
 		} else if (x >= endX) {
@@ -40,22 +40,22 @@ public class LayerUtil {
 		}
 	}
 	
-	public static final int getRowPositionByY(ILayer layer, int y) {
-		int height = layer.getHeight();
+	public static final long getRowPositionByY(ILayer layer, long y) {
+		long height = layer.getHeight();
 		
 		if (y < 0 || y >= height) {
-			return Integer.MIN_VALUE;
+			return Long.MIN_VALUE;
 		}
 		
 		return findRowPosition(0, 0, layer, y, height, layer.getRowCount());
 	}
 	
-	protected static final int findRowPosition(int yOffset, int rowOffset, ILayer layer, int y, int totalHeight, int rowCount) {
+	protected static final long findRowPosition(long yOffset, long rowOffset, ILayer layer, long y, long totalHeight, long rowCount) {
 		double size = (double) (totalHeight - yOffset) / (rowCount - rowOffset);
-		int rowPosition = rowOffset + (int) ((y - yOffset) / size);
+		long rowPosition = rowOffset + (int) ((y - yOffset) / size);
 		
-		int startY = layer.getStartYOfRowPosition(rowPosition);
-		int endY = startY + layer.getRowHeightByPosition(rowPosition);
+		long startY = layer.getStartYOfRowPosition(rowPosition);
+		long endY = startY + layer.getRowHeightByPosition(rowPosition);
 		if (y < startY) {
 			if(startY == totalHeight){
 				return rowCount;
@@ -75,14 +75,14 @@ public class LayerUtil {
 	 * @param targetLayer layer to convert the from position to 
 	 * @return converted column position, or -1 if conversion not possible
 	 */
-	public static final int convertPosition(final ILayerDim source, final int sourceRefPosition,
-			final int sourcePosition, final IUniqueIndexLayer targetLayer) {
+	public static final long convertPosition(final ILayerDim source, final long sourceRefPosition,
+			final long sourcePosition, final IUniqueIndexLayer targetLayer) {
 		if (targetLayer == source.getLayer()) {
 			return sourcePosition;
 		}
-		final int index = source.getPositionIndex(sourceRefPosition, sourcePosition);
+		final long index = source.getPositionIndex(sourceRefPosition, sourcePosition);
 		if (index < 0) {
-			return Integer.MIN_VALUE;
+			return Long.MIN_VALUE;
 		}
 		return (source.getOrientation() == HORIZONTAL) ?
 				targetLayer.getColumnPositionByIndex(index) :
@@ -96,13 +96,13 @@ public class LayerUtil {
 	 * @param targetLayer layer to convert the from position to 
 	 * @return converted column position, or -1 if conversion not possible
 	 */
-	public static final int convertColumnPosition(ILayer sourceLayer, int sourceColumnPosition, IUniqueIndexLayer targetLayer) {
+	public static final long convertColumnPosition(ILayer sourceLayer, long sourceColumnPosition, IUniqueIndexLayer targetLayer) {
 		if (targetLayer == sourceLayer) {
 			return sourceColumnPosition;
 		}
-		int columnIndex = sourceLayer.getColumnIndexByPosition(sourceColumnPosition);
+		long columnIndex = sourceLayer.getColumnIndexByPosition(sourceColumnPosition);
 		if (columnIndex < 0) {
-			return Integer.MIN_VALUE;
+			return Long.MIN_VALUE;
 		}
 		return targetLayer.getColumnPositionByIndex(columnIndex);
 	}
@@ -114,20 +114,20 @@ public class LayerUtil {
 	 * @param targetLayer layer to convert the from position to 
 	 * @return converted row position, or -1 if conversion not possible
 	 */
-	public static final int convertRowPosition(ILayer sourceLayer, int sourceRowPosition, IUniqueIndexLayer targetLayer) {
+	public static final long convertRowPosition(ILayer sourceLayer, long sourceRowPosition, IUniqueIndexLayer targetLayer) {
 		if (targetLayer == sourceLayer) {
 			return sourceRowPosition;
 		}
-		int rowIndex = sourceLayer.getRowIndexByPosition(sourceRowPosition);
+		long rowIndex = sourceLayer.getRowIndexByPosition(sourceRowPosition);
 		if (rowIndex < 0) {
-			return Integer.MIN_VALUE;
+			return Long.MIN_VALUE;
 		}
 		return targetLayer.getRowPositionByIndex(rowIndex);
 	}
 	
-	public static final int localToUnderlyingPosition(final ILayerDim dim, final int position) {
+	public static final long localToUnderlyingPosition(final ILayerDim dim, final long position) {
 		if (position < 0 || position >= dim.getPositionCount()) {
-			return Integer.MIN_VALUE;
+			return Long.MIN_VALUE;
 		}
 		return dim.localToUnderlyingPosition(position, position);
 	}

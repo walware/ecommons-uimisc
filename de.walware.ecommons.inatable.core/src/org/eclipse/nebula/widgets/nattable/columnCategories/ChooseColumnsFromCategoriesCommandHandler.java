@@ -72,12 +72,12 @@ public class ChooseColumnsFromCategoriesCommandHandler
 
 	// Listen and respond to the dialog events
 
-	public void itemsRemoved(List<Integer> removedColumnPositions) {
+	public void itemsRemoved(List<Long> removedColumnPositions) {
 		ColumnChooserUtils.hideColumnPositions(removedColumnPositions, columnHideShowLayer);
 		refreshDialog();
 	}
 
-	public void itemsSelected(List<Integer> addedColumnIndexes) {
+	public void itemsSelected(List<Long> addedColumnIndexes) {
 		ColumnChooserUtils.showColumnIndexes(addedColumnIndexes, columnHideShowLayer);
 		refreshDialog();
 	}
@@ -91,17 +91,17 @@ public class ChooseColumnsFromCategoriesCommandHandler
 	 * @param direction the direction to move
 	 * @param selectedPositions the column positions to move
 	 */
-	public void itemsMoved(Direction direction, List<Integer> selectedPositions) {
-		List<List<Integer>> fromPositions = PositionUtil.getGroupedByContiguous(selectedPositions);
-		List<Integer> toPositions = getDestinationPositions(direction, fromPositions);
+	public void itemsMoved(Direction direction, List<Long> selectedPositions) {
+		List<List<Long>> fromPositions = PositionUtil.getGroupedByContiguous(selectedPositions);
+		List<Long> toPositions = getDestinationPositions(direction, fromPositions);
 
 		for (int i = 0; i < fromPositions.size(); i++) {
 			boolean multipleColumnsMoved = fromPositions.get(i).size() > 1;
 
 			ILayerCommand command = null;
 			if (!multipleColumnsMoved) {
-				int fromPosition = fromPositions.get(i).get(0).intValue();
-				int toPosition = toPositions.get(i);
+				long fromPosition = fromPositions.get(i).get(0).longValue();
+				long toPosition = toPositions.get(i);
 				command = new ColumnReorderCommand(columnHideShowLayer, fromPosition, toPosition);
 			} else if(multipleColumnsMoved){
 				command = new MultiColumnReorderCommand(columnHideShowLayer, fromPositions.get(i), toPositions.get(i));
@@ -126,9 +126,9 @@ public class ChooseColumnsFromCategoriesCommandHandler
 	 * </ul>
 	 * @return a List of destination positions
 	 */
-	protected List<Integer> getDestinationPositions(Direction direction, List<List<Integer>> selectedPositions) {
-		List<Integer> destinationPositions = new ArrayList<Integer>();
-		for (List<Integer> contiguousPositions : selectedPositions) {
+	protected List<Long> getDestinationPositions(Direction direction, List<List<Long>> selectedPositions) {
+		List<Long> destinationPositions = new ArrayList<Long>();
+		for (List<Long> contiguousPositions : selectedPositions) {
 			switch (direction) {
 			case UP:
 				destinationPositions.add(ObjectUtils.getFirstElement(contiguousPositions) - 1);

@@ -17,7 +17,10 @@ import java.util.List;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.window.Window;
-import org.eclipse.swt.graphics.Rectangle;
+
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.SWTUtil;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -64,8 +67,8 @@ public class EditController {
 			Rectangle cellBounds = cell.getBounds();
 			ILayer layer = cell.getLayer();
 			
-			int columnPosition = cell.getColumnPosition();
-			int rowPosition = cell.getRowPosition();
+			long columnPosition = cell.getColumnPosition();
+			long rowPosition = cell.getRowPosition();
 
 			//read the configuration for the specified cell for
 			//- which editor to use for that cell
@@ -97,7 +100,7 @@ public class EditController {
 				final Control editorControl = cellEditor.getEditorControl();
 				
 				if (editorControl != null && !editorControl.isDisposed()) {
-					editorControl.setBounds(editorBounds);
+					editorControl.setBounds(SWTUtil.toSWT(editorBounds));
 					//We need to add the control listeners after setting the bounds to it 
 					//because of the strange behaviour on Mac OS where a control loses focus 
 					//if its bounds are set
@@ -164,7 +167,7 @@ public class EditController {
 						parent != null ? parent.getShell() : null, initialCanonicalValue, 
 								cells.get(0), cellEditor, configRegistry);
 				
-				int returnValue = dialog.open();
+				long returnValue = dialog.open();
 				
 				if (returnValue == Window.OK) {
 					for (ILayerCell selectedCell : cells) {

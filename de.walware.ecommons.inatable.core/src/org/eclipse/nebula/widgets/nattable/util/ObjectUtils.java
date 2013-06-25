@@ -23,12 +23,12 @@ import java.util.TreeSet;
 
 public class ObjectUtils {
 
-	public static int[] asIntArray(Collection<Integer> collection) {
-		int[] copy = new int[collection.size()];
+	public static long[] asLongArray(Collection<Long> collection) {
+		long[] copy = new long[collection.size()];
 
 		int index = 0;
-		for (Integer value : collection) {
-			copy[index] = value.intValue();
+		for (Long value : collection) {
+			copy[index] = value.longValue();
 			index++;
 		}
 
@@ -59,7 +59,7 @@ public class ObjectUtils {
 			return "NULL"; //$NON-NLS-1$
 		}
 		String out = "[ "; //$NON-NLS-1$
-		int count = 1;
+		long count = 1;
 		for (T object : collection) {
 			if(object == null) continue;
 			out = out + object.toString();
@@ -94,9 +94,9 @@ public class ObjectUtils {
 	}
 
 	/**
-	 * @return 4 digit random Integer number
+	 * @return 4 digit random Long number
 	 */
-	public static int getRandomNumber() {
+	public static long getRandomNumber() {
 		return RANDOM.nextInt(10000);
 	}
 	
@@ -104,13 +104,6 @@ public class ObjectUtils {
 	
 	public static ThreadGroup getNatTableThreadGroup() {
 		return THREAD_GROUP;
-	}
-
-	/**
-	 * @return random Integer number between 0 and parameter max
-	 */
-	public static int getRandomNumber(int max) {
-		return RANDOM.nextInt(max);
 	}
 
 	public static <T> T getLastElement(List<T> list) {

@@ -20,7 +20,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEn
 
 public class RowInsertEvent extends RowStructuralChangeEvent {
 	
-	public RowInsertEvent(ILayer layer, int rowPosition) {
+	public RowInsertEvent(ILayer layer, long rowPosition) {
 		this(layer, new Range(rowPosition));
 	}
 	

@@ -12,7 +12,7 @@ package org.eclipse.nebula.widgets.nattable.data.validate;
 
 public class DefaultNumericDataValidator extends DataValidator {
 
-	public boolean validate(int columnIndex, int rowIndex, Object newValue) {
+	public boolean validate(long columnIndex, long rowIndex, Object newValue) {
 		try {
 			if (newValue != null)
 				new Double(newValue.toString());

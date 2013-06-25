@@ -23,7 +23,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEn
 
 public class HideColumnPositionsEvent extends ColumnStructuralChangeEvent {
 
-	public HideColumnPositionsEvent(ILayer layer, Collection<Integer> columnPositions) {
+	public HideColumnPositionsEvent(ILayer layer, Collection<Long> columnPositions) {
 		super(layer, PositionUtil.getRanges(columnPositions));
 	}
 

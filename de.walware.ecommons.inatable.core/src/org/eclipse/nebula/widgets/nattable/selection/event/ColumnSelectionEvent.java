@@ -27,16 +27,16 @@ public class ColumnSelectionEvent extends ColumnVisualChangeEvent implements ISe
 	
 	private final SelectionLayer selectionLayer;
 	
-	private int columnPositionToReveal;
+	private long columnPositionToReveal;
 	
 	
-	public ColumnSelectionEvent(SelectionLayer selectionLayer, int columnPosition, boolean revealColumn) {
+	public ColumnSelectionEvent(SelectionLayer selectionLayer, long columnPosition, boolean revealColumn) {
 		super(selectionLayer, new Range(columnPosition));
 		this.selectionLayer = selectionLayer;
 		this.columnPositionToReveal = (revealColumn) ? columnPosition : NO_SELECTION;
 	}
 	
-	public ColumnSelectionEvent(SelectionLayer selectionLayer, Collection<Integer> columnPositions, int columnPositionToReveal) {
+	public ColumnSelectionEvent(SelectionLayer selectionLayer, Collection<Long> columnPositions, long columnPositionToReveal) {
 		super(selectionLayer, PositionUtil.getRanges(columnPositions));
 		this.selectionLayer = selectionLayer;
 		this.columnPositionToReveal = columnPositionToReveal;
@@ -56,7 +56,7 @@ public class ColumnSelectionEvent extends ColumnVisualChangeEvent implements ISe
 		return selectionLayer;
 	}
 	
-	public int getColumnPositionToReveal() {
+	public long getColumnPositionToReveal() {
 		return columnPositionToReveal;
 	}
 	

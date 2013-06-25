@@ -21,7 +21,7 @@ public class ExtendedReflectiveColumnPropertyAccessor<R> extends ReflectiveColum
 		super(propertyNames);
 	}
 
-	public Object getDataValue(R rowObj, int columnIndex) {
+	public Object getDataValue(R rowObj, long columnIndex) {
 		String propertyName = getColumnProperty(columnIndex);
 		if (propertyName.contains(".")) { //$NON-NLS-1$
 			return getPropertyValue(rowObj, propertyName);
@@ -31,7 +31,7 @@ public class ExtendedReflectiveColumnPropertyAccessor<R> extends ReflectiveColum
 		}
 	}
 
-	public void setDataValue(R rowObj, int columnIndex, Object newValue) {
+	public void setDataValue(R rowObj, long columnIndex, Object newValue) {
 		String propertyName = getColumnProperty(columnIndex);
 		if (propertyName.contains(".")) { //$NON-NLS-1$
 			setPropertyValue(rowObj, propertyName, newValue);

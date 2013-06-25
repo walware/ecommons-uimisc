@@ -12,9 +12,9 @@
 package org.eclipse.nebula.widgets.nattable.selection.action;
 
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.graphics.Point;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.coordinate.Point;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionFlags;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
@@ -46,8 +46,8 @@ public class CellSelectionDragMode implements IDragMode {
 		if (event.x > natTable.getWidth()) {
 			return;
 		}
-		int selectedColumnPosition = natTable.getColumnPositionByX(event.x);
-		int selectedRowPosition = natTable.getRowPositionByY(event.y);
+		long selectedColumnPosition = natTable.getColumnPositionByX(event.x);
+		long selectedRowPosition = natTable.getRowPositionByY(event.y);
 
 		if (selectedColumnPosition > -1 && selectedRowPosition > -1) {
 			Point dragInCellPosition = new Point(selectedColumnPosition, selectedRowPosition);
@@ -59,7 +59,7 @@ public class CellSelectionDragMode implements IDragMode {
 		}
 	}
 
-	protected void fireSelectionCommand(NatTable natTable, int columnPosition,	int rowPosition, int selectionFlags) {
+	protected void fireSelectionCommand(NatTable natTable, long columnPosition,	long rowPosition, int selectionFlags) {
 		natTable.doCommand(new SelectCellCommand(natTable, columnPosition, rowPosition, selectionFlags ));
 	}
 

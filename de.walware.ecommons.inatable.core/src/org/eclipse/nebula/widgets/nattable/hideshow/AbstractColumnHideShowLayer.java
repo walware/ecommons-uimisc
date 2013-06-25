@@ -31,11 +31,11 @@ import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 
 public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform implements IUniqueIndexLayer {
 
-	private List<Integer> cachedVisibleColumnIndexOrder;
+	private List<Long> cachedVisibleColumnIndexOrder;
 
-	private Map<Integer, Integer> cachedHiddenColumnIndexToPositionMap;
+	private Map<Long, Long> cachedHiddenColumnIndexToPositionMap;
 
-	private final Map<Integer, Integer> startXCache = new HashMap<Integer, Integer>();
+	private final Map<Long, Long> startXCache = new HashMap<Long, Long>();
 
 	public AbstractColumnHideShowLayer(IUniqueIndexLayer underlyingLayer) {
 		super(underlyingLayer);
@@ -57,54 +57,54 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 	// Columns
 
 	@Override
-	public int getColumnCount() {
+	public long getColumnCount() {
 		return getCachedVisibleColumnIndexes().size();
 	}
 
 	@Override
-	public int getColumnIndexByPosition(int columnPosition) {
+	public long getColumnIndexByPosition(long columnPosition) {
 		if (columnPosition < 0 || columnPosition >= getColumnCount()) {
 			return NO_INDEX;
 		}
 
-		Integer columnIndex = getCachedVisibleColumnIndexes().get(columnPosition);
+		Long columnIndex = getCachedVisibleColumnIndexes().get((int) columnPosition);
 		if (columnIndex != null) {
-			return columnIndex.intValue();
+			return columnIndex.longValue();
 		} else {
 			return NO_INDEX;
 		}
 	}
 
-	public int getColumnPositionByIndex(int columnIndex) {
-		return getCachedVisibleColumnIndexes().indexOf(Integer.valueOf(columnIndex));
+	public long getColumnPositionByIndex(long columnIndex) {
+		return getCachedVisibleColumnIndexes().indexOf(Long.valueOf(columnIndex));
 	}
 	
-	public Collection<Integer> getColumnPositionsByIndexes(Collection<Integer> columnIndexes) {
-		Collection<Integer> columnPositions = new HashSet<Integer>();
-		for (int columnIndex : columnIndexes) {
+	public Collection<Long> getColumnPositionsByIndexes(Collection<Long> columnIndexes) {
+		Collection<Long> columnPositions = new HashSet<Long>();
+		for (long columnIndex : columnIndexes) {
 			columnPositions.add(getColumnPositionByIndex(columnIndex));
 		}
 		return columnPositions;
 	}
 	
 	@Override
-	public int localToUnderlyingColumnPosition(int localColumnPosition) {
-		int columnIndex = getColumnIndexByPosition(localColumnPosition);
+	public long localToUnderlyingColumnPosition(long localColumnPosition) {
+		long columnIndex = getColumnIndexByPosition(localColumnPosition);
 		return ((IUniqueIndexLayer) getUnderlyingLayer()).getColumnPositionByIndex(columnIndex);
 	}
 
 	@Override
-	public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, int underlyingColumnPosition) {
-		int columnIndex = getUnderlyingLayer().getColumnIndexByPosition(underlyingColumnPosition);
-		int columnPosition = getColumnPositionByIndex(columnIndex);
+	public long underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, long underlyingColumnPosition) {
+		long columnIndex = getUnderlyingLayer().getColumnIndexByPosition(underlyingColumnPosition);
+		long columnPosition = getColumnPositionByIndex(columnIndex);
 		if (columnPosition >= 0) {
 			return columnPosition;
 		} else {
-			Integer hiddenColumnPosition = cachedHiddenColumnIndexToPositionMap.get(Integer.valueOf(columnIndex));
+			Long hiddenColumnPosition = cachedHiddenColumnIndexToPositionMap.get(Long.valueOf(columnIndex));
 			if (hiddenColumnPosition != null) {
-				return hiddenColumnPosition.intValue();
+				return hiddenColumnPosition.longValue();
 			} else {
-				return Integer.MIN_VALUE;
+				return Long.MIN_VALUE;
 			}
 		}
 	}
@@ -114,8 +114,8 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 		Collection<Range> localColumnPositionRanges = new ArrayList<Range>();
 
 		for (Range underlyingColumnPositionRange : underlyingColumnPositionRanges) {
-			int startColumnPosition = getAdjustedUnderlyingToLocalStartPosition(sourceUnderlyingLayer, underlyingColumnPositionRange.start, underlyingColumnPositionRange.end);
-			int endColumnPosition = getAdjustedUnderlyingToLocalEndPosition(sourceUnderlyingLayer, underlyingColumnPositionRange.end, underlyingColumnPositionRange.start);
+			long startColumnPosition = getAdjustedUnderlyingToLocalStartPosition(sourceUnderlyingLayer, underlyingColumnPositionRange.start, underlyingColumnPositionRange.end);
+			long endColumnPosition = getAdjustedUnderlyingToLocalEndPosition(sourceUnderlyingLayer, underlyingColumnPositionRange.end, underlyingColumnPositionRange.start);
 
 			// teichstaedt: fixes the problem that ranges where added even if the
 			// corresponding startPosition weren't found in the underlying layer.
@@ -129,18 +129,18 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 		return localColumnPositionRanges;
 	}
 
-	private int getAdjustedUnderlyingToLocalStartPosition(ILayer sourceUnderlyingLayer, int startUnderlyingPosition, int endUnderlyingPosition) {
-		int localStartColumnPosition = underlyingToLocalColumnPosition(sourceUnderlyingLayer, startUnderlyingPosition);
-		int offset = 0;
+	private long getAdjustedUnderlyingToLocalStartPosition(ILayer sourceUnderlyingLayer, long startUnderlyingPosition, long endUnderlyingPosition) {
+		long localStartColumnPosition = underlyingToLocalColumnPosition(sourceUnderlyingLayer, startUnderlyingPosition);
+		long offset = 0;
 		while (localStartColumnPosition < 0 && (startUnderlyingPosition + offset < endUnderlyingPosition)) {
 			localStartColumnPosition = underlyingToLocalColumnPosition(sourceUnderlyingLayer, startUnderlyingPosition + offset++);
 		}
 		return localStartColumnPosition;
 	}
 
-	private int getAdjustedUnderlyingToLocalEndPosition(ILayer sourceUnderlyingLayer, int endUnderlyingPosition, int startUnderlyingPosition) {
-		int localEndColumnPosition = underlyingToLocalColumnPosition(sourceUnderlyingLayer, endUnderlyingPosition - 1);
-		int offset = 0;
+	private long getAdjustedUnderlyingToLocalEndPosition(ILayer sourceUnderlyingLayer, long endUnderlyingPosition, long startUnderlyingPosition) {
+		long localEndColumnPosition = underlyingToLocalColumnPosition(sourceUnderlyingLayer, endUnderlyingPosition - 1);
+		long offset = 0;
 		while (localEndColumnPosition < 0 && (endUnderlyingPosition - offset > startUnderlyingPosition)) {
 			localEndColumnPosition = underlyingToLocalColumnPosition(sourceUnderlyingLayer, endUnderlyingPosition - offset++);
 		}
@@ -150,37 +150,37 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 	// Width
 
 	@Override
-	public int getWidth() {
-		int lastColumnPosition = getColumnCount() - 1;
+	public long getWidth() {
+		long lastColumnPosition = getColumnCount() - 1;
 		return getStartXOfColumnPosition(lastColumnPosition) + getColumnWidthByPosition(lastColumnPosition);
 	}
 
 	// X
 
 	@Override
-	public int getColumnPositionByX(int x) {
+	public long getColumnPositionByX(long x) {
 		return LayerUtil.getColumnPositionByX(this, x);
 	}
 
 	@Override
-	public int getStartXOfColumnPosition(int localColumnPosition) {
-		Integer cachedStartX = startXCache.get(Integer.valueOf(localColumnPosition));
+	public long getStartXOfColumnPosition(long localColumnPosition) {
+		Long cachedStartX = startXCache.get(Long.valueOf(localColumnPosition));
 		if (cachedStartX != null) {
-			return cachedStartX.intValue();
+			return cachedStartX.longValue();
 		}
 
 		IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
-		int underlyingPosition = localToUnderlyingColumnPosition(localColumnPosition);
-		int underlyingStartX = underlyingLayer.getStartXOfColumnPosition(underlyingPosition);
+		long underlyingPosition = localToUnderlyingColumnPosition(localColumnPosition);
+		long underlyingStartX = underlyingLayer.getStartXOfColumnPosition(underlyingPosition);
 
-		for (Integer hiddenIndex : getHiddenColumnIndexes()) {
-			int hiddenPosition = underlyingLayer.getColumnPositionByIndex(hiddenIndex.intValue());
+		for (Long hiddenIndex : getHiddenColumnIndexes()) {
+			long hiddenPosition = underlyingLayer.getColumnPositionByIndex(hiddenIndex.longValue());
 			if (hiddenPosition <= underlyingPosition) {
 				underlyingStartX -= underlyingLayer.getColumnWidthByPosition(hiddenPosition);
 			}
 		}
 
-		startXCache.put(Integer.valueOf(localColumnPosition), Integer.valueOf(underlyingStartX));
+		startXCache.put(Long.valueOf(localColumnPosition), Long.valueOf(underlyingStartX));
 		return underlyingStartX;
 	}
 	
@@ -188,7 +188,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 
 	// Rows
 
-	public int getRowPositionByIndex(int rowIndex) {
+	public long getRowPositionByIndex(long rowIndex) {
 		return ((IUniqueIndexLayer) getUnderlyingLayer()).getRowPositionByIndex(rowIndex);
 	}
 
@@ -204,7 +204,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 	 * @return <code>true</code> if the column at the specified index is hidden,
 	 * 			<code>false</code> if it is visible.
 	 */
-	public abstract boolean isColumnIndexHidden(int columnIndex);
+	public abstract boolean isColumnIndexHidden(long columnIndex);
 
 	/**
 	 * Will collect and return all indexes of the columns that are hidden in this layer.
@@ -213,7 +213,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 	 * 		 is responsible for those calculations itself. 
 	 * @return Collection of all column indexes that are hidden in this layer.
 	 */
-	public abstract Collection<Integer> getHiddenColumnIndexes();
+	public abstract Collection<Long> getHiddenColumnIndexes();
 
 	// Cache
 
@@ -225,7 +225,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 		startXCache.clear();
 	}
 
-	private List<Integer> getCachedVisibleColumnIndexes() {
+	private List<Long> getCachedVisibleColumnIndexes() {
 		if (cachedVisibleColumnIndexOrder == null) {
 			cacheVisibleColumnIndexes();
 		}
@@ -233,20 +233,20 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 	}
 
 	private void cacheVisibleColumnIndexes() {
-		cachedVisibleColumnIndexOrder = new ArrayList<Integer>();
-		cachedHiddenColumnIndexToPositionMap = new HashMap<Integer, Integer>();
+		cachedVisibleColumnIndexOrder = new ArrayList<Long>();
+		cachedHiddenColumnIndexToPositionMap = new HashMap<Long, Long>();
 		startXCache.clear();
 
 		ILayer underlyingLayer = getUnderlyingLayer();
-		int columnPosition = 0;
-		for (int parentColumnPosition = 0; parentColumnPosition < underlyingLayer.getColumnCount(); parentColumnPosition++) {
-			int columnIndex = underlyingLayer.getColumnIndexByPosition(parentColumnPosition);
+		long columnPosition = 0;
+		for (long parentColumnPosition = 0; parentColumnPosition < underlyingLayer.getColumnCount(); parentColumnPosition++) {
+			long columnIndex = underlyingLayer.getColumnIndexByPosition(parentColumnPosition);
 
 			if (!isColumnIndexHidden(columnIndex)) {
-				cachedVisibleColumnIndexOrder.add(Integer.valueOf(columnIndex));
+				cachedVisibleColumnIndexOrder.add(Long.valueOf(columnIndex));
 				columnPosition++;
 			} else {
-				cachedHiddenColumnIndexToPositionMap.put(Integer.valueOf(columnIndex), Integer.valueOf(columnPosition));
+				cachedHiddenColumnIndexToPositionMap.put(Long.valueOf(columnIndex), Long.valueOf(columnPosition));
 			}
 		}
 	}

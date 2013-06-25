@@ -104,7 +104,7 @@ public class FreezeHelper {
 			if (freezeLayer.isFrozen()) {
 				final Dim freezeDim = freezeLayer.get(orientation);
 				
-				final int position = freezeDim.getStartPosition();
+				final long position = freezeDim.getStartPosition();
 				freezeDim.setFreeze(0, 0);
 				viewportLayer.getDim(orientation).reset(position);
 			}

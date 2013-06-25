@@ -32,7 +32,7 @@ public class SelectColumnsCommand extends AbstractMultiColumnCommand {
 	private ColumnPositionCoordinate columnPositionToReveal;
 
 
-	public SelectColumnsCommand(final ILayer layer, final int columnPosition, final int rowPosition,
+	public SelectColumnsCommand(final ILayer layer, final long columnPosition, final long rowPosition,
 			final int selectionFlags) {
 		super(layer, columnPosition);
 		
@@ -40,20 +40,20 @@ public class SelectColumnsCommand extends AbstractMultiColumnCommand {
 		init(layer, rowPosition, columnPosition);
 	}
 
-	public SelectColumnsCommand(final ILayer layer, final Collection<Integer> columnPositions, final int rowPosition,
+	public SelectColumnsCommand(final ILayer layer, final Collection<Long> columnPositions, final long rowPosition,
 			final int selectionFlags) {
 		this(layer, columnPositions, rowPosition, selectionFlags, columnPositions.iterator().next());
 	}
 
-	public SelectColumnsCommand(final ILayer layer, final Collection<Integer> columnPositions, final int rowPosition,
-			final int selectionFlags, int columnPositionToReveal) {
+	public SelectColumnsCommand(final ILayer layer, final Collection<Long> columnPositions, final long rowPosition,
+			final int selectionFlags, long columnPositionToReveal) {
 		super(layer, columnPositions);
 		
 		this.selectionFlags = selectionFlags;
 		init(layer, rowPosition, columnPositionToReveal);
 	}
 
-	private void init(final ILayer layer, final int rowPosition, final int columnPositionToReveal) {
+	private void init(final ILayer layer, final long rowPosition, final long columnPositionToReveal) {
 		this.rowPositionCoordinate = new RowPositionCoordinate(layer, rowPosition);
 		if (columnPositionToReveal != NO_SELECTION) {
 			this.columnPositionToReveal = new ColumnPositionCoordinate(layer, columnPositionToReveal);
@@ -88,7 +88,7 @@ public class SelectColumnsCommand extends AbstractMultiColumnCommand {
 	}
 
 
-	public int getRowPosition() {
+	public long getRowPosition() {
 		return rowPositionCoordinate.rowPosition;
 	}
 
@@ -96,7 +96,7 @@ public class SelectColumnsCommand extends AbstractMultiColumnCommand {
 		return selectionFlags;
 	}
 
-	public int getColumnPositionToReveal() {
+	public long getColumnPositionToReveal() {
 		if (columnPositionToReveal != null) {
 			return columnPositionToReveal.columnPosition;
 		} else {

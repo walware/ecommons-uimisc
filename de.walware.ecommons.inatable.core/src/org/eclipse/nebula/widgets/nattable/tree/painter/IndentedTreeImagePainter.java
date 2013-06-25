@@ -16,7 +16,7 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.tree.ITreeRowModel;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 
 /**
  * Implementation of CellPainterWrapper that is used to render tree structures in NatTable.
@@ -32,7 +32,7 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
 	/**
 	 * The number of pixels to indent per depth.
 	 */
-	private final int treeIndent;
+	private final long treeIndent;
 	
 	/**
 	 * Creates an IndentedTreeImagePainter based on the given ITreeRowModel.
@@ -53,7 +53,7 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
 	 * 			depth, children and expand/collapse.
 	 * @param treeIndent The number of pixels to indent per depth.
 	 */
-	public IndentedTreeImagePainter(ITreeRowModel<?> treeRowModel, int treeIndent) {
+	public IndentedTreeImagePainter(ITreeRowModel<?> treeRowModel, long treeIndent) {
 		this(treeRowModel, treeIndent, new TreeImagePainter(treeRowModel));
 	}
 	
@@ -67,7 +67,7 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
 	 * 			Usually it is some type	of TreeImagePainter that paints expand/collapse/leaf icons regarding 
 	 * 			the node state.
 	 */
-	public IndentedTreeImagePainter(ITreeRowModel<?> treeRowModel, int treeIndent, ICellPainter treeImagePainter) {
+	public IndentedTreeImagePainter(ITreeRowModel<?> treeRowModel, long treeIndent, ICellPainter treeImagePainter) {
 		this.treeRowModel = treeRowModel;
 		this.treeIndent = treeIndent;
 		
@@ -93,8 +93,8 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
 	
 	@Override
 	public Rectangle getWrappedPainterBounds(ILayerCell cell, GC gc, Rectangle bounds, IConfigRegistry configRegistry) {
-		int depth = getDepth(cell);
-		int indent = getIndent(depth);
+		long depth = getDepth(cell);
+		long indent = getIndent(depth);
 		
 		return new Rectangle(bounds.x + indent, bounds.y, bounds.width - indent, bounds.height);
 	}
@@ -105,9 +105,9 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
 	}
 	
 	@Override
-    public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
-        int depth = getDepth(cell);
-        int indent = getIndent(depth);
+    public long getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+        long depth = getDepth(cell);
+        long indent = getIndent(depth);
 		return indent + super.getPreferredWidth(cell, gc, configRegistry);
     }
 	
@@ -115,7 +115,7 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
 	 * @param depth The depth/level in the tree structure for which the indent is requested.
 	 * @return The number of pixels the content should be indented.
 	 */
-	protected int getIndent(int depth) {
+	protected long getIndent(long depth) {
 		return this.treeIndent * depth;
 	}
 	
@@ -123,8 +123,8 @@ public class IndentedTreeImagePainter extends CellPainterWrapper {
 	 * @param cell The cell for which the depth/level in the tree structure is requested.
 	 * @return The depth/level in the tree structure the given cell is located.
 	 */
-	private int getDepth(ILayerCell cell) {
-        int index = cell.getLayer().getRowIndexByPosition(cell.getRowPosition());
+	private long getDepth(ILayerCell cell) {
+        long index = cell.getLayer().getRowIndexByPosition(cell.getRowPosition());
         return this.treeRowModel.depth(index);
     }
 	

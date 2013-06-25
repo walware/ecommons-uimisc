@@ -57,11 +57,11 @@ public class SummaryRowLayer extends AbstractLayerTransform {
 	private int summaryRowHeight = DataLayer.DEFAULT_ROW_HEIGHT;
 
 	/** Cache the calculated summary value, since its CPU intensive */
-	protected Map<Integer, Object> summaryCache = new HashMap<Integer, Object>();
+	protected Map<Long, Object> summaryCache = new HashMap<Long, Object>();
 	/** Use a cache-copy which does not get cleared, as using an Entry type object with stale flag per instance 
 	 *  would require traversal of full set of entries in <code>clearSummaryCache()</code>
 	 */
-	protected Map<Integer, Object> summaryCacheIncludingStaleValues = new HashMap<Integer, Object>();
+	protected Map<Long, Object> summaryCacheIncludingStaleValues = new HashMap<Long, Object>();
 	
 	
 	public SummaryRowLayer(IUniqueIndexLayer underlyingDataLayer, IConfigRegistry configRegistry) {
@@ -84,7 +84,7 @@ public class SummaryRowLayer extends AbstractLayerTransform {
 	 * NOTE: Since this is a {@link IUniqueIndexLayer} sitting close to the {@link DataLayer}, columnPosition == columnIndex
 	 */
 	@Override
-	public Object getDataValueByPosition(final int columnPosition, final int rowPosition) {
+	public Object getDataValueByPosition(final long columnPosition, final long rowPosition) {
 		
 		if (isSummaryRowPosition(rowPosition)) {
 			
@@ -105,7 +105,7 @@ public class SummaryRowLayer extends AbstractLayerTransform {
 		return super.getDataValueByPosition(columnPosition, rowPosition);
 	}
 
-	private void calculateNewSummaryValue(final Object potentiallyStaleSummaryValue, final int columnPosition, final int rowPosition) {
+	private void calculateNewSummaryValue(final Object potentiallyStaleSummaryValue, final long columnPosition, final long rowPosition) {
 		// Get the summary provider from the configuration registry
 		LabelStack labelStack = getConfigLabelsByPosition(columnPosition, rowPosition);
 		String[] configLabels = labelStack.getLabels().toArray(ArrayUtil.STRING_TYPE_ARRAY);
@@ -131,7 +131,7 @@ public class SummaryRowLayer extends AbstractLayerTransform {
 		}.start();
 	}
 
-	private Object calculateColumnSummary(int columnIndex, ISummaryProvider summaryProvider) {
+	private Object calculateColumnSummary(long columnIndex, ISummaryProvider summaryProvider) {
 		Object summaryValue = null;
 		if (summaryProvider != null) {
 			summaryValue = summaryProvider.summarize(columnIndex);
@@ -139,20 +139,20 @@ public class SummaryRowLayer extends AbstractLayerTransform {
 		return summaryValue;
 	}
 	
-	public Object getSummaryFromCache(Integer columnIndex) {
+	public Object getSummaryFromCache(Long columnIndex) {
 		return summaryCache.get(columnIndex);
 	}
 
-	public Object getPotentiallyStaleSummaryFromCache(Integer columnIndex) {
+	public Object getPotentiallyStaleSummaryFromCache(Long columnIndex) {
 		return summaryCacheIncludingStaleValues.get(columnIndex);
 	}
 	
-	public boolean hasNonStaleSummaryFor(Integer columnIndex)
+	public boolean hasNonStaleSummaryFor(Long columnIndex)
 	{
 		return summaryCache.containsKey(columnIndex);
 	}
 	
-	protected boolean addToCache(Integer columnIndex, Object summaryValue) {
+	protected boolean addToCache(Long columnIndex, Object summaryValue) {
 		Object oldSummaryValue = summaryCache.put(columnIndex, summaryValue);
 		summaryCacheIncludingStaleValues.put(columnIndex,summaryValue);
 		return (!((oldSummaryValue != null) ? oldSummaryValue.equals(summaryValue) : null == summaryValue));
@@ -183,7 +183,7 @@ public class SummaryRowLayer extends AbstractLayerTransform {
 	}
 
 	@Override
-	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
+	public LabelStack getConfigLabelsByPosition(long columnPosition, long rowPosition) {
 		if (isSummaryRowPosition(rowPosition)) {
 			return new LabelStack(
 					DEFAULT_SUMMARY_COLUMN_CONFIG_LABEL_PREFIX + columnPosition, 
@@ -193,7 +193,7 @@ public class SummaryRowLayer extends AbstractLayerTransform {
 	}
 
 	@Override
-	public ILayerCell getCellByPosition(int columnPosition, int rowPosition) {
+	public ILayerCell getCellByPosition(long columnPosition, long rowPosition) {
 		if (isSummaryRowPosition(rowPosition)) {
 			return new LayerCell(this,
 					new LayerCellDim(HORIZONTAL, getColumnIndexByPosition(columnPosition),
@@ -205,27 +205,27 @@ public class SummaryRowLayer extends AbstractLayerTransform {
 	}
 
 	@Override
-	public int getHeight() {
+	public long getHeight() {
 		return super.getHeight() + getRowHeightByPosition(getSummaryRowPosition());
 	}
 	
 	@Override
-	public int getPreferredHeight() {
+	public long getPreferredHeight() {
 		return super.getPreferredHeight() + getRowHeightByPosition(getSummaryRowPosition());
 	}
 	
 	@Override
-	public int getRowCount() {
+	public long getRowCount() {
 		return super.getRowCount() + 1;
 	}
 
 	@Override
-	public int getPreferredRowCount() {
+	public long getPreferredRowCount() {
 		return getRowCount();
 	}
 
 	@Override
-	public int getRowIndexByPosition(int rowPosition) {
+	public long getRowIndexByPosition(long rowPosition) {
 		if (isSummaryRowPosition(rowPosition)) {
 			return rowPosition;
 		}
@@ -233,11 +233,11 @@ public class SummaryRowLayer extends AbstractLayerTransform {
 	}
 
 	@Override
-	public int getRowPositionByY(int y) {
+	public long getRowPositionByY(long y) {
 		return LayerUtil.getRowPositionByY(this, y);
 	}
 
-	private boolean isSummaryRowPosition(int rowPosition) {
+	private boolean isSummaryRowPosition(long rowPosition) {
 		return rowPosition == getSummaryRowPosition();
 	}
 
@@ -245,28 +245,28 @@ public class SummaryRowLayer extends AbstractLayerTransform {
 	 * @return the position of the summary row. In most 
 	 * cases <code>rowCount - 1</code>. 
 	 */
-	private int getSummaryRowPosition() {
+	private long getSummaryRowPosition() {
 		return getRowCount() - 1;
 	}
 
 	@Override
-	public int getRowHeightByPosition(int rowPosition) {
+	public int getRowHeightByPosition(long rowPosition) {
 		if (isSummaryRowPosition(rowPosition)) {
 			return summaryRowHeight;
 		}
 		return super.getRowHeightByPosition(rowPosition);
 	}
 
-	public int getRowPositionByIndex(int rowIndex) {
+	public long getRowPositionByIndex(long rowIndex) {
 		if (rowIndex < 0 || rowIndex >= getRowCount()) {
-			return Integer.MIN_VALUE;
+			return Long.MIN_VALUE;
 		}
 		return rowIndex;
 	}
 
-	public int getColumnPositionByIndex(int columnIndex) {
+	public long getColumnPositionByIndex(long columnIndex) {
 		if (columnIndex < 0 || columnIndex >= getColumnCount()) {
-			return Integer.MIN_VALUE;
+			return Long.MIN_VALUE;
 		}
 		return columnIndex;
 	}

@@ -47,7 +47,6 @@ import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel.ColumnGroup;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupUtils;
 import org.eclipse.nebula.widgets.nattable.util.ArrayUtil;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 
 
 public class ColumnChooserDialog extends AbstractColumnChooserDialog {
@@ -261,7 +260,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 		}
 	}
 
-	protected final void fireItemsMoved(Direction direction, List<ColumnGroupEntry> selectedColumnGroupEntries, List<ColumnEntry> selectedColumnEntries, List<List<Integer>> fromPositions, List<Integer> toPositions) {
+	protected final void fireItemsMoved(Direction direction, List<ColumnGroupEntry> selectedColumnGroupEntries, List<ColumnEntry> selectedColumnEntries, List<List<Long>> fromPositions, List<Long> toPositions) {
 		for (Object listener : listeners.getListeners()) {
 			((ISelectionTreeListener) listener).itemsMoved(direction, selectedColumnGroupEntries, selectedColumnEntries, fromPositions, toPositions);
 		}
@@ -299,7 +298,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 
 		for (ColumnEntry columnEntry : columnEntries) {
 			TreeItem treeItem;
-			int columnEntryIndex = columnEntry.getIndex().intValue();
+			long columnEntryIndex = columnEntry.getIndex().longValue();
 
 			// Create a node for the column group - if needed
 			if (columnGroupModel != null && columnGroupModel.isPartOfAGroup(columnEntryIndex)) {
@@ -411,7 +410,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 	private void removeSelected() {
 		if (isAnyLeafSelected(selectedTree)) {
 			TreeItem topAvailableItem = availableTree.getTopItem();
-            int topIndex = topAvailableItem == null ? -1 : availableTree.indexOf(topAvailableItem);
+			int topIndex = topAvailableItem == null ? -1 : availableTree.indexOf(topAvailableItem);
 			
             TreeItem topSelectedItem = selectedTree.getTopItem();
             int topSelectedIndex = topSelectedItem == null ? - 1 : selectedTree.indexOf(topSelectedItem);
@@ -475,14 +474,14 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 				List<ColumnEntry> selectedColumnEntries = getSelectedColumnEntriesIncludingNested(selectedTree);
 				List<ColumnGroupEntry> selectedColumnGroupEntries = getSelectedColumnGroupEntries(selectedTree);
 
-				List<Integer> allSelectedPositions = merge(selectedColumnEntries, selectedColumnGroupEntries);
+				List<Long> allSelectedPositions = merge(selectedColumnEntries, selectedColumnGroupEntries);
 
 				// Group continuous positions
-				List<List<Integer>> postionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
-				List<Integer> toPositions = new ArrayList<Integer>();
+				List<List<Long>> postionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
+				List<Long> toPositions = new ArrayList<Long>();
 				
-				int shift = 0;
-				for (List<Integer> groupedPositions : postionsGroupedByContiguous) {
+				long shift = 0;
+				for (List<Long> groupedPositions : postionsGroupedByContiguous) {
 					toPositions.add(shift);
 					shift += groupedPositions.size();
 				}
@@ -501,31 +500,31 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 				List<ColumnEntry> selectedColumnEntries = getSelectedColumnEntriesIncludingNested(selectedTree);
 				List<ColumnGroupEntry> selectedColumnGroupEntries = getSelectedColumnGroupEntries(selectedTree);
 
-				List<Integer> allSelectedPositions = merge(selectedColumnEntries, selectedColumnGroupEntries);
+				List<Long> allSelectedPositions = merge(selectedColumnEntries, selectedColumnGroupEntries);
 
 				// Group continuous positions. If a column group moves, a bunch of 'from' positions move
 				// to a single 'to' position
-				List<List<Integer>> postionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
-				List<Integer> toPositions = new ArrayList<Integer>();
+				List<List<Long>> postionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
+				List<Long> toPositions = new ArrayList<Long>();
 
 				//Set destination positions
-				for (List<Integer> groupedPositions : postionsGroupedByContiguous) {
+				for (List<Long> groupedPositions : postionsGroupedByContiguous) {
 					// Do these contiguous positions contain a column group ?
 					boolean columnGroupMoved = columnGroupMoved(groupedPositions, selectedColumnGroupEntries);
 
 					//  If already at first position do not move
-					int firstPositionInGroup = groupedPositions.get(0);
+					long firstPositionInGroup = groupedPositions.get(0);
 					if (firstPositionInGroup == 0){
 						return;
 					}
 
 					// Column entry
 					ColumnEntry columnEntry = getColumnEntryForPosition(selectedTree, firstPositionInGroup);
-					int columnEntryIndex = columnEntry.getIndex();
+					long columnEntryIndex = columnEntry.getIndex();
 
 					// Previous column entry
 					ColumnEntry previousColumnEntry = getColumnEntryForPosition(selectedTree, firstPositionInGroup - 1);
-					int previousColumnEntryIndex = previousColumnEntry.getIndex();
+					long previousColumnEntryIndex = previousColumnEntry.getIndex();
 
 					if (columnGroupMoved) {
 						// If the previous entry is a column group - move above it.
@@ -556,16 +555,16 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 		}
 	}
 
-	private List<Integer> merge(List<ColumnEntry> selectedColumnEntries, List<ColumnGroupEntry> selectedColumnGroupEntries){
+	private List<Long> merge(List<ColumnEntry> selectedColumnEntries, List<ColumnGroupEntry> selectedColumnGroupEntries){
 		//Convert to positions
-		List<Integer> columnEntryPositions = ColumnChooserUtils.getColumnEntryPositions(selectedColumnEntries);
-		List<Integer> columnGroupEntryPositions = ColumnGroupEntry.getColumnGroupEntryPositions(selectedColumnGroupEntries);
+		List<Long> columnEntryPositions = ColumnChooserUtils.getColumnEntryPositions(selectedColumnEntries);
+		List<Long> columnGroupEntryPositions = ColumnGroupEntry.getColumnGroupEntryPositions(selectedColumnGroupEntries);
 
 		//Selected columns + column groups
-		Set<Integer> allSelectedPositionsSet = new HashSet<Integer>();
+		Set<Long> allSelectedPositionsSet = new HashSet<Long>();
 		allSelectedPositionsSet.addAll(columnEntryPositions);
 		allSelectedPositionsSet.addAll(columnGroupEntryPositions);
-		List<Integer> allSelectedPositions = new ArrayList<Integer>(allSelectedPositionsSet);
+		List<Long> allSelectedPositions = new ArrayList<Long>(allSelectedPositionsSet);
 		Collections.sort(allSelectedPositions);
 
 		return allSelectedPositions;
@@ -581,24 +580,24 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 				List<ColumnEntry> selectedColumnEntries = getSelectedColumnEntriesIncludingNested(selectedTree);
 				List<ColumnGroupEntry> selectedColumnGroupEntries = getSelectedColumnGroupEntries(selectedTree);
 
-				List<Integer> allSelectedPositions = merge(selectedColumnEntries, selectedColumnGroupEntries);
+				List<Long> allSelectedPositions = merge(selectedColumnEntries, selectedColumnGroupEntries);
 
 				// Group continuous positions
-				List<List<Integer>> postionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
-				List<Integer> toPositions = new ArrayList<Integer>();
+				List<List<Long>> postionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
+				List<Long> toPositions = new ArrayList<Long>();
 
 				// Set destination positions
-				for (List<Integer> groupedPositions : postionsGroupedByContiguous) {
+				for (List<Long> groupedPositions : postionsGroupedByContiguous) {
 					// Do these contiguous positions contain a column group ?
 					boolean columnGroupMoved = columnGroupMoved(groupedPositions, selectedColumnGroupEntries);
 
 					// Position of last element in list
 					int lastListIndex = groupedPositions.size() - 1;
-					int lastPositionInGroup = groupedPositions.get(lastListIndex);
+					long lastPositionInGroup = groupedPositions.get(lastListIndex);
 
 					// Column entry
 					ColumnEntry columnEntry = getColumnEntryForPosition(selectedTree, lastPositionInGroup);
-					int columnEntryIndex = columnEntry.getIndex();
+					long columnEntryIndex = columnEntry.getIndex();
 
 					// Next Column Entry
 					ColumnEntry nextColumnEntry = getColumnEntryForPosition(selectedTree, lastPositionInGroup + 1);
@@ -607,7 +606,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 					if (nextColumnEntry == null) {
 						return;
 					}
-					int nextColumnEntryIndex = nextColumnEntry.getIndex();
+					long nextColumnEntryIndex = nextColumnEntry.getIndex();
 
 					if (columnGroupMoved) {
 						// If the next entry is a column group - move past it.
@@ -643,20 +642,20 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 				List<ColumnEntry> selectedColumnEntries = getSelectedColumnEntriesIncludingNested(selectedTree);
 				List<ColumnGroupEntry> selectedColumnGroupEntries = getSelectedColumnGroupEntries(selectedTree);
 
-				List<Integer> allSelectedPositions = merge(selectedColumnEntries, selectedColumnGroupEntries);
+				List<Long> allSelectedPositions = merge(selectedColumnEntries, selectedColumnGroupEntries);
 
 				// Group continuous positions
-				List<List<Integer>> postionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
-				List<Integer> toPositions = new ArrayList<Integer>();
+				List<List<Long>> postionsGroupedByContiguous = PositionUtil.getGroupedByContiguous(allSelectedPositions);
+				List<Long> toPositions = new ArrayList<Long>();
 
-				List<List<Integer>> reversed = new ArrayList<List<Integer>>(postionsGroupedByContiguous);
+				List<List<Long>> reversed = new ArrayList<List<Long>>(postionsGroupedByContiguous);
 				Collections.reverse(reversed);
 				
-				int totalSelItemCount = getColumnEntriesIncludingNested(selectedTree.getItems()).size();
+				long totalSelItemCount = getColumnEntriesIncludingNested(selectedTree.getItems()).size();
 				
-				int shift = 0;
-				for (List<Integer> groupedPositions : reversed) {
-					toPositions.add(Integer.valueOf(totalSelItemCount - shift - 1));
+				long shift = 0;
+				for (List<Long> groupedPositions : reversed) {
+					toPositions.add(Long.valueOf(totalSelItemCount - shift - 1));
 					shift += groupedPositions.size();
 				}
 				
@@ -665,7 +664,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 		}
 	}
 	
-	private boolean columnGroupMoved(List<Integer> fromPositions, List<ColumnGroupEntry> movedColumnGroupEntries) {
+	private boolean columnGroupMoved(List<Long> fromPositions, List<ColumnGroupEntry> movedColumnGroupEntries) {
 		for (ColumnGroupEntry columnGroupEntry : movedColumnGroupEntries) {
 			if(fromPositions.contains(columnGroupEntry.getFirstElementPosition())) return true;
 		}
@@ -675,11 +674,11 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 	/**
 	 * Get the ColumnEntry in the tree with the given position
 	 */
-	private ColumnEntry getColumnEntryForPosition(Tree tree, int columnEntryPosition) {
+	private ColumnEntry getColumnEntryForPosition(Tree tree, long columnEntryPosition) {
 		List<ColumnEntry> allColumnEntries = getColumnEntriesIncludingNested(selectedTree.getItems());
 
 		for (ColumnEntry columnEntry : allColumnEntries) {
-			if(columnEntry.getPosition().intValue() == columnEntryPosition){
+			if(columnEntry.getPosition().longValue() == columnEntryPosition){
 				return columnEntry;
 			}
 		}
@@ -691,12 +690,12 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 	/**
 	 * Get Leaf index of the selected leaves in the tree
 	 */
-	protected List<Integer> getIndexesOfSelectedLeaves(Tree tree) {
+	protected List<Long> getIndexesOfSelectedLeaves(Tree tree) {
 		List<TreeItem> allSelectedLeaves = ArrayUtil.asList(tree.getSelection());
-		List<Integer> allSelectedIndexes = new ArrayList<Integer>();
+		List<Long> allSelectedIndexes = new ArrayList<Long>();
 
 		for (TreeItem selectedLeaf : allSelectedLeaves) {
-			allSelectedIndexes.add(Integer.valueOf(tree.indexOf(selectedLeaf)));
+			allSelectedIndexes.add(Long.valueOf(tree.indexOf(selectedLeaf)));
 		}
 
 		return allSelectedIndexes;
@@ -762,7 +761,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 
 	// Leaf Selection
 
-	public void setSelectionIncludingNested(List<Integer> indexes) {
+	public void setSelectionIncludingNested(List<Long> indexes) {
 		setSelectionIncludingNested(selectedTree, indexes);
 	}
 
@@ -771,10 +770,10 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 	 * @param tree containing the leaves
 	 * @param indexes index of the leaf in the tree
 	 */
-	protected void setSelection(Tree tree, List<Integer> indexes) {
+	protected void setSelection(Tree tree, List<Long> indexes) {
 		List<TreeItem> selectedLeaves = new ArrayList<TreeItem>();
 
-		for (Integer leafIndex : indexes) {
+		for (Long leafIndex : indexes) {
 			selectedLeaves.add(tree.getItem(leafIndex.intValue()));
 		}
 		tree.setSelection(selectedLeaves.toArray(new TreeItem[] {}));
@@ -786,22 +785,22 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 	 * Also checks all the children of the column group leaves
 	 * @param columnEntryIndexes index of the ColumnEntry in the leaf
 	 */
-	private void setSelectionIncludingNested(Tree tree, List<Integer> columnEntryIndexes) {
+	private void setSelectionIncludingNested(Tree tree, List<Long> columnEntryIndexes) {
 		Collection<TreeItem> allLeaves = ArrayUtil.asCollection(tree.getItems());
 		List<TreeItem> selectedLeaves = new ArrayList<TreeItem>();
 
 		for (TreeItem leaf : allLeaves) {
 			if (!isColumnGroupLeaf(leaf)) {
-				int index = getColumnEntryInLeaf(leaf).getIndex().intValue();
-				if (columnEntryIndexes.contains(Integer.valueOf(index))) {
+				long index = getColumnEntryInLeaf(leaf).getIndex().longValue();
+				if (columnEntryIndexes.contains(Long.valueOf(index))) {
 					selectedLeaves.add(leaf);
 				}
 			} else {
 				//Check all children in column groups
 				Collection<TreeItem> columnGroupLeaves = ArrayUtil.asCollection(leaf.getItems());
 				for (TreeItem columnGroupLeaf : columnGroupLeaves) {
-					int index = getColumnEntryInLeaf(columnGroupLeaf).getIndex().intValue();
-					if (columnEntryIndexes.contains(Integer.valueOf(index))) {
+					long index = getColumnEntryInLeaf(columnGroupLeaf).getIndex().longValue();
+					if (columnEntryIndexes.contains(Long.valueOf(index))) {
 						selectedLeaves.add(columnGroupLeaf);
 					}
 				}
@@ -815,7 +814,7 @@ public class ColumnChooserDialog extends AbstractColumnChooserDialog {
 	/**
 	 * If all the leaves in a group are selected the group is also selected
 	 */
-	private void setGroupsSelectionIfRequired(Tree tree, List<Integer> columnEntryIndexes){
+	private void setGroupsSelectionIfRequired(Tree tree, List<Long> columnEntryIndexes){
 		Collection<TreeItem> allLeaves = ArrayUtil.asCollection(tree.getItems());
 		Collection<TreeItem> selectedLeaves = ArrayUtil.asCollection(tree.getSelection());
 

@@ -38,7 +38,7 @@ public class RowGroupExpandCollapseCommandHandler<T> extends AbstractLayerComman
 	@Override
 	protected boolean doCommand(RowGroupExpandCollapseCommand command) {
 		
-		int rowIndex = rowGroupExpandCollapseLayer.getRowIndexByPosition(command.getRowPosition());
+		long rowIndex = rowGroupExpandCollapseLayer.getRowIndexByPosition(command.getRowPosition());
 		IRowGroupModel<T> model = rowGroupExpandCollapseLayer.getModel();
 		IRowGroup<T> group = RowGroupUtils.getTopMostParentGroup(RowGroupUtils.getRowGroupForRowIndex(model, rowIndex));
 		
@@ -56,8 +56,8 @@ public class RowGroupExpandCollapseCommandHandler<T> extends AbstractLayerComman
 			group.collapse();
 		}
 		
-		List<Integer> rowIndexes = new ArrayList<Integer>(RowGroupUtils.getRowIndexesInGroup(model, rowIndex));	
-		List<Integer> rowPositions = RowGroupUtils.getRowPositionsInGroup(rowGroupExpandCollapseLayer, rowIndexes);
+		List<Long> rowIndexes = new ArrayList<Long>(RowGroupUtils.getRowIndexesInGroup(model, rowIndex));	
+		List<Long> rowPositions = RowGroupUtils.getRowPositionsInGroup(rowGroupExpandCollapseLayer, rowIndexes);
 		
 		ILayerEvent event;
 		if (wasCollapsed) {

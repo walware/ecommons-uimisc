@@ -19,10 +19,10 @@ public final class ColumnPositionCoordinate {
 
 	private final ILayer layer;
 
-	public final int columnPosition;
+	public final long columnPosition;
 
 
-	public ColumnPositionCoordinate(final ILayer layer, final int columnPosition) {
+	public ColumnPositionCoordinate(final ILayer layer, final long columnPosition) {
 		this.layer = layer;
 		this.columnPosition = columnPosition;
 	}
@@ -32,14 +32,14 @@ public final class ColumnPositionCoordinate {
 		return layer;
 	}
 
-	public int getColumnPosition() {
+	public long getColumnPosition() {
 		return columnPosition;
 	}
 
 
 	@Override
 	public int hashCode() {
-		int h = 253 + columnPosition * 17 + columnPosition & 0xff000000;
+		int h = 253 + (int) (columnPosition ^ (columnPosition >>> 32));
 		return layer.hashCode() + (h ^ (h >>> 7));
 	}
 

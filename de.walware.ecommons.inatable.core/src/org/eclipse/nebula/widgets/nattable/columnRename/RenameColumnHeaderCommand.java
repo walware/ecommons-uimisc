@@ -23,7 +23,7 @@ public class RenameColumnHeaderCommand extends AbstractColumnCommand {
 
 	private final String customColumnName;
 
-	public RenameColumnHeaderCommand(ILayer layer, int columnPosition, String customColumnName) {
+	public RenameColumnHeaderCommand(ILayer layer, long columnPosition, String customColumnName) {
 		super(layer, columnPosition);
 		this.customColumnName = customColumnName;
 	}

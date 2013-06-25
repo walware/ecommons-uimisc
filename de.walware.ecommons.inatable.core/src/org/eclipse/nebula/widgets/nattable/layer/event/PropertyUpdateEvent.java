@@ -16,7 +16,7 @@ import java.util.Collection;
 
 
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 
 public class PropertyUpdateEvent<T> implements IVisualChangeEvent {
 

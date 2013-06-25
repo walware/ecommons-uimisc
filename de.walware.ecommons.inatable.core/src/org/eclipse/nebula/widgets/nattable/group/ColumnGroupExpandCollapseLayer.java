@@ -43,7 +43,7 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
 	// Expand/collapse
 
 	@Override
-	public boolean isColumnIndexHidden(int columnIndex) {
+	public boolean isColumnIndexHidden(long columnIndex) {
 		
 		IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
 		
@@ -57,18 +57,18 @@ public class ColumnGroupExpandCollapseLayer extends AbstractColumnHideShowLayer 
 	}
 
 	@Override
-	public Collection<Integer> getHiddenColumnIndexes() {
-		Collection<Integer> hiddenColumnIndexes = new HashSet<Integer>();
+	public Collection<Long> getHiddenColumnIndexes() {
+		Collection<Long> hiddenColumnIndexes = new HashSet<Long>();
 
 		IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
-		int underlyingColumnCount = underlyingLayer.getColumnCount();
-		for (int i = 0; i < underlyingColumnCount; i++) {
-			int columnIndex = underlyingLayer.getColumnIndexByPosition(i);
+		long underlyingColumnCount = underlyingLayer.getColumnCount();
+		for (long i = 0; i < underlyingColumnCount; i++) {
+			long columnIndex = underlyingLayer.getColumnIndexByPosition(i);
 			ColumnGroup columnGroup = model.getColumnGroupByIndex(columnIndex);
 
 			if (columnGroup != null && columnGroup.isCollapsed()) {
 				if (!ColumnGroupUtils.isStaticOrFirstVisibleColumn(columnIndex, underlyingLayer, underlyingLayer, model)) {
-					hiddenColumnIndexes.add(Integer.valueOf(columnIndex));
+					hiddenColumnIndexes.add(Long.valueOf(columnIndex));
 				}
 			}
 		}

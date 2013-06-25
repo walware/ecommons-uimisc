@@ -32,11 +32,11 @@ public class InlineEditHandler implements ICellEditHandler {
 	/**
 	 * The column position of the cell that is edited
 	 */
-	private final int columnPosition;
+	private final long columnPosition;
 	/**
 	 * The row position of the cell that is edited
 	 */
-	private final int rowPosition;
+	private final long rowPosition;
 
 	/**
 	 * 
@@ -45,7 +45,7 @@ public class InlineEditHandler implements ICellEditHandler {
 	 * @param columnPosition The column position of the cell that is edited
 	 * @param rowPosition The row position of the cell that is edited
 	 */
-	public InlineEditHandler(ILayer layer, int columnPosition, int rowPosition) {
+	public InlineEditHandler(ILayer layer, long columnPosition, long rowPosition) {
 		this.layer = layer;
 		this.columnPosition = columnPosition;
 		this.rowPosition = rowPosition;

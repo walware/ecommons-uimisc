@@ -24,7 +24,7 @@ public class BodyOverrideConfigLabelAccumulator implements IConfigLabelAccumulat
 
 	private List<String> configLabels;
 
-	public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
+	public void accumulateConfigLabels(LabelStack configLabels, long columnPosition, long rowPosition) {
 		configLabels.getLabels().addAll(this.configLabels);
 	}
 

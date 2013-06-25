@@ -106,7 +106,7 @@ public class MenuItemProviders {
 				menuItem.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent event) {
-						int columnPosition = getNatEventData(event).getColumnPosition();
+						long columnPosition = getNatEventData(event).getColumnPosition();
 						natTable.doCommand(new ColumnHideCommand(natTable, columnPosition));
 					}
 				});
@@ -185,7 +185,7 @@ public class MenuItemProviders {
 				menuItem.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent event) {
-						int rowPosition = getNatEventData(event).getRowPosition();
+						long rowPosition = getNatEventData(event).getRowPosition();
 						natTable.doCommand(new RowHideCommand(natTable, rowPosition));
 					}
 				});
@@ -248,7 +248,7 @@ public class MenuItemProviders {
 				autoResizeColumns.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent event) {
-						int columnPosition = getNatEventData(event).getColumnPosition();
+						long columnPosition = getNatEventData(event).getColumnPosition();
 						natTable.doCommand(new InitializeAutoResizeColumnsCommand(natTable, columnPosition));
 					}
 				});
@@ -271,7 +271,7 @@ public class MenuItemProviders {
 				autoResizeRows.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent event) {
-						int rowPosition = getNatEventData(event).getRowPosition();
+						long rowPosition = getNatEventData(event).getRowPosition();
 						natTable.doCommand(new InitializeAutoResizeRowsCommand(natTable, rowPosition, natTable.getConfigRegistry(), new GCFactory(natTable)));
 					}
 				});
@@ -294,7 +294,7 @@ public class MenuItemProviders {
 				autoResizeColumns.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent event) {
-						int columnPosition = getNatEventData(event).getColumnPosition();
+						long columnPosition = getNatEventData(event).getColumnPosition();
 						natTable.doCommand(new InitializeAutoResizeColumnsCommand(natTable, columnPosition));
 					}
 				});
@@ -342,8 +342,8 @@ public class MenuItemProviders {
 				columnStyleEditor.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent event) {
-						int rowPosition = getNatEventData(event).getRowPosition();
-						int columnPosition = getNatEventData(event).getColumnPosition();
+						long rowPosition = getNatEventData(event).getRowPosition();
+						long columnPosition = getNatEventData(event).getColumnPosition();
 						natTable.doCommand(new DisplayColumnStyleEditorCommand(natTable, natTable.getConfigRegistry(), columnPosition, rowPosition));
 					}
 				});
@@ -431,8 +431,8 @@ public class MenuItemProviders {
 					public void widgetSelected(SelectionEvent e) {
 						NatEventData natEventData = getNatEventData(e);
 						NatTable natTable = natEventData.getNatTable();
-						int columnPosition = natEventData.getColumnPosition();
-						int rowPosition = natEventData.getRowPosition();
+						long columnPosition = natEventData.getColumnPosition();
+						long rowPosition = natEventData.getRowPosition();
 						
 						ILayerCell cell = natTable.getCellByPosition(columnPosition, rowPosition);
 						

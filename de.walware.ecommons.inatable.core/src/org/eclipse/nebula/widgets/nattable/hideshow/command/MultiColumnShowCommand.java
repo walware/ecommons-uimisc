@@ -23,13 +23,13 @@ public class MultiColumnShowCommand extends AbstractContextFreeCommand{
 	/**
 	 * The indexes of the columns that should be showed again.
 	 */
-	private final Collection<Integer> columnIndexes;
+	private final Collection<Long> columnIndexes;
 
 	/**
 	 * 
 	 * @param columnIndexes The indexes of the columns that should be showed again.
 	 */
-	public MultiColumnShowCommand(Collection<Integer> columnIndexes) {
+	public MultiColumnShowCommand(Collection<Long> columnIndexes) {
 		this.columnIndexes = columnIndexes;
 	}
 
@@ -37,14 +37,14 @@ public class MultiColumnShowCommand extends AbstractContextFreeCommand{
 	 * 
 	 * @return The indexes of the columns that should be showed again.
 	 */
-	public Collection<Integer> getColumnIndexes() {
+	public Collection<Long> getColumnIndexes() {
 		return columnIndexes;
 	}
 
 	
 	@Override
 	public MultiColumnShowCommand cloneCommand() {
-		return new MultiColumnShowCommand(new ArrayList<Integer>(this.columnIndexes));
+		return new MultiColumnShowCommand(new ArrayList<Long>(this.columnIndexes));
 	}
 
 }

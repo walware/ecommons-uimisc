@@ -42,15 +42,15 @@ public class GroupColumnReorderCommandHandler extends AbstractLayerCommandHandle
 
 	@Override
 	protected boolean doCommand(ColumnReorderCommand command) {
-		int fromColumnPosition = command.getFromColumnPosition();
-		int toColumnPosition = command.getToColumnPosition();
+		long fromColumnPosition = command.getFromColumnPosition();
+		long toColumnPosition = command.getToColumnPosition();
 
 		if (fromColumnPosition == -1 || toColumnPosition == -1) {
 			System.err.println("Invalid reorder positions, fromPosition: " + fromColumnPosition + ", toPosition: " + toColumnPosition); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		ILayer underlyingLayer = columnGroupReorderLayer.getUnderlyingLayer();
-		int fromColumnIndex = underlyingLayer.getColumnIndexByPosition(fromColumnPosition);
-		int toColumnIndex = underlyingLayer.getColumnIndexByPosition(toColumnPosition);
+		long fromColumnIndex = underlyingLayer.getColumnIndexByPosition(fromColumnPosition);
+		long toColumnIndex = underlyingLayer.getColumnIndexByPosition(toColumnPosition);
 
 		Direction moveDirection = ColumnGroupUtils.getMoveDirection(fromColumnPosition, toColumnPosition);
 
@@ -71,7 +71,7 @@ public class GroupColumnReorderCommandHandler extends AbstractLayerCommandHandle
 		}
 	}
 
-	private boolean updateModel(int fromColumnIndex, int toColumnIndex, String leftEdgeGroupName, String rightEdgeGroupName) {
+	private boolean updateModel(long fromColumnIndex, long toColumnIndex, String leftEdgeGroupName, String rightEdgeGroupName) {
 		ColumnGroup fromColumnGroup = model.getColumnGroupByIndex(fromColumnIndex);
 		ColumnGroup toColumnGroup = model.getColumnGroupByIndex(toColumnIndex);
 
@@ -114,14 +114,14 @@ public class GroupColumnReorderCommandHandler extends AbstractLayerCommandHandle
 		return true;
 	}
 
-	private String movedToRightEdgeOfAGroup(int dropColumnPosition, int dropColumnIndex){
+	private String movedToRightEdgeOfAGroup(long dropColumnPosition, long dropColumnIndex){
 		if(ColumnGroupUtils.isRightEdgeOfAColumnGroup(columnGroupReorderLayer, dropColumnPosition, dropColumnIndex, model)){
 			return model.getColumnGroupByIndex(dropColumnIndex).getName();
 		}
 		return null;
 	}
 
-	private String movedToLeftEdgeOfAGroup(int dropColumnPosition, int dropColumnIndex){
+	private String movedToLeftEdgeOfAGroup(long dropColumnPosition, long dropColumnIndex){
 		if(ColumnGroupUtils.isLeftEdgeOfAColumnGroup(columnGroupReorderLayer, dropColumnPosition, dropColumnIndex, model)){
 			return model.getColumnGroupByIndex(dropColumnIndex).getName();
 		}

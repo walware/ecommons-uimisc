@@ -52,9 +52,9 @@ public class SortStatePersistor<T> implements IPersistable {
 	public void saveState(String prefix, Properties properties) {
 		StringBuilder buffer = new StringBuilder();
 
-		for (int columnIndex : sortModel.getSortedColumnIndexes()) {
+		for (long columnIndex : sortModel.getSortedColumnIndexes()) {
 			SortDirectionEnum sortDirection = sortModel.getSortDirection(columnIndex);
-			int sortOrder = sortModel.getSortOrder(columnIndex);
+			long sortOrder = sortModel.getSortOrder(columnIndex);
 
 			buffer.append(columnIndex);
 			buffer.append(":"); //$NON-NLS-1$
@@ -115,7 +115,7 @@ public class SortStatePersistor<T> implements IPersistable {
 	 */
 	protected SortState getSortStateFromString(String token) {
 		String[] split = token.split(":"); //$NON-NLS-1$
-		int columnIndex = Integer.parseInt(split[0]);
+		long columnIndex = Long.parseLong(split[0]);
 		SortDirectionEnum sortDirection = SortDirectionEnum.valueOf(split[1]);
 		int sortOrder = Integer.parseInt(split[2]);
 
@@ -126,11 +126,11 @@ public class SortStatePersistor<T> implements IPersistable {
 	 * Encapsulation of the sort state of a column
 	 */
 	protected class SortState {
-		public int columnIndex;
+		public long columnIndex;
 		public SortDirectionEnum sortDirection;
 		public int sortOrder;
 
-		public SortState(int columnIndex, SortDirectionEnum sortDirection, int sortOrder) {
+		public SortState(long columnIndex, SortDirectionEnum sortDirection, int sortOrder) {
 			this.columnIndex = columnIndex;
 			this.sortDirection = sortDirection;
 			this.sortOrder = sortOrder;
@@ -145,7 +145,7 @@ public class SortStatePersistor<T> implements IPersistable {
 	private class SortStateComparator implements Comparator<SortState> {
 
 		public int compare(SortState state1, SortState state2) {
-			return Integer.valueOf(state1.sortOrder).compareTo(Integer.valueOf(state2.sortOrder));
+			return Long.valueOf(state1.sortOrder).compareTo(Long.valueOf(state2.sortOrder));
 		}
 
 	}

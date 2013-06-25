@@ -10,9 +10,9 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.grid.layer;
 
-import org.eclipse.swt.graphics.Rectangle;
-
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.SWTUtil;
 import org.eclipse.nebula.widgets.nattable.export.command.ExportCommandHandler;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
@@ -156,7 +156,7 @@ public class GridLayer extends CompositeLayer {
 	public boolean doCommand(ILayerCommand command) {
 		if (command instanceof ClientAreaResizeCommand && command.convertToTargetLayer(this)) {
 			ClientAreaResizeCommand clientAreaResizeCommand = (ClientAreaResizeCommand) command;
-			Rectangle possibleArea = clientAreaResizeCommand.getScrollable().getClientArea();
+			Rectangle possibleArea = SWTUtil.toNatTable(clientAreaResizeCommand.getScrollable().getClientArea());
 			
 			//remove the column header height and the row header width from the client area to 
 			//ensure that only the body region is used for percentage calculation

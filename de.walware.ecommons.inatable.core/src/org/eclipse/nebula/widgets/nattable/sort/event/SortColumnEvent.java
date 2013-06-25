@@ -22,11 +22,11 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ColumnVisualChangeEvent;
 public class SortColumnEvent extends ColumnVisualChangeEvent {
 
 
-	public SortColumnEvent(final ILayer layer, final int columnPosition) {
+	public SortColumnEvent(final ILayer layer, final long columnPosition) {
 		super(layer, new Range(columnPosition));
 	}
 
-	public SortColumnEvent(final ILayer layer, final Collection<Integer> columnPositions) {
+	public SortColumnEvent(final ILayer layer, final Collection<Long> columnPositions) {
 		super(layer, PositionUtil.getRanges(columnPositions));
 	}
 

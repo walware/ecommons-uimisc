@@ -13,27 +13,27 @@ package org.eclipse.nebula.widgets.nattable.grid.data;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.nebula.widgets.nattable.coordinate.Point;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
-import org.eclipse.swt.graphics.Point;
 
 public class DummyModifiableBodyDataProvider implements IDataProvider {
 
-	private int columnCount;
+	private long columnCount;
 	
-	private int rowCount;
+	private long rowCount;
 
 	private Map<Point, Object> values = new HashMap<Point, Object>();
 	
-	public DummyModifiableBodyDataProvider(int columnCount, int rowCount) {
+	public DummyModifiableBodyDataProvider(long columnCount, long rowCount) {
 		this.columnCount = columnCount;
 		this.rowCount = rowCount;
 	}
 	
-	public int getColumnCount() {
+	public long getColumnCount() {
 		return columnCount;
 	}
 
-	public int getRowCount() {
+	public long getRowCount() {
 		return rowCount;
 	}
 
@@ -41,7 +41,7 @@ public class DummyModifiableBodyDataProvider implements IDataProvider {
 	 * You have to fire a {@link org.eclipse.nebula.widgets.nattable.layer.event.StructuralRefreshEvent} after using this method for refreshing the NatTable.
 	 * @param columnCount
 	 */
-	public void setColumnCount(int columnCount) {
+	public void setColumnCount(long columnCount) {
 		this.columnCount = columnCount;
 	}
 
@@ -49,11 +49,11 @@ public class DummyModifiableBodyDataProvider implements IDataProvider {
 	 * You have to fire a {@link org.eclipse.nebula.widgets.nattable.layer.event.StructuralRefreshEvent} after using this method for refreshing the NatTable.
 	 * @param rowCount
 	 */
-	public void setRowCount(int rowCount) {
+	public void setRowCount(long rowCount) {
 		this.rowCount = rowCount;
 	}
 
-	public Object getDataValue(int columnIndex, int rowIndex) {
+	public Object getDataValue(long columnIndex, long rowIndex) {
 		Point point = new Point(columnIndex, rowIndex);
 		if (values.containsKey(point)) {
 			return values.get(point);
@@ -62,7 +62,7 @@ public class DummyModifiableBodyDataProvider implements IDataProvider {
 		}
 	}
 	
-	public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
+	public void setDataValue(long columnIndex, long rowIndex, Object newValue) {
 		values.put(new Point(columnIndex, rowIndex), newValue);
 	}
 

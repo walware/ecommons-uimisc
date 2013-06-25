@@ -132,13 +132,13 @@ public interface IRowGroupModel<T> extends IPersistable {
 	 * Retrieves a row T by it's index from our cache. It will be added to the
 	 * cache if not present.
 	 */
-	T getRowFromIndexCache(final int rowIndex);
+	T getRowFromIndexCache(final long rowIndex);
 	
 	/**
 	 * Retrieves a row's index by from our cache. It will be added to the cache
 	 * if not present.
 	 */	
-	int getIndexFromRowCache(final T row);
+	long getIndexFromRowCache(final T row);
 
 	/**
 	 * Required for the index-to-row cache to populate itseld.

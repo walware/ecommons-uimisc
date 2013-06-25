@@ -15,11 +15,11 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 public class MultiRowHideCommand extends AbstractMultiRowCommand {
 
-	public MultiRowHideCommand(ILayer layer, int rowPosition) {
-		this(layer, new int[] { rowPosition });
+	public MultiRowHideCommand(ILayer layer, long rowPosition) {
+		this(layer, new long[] { rowPosition });
 	}
 
-	public MultiRowHideCommand(ILayer layer, int[] rowPositions) {
+	public MultiRowHideCommand(ILayer layer, long[] rowPositions) {
 		super(layer, rowPositions);
 	}
 	

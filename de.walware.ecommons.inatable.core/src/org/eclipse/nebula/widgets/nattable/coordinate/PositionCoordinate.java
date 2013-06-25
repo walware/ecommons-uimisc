@@ -19,11 +19,11 @@ public final class PositionCoordinate {
 	
 	private final ILayer layer;
 	
-	public int columnPosition;
-	public int rowPosition;
+	public long columnPosition;
+	public long rowPosition;
 	
 	
-	public PositionCoordinate(final ILayer layer, final int columnPosition, final int rowPosition) {
+	public PositionCoordinate(final ILayer layer, final long columnPosition, final long rowPosition) {
 		this.layer = layer;
 		this.columnPosition = columnPosition;
 		this.rowPosition = rowPosition;
@@ -40,22 +40,24 @@ public final class PositionCoordinate {
 		return layer;
 	}
 	
-	public int getColumnPosition() {
+	public long getColumnPosition() {
 		return columnPosition;
 	}
 	
-	public int getRowPosition() {
+	public long getRowPosition() {
 		return rowPosition;
 	}
 	
-	public void set(final int rowPosition, final int columnPosition) {
+	public void set(final long rowPosition, final long columnPosition) {
 		this.rowPosition = rowPosition;
 		this.columnPosition = columnPosition;
 	}
 	
 	@Override
 	public int hashCode() {
-		int h = Integer.rotateRight(columnPosition, 15) + rowPosition * 17 ^ rowPosition & 0xff000000;
+		int h = (int) (columnPosition ^ (columnPosition >>> 32));
+		h = Integer.rotateRight(h, 15);
+		h ^= (int) (rowPosition ^ (rowPosition));
 		return layer.hashCode() + (h ^ (h >>> 7));
 	}
 	

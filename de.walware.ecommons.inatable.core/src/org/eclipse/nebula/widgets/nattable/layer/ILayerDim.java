@@ -35,10 +35,10 @@ public interface ILayerDim {
 	// Index
 	
 	/**
-	 * {@link ILayer#getColumnIndexByPosition(int)} /
-	 * {@link ILayer#getRowIndexByPosition(int)}
+	 * {@link ILayer#getColumnIndexByPosition(long)} /
+	 * {@link ILayer#getRowIndexByPosition(long)}
 	 */
-	int getPositionIndex(int refPosition, int position);
+	long getPositionIndex(long refPosition, long position);
 	
 	
 	// Position = Columns / Rows
@@ -47,28 +47,28 @@ public interface ILayerDim {
 	 * {@link ILayer#getColumnCount()} /
 	 * {@link ILayer#getRowCount()}
 	 */
-	int getPositionCount();
+	long getPositionCount();
 	
 	/**
 	 * {@link ILayer#getPreferredColumnCount()} /
 	 * {@link ILayer#getPreferredRowCount()}
 	 */
-	int getPreferredPositionCount();
+	long getPreferredPositionCount();
 	
 	
 	/**
-	 * {@link ILayer#localToUnderlyingColumnPosition(int)} /
-	 * {@link ILayer#localToUnderlyingRowPosition(int)}
+	 * {@link ILayer#localToUnderlyingColumnPosition(long)} /
+	 * {@link ILayer#localToUnderlyingRowPosition(long)}
 	 */
-	int localToUnderlyingPosition(int refPosition, int position);
+	long localToUnderlyingPosition(long refPosition, long position);
 	
 	/**
-	 * {@link ILayer#underlyingToLocalColumnPosition(ILayer, int)} /
-	 * {@link ILayer#underlyingToLocalRowPosition(ILayer, int)}
+	 * {@link ILayer#underlyingToLocalColumnPosition(ILayer, long)} /
+	 * {@link ILayer#underlyingToLocalRowPosition(ILayer, long)}
 	 */
-	int underlyingToLocalPosition(int refPosition, int underlyingPosition);
+	long underlyingToLocalPosition(long refPosition, long underlyingPosition);
 	
-	int underlyingToLocalPosition(ILayer sourceUnderlyingLayer, int underlyingPosition);
+	long underlyingToLocalPosition(ILayer sourceUnderlyingLayer, long underlyingPosition);
 	
 	/**
 	 * {@link ILayer#underlyingToLocalColumnPositions(ILayer, Collection)} /
@@ -78,10 +78,10 @@ public interface ILayerDim {
 			Collection<Range> underlyingPositionRanges);
 	
 	/**
-	 * {@link ILayer#getUnderlyingLayersByColumnPosition(int)} /
-	 * {@link ILayer#getUnderlyingLayersByRowPosition(int)}
+	 * {@link ILayer#getUnderlyingLayersByColumnPosition(long)} /
+	 * {@link ILayer#getUnderlyingLayersByRowPosition(long)}
 	 */
-	Collection<ILayer> getUnderlyingLayersByPosition(int position);
+	Collection<ILayer> getUnderlyingLayersByPosition(long position);
 	
 	
 	// Pixel = X / Y, Width / Height
@@ -90,39 +90,39 @@ public interface ILayerDim {
 	 * {@link ILayer#getWidth()} /
 	 * {@link ILayer#getHeight()}
 	 */
-	int getSize();
+	long getSize();
 	
 	/**
 	 * {@link ILayer#getPreferredWidth()} /
 	 * {@link ILayer#getPreferredHeight()}
 	 */
-	int getPreferredSize();
+	long getPreferredSize();
 	
 	/**
-	 * {@link ILayer#getColumnPositionByX(int)} /
-	 * {@link ILayer#getRowPositionByY(int)}
+	 * {@link ILayer#getColumnPositionByX(long)} /
+	 * {@link ILayer#getRowPositionByY(long)}
 	 */
-	int getPositionByPixel(int pixel);
+	long getPositionByPixel(long pixel);
 	
 	/**
-	 * {@link ILayer#getStartXOfColumnPosition(int)} /
-	 * {@link ILayer#getStartYOfRowPosition(int)}
+	 * {@link ILayer#getStartXOfColumnPosition(long)} /
+	 * {@link ILayer#getStartYOfRowPosition(long)}
 	 */
-	int getPositionStart(int refPosition, int position);
+	long getPositionStart(long refPosition, long position);
 	
 	/**
-	 * {@link ILayer#getColumnWidthByPosition(int)} /
-	 * {@link ILayer#getRowHeightByPosition(int)}
+	 * {@link ILayer#getColumnWidthByPosition(long)} /
+	 * {@link ILayer#getRowHeightByPosition(long)}
 	 */
-	int getPositionSize(int refPosition, int position);
+	int getPositionSize(long refPosition, long position);
 	
 	
 	// Resize
 	
 	/**
-	 * {@link ILayer#isColumnPositionResizable(int)} /
-	 * {@link ILayer#isRowPositionResizable(int)}
+	 * {@link ILayer#isColumnPositionResizable(long)} /
+	 * {@link ILayer#isRowPositionResizable(long)}
 	 */
-	boolean isPositionResizable(int position);
+	boolean isPositionResizable(long position);
 	
 }

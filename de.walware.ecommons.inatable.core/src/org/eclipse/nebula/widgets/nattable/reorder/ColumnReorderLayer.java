@@ -52,11 +52,11 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 	private final IUniqueIndexLayer underlyingLayer;
 
 	// Position X in the List contains the index of column at position X
-	private final List<Integer> columnIndexOrder = new ArrayList<Integer>();
+	private final List<Long> columnIndexOrder = new ArrayList<Long>();
 
-	private final Map<Integer, Integer> startXCache = new HashMap<Integer, Integer>();
+	private final Map<Long, Long> startXCache = new HashMap<Long, Long>();
 
-	private int reorderFromColumnPosition;
+	private long reorderFromColumnPosition;
 
 	public ColumnReorderLayer(IUniqueIndexLayer underlyingLayer) {
 		this(underlyingLayer, true);
@@ -122,7 +122,7 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 		super.saveState(prefix, properties);
 		if (columnIndexOrder.size() > 0) {
 			StringBuilder strBuilder = new StringBuilder();
-			for (Integer index : columnIndexOrder) {
+			for (Long index : columnIndexOrder) {
 				strBuilder.append(index);
 				strBuilder.append(',');
 			}
@@ -136,11 +136,11 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 		String property = properties.getProperty(prefix + PERSISTENCE_KEY_COLUMN_INDEX_ORDER);
 
 		if (property != null) {
-			List<Integer> newColumnIndexOrder = new ArrayList<Integer>();
+			List<Long> newColumnIndexOrder = new ArrayList<Long>();
 			StringTokenizer tok = new StringTokenizer(property, ","); //$NON-NLS-1$
 			while (tok.hasMoreTokens()) {
 				String index = tok.nextToken();
-				newColumnIndexOrder.add(Integer.valueOf(index));
+				newColumnIndexOrder.add(Long.valueOf(index));
 			}
 			
 			if(isRestoredStateValid(newColumnIndexOrder)){
@@ -155,7 +155,7 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 	 * Ensure that columns haven't changed in the underlying data source
 	 * @param newColumnIndexOrder restored from the properties file.
 	 */
-	protected boolean isRestoredStateValid(List<Integer> newColumnIndexOrder) {
+	protected boolean isRestoredStateValid(List<Long> newColumnIndexOrder) {
 		if (newColumnIndexOrder.size() != getColumnCount()){
 			System.err.println(
 				"Number of persisted columns (" + newColumnIndexOrder.size() + ") " + //$NON-NLS-1$ //$NON-NLS-2$
@@ -164,7 +164,7 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 			return false;
 		}
 		
-		for (Integer index : newColumnIndexOrder) {
+		for (Long index : newColumnIndexOrder) {
 			if(!columnIndexOrder.contains(index)){
 				System.err.println(
 					"Column index: " + index + " being restored, is not a available in the data soure.\n" + //$NON-NLS-1$ //$NON-NLS-2$
@@ -177,43 +177,46 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 
 	// Columns
 
-	public List<Integer> getColumnIndexOrder() {
+	public List<Long> getColumnIndexOrder() {
 		return columnIndexOrder;
 	}
 
 	@Override
-	public int getColumnIndexByPosition(int columnPosition) {
+	public long getColumnIndexByPosition(long columnPosition) {
 		if (columnPosition >= 0 && columnPosition < columnIndexOrder.size()) {
-			return columnIndexOrder.get(columnPosition).intValue();
+			return columnIndexOrder.get((int) columnPosition).longValue();
 		} else {
 			return NO_INDEX;
 		}
 	}
 
 	@Override
-	public int getColumnPositionByIndex(int columnIndex) {
-		return columnIndexOrder.indexOf(Integer.valueOf(columnIndex));
+	public long getColumnPositionByIndex(long columnIndex) {
+		if (columnIndex > Integer.MAX_VALUE) {
+			throw new IndexOutOfBoundsException();
+		}
+		return columnIndexOrder.indexOf(Long.valueOf((int) columnIndex));
 	}
 
 	@Override
-	public int localToUnderlyingColumnPosition(int localColumnPosition) {
-		int columnIndex = getColumnIndexByPosition(localColumnPosition);
+	public long localToUnderlyingColumnPosition(long localColumnPosition) {
+		long columnIndex = getColumnIndexByPosition(localColumnPosition);
 		return underlyingLayer.getColumnPositionByIndex(columnIndex);
 	}
 
 	@Override
-	public int underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, int underlyingColumnPosition) {
-		int columnIndex = underlyingLayer.getColumnIndexByPosition(underlyingColumnPosition);
+	public long underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, long underlyingColumnPosition) {
+		long columnIndex = underlyingLayer.getColumnIndexByPosition(underlyingColumnPosition);
 		return getColumnPositionByIndex(columnIndex);
 	}
 
 	@Override
 	public Collection<Range> underlyingToLocalColumnPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingColumnPositionRanges) {
-		List<Integer> reorderedColumnPositions = new ArrayList<Integer>();
+		List<Long> reorderedColumnPositions = new ArrayList<Long>();
 		for (Range underlyingColumnPositionRange : underlyingColumnPositionRanges) {
-			for (int underlyingColumnPosition = underlyingColumnPositionRange.start; underlyingColumnPosition < underlyingColumnPositionRange.end; underlyingColumnPosition++) {
-				int localColumnPosition = underlyingToLocalColumnPosition(sourceUnderlyingLayer, underlyingColumnPositionRange.start);
-				reorderedColumnPositions.add(Integer.valueOf(localColumnPosition));
+			for (long underlyingColumnPosition = underlyingColumnPositionRange.start; underlyingColumnPosition < underlyingColumnPositionRange.end; underlyingColumnPosition++) {
+				long localColumnPosition = underlyingToLocalColumnPosition(sourceUnderlyingLayer, underlyingColumnPositionRange.start);
+				reorderedColumnPositions.add(Long.valueOf(localColumnPosition));
 			}
 		}
 		Collections.sort(reorderedColumnPositions);
@@ -224,30 +227,33 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 	// X
 
 	@Override
-	public int getColumnPositionByX(int x) {
+	public long getColumnPositionByX(long x) {
 		return LayerUtil.getColumnPositionByX(this, x);
 	}
 
 	@Override
-	public int getStartXOfColumnPosition(int targetColumnPosition) {
-		Integer cachedStartX = startXCache.get(Integer.valueOf(targetColumnPosition));
+	public long getStartXOfColumnPosition(long targetColumnPosition) {
+		if (targetColumnPosition >= Integer.MAX_VALUE) {
+			throw new IndexOutOfBoundsException();
+		}
+		Long cachedStartX = startXCache.get(Long.valueOf((int) targetColumnPosition));
 		if (cachedStartX != null) {
-			return cachedStartX.intValue();
+			return cachedStartX.longValue();
 		}
 
-		int aggregateWidth = 0;
+		long aggregateWidth = 0;
 		for (int columnPosition = 0; columnPosition < targetColumnPosition; columnPosition++) {
 			aggregateWidth += underlyingLayer.getColumnWidthByPosition(localToUnderlyingColumnPosition(columnPosition));
 		}
 
-		startXCache.put(Integer.valueOf(targetColumnPosition), Integer.valueOf(aggregateWidth));
+		startXCache.put(Long.valueOf(targetColumnPosition), Long.valueOf(aggregateWidth));
 		return aggregateWidth;
 	}
 	
 	private void populateIndexOrder() {
 		ILayer underlyingLayer = getUnderlyingLayer();
-		for (int columnPosition = 0; columnPosition < underlyingLayer.getColumnCount(); columnPosition++) {
-			columnIndexOrder.add(Integer.valueOf(underlyingLayer.getColumnIndexByPosition(columnPosition)));
+		for (long columnPosition = 0; columnPosition < underlyingLayer.getColumnCount(); columnPosition++) {
+			columnIndexOrder.add(Long.valueOf(underlyingLayer.getColumnIndexByPosition(columnPosition)));
 		}
 	}
 
@@ -256,7 +262,7 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 	// Rows
 
 	@Override
-	public int getRowPositionByIndex(int rowIndex) {
+	public long getRowPositionByIndex(long rowIndex) {
 		return underlyingLayer.getRowPositionByIndex(rowIndex);
 	}
 
@@ -270,14 +276,14 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 			toColumnPosition++;
 		}
 		
-		Integer fromColumnIndex = columnIndexOrder.get(fromColumnPosition);
+		Long fromColumnIndex = columnIndexOrder.get(fromColumnPosition);
 		columnIndexOrder.add(toColumnPosition, fromColumnIndex);
 
 		columnIndexOrder.remove(fromColumnPosition + (fromColumnPosition > toColumnPosition ? 1 : 0));
 		invalidateCache();
 	}
 
-	public void reorderColumnPosition(int fromColumnPosition, int toColumnPosition) {
+	public void reorderColumnPosition(long fromColumnPosition, long toColumnPosition) {
 		boolean reorderToLeftEdge;
 		if (toColumnPosition < getColumnCount()) {
  			reorderToLeftEdge = true;
@@ -288,12 +294,15 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 		reorderColumnPosition(fromColumnPosition, toColumnPosition, reorderToLeftEdge);
 	}
 	
-	public void reorderColumnPosition(int fromColumnPosition, int toColumnPosition, boolean reorderToLeftEdge) {
-		moveColumn(fromColumnPosition, toColumnPosition, reorderToLeftEdge);
+	public void reorderColumnPosition(long fromColumnPosition, long toColumnPosition, boolean reorderToLeftEdge) {
+		if (fromColumnPosition >= Integer.MAX_VALUE || toColumnPosition >= Integer.MAX_VALUE) {
+			throw new IndexOutOfBoundsException();
+		}
+		moveColumn((int) fromColumnPosition, (int) toColumnPosition, reorderToLeftEdge);
 		fireLayerEvent(new ColumnReorderEvent(this, fromColumnPosition, toColumnPosition, reorderToLeftEdge));
 	}
 
-	public void reorderMultipleColumnPositions(List<Integer> fromColumnPositions, int toColumnPosition) {
+	public void reorderMultipleColumnPositions(List<Long> fromColumnPositions, long toColumnPosition) {
 		boolean reorderToLeftEdge;
 		if (toColumnPosition < getColumnCount()) {
  			reorderToLeftEdge = true;
@@ -304,24 +313,30 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 		reorderMultipleColumnPositions(fromColumnPositions, toColumnPosition, reorderToLeftEdge);
 	}
 	
-	public void reorderMultipleColumnPositions(List<Integer> fromColumnPositions, int toColumnPosition, boolean reorderToLeftEdge) {
+	public void reorderMultipleColumnPositions(List<Long> fromColumnPositions, long toColumnPosition, boolean reorderToLeftEdge) {
+		if (toColumnPosition >= Integer.MAX_VALUE) {
+			throw new IndexOutOfBoundsException();
+		}
 		// Moving from left to right
 		final int fromColumnPositionsCount = fromColumnPositions.size();
 
-		if (toColumnPosition > fromColumnPositions.get(fromColumnPositionsCount - 1).intValue()) {
-			int firstColumnPosition = fromColumnPositions.get(0).intValue();
+		if (toColumnPosition > fromColumnPositions.get(fromColumnPositionsCount - 1).longValue()) {
+			long firstColumnPosition = fromColumnPositions.get(0).longValue();
 
 			for (int columnCount = 0; columnCount < fromColumnPositionsCount; columnCount++) {
-				final int fromColumnPosition = fromColumnPositions.get(0).intValue();
-				moveColumn(fromColumnPosition, toColumnPosition, reorderToLeftEdge);
+				final long fromColumnPosition = fromColumnPositions.get(0).longValue();
+				if (fromColumnPosition >= Integer.MAX_VALUE) {
+					throw new IndexOutOfBoundsException();
+				}
+				moveColumn((int) fromColumnPosition, (int) toColumnPosition, reorderToLeftEdge);
 				if (fromColumnPosition < firstColumnPosition) {
 					firstColumnPosition = fromColumnPosition;
 				}
 			}
-		} else if (toColumnPosition < fromColumnPositions.get(fromColumnPositionsCount - 1).intValue()) {
+		} else if (toColumnPosition < fromColumnPositions.get(fromColumnPositionsCount - 1).longValue()) {
 			// Moving from right to left
-			int targetColumnPosition = toColumnPosition;
-			for (Integer fromColumnPosition : fromColumnPositions) {
+			int targetColumnPosition = (int) toColumnPosition;
+			for (Long fromColumnPosition : fromColumnPositions) {
 				final int fromColumnPositionInt = fromColumnPosition.intValue();
 				moveColumn(fromColumnPositionInt, targetColumnPosition++, reorderToLeftEdge);
 			}
@@ -334,11 +349,11 @@ public class ColumnReorderLayer extends AbstractLayerTransform implements IUniqu
 		startXCache.clear();
 	}
 
-	public int getReorderFromColumnPosition() {
+	public long getReorderFromColumnPosition() {
 		return reorderFromColumnPosition;
 	}
 	
-	public void setReorderFromColumnPosition(int fromColumnPosition) {
+	public void setReorderFromColumnPosition(long fromColumnPosition) {
 		this.reorderFromColumnPosition = fromColumnPosition;
 	}
 

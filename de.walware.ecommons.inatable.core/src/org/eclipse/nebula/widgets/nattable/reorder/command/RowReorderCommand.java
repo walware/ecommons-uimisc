@@ -43,7 +43,7 @@ public class RowReorderCommand implements ILayerCommand {
 	 * @param fromRowPosition The position of the row that should be reordered
 	 * @param toRowPosition The position of the row to which the dragged row should be dropped
 	 */
-	public RowReorderCommand(ILayer layer, int fromRowPosition, int toRowPosition) {
+	public RowReorderCommand(ILayer layer, long fromRowPosition, long toRowPosition) {
 		fromRowPositionCoordinate = new RowPositionCoordinate(layer, fromRowPosition);
 		
 		if (toRowPosition < layer.getRowCount()) {
@@ -69,14 +69,14 @@ public class RowReorderCommand implements ILayerCommand {
 	/**
 	 * @return The position of the row that should be reordered
 	 */
-	public int getFromRowPosition() {
+	public long getFromRowPosition() {
 		return fromRowPositionCoordinate.getRowPosition();
 	}
 	
 	/**
 	 * @return The position of the row to which the dragged row should be dropped
 	 */
-	public int getToRowPosition() {
+	public long getToRowPosition() {
 		return toRowPositionCoordinate.getRowPosition();
 	}
 	

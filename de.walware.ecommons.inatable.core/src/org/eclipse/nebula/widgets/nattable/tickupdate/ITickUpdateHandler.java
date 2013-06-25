@@ -61,7 +61,7 @@ public interface ITickUpdateHandler {
 
 	/**
 	 * The default implementation of {@link ITickUpdateHandler} that handles {@link Byte}, {@link Short}, 
-	 * {@link Integer}, {@link Long}, {@link Double} and {@link Float} values.
+	 * {@link Long}, {@link Long}, {@link Double} and {@link Float} values.
 	 */
 	ITickUpdateHandler DEFAULT_TICK_UPDATE_HANDLER = new ITickUpdateHandler() {
 
@@ -69,7 +69,7 @@ public interface ITickUpdateHandler {
 		public boolean isApplicableFor(Object value) {
 			return (value instanceof Byte
 					 || value instanceof Short
-					 || value instanceof Integer
+					 || value instanceof Long
 					 || value instanceof Long
 					 || value instanceof Double
 					 || value instanceof Float);
@@ -83,13 +83,13 @@ public interface ITickUpdateHandler {
 		@Override
 		public Object getIncrementedValue(Object currentValue, double incrementSize) {
 			if (currentValue instanceof Byte) {
-				return Integer.valueOf(((Byte)currentValue) + Double.valueOf(Math.abs(incrementSize)).byteValue()).byteValue();
+				return Long.valueOf(((Byte)currentValue) + Double.valueOf(Math.abs(incrementSize)).byteValue()).byteValue();
 			}
 			if (currentValue instanceof Short) {
-				return Integer.valueOf(((Integer)currentValue) + Double.valueOf(Math.abs(incrementSize)).intValue());
+				return Long.valueOf(((Long)currentValue) + Double.valueOf(Math.abs(incrementSize)).longValue());
 			}
-			if (currentValue instanceof Integer) {
-				return Integer.valueOf(((Integer)currentValue) + Double.valueOf(Math.abs(incrementSize)).intValue());
+			if (currentValue instanceof Long) {
+				return Long.valueOf(((Long)currentValue) + Double.valueOf(Math.abs(incrementSize)).longValue());
 			}
 			if (currentValue instanceof Long) {
 				return Long.valueOf(((Long)currentValue) + Double.valueOf(Math.abs(incrementSize)).longValue());
@@ -111,13 +111,13 @@ public interface ITickUpdateHandler {
 		@Override
         public Object getDecrementedValue(Object currentValue, double decrementSize) {
 			if (currentValue instanceof Byte) {
-				return Integer.valueOf(((Byte)currentValue) - Double.valueOf(Math.abs(decrementSize)).byteValue()).byteValue();
+				return Long.valueOf(((Byte)currentValue) - Double.valueOf(Math.abs(decrementSize)).byteValue()).byteValue();
 			}
 			if (currentValue instanceof Short) {
-				return Integer.valueOf(((Integer)currentValue) - Double.valueOf(Math.abs(decrementSize)).intValue());
+				return Long.valueOf(((Long)currentValue) - Double.valueOf(Math.abs(decrementSize)).longValue());
 			}
-			if (currentValue instanceof Integer) {
-				return Integer.valueOf(((Integer)currentValue) - Double.valueOf(Math.abs(decrementSize)).intValue());
+			if (currentValue instanceof Long) {
+				return Long.valueOf(((Long)currentValue) - Double.valueOf(Math.abs(decrementSize)).longValue());
 			}
 			if (currentValue instanceof Long) {
 				return Long.valueOf(((Long)currentValue) - Double.valueOf(Math.abs(decrementSize)).longValue());

@@ -17,10 +17,10 @@ public class FreezePositionStrategy implements IFreezeCoordinatesProvider {
 
 	private final FreezeLayer freezeLayer;
 	
-	private final int columnPosition;
-	private final int rowPosition;
+	private final long columnPosition;
+	private final long rowPosition;
 
-	public FreezePositionStrategy(FreezeLayer freezeLayer, int columnPosition, int rowPosition) {
+	public FreezePositionStrategy(FreezeLayer freezeLayer, long columnPosition, long rowPosition) {
 		this.freezeLayer = freezeLayer;
 		this.columnPosition = columnPosition;
 		this.rowPosition = rowPosition;

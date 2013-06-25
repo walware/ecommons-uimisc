@@ -13,12 +13,13 @@ package org.eclipse.nebula.widgets.nattable.style.editor;
 
 import static org.eclipse.swt.SWT.NONE;
 
-import org.eclipse.nebula.widgets.nattable.Messages;
-import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+
+import org.eclipse.nebula.widgets.nattable.Messages;
+import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyle;
 
 
 /**

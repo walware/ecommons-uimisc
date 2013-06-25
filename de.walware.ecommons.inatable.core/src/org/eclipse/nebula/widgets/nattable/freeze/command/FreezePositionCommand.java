@@ -42,7 +42,7 @@ public class FreezePositionCommand extends AbstractPositionCommand implements IF
 	 * @param rowPosition The row position that will be the bottom
 	 * 			row in the frozen part.
 	 */
-	public FreezePositionCommand(ILayer layer, int columnPosition, int rowPosition) {
+	public FreezePositionCommand(ILayer layer, long columnPosition, long rowPosition) {
 		this(layer, columnPosition, rowPosition, false);
 	}
 	
@@ -58,7 +58,7 @@ public class FreezePositionCommand extends AbstractPositionCommand implements IF
 	 * @param toggle whether this command should toggle the frozen state between
 	 * 			frozen and unfrozen, or if it should always result in a frozen state.
 	 */
-	public FreezePositionCommand(ILayer layer, int columnPosition, int rowPosition, boolean toggle) {
+	public FreezePositionCommand(ILayer layer, long columnPosition, long rowPosition, boolean toggle) {
 		this(layer, columnPosition, rowPosition, toggle, false);
 	}
 	
@@ -75,7 +75,7 @@ public class FreezePositionCommand extends AbstractPositionCommand implements IF
 	 * @param overrideFreeze whether this command should override a current frozen state
 	 * 			or if it should be skipped if a frozen state is already applied.
 	 */
-	public FreezePositionCommand(ILayer layer, int columnPosition, int rowPosition, boolean toggle, boolean overrideFreeze) {
+	public FreezePositionCommand(ILayer layer, long columnPosition, long rowPosition, boolean toggle, boolean overrideFreeze) {
 		super(layer, columnPosition, rowPosition);
 		this.toggle = toggle;
 		this.overrideFreeze = overrideFreeze;

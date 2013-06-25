@@ -26,7 +26,7 @@ public class ColumnLabelAccumulator implements IConfigLabelAccumulator {
 	public static final String COLUMN_LABEL_PREFIX = "COLUMN_"; //$NON-NLS-1$
 
 
-	public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
+	public void accumulateConfigLabels(LabelStack configLabels, long columnPosition, long rowPosition) {
 		configLabels.addLabel(COLUMN_LABEL_PREFIX + columnPosition);
 	}
 

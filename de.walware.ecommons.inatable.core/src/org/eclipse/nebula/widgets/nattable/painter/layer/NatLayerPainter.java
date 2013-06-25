@@ -14,7 +14,7 @@ package org.eclipse.nebula.widgets.nattable.painter.layer;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -31,7 +31,7 @@ public class NatLayerPainter implements ILayerPainter {
 		this.natTable = natTable;
 	}
 	
-	public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
+	public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, org.eclipse.swt.graphics.Rectangle rectangle, IConfigRegistry configRegistry) {
 		try {
 			paintBackground(natLayer, gc, xOffset, yOffset, rectangle, configRegistry);
 			
@@ -47,20 +47,20 @@ public class NatLayerPainter implements ILayerPainter {
 		}
 	}
 	
-	protected void paintBackground(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
+	protected void paintBackground(ILayer natLayer, GC gc, long xOffset, long yOffset, org.eclipse.swt.graphics.Rectangle rectangle, IConfigRegistry configRegistry) {
 		gc.setBackground(natTable.getBackground());
 
 		// Clean Background
 		gc.fillRectangle(rectangle);
 	}
 	
-	protected void paintOverlays(ILayer natLayer, GC gc, int xOffset, int yOffset, Rectangle rectangle, IConfigRegistry configRegistry) {
+	protected void paintOverlays(ILayer natLayer, GC gc, long xOffset, long yOffset, org.eclipse.swt.graphics.Rectangle rectangle, IConfigRegistry configRegistry) {
 		for (IOverlayPainter overlayPainter : natTable.getOverlayPainters()) {
 			overlayPainter.paintOverlay(gc, natTable);
 		}
 	}
 
-	public Rectangle adjustCellBounds(int columnPosition, int rowPosition, Rectangle cellBounds) {
+	public Rectangle adjustCellBounds(long columnPosition, long rowPosition, Rectangle cellBounds) {
 		ILayerPainter layerPainter = natTable.getLayer().getLayerPainter();
 		return layerPainter.adjustCellBounds(columnPosition, rowPosition, cellBounds);
 	}

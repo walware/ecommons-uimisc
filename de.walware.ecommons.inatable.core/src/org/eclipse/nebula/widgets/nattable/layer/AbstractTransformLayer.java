@@ -146,7 +146,7 @@ public abstract class AbstractTransformLayer extends DimBasedLayer {
 	// Cell features
 	
 	@Override
-	public ILayerCell getCellByPosition(final int columnPosition, final int rowPosition) {
+	public ILayerCell getCellByPosition(final long columnPosition, final long rowPosition) {
 		ILayerCell cell = this.underlyingLayer.getCellByPosition(
 				getDim(HORIZONTAL).localToUnderlyingPosition(columnPosition, columnPosition),
 				getDim(VERTICAL).localToUnderlyingPosition(rowPosition, rowPosition) );
@@ -161,8 +161,8 @@ public abstract class AbstractTransformLayer extends DimBasedLayer {
 		return cell;
 	}
 	
-	protected LayerCellDim transformCellDim(final LayerCellDim underlyingDim, final int position) {
-		final int originPosition = (underlyingDim.getPosition() == underlyingDim.getOriginPosition()) ?
+	protected LayerCellDim transformCellDim(final LayerCellDim underlyingDim, final long position) {
+		final long originPosition = (underlyingDim.getPosition() == underlyingDim.getOriginPosition()) ?
 				position :
 				getDim(underlyingDim.getOrientation()).underlyingToLocalPosition(
 						position, underlyingDim.getOriginPosition() );
@@ -176,7 +176,7 @@ public abstract class AbstractTransformLayer extends DimBasedLayer {
 	}
 	
 	@Override
-	public LabelStack getConfigLabelsByPosition(final int columnPosition, final int rowPosition) {
+	public LabelStack getConfigLabelsByPosition(final long columnPosition, final long rowPosition) {
 		final LabelStack configLabels = this.underlyingLayer.getConfigLabelsByPosition(
 				getDim(HORIZONTAL).localToUnderlyingPosition(columnPosition, columnPosition),
 				getDim(VERTICAL).localToUnderlyingPosition(rowPosition, rowPosition) );
@@ -191,21 +191,21 @@ public abstract class AbstractTransformLayer extends DimBasedLayer {
 		return configLabels;
 	}
 	
-	public Object getDataValueByPosition(final int columnPosition, final int rowPosition) {
+	public Object getDataValueByPosition(final long columnPosition, final long rowPosition) {
 		return this.underlyingLayer.getDataValueByPosition(
 				getDim(HORIZONTAL).localToUnderlyingPosition(columnPosition, columnPosition),
 				getDim(VERTICAL).localToUnderlyingPosition(rowPosition, rowPosition) );
 	}
 	
 	@Override
-	public ICellPainter getCellPainter(final int columnPosition, final int rowPosition, final ILayerCell cell, final IConfigRegistry configRegistry) {
+	public ICellPainter getCellPainter(final long columnPosition, final long rowPosition, final ILayerCell cell, final IConfigRegistry configRegistry) {
 		return this.underlyingLayer.getCellPainter(columnPosition, rowPosition, cell, configRegistry);
 	}
 	
 	// IRegionResolver
 	
 	@Override
-	public LabelStack getRegionLabelsByXY(final int x, final int y) {
+	public LabelStack getRegionLabelsByXY(final long x, final long y) {
 		final LabelStack regionLabels = this.underlyingLayer.getRegionLabelsByXY(x, y);
 		final String regionName = getRegionName();
 		if (regionName != null) {
@@ -214,7 +214,7 @@ public abstract class AbstractTransformLayer extends DimBasedLayer {
 		return regionLabels;
 	}
 	
-	public ILayer getUnderlyingLayerByPosition(final int columnPosition, final int rowPosition) {
+	public ILayer getUnderlyingLayerByPosition(final long columnPosition, final long rowPosition) {
 		return this.underlyingLayer;
 	}
 	

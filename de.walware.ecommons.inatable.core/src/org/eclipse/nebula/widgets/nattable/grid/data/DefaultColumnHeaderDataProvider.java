@@ -30,8 +30,11 @@ public class DefaultColumnHeaderDataProvider implements IDataProvider {
 		this.propertyToLabelMap = propertyToLabelMap;
 	}
 
-	public String getColumnHeaderLabel(int columnIndex) {
-		String propertyName = propertyNames[columnIndex];
+	public String getColumnHeaderLabel(long columnIndex) {
+		if (columnIndex >= Integer.MAX_VALUE) {
+			throw new IndexOutOfBoundsException();
+		}
+		String propertyName = propertyNames[(int) columnIndex];
 		if (propertyToLabelMap != null) {
 			String label = propertyToLabelMap.get(propertyName);
 			if (label != null) {
@@ -41,22 +44,22 @@ public class DefaultColumnHeaderDataProvider implements IDataProvider {
 		return propertyName;
 	}
 
-	public int getColumnCount() {
+	public long getColumnCount() {
 		return propertyNames.length;
 	}
 
-	public int getRowCount() {
+	public long getRowCount() {
 		return 1;
 	}
 
 	/**
 	 * This class does not support multiple rows in the column header layer.
 	 */
-	public Object getDataValue(int columnIndex, int rowIndex) {
+	public Object getDataValue(long columnIndex, long rowIndex) {
 		return getColumnHeaderLabel(columnIndex);
 	}
 
-	public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
+	public void setDataValue(long columnIndex, long rowIndex, Object newValue) {
 		throw new UnsupportedOperationException();
 	}
 

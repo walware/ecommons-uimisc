@@ -31,12 +31,12 @@ public class SelectCellCommand extends AbstractPositionCommand {
 	private final boolean revealCell;
 
 
-	public SelectCellCommand(final ILayer layer, final int columnPosition, final int rowPosition,
+	public SelectCellCommand(final ILayer layer, final long columnPosition, final long rowPosition,
 			final int selectionFlags) {
 		this(layer, columnPosition, rowPosition, selectionFlags, true);
 	}
 
-	public SelectCellCommand(final ILayer layer, final int columnPosition, final int rowPosition,
+	public SelectCellCommand(final ILayer layer, final long columnPosition, final long rowPosition,
 			final int selectionFlags, boolean revealCell) {
 		super(layer, columnPosition, rowPosition);
 		

@@ -20,7 +20,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ColumnVisualChangeEvent;
 
 public class ColumnHeaderSelectionEvent extends ColumnVisualChangeEvent {
 
-	public ColumnHeaderSelectionEvent(ILayer layer, int columnPosition) {
+	public ColumnHeaderSelectionEvent(ILayer layer, long columnPosition) {
 		this(layer, new Range(columnPosition));
 	}
 	

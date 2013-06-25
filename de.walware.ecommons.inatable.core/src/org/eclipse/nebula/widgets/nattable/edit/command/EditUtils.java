@@ -18,7 +18,6 @@ import java.util.Set;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
-import org.eclipse.nebula.widgets.nattable.coordinate.Direction;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditorRegistry;
@@ -73,7 +72,7 @@ public class EditUtils {
 	 * 			at least one cell is not editable.
 	 */
 	public static boolean allCellsEditable(SelectionLayer selectionLayer, IConfigRegistry configRegistry) {
-		PositionCoordinate[] selectedCells = selectionLayer.getSelectedCellPositions();
+		List<PositionCoordinate> selectedCells = selectionLayer.getSelectedCellPositions();
 		ILayerCell layerCell = null;
 		for (PositionCoordinate cell : selectedCells) {
 			layerCell = selectionLayer.getCellByPosition(cell.columnPosition, cell.rowPosition);
@@ -127,7 +126,7 @@ public class EditUtils {
 	 * 			configured.
 	 */
 	public static boolean isEditorSame(SelectionLayer selectionLayer, IConfigRegistry configRegistry) {
-		PositionCoordinate[] selectedCells = selectionLayer.getSelectedCellPositions();
+		List<PositionCoordinate> selectedCells = selectionLayer.getSelectedCellPositions();
 		ICellEditor lastSelectedCellEditor = null;
 		for (PositionCoordinate selectedCell : selectedCells) {
 			LabelStack labelStack = selectionLayer.getConfigLabelsByPosition(
@@ -153,7 +152,7 @@ public class EditUtils {
 	 * Checks if all selected cells have the same {@link IDisplayConverter} configured. This is needed
 	 * for the multi edit feature to determine if a multi edit is possible. 
 	 * <p>
-	 * Let's assume there are two columns, one containing an Integer, the other a Date. 
+	 * Let's assume there are two columns, one containing an Long, the other a Date. 
 	 * Both have a TextCellEditor configured, so if only the editor is checked, the multi edit dialog
 	 * would open. On committing a changed value an error would occur because of wrong conversion.
 	 * @param selectionLayer The {@link SelectionLayer} to retrieve the current selection.
@@ -165,7 +164,7 @@ public class EditUtils {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static boolean isConverterSame(SelectionLayer selectionLayer, IConfigRegistry configRegistry){
-		PositionCoordinate[] selectedCells = selectionLayer.getSelectedCellPositions();
+		List<PositionCoordinate> selectedCells = selectionLayer.getSelectedCellPositions();
 		Set<Class> converterSet = new HashSet<Class>();
 		
 		for (PositionCoordinate selectedCell : selectedCells) {
@@ -191,7 +190,7 @@ public class EditUtils {
 	 */
 	public static boolean isValueSame(SelectionLayer selectionLayer) {
 		Object lastSelectedValue = null;
-		PositionCoordinate[] selectedCells = selectionLayer.getSelectedCellPositions();
+		List<PositionCoordinate> selectedCells = selectionLayer.getSelectedCellPositions();
 		for (PositionCoordinate selectedCell : selectedCells) {
 			Object cellValue = selectionLayer
 					.getCellByPosition(selectedCell.columnPosition, selectedCell.rowPosition)

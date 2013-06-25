@@ -11,11 +11,13 @@
 // ~
 package org.eclipse.nebula.widgets.nattable.painter.cell.decorator;
 
+import static org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils.safe;
+
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
@@ -29,21 +31,21 @@ import org.eclipse.nebula.widgets.nattable.style.VerticalAlignmentEnum;
 public class PaddingDecorator extends CellPainterWrapper {
 	
 	
-	private final int topPadding;
-	private final int rightPadding;
-	private final int bottomPadding;
-	private final int leftPadding;
+	private final long topPadding;
+	private final long rightPadding;
+	private final long bottomPadding;
+	private final long leftPadding;
 	
 	
 	public PaddingDecorator(ICellPainter interiorPainter) {
 		this(interiorPainter, 2);
 	}
 	
-	public PaddingDecorator(ICellPainter interiorPainter, int padding) {
+	public PaddingDecorator(ICellPainter interiorPainter, long padding) {
 		this(interiorPainter, padding, padding, padding, padding);
 	}
 	
-	public PaddingDecorator(ICellPainter interiorPainter, int topPadding, int rightPadding, int bottomPadding, int leftPadding) {
+	public PaddingDecorator(ICellPainter interiorPainter, long topPadding, long rightPadding, long bottomPadding, long leftPadding) {
 		super(interiorPainter);
 		this.topPadding = topPadding;
 		this.rightPadding = rightPadding;
@@ -53,12 +55,12 @@ public class PaddingDecorator extends CellPainterWrapper {
 	
 	
 	@Override
-	public int getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public long getPreferredWidth(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return leftPadding + super.getPreferredWidth(cell, gc, configRegistry) + rightPadding;
 	}
 	
 	@Override
-	public int getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
+	public long getPreferredHeight(ILayerCell cell, GC gc, IConfigRegistry configRegistry) {
 		return topPadding + super.getPreferredHeight(cell, gc, configRegistry) + bottomPadding;
 	}
 	
@@ -68,11 +70,11 @@ public class PaddingDecorator extends CellPainterWrapper {
 		Color cellStyleBackground = getBackgroundColor(cell, configRegistry);
 		if (cellStyleBackground != null) {
 			gc.setBackground(cellStyleBackground);
-			gc.fillRectangle(adjustedCellBounds);
+			gc.fillRectangle(safe(adjustedCellBounds));
 			gc.setBackground(originalBg);
 		}
 		else {
-			gc.fillRectangle(adjustedCellBounds);
+			gc.fillRectangle(safe(adjustedCellBounds));
 		}
 		
 		Rectangle interiorBounds = getInteriorBounds(adjustedCellBounds);
@@ -95,12 +97,12 @@ public class PaddingDecorator extends CellPainterWrapper {
 	}
 	
 	@Override
-	public ICellPainter getCellPainterAt(int x, int y, ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
+	public ICellPainter getCellPainterAt(long x, long y, ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
 		//need to take the alignment into account
 		IStyle cellStyle = CellStyleUtil.getCellStyle(cell, configRegistry);
 		
 		HorizontalAlignment horizontalAlignment = cellStyle.getAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT);
-		int horizontalAlignmentPadding = 0;
+		long horizontalAlignmentPadding = 0;
 		switch (horizontalAlignment) {
 			case LEFT: horizontalAlignmentPadding = leftPadding;
 						break;
@@ -109,7 +111,7 @@ public class PaddingDecorator extends CellPainterWrapper {
 		}
 		
 		VerticalAlignmentEnum verticalAlignment = cellStyle.getAttributeValue(CellStyleAttributes.VERTICAL_ALIGNMENT);
-		int verticalAlignmentPadding = 0;
+		long verticalAlignmentPadding = 0;
 		switch (verticalAlignment) {
 			case TOP: verticalAlignmentPadding = topPadding;
 						break;

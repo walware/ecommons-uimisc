@@ -17,9 +17,9 @@ public class FreezeColumnStrategy implements IFreezeCoordinatesProvider {
 
 	private final FreezeLayer freezeLayer;
 	
-	private final int columnPosition;
+	private final long columnPosition;
 
-	public FreezeColumnStrategy(FreezeLayer freezeLayer, int columnPosition) {
+	public FreezeColumnStrategy(FreezeLayer freezeLayer, long columnPosition) {
 		this.freezeLayer = freezeLayer;
 		this.columnPosition = columnPosition;
 	}

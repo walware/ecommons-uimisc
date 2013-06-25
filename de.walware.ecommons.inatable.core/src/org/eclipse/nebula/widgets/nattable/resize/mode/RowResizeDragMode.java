@@ -10,21 +10,24 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.resize.mode;
 
+import static org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils.check;
+
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.coordinate.Point;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
 import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IDragMode;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeDetectUtil;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Point;
+
 
 /**
  * Drag mode that will implement the row resizing process.
@@ -33,7 +36,7 @@ public class RowResizeDragMode implements IDragMode {
 	
 	private static final int DEFAULT_ROW_HEIGHT_MINIMUM = 18;
 	
-	private int gridRowPositionToResize;
+	private long gridRowPositionToResize;
 	private int originalRowHeight;
 	private int startY;
 	private int currentY;
@@ -46,7 +49,7 @@ public class RowResizeDragMode implements IDragMode {
 		gridRowPositionToResize = 
 		    CellEdgeDetectUtil.getRowPositionToResize(natTable, new Point(event.x, event.y));
 		if (gridRowPositionToResize > 0) {
-		    gridRowStartY = natTable.getStartYOfRowPosition(gridRowPositionToResize);
+		    gridRowStartY = check(natTable.getStartYOfRowPosition(gridRowPositionToResize));
 		    originalRowHeight = natTable.getRowHeightByPosition(gridRowPositionToResize);
 		    startY = event.y;
 	        natTable.addOverlayPainter(overlayPainter);
@@ -61,20 +64,20 @@ public class RowResizeDragMode implements IDragMode {
         if (currentY < gridRowStartY + getRowHeightMinimum()) {
             currentY = gridRowStartY + getRowHeightMinimum();
         } else {
-	    	int overlayExtent = RowResizeOverlayPainter.ROW_RESIZE_OVERLAY_HEIGHT / 2;
+	    	long overlayExtent = RowResizeOverlayPainter.ROW_RESIZE_OVERLAY_HEIGHT / 2;
 		    
-	    	Set<Integer> rowsToRepaint = new HashSet<Integer>();
+	    	Set<Long> rowsToRepaint = new HashSet<Long>();
 	    	
-	    	rowsToRepaint.add(Integer.valueOf(natTable.getRowPositionByY(currentY - overlayExtent)));
-	    	rowsToRepaint.add(Integer.valueOf(natTable.getRowPositionByY(currentY + overlayExtent)));
+	    	rowsToRepaint.add(Long.valueOf(natTable.getRowPositionByY(currentY - overlayExtent)));
+	    	rowsToRepaint.add(Long.valueOf(natTable.getRowPositionByY(currentY + overlayExtent)));
 	    	
 	    	if (lastY >= 0) {
-		    	rowsToRepaint.add(Integer.valueOf(natTable.getRowPositionByY(lastY - overlayExtent)));
-		    	rowsToRepaint.add(Integer.valueOf(natTable.getRowPositionByY(lastY + overlayExtent)));
+		    	rowsToRepaint.add(Long.valueOf(natTable.getRowPositionByY(lastY - overlayExtent)));
+		    	rowsToRepaint.add(Long.valueOf(natTable.getRowPositionByY(lastY + overlayExtent)));
 	    	}
 	    	
-	    	for (Integer rowToRepaint : rowsToRepaint) {
-	    		natTable.repaintRow(rowToRepaint.intValue());
+	    	for (Long rowToRepaint : rowsToRepaint) {
+	    		natTable.repaintRow(rowToRepaint.longValue());
 	    	}
 	        
 	        lastY = currentY;
@@ -105,7 +108,7 @@ public class RowResizeDragMode implements IDragMode {
 	    public void paintOverlay(GC gc, ILayer layer) {
 	        Color originalBackgroundColor = gc.getBackground();
 	        gc.setBackground(GUIHelper.COLOR_DARK_GRAY);
-	        gc.fillRectangle(0, currentY - (ROW_RESIZE_OVERLAY_HEIGHT / 2), layer.getWidth(), ROW_RESIZE_OVERLAY_HEIGHT);
+	        gc.fillRectangle(0, currentY - (ROW_RESIZE_OVERLAY_HEIGHT / 2), check(layer.getWidth()), ROW_RESIZE_OVERLAY_HEIGHT);
 	        gc.setBackground(originalBackgroundColor);
 	    }
 	}

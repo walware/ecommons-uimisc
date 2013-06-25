@@ -27,21 +27,21 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
 
 	private Collection<Range> beforeFromColumnPositionRanges;
 
-	private int beforeToColumnPosition;
+	private long beforeToColumnPosition;
 	private boolean reorderToLeftEdge;
 
-	public ColumnReorderEvent(ILayer layer, int beforeFromColumnPosition, int beforeToColumnPosition, boolean reorderToLeftEdge) {
-		this(layer, Arrays.asList(new Integer[] { Integer.valueOf(beforeFromColumnPosition) }), beforeToColumnPosition, reorderToLeftEdge);
+	public ColumnReorderEvent(ILayer layer, long beforeFromColumnPosition, long beforeToColumnPosition, boolean reorderToLeftEdge) {
+		this(layer, Arrays.asList(new Long[] { Long.valueOf(beforeFromColumnPosition) }), beforeToColumnPosition, reorderToLeftEdge);
 	}
 
-	public ColumnReorderEvent(ILayer layer, List<Integer> beforeFromColumnPositions, int beforeToColumnPosition, boolean reorderToLeftEdge) {
+	public ColumnReorderEvent(ILayer layer, List<Long> beforeFromColumnPositions, long beforeToColumnPosition, boolean reorderToLeftEdge) {
 		super(layer);
 		this.beforeFromColumnPositionRanges = PositionUtil.getRanges(beforeFromColumnPositions);
 		this.reorderToLeftEdge = reorderToLeftEdge;
 		this.beforeToColumnPosition = beforeToColumnPosition;
 
-		List<Integer> allColumnPositions = new ArrayList<Integer>(beforeFromColumnPositions);
-		allColumnPositions.add(Integer.valueOf(beforeToColumnPosition));
+		List<Long> allColumnPositions = new ArrayList<Long>(beforeFromColumnPositions);
+		allColumnPositions.add(Long.valueOf(beforeToColumnPosition));
 		setColumnPositionRanges(PositionUtil.getRanges(allColumnPositions));
 	}
 
@@ -60,7 +60,7 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
 		return beforeFromColumnPositionRanges;
 	}
 
-	public int getBeforeToColumnPosition() {
+	public long getBeforeToColumnPosition() {
 		return beforeToColumnPosition;
 	}
 	
@@ -74,7 +74,7 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
 
 		Collection<Range> beforeFromColumnPositionRanges = getBeforeFromColumnPositionRanges();
 
-		int afterAddColumnPosition = beforeToColumnPosition;
+		long afterAddColumnPosition = beforeToColumnPosition;
 		for (Range beforeFromColumnPositionRange : beforeFromColumnPositionRanges) {
 			if (beforeFromColumnPositionRange.start < beforeToColumnPosition) {
 				afterAddColumnPosition -= Math.min(beforeFromColumnPositionRange.end, beforeToColumnPosition) - beforeFromColumnPositionRange.start;
@@ -82,14 +82,14 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
 				break;
 			}
 		}
-		int cumulativeAddSize = 0;
+		long cumulativeAddSize = 0;
 		for (Range beforeFromColumnPositionRange : beforeFromColumnPositionRanges) {
 			cumulativeAddSize += beforeFromColumnPositionRange.size();
 		}
 
-		int offset = 0;
+		long offset = 0;
 		for (Range beforeFromColumnPositionRange : beforeFromColumnPositionRanges) {
-			int afterDeleteColumnPosition = beforeFromColumnPositionRange.start - offset;
+			long afterDeleteColumnPosition = beforeFromColumnPositionRange.start - offset;
 			if (afterAddColumnPosition < afterDeleteColumnPosition) {
 				afterDeleteColumnPosition += cumulativeAddSize;
 			}
@@ -99,7 +99,7 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
 		Range beforeAddRange = new Range(beforeToColumnPosition, beforeToColumnPosition);
 		offset = 0;
 		for (Range beforeFromColumnPositionRange : beforeFromColumnPositionRanges) {
-			int size = beforeFromColumnPositionRange.size();
+			long size = beforeFromColumnPositionRange.size();
 			columnDiffs.add(new StructuralDiff(DiffTypeEnum.ADD, beforeAddRange, new Range(afterAddColumnPosition + offset, afterAddColumnPosition + offset + size)));
 			offset += size;
 		}

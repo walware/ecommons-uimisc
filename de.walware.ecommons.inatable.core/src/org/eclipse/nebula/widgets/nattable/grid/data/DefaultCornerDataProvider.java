@@ -23,19 +23,19 @@ public class DefaultCornerDataProvider implements IDataProvider {
 		this.rowHeaderDataProvider = rowHeaderDataProvider;
 	}
 	
-	public int getColumnCount() {
+	public long getColumnCount() {
 		return rowHeaderDataProvider.getColumnCount();
 	}
 
-	public int getRowCount() {
+	public long getRowCount() {
 		return columnHeaderDataProvider.getRowCount();
 	}
 
-	public Object getDataValue(int columnIndex, int rowIndex) {
+	public Object getDataValue(long columnIndex, long rowIndex) {
 		return ""; //$NON-NLS-1$
 	}
 	
-	public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
+	public void setDataValue(long columnIndex, long rowIndex, Object newValue) {
 		throw new UnsupportedOperationException();
 	}
 

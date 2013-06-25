@@ -28,7 +28,7 @@ public class RowReorderStartCommandHandler extends AbstractLayerCommandHandler<R
 
 	@Override
 	protected boolean doCommand(RowReorderStartCommand command) {
-		int fromRowPosition = command.getFromRowPosition();
+		long fromRowPosition = command.getFromRowPosition();
 		
 		rowReorderLayer.setReorderFromRowPosition(fromRowPosition);
 		

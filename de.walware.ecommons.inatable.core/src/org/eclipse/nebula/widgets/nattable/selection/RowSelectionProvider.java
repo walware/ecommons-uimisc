@@ -136,20 +136,20 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
 			selectionLayer.clear();
 			if (!selection.isEmpty()) {
     			List<T> rowObjects = ((IStructuredSelection) selection).toList();
-    			Set<Integer> rowPositions = new HashSet<Integer>();
+    			Set<Long> rowPositions = new HashSet<Long>();
     			for (T rowObject : rowObjects) {
-    				int rowIndex = rowDataProvider.indexOfRowObject(rowObject);
-    				int rowPosition = selectionLayer.getRowPositionByIndex(rowIndex);
-    				rowPositions.add(Integer.valueOf(rowPosition));
+    				long rowIndex = rowDataProvider.indexOfRowObject(rowObject);
+    				long rowPosition = selectionLayer.getRowPositionByIndex(rowIndex);
+    				rowPositions.add(Long.valueOf(rowPosition));
     			}
-				int intValue = -1;
+				long intValue = -1;
 				if (!rowPositions.isEmpty()) {
-					Integer max = Collections.max(rowPositions);
-					intValue = max.intValue();
+					Long max = Collections.max(rowPositions);
+					intValue = max.longValue();
 				}
 				if (intValue >= 0) {
 					selectionLayer.doCommand(new SelectRowsCommand(selectionLayer,
-							0, ObjectUtils.asIntArray(rowPositions), SWT.NONE, intValue));
+							0, ObjectUtils.asLongArray(rowPositions), SWT.NONE, intValue));
 				}
 			}
 		}
@@ -177,13 +177,16 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
 
 		if (selectionLayer != null) {
 			if (fullySelectedRowsOnly) {
-				for (int rowPosition : selectionLayer.getFullySelectedRowPositions()) {
-					addToSelection(rows, rowPosition, selectionLayer, rowDataProvider);
+				List<Range> ranges = selectionLayer.getFullySelectedRowPositions();
+				for (Range range : ranges) {
+					for (long rowPosition = range.start; rowPosition < range.end; rowPosition++) {
+						addToSelection(rows, rowPosition, selectionLayer, rowDataProvider);
+					}
 				}
 			} else {
-				Set<Range> rowRanges = selectionLayer.getSelectedRowPositions();
-				for (Range rowRange : rowRanges) {
-					for (int rowPosition = rowRange.start; rowPosition < rowRange.end; rowPosition++) {
+				List<Range> ranges = selectionLayer.getSelectedRowPositions();
+				for (Range range : ranges) {
+					for (long rowPosition = range.start; rowPosition < range.end; rowPosition++) {
 						addToSelection(rows, rowPosition, selectionLayer, rowDataProvider);
 					}
 				}
@@ -198,8 +201,8 @@ public class RowSelectionProvider<T> implements ISelectionProvider, ILayerListen
 	}
 	
 	@SuppressWarnings("rawtypes")
-	private static void addToSelection(List<RowObjectIndexHolder<Object>> rows, int rowPosition, SelectionLayer selectionLayer, IRowDataProvider rowDataProvider) {
-		int rowIndex = selectionLayer.getRowIndexByPosition(rowPosition);
+	private static void addToSelection(List<RowObjectIndexHolder<Object>> rows, long rowPosition, SelectionLayer selectionLayer, IRowDataProvider rowDataProvider) {
+		long rowIndex = selectionLayer.getRowIndexByPosition(rowPosition);
 		if (rowIndex >= 0 && rowIndex < rowDataProvider.getRowCount()) {
 			Object rowObject = rowDataProvider.getRowObject(rowIndex);
 			rows.add(new RowObjectIndexHolder<Object>(rowIndex, rowObject));

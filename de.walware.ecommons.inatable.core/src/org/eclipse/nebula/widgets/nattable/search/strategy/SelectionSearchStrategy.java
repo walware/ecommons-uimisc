@@ -45,12 +45,11 @@ public class SelectionSearchStrategy extends AbstractSearchStrategy {
 		return coordinate;
 	}
 
-	protected PositionCoordinate[] getSelectedCells(SelectionLayer selectionLayer) {
-		PositionCoordinate[] selectedCells = null;
+	protected List<PositionCoordinate> getSelectedCells(SelectionLayer selectionLayer) {
+		List<PositionCoordinate> selectedCells = null;
 		if (searchDirection.equals(ISearchDirection.SEARCH_BACKWARDS)) {
-			List<PositionCoordinate> coordinates = Arrays.asList(selectionLayer.getSelectedCellPositions());
-			Collections.reverse(coordinates);
-			selectedCells = coordinates.toArray(new PositionCoordinate[0]);
+			selectedCells = selectionLayer.getSelectedCellPositions();
+			Collections.reverse(selectedCells);
 		} else {
 			selectedCells = selectionLayer.getSelectedCellPositions();
 		}

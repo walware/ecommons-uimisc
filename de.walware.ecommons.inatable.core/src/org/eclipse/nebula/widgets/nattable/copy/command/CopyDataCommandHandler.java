@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.copy.command;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -83,10 +82,10 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
 	
 	@Override
 	public boolean doCommand(CopyDataToClipboardCommand command) {
-		ISerializer serializer = copyFormattedText ?
-				new CopyFormattedTextToClipboardSerializer(assembleCopiedDataStructure(), command) :
-				new CopyDataToClipboardSerializer(assembleCopiedDataStructure(), command);
-		serializer.serialize();
+//		ISerializer serializer = copyFormattedText ?
+//				new CopyFormattedTextToClipboardSerializer(assembleCopiedDataStructure(), command) :
+//				new CopyDataToClipboardSerializer(assembleCopiedDataStructure(), command);
+//		serializer.serialize();
 		return true;
 	}
 
@@ -94,97 +93,97 @@ public class CopyDataCommandHandler extends AbstractLayerCommandHandler<CopyData
 		return CopyDataToClipboardCommand.class;
 	}
 
-	/**
-	 * Collects and assembles the selected data that should be copied to the clipboard.
-	 * @return A two dimensional array containing the selected cells to copy to the clipboard.
-	 * 			The first level of this array represent the row positions of the cells, while the
-	 * 			second level contains the cells itself based on the column position.
-	 */
-	protected ILayerCell[][] assembleCopiedDataStructure() {
-		final Set<Range> selectedRows = selectionLayer.getSelectedRowPositions();
-		final ILayerCell[][] copiedCells = assembleColumnHeaders();
-		
-		//cleanup the row positions to copy
-		//this is needed because taking only the Range.start into account leads to overriding
-		//values in the array instead of adding if there are multiple Ranges returned
-		List<Integer> selectedRowPositions = new ArrayList<Integer>();
-		for (Range range : selectedRows) {
-			for (int rowPosition = range.start; rowPosition < range.end; rowPosition++) {
-				selectedRowPositions.add(rowPosition);
-			}
-		}
-		//ensure the correct order as a Set is not ordered at all and we want to paste the values
-		//in the same order we copied them.
-		Collections.sort(selectedRowPositions);
-		
-		final int rowOffset = columnHeaderDataLayer != null ? columnHeaderDataLayer.getRowCount() : 0;
-		for (int i = 0; i < selectedRowPositions.size(); i++) {
-			Integer rowPos = selectedRowPositions.get(i);
-			copiedCells[i+rowOffset] = assembleBody(rowPos);
-		}
-
-		return copiedCells;
-	}
-
-	/**
-	 * Creates the two dimensional array whose dimensions are calculated based on the selection
-	 * within the {@link SelectionLayer} and the configured column and row headers.
-	 * If there is a column header configured for this handler, the column header information
-	 * will be added to the resulting array in here. If there is no column header configured
-	 * an empty array with the matching dimensions will be returned.
-	 * @return A two dimensional array with the dimensions to store the selected data to copy
-	 * 			to the clipboard. Will also contain the column header information for the copy
-	 * 			operation if there is one configured.
-	 */
-	protected ILayerCell[][] assembleColumnHeaders() {
-		// Add offset to rows, remember they need to include the column header rows
-		final int rowOffset = columnHeaderDataLayer != null ? columnHeaderDataLayer.getRowCount() : 0;
-		final int columnOffset = rowHeaderDataLayer != null ? rowHeaderDataLayer.getColumnCount() : 0;
-
-		final ILayerCell[][] copiedCells = new ILayerCell[selectionLayer.getSelectedRowCount() + rowOffset][1];
-		
-		if (columnHeaderDataLayer != null) {
-			int[] selectedColumnPositions = selectionLayer.getSelectedColumnPositions();
-			for (int i = 0; i < rowOffset; i++) {
-				final ILayerCell[] cells = new ILayerCell[selectedColumnPositions.length + columnOffset];
-				for (int columnPosition = 0; columnPosition < selectedColumnPositions.length; columnPosition++) {
-					// Pad the width of the vertical layer
-					cells[columnPosition + columnOffset] = 
-							columnHeaderDataLayer.getCellByPosition(selectedColumnPositions[columnPosition], i);
-				}
-				
-				copiedCells[i] = cells;
-			}
-		}
-		
-		return copiedCells;
-	}
-	
-	/**
-	 * Collects and assembles the selected data per row position that should be copied to the clipboard.
-	 * If there is a row header layer configured for this handler, the row header cells of the selected
-	 * row position are also added to the resulting array.
-	 * @param currentRowPosition The row position of which the selected cells should be collected.
-	 * @return An array containing the selected cells that should be copied to the clipboard. 
-	 */
-	protected ILayerCell[] assembleBody(int currentRowPosition) {		
-		final int[] selectedColumns = selectionLayer.getSelectedColumnPositions();
-		final int columnOffset = rowHeaderDataLayer != null ? rowHeaderDataLayer.getColumnCount() : 0;
-		final ILayerCell[] bodyCells = new ILayerCell[selectedColumns.length + columnOffset];
-		
-		if (rowHeaderDataLayer != null) {
-			for (int i = 0; i < rowHeaderDataLayer.getColumnCount(); i++) {
-				bodyCells[i] = rowHeaderDataLayer.getCellByPosition(i, currentRowPosition);
-			}
-		}
-		
-		for (int columnPosition = 0; columnPosition < selectedColumns.length; columnPosition++) {
-			final int selectedColumnPosition = selectedColumns[columnPosition];
-			if (selectionLayer.isCellPositionSelected(selectedColumnPosition, currentRowPosition)) {
-				bodyCells[columnPosition + columnOffset] = selectionLayer.getCellByPosition(selectedColumnPosition, currentRowPosition);
-			}
-		}
-		return bodyCells;
-	}
+//	/**
+//	 * Collects and assembles the selected data that should be copied to the clipboard.
+//	 * @return A two dimensional array containing the selected cells to copy to the clipboard.
+//	 * 			The first level of this array represent the row positions of the cells, while the
+//	 * 			second level contains the cells itself based on the column position.
+//	 */
+//	protected ILayerCell[][] assembleCopiedDataStructure() {
+//		final List<Range> selectedRows = selectionLayer.getSelectedRowPositions();
+//		final ILayerCell[][] copiedCells = assembleColumnHeaders();
+//		
+//		//cleanup the row positions to copy
+//		//this is needed because taking only the Range.start into account leads to overriding
+//		//values in the array instead of adding if there are multiple Ranges returned
+//		List<Long> selectedRowPositions = new ArrayList<Long>();
+//		for (Range range : selectedRows) {
+//			for (long rowPosition = range.start; rowPosition < range.end; rowPosition++) {
+//				selectedRowPositions.add(rowPosition);
+//			}
+//		}
+//		//ensure the correct order as a Set is not ordered at all and we want to paste the values
+//		//in the same order we copied them.
+//		Collections.sort(selectedRowPositions);
+//		
+//		final long rowOffset = columnHeaderDataLayer != null ? columnHeaderDataLayer.getRowCount() : 0;
+//		for (int i = 0; i < selectedRowPositions.size(); i++) {
+//			Long rowPos = selectedRowPositions.get(i);
+//			copiedCells[i+rowOffset] = assembleBody(rowPos);
+//		}
+//
+//		return copiedCells;
+//	}
+//
+//	/**
+//	 * Creates the two dimensional array whose dimensions are calculated based on the selection
+//	 * within the {@link SelectionLayer} and the configured column and row headers.
+//	 * If there is a column header configured for this handler, the column header information
+//	 * will be added to the resulting array in here. If there is no column header configured
+//	 * an empty array with the matching dimensions will be returned.
+//	 * @return A two dimensional array with the dimensions to store the selected data to copy
+//	 * 			to the clipboard. Will also contain the column header information for the copy
+//	 * 			operation if there is one configured.
+//	 */
+//	protected ILayerCell[][] assembleColumnHeaders() {
+//		// Add offset to rows, remember they need to include the column header rows
+//		final long rowOffset = columnHeaderDataLayer != null ? columnHeaderDataLayer.getRowCount() : 0;
+//		final long columnOffset = rowHeaderDataLayer != null ? rowHeaderDataLayer.getColumnCount() : 0;
+//
+//		final ILayerCell[][] copiedCells = new ILayerCell[selectionLayer.getSelectedRowCount() + rowOffset][1];
+//		
+//		if (columnHeaderDataLayer != null) {
+//			List<Range> selectedColumnPositions = selectionLayer.getSelectedColumnPositions();
+//			for (long i = 0; i < rowOffset; i++) {
+//				final ILayerCell[] cells = new ILayerCell[selectedColumnPositions.length + columnOffset];
+//				for (int columnPosition = 0; columnPosition < selectedColumnPositions.length; columnPosition++) {
+//					// Pad the width of the vertical layer
+//					cells[columnPosition + columnOffset] = 
+//							columnHeaderDataLayer.getCellByPosition(selectedColumnPositions[columnPosition], i);
+//				}
+//				
+//				copiedCells[i] = cells;
+//			}
+//		}
+//		
+//		return copiedCells;
+//	}
+//	
+//	/**
+//	 * Collects and assembles the selected data per row position that should be copied to the clipboard.
+//	 * If there is a row header layer configured for this handler, the row header cells of the selected
+//	 * row position are also added to the resulting array.
+//	 * @param currentRowPosition The row position of which the selected cells should be collected.
+//	 * @return An array containing the selected cells that should be copied to the clipboard. 
+//	 */
+//	protected ILayerCell[] assembleBody(long currentRowPosition) {		
+//		List<Range> selectedColumns = selectionLayer.getSelectedColumnPositions();
+//		final long columnOffset = rowHeaderDataLayer != null ? rowHeaderDataLayer.getColumnCount() : 0;
+//		final ILayerCell[] bodyCells = new ILayerCell[selectedColumns.length + columnOffset];
+//		
+//		if (rowHeaderDataLayer != null) {
+//			for (long i = 0; i < rowHeaderDataLayer.getColumnCount(); i++) {
+//				bodyCells[i] = rowHeaderDataLayer.getCellByPosition(i, currentRowPosition);
+//			}
+//		}
+//		
+//		for (int columnPosition = 0; columnPosition < selectedColumns.length; columnPosition++) {
+//			final long selectedColumnPosition = selectedColumns[columnPosition];
+//			if (selectionLayer.isCellPositionSelected(selectedColumnPosition, currentRowPosition)) {
+//				bodyCells[columnPosition + columnOffset] = selectionLayer.getCellByPosition(selectedColumnPosition, currentRowPosition);
+//			}
+//		}
+//		return bodyCells;
+//	}
 	
 }

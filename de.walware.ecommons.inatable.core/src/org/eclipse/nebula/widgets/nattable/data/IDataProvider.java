@@ -27,7 +27,7 @@ public interface IDataProvider {
 	 * @param rowIndex
 	 * @return the data value associated with the specified cell
 	 */
-	public Object getDataValue(int columnIndex, int rowIndex);
+	public Object getDataValue(long columnIndex, long rowIndex);
 
 	/**
 	 * Sets the value at the given column and row index. Optional operation. Should throw UnsupportedOperationException
@@ -37,10 +37,10 @@ public interface IDataProvider {
 	 * @param rowIndex
 	 * @param newValue
 	 */
-	public void setDataValue(int columnIndex, int rowIndex, Object newValue);
+	public void setDataValue(long columnIndex, long rowIndex, Object newValue);
 
-	public int getColumnCount();
+	public long getColumnCount();
 
-	public int getRowCount();
+	public long getRowCount();
 
 }

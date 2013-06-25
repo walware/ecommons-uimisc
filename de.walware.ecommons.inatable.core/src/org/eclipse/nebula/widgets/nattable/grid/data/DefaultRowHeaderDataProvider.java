@@ -20,19 +20,19 @@ public class DefaultRowHeaderDataProvider implements IDataProvider {
 		this.bodyDataProvider = bodyDataProvider;
 	}
 	
-	public int getColumnCount() {
+	public long getColumnCount() {
 		return 1;
 	}
 
-	public int getRowCount() {
+	public long getRowCount() {
 		return bodyDataProvider.getRowCount();
 	}
 
-	public Object getDataValue(int columnIndex, int rowIndex) {
-		return Integer.valueOf(rowIndex + 1);
+	public Object getDataValue(long columnIndex, long rowIndex) {
+		return Long.valueOf(rowIndex + 1);
 	}
 
-	public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
+	public void setDataValue(long columnIndex, long rowIndex, Object newValue) {
 		throw new UnsupportedOperationException();
 	}
 	

@@ -27,7 +27,7 @@ public interface ISelectionTreeListener {
 	 * @param direction
 	 * @param selectedColumnGroupEntries
 	 */
-	void itemsMoved(Direction direction, List<ColumnGroupEntry> selectedColumnGroupEntries, List<ColumnEntry> movedColumnEntries, List<List<Integer>> fromPositions, List<Integer> toPositions);
+	void itemsMoved(Direction direction, List<ColumnGroupEntry> selectedColumnGroupEntries, List<ColumnEntry> movedColumnEntries, List<List<Long>> fromPositions, List<Long> toPositions);
 
 	void itemsExpanded(ColumnGroupEntry columnGroupEntry);
 

@@ -25,14 +25,14 @@ public class MultiColumnReorderCommand implements ILayerCommand {
 	private ColumnPositionCoordinate toColumnPositionCoordinate;
 	private boolean reorderToLeftEdge;
 
-	public MultiColumnReorderCommand(ILayer layer, List<Integer> fromColumnPositions, int toColumnPosition) {
+	public MultiColumnReorderCommand(ILayer layer, List<Long> fromColumnPositions, long toColumnPosition) {
 		this(layer, fromColumnPositions, toColumnPosition < layer.getColumnCount() ? toColumnPosition : toColumnPosition - 1, toColumnPosition < layer.getColumnCount());
 	}
 	
-	public MultiColumnReorderCommand(ILayer layer, List<Integer> fromColumnPositions, int toColumnPosition, boolean reorderToLeftEdge) {
+	public MultiColumnReorderCommand(ILayer layer, List<Long> fromColumnPositions, long toColumnPosition, boolean reorderToLeftEdge) {
 		fromColumnPositionCoordinates = new ArrayList<ColumnPositionCoordinate>();
-		for (Integer fromColumnPosition : fromColumnPositions) {
-			fromColumnPositionCoordinates.add(new ColumnPositionCoordinate(layer, fromColumnPosition.intValue()));
+		for (Long fromColumnPosition : fromColumnPositions) {
+			fromColumnPositionCoordinates.add(new ColumnPositionCoordinate(layer, fromColumnPosition.longValue()));
 		}
 		
 		toColumnPositionCoordinate = new ColumnPositionCoordinate(layer, toColumnPosition);
@@ -46,15 +46,15 @@ public class MultiColumnReorderCommand implements ILayerCommand {
 		this.reorderToLeftEdge = command.reorderToLeftEdge;
 	}
 
-	public List<Integer> getFromColumnPositions() {
-		List<Integer> fromColumnPositions = new ArrayList<Integer>();
+	public List<Long> getFromColumnPositions() {
+		List<Long> fromColumnPositions = new ArrayList<Long>();
 		for (ColumnPositionCoordinate fromColumnPositionCoordinate : fromColumnPositionCoordinates) {
-			fromColumnPositions.add(Integer.valueOf(fromColumnPositionCoordinate.getColumnPosition()));
+			fromColumnPositions.add(Long.valueOf(fromColumnPositionCoordinate.getColumnPosition()));
 		}
 		return fromColumnPositions;
 	}
 
-	public int getToColumnPosition() {
+	public long getToColumnPosition() {
 		return toColumnPositionCoordinate.getColumnPosition();
 	}
 	

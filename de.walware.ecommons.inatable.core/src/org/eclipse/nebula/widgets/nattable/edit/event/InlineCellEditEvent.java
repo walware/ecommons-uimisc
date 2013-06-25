@@ -93,14 +93,14 @@ public class InlineCellEditEvent implements ILayerEvent {
 	/**
 	 * @return The column position of the cell to edit.
 	 */
-	public int getColumnPosition() {
+	public long getColumnPosition() {
 		return cellCoordinate.columnPosition;
 	}
 	
 	/**
 	 * @return The row position of the cell to edit.
 	 */
-	public int getRowPosition() {
+	public long getRowPosition() {
 		return cellCoordinate.rowPosition;
 	}
 	

@@ -14,7 +14,7 @@ import java.util.Collection;
 
 
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 
 /**
  * An event which indicates a visible change to one or more cells in the layer.

@@ -23,7 +23,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff.DiffTypeEn
 
 public class RowDeleteEvent extends RowStructuralChangeEvent {
 	
-	public RowDeleteEvent(ILayer layer, int rowPosition) {
+	public RowDeleteEvent(ILayer layer, long rowPosition) {
 		this(layer, new Range(rowPosition));
 	}
 	
@@ -54,10 +54,10 @@ public class RowDeleteEvent extends RowStructuralChangeEvent {
 		return true;
 	}
 	
-	public Collection<Integer> getDeletedRowIndexes() {
-		Set<Integer> rowIndexes = new HashSet<Integer>();
+	public Collection<Long> getDeletedRowIndexes() {
+		Set<Long> rowIndexes = new HashSet<Long>();
 		for (Range range : getRowPositionRanges()) {
-			for (int i = range.start; i < range.end; i++) {
+			for (long i = range.start; i < range.end; i++) {
 				rowIndexes.add(getLayer().getRowIndexByPosition(i));
 			}
 		}

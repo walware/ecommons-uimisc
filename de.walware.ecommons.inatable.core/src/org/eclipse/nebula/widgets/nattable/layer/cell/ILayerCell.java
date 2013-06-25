@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.layer.cell;
 
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
@@ -20,7 +20,7 @@ import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 public interface ILayerCell {
 	
 	
-	int NO_INDEX = -1;
+	long NO_INDEX = -1;
 	
 	
 	ILayer getLayer();
@@ -28,30 +28,30 @@ public interface ILayerCell {
 	LayerCellDim getDim(Orientation orientation);
 	
 	
-	public int getOriginColumnPosition();
+	long getOriginColumnPosition();
 	
-	public int getOriginRowPosition();
+	long getOriginRowPosition();
 	
-	public int getColumnPosition();
+	long getColumnPosition();
 	
-	public int getRowPosition();
+	long getRowPosition();
 	
-	public int getColumnIndex();
+	long getColumnIndex();
 	
-	public int getRowIndex();
+	long getRowIndex();
 	
-	public int getColumnSpan();
+	long getColumnSpan();
 	
-	public int getRowSpan();
+	long getRowSpan();
 	
-	public boolean isSpannedCell();
-
-	public String getDisplayMode();
-
-	public LabelStack getConfigLabels();
-
-	public Object getDataValue();
-
-	public Rectangle getBounds();
-
+	boolean isSpannedCell();
+	
+	String getDisplayMode();
+	
+	LabelStack getConfigLabels();
+	
+	Object getDataValue();
+	
+	Rectangle getBounds();
+	
 }

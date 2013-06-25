@@ -10,17 +10,18 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.ui.action;
 
-import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
-import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
-import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.Rectangle;
+
+import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 
 public class CellDragMode implements IDragMode {
 	
@@ -46,14 +47,14 @@ public class CellDragMode implements IDragMode {
 	public void mouseMove(NatTable natTable, MouseEvent event) {
 		currentEvent = event;
 		
-		natTable.redraw(0, 0, natTable.getWidth(), natTable.getHeight(), false);
+		natTable.redraw();
 	}
 
 	public void mouseUp(NatTable natTable, MouseEvent event) {
 		natTable.removeOverlayPainter(cellImageOverlayPainter);
 		cellImage.dispose();
 		
-		natTable.redraw(0, 0, natTable.getWidth(), natTable.getHeight(), false);
+		natTable.redraw();
 	}
 	
 	protected MouseEvent getInitialEvent() {
@@ -65,20 +66,22 @@ public class CellDragMode implements IDragMode {
 	}
 	
 	private void setCellImage(NatTable natTable) {
-		int columnPosition = natTable.getColumnPositionByX(currentEvent.x);
-		int rowPosition = natTable.getRowPositionByY(currentEvent.y);
+		long columnPosition = natTable.getColumnPositionByX(currentEvent.x);
+		long rowPosition = natTable.getRowPositionByY(currentEvent.y);
 		ILayerCell cell = natTable.getCellByPosition(columnPosition, rowPosition);
 		
 		Rectangle cellBounds = cell.getBounds();
-		xOffset = currentEvent.x - cellBounds.x;
-		yOffset = currentEvent.y - cellBounds.y;
-		Image image = new Image(natTable.getDisplay(), cellBounds.width, cellBounds.height);
+		final int width = (int) Math.min(cellBounds.width, 0x1fff);
+		final int height = (int) Math.min(cellBounds.height, 0x1fff);
+		xOffset = (int) Math.max(currentEvent.x - cellBounds.x, 0);
+		yOffset = (int) Math.max(currentEvent.y - cellBounds.y, 0);
+		Image image = new Image(natTable.getDisplay(), width, height);
 		
 		GC gc = new GC(image);
 		IConfigRegistry configRegistry = natTable.getConfigRegistry();
 		ICellPainter cellPainter = cell.getLayer().getCellPainter(columnPosition, rowPosition, cell, configRegistry);
 		if (cellPainter != null) {
-			cellPainter.paintCell(cell, gc, new Rectangle(0, 0, cellBounds.width, cellBounds.height), configRegistry);
+			cellPainter.paintCell(cell, gc, new Rectangle(0, 0, width, height), configRegistry);
 		}
 		gc.dispose();
 

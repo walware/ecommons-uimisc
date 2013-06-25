@@ -31,5 +31,5 @@ public interface IComboBoxDataProvider {
 	 * 			be filled.
 	 * @return List of values that should be used to fill the values of the {@link ComboBoxCellEditor}
 	 */
-	public List<?> getValues(int columnIndex, int rowIndex);
+	public List<?> getValues(long columnIndex, long rowIndex);
 }

@@ -10,14 +10,14 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.painter.cell;
 
+import org.eclipse.swt.graphics.Image;
+
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Rectangle;
+
 
 public class CheckBoxPainter extends ImagePainter {
 
@@ -35,21 +35,12 @@ public class CheckBoxPainter extends ImagePainter {
 		this.uncheckedImg = uncheckedImg;
 	}
 
-	public int getPreferredWidth(boolean checked) {
+	public long getPreferredWidth(boolean checked) {
 		return checked ? checkedImg.getBounds().width : uncheckedImg.getBounds().width;
 	}
 
-	public int getPreferredHeight(boolean checked) {
+	public long getPreferredHeight(boolean checked) {
 		return checked ? checkedImg.getBounds().height : uncheckedImg.getBounds().height;
-	}
-
-	public void paintIconImage(GC gc, Rectangle rectangle, int yOffset, boolean checked) {
-		Image checkBoxImage = checked ? checkedImg : uncheckedImg;
-
-		// Center image
-		int x = rectangle.x + (rectangle.width / 2) - (checkBoxImage.getBounds().width/2);
-
-		gc.drawImage(checkBoxImage, x, rectangle.y + yOffset);
 	}
 
 	@Override

@@ -20,7 +20,7 @@ public abstract class AbstractRowCommand implements ILayerCommand {
 	private RowPositionCoordinate rowPositionCoordinate;
 	
 	
-	protected AbstractRowCommand(ILayer layer, int rowPosition) {
+	protected AbstractRowCommand(ILayer layer, long rowPosition) {
 		rowPositionCoordinate = new RowPositionCoordinate(layer, rowPosition);
 	}
 	
@@ -29,7 +29,7 @@ public abstract class AbstractRowCommand implements ILayerCommand {
 	}
 	
 	
-	public int getRowPosition() {
+	public long getRowPosition() {
 		return rowPositionCoordinate.getRowPosition();
 	}
 	

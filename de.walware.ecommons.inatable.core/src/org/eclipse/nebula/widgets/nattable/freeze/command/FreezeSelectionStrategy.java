@@ -45,10 +45,10 @@ public class FreezeSelectionStrategy implements IFreezeCoordinatesProvider {
 				checkPosition(VERTICAL, selectionAnchor.rowPosition) );
 	}
 	
-	private int checkPosition(final Orientation orientation, final int maxPosition) {
+	private long checkPosition(final Orientation orientation, final long maxPosition) {
 		final IViewportDim dim = viewportLayer.getDim(orientation);
 		if (dim.getSize() > 0) {
-			final int position = dim.getOriginPosition();
+			final long position = dim.getOriginPosition();
 			if (position < maxPosition) {
 				return position;
 			}

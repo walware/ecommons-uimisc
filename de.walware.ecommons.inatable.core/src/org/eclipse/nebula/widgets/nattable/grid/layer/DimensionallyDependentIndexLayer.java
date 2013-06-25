@@ -63,13 +63,13 @@ public class DimensionallyDependentIndexLayer extends AbstractTransformLayer {
 		
 		
 		@Override
-		public int getPositionIndex(final int refPosition, final int position) {
+		public long getPositionIndex(final long refPosition, final long position) {
 			return this.underlyingDim.getPositionIndex(refPosition, position);
 		}
 		
 		
 		@Override
-		public int localToUnderlyingPosition(final int refPosition, final int position) {
+		public long localToUnderlyingPosition(final long refPosition, final long position) {
 			if (this.underlyingDim == getBaseDim()) {
 				return position;
 			}
@@ -78,8 +78,8 @@ public class DimensionallyDependentIndexLayer extends AbstractTransformLayer {
 		}
 		
 		@Override
-		public int underlyingToLocalPosition(final int refPosition,
-				final int underlyingPosition) {
+		public long underlyingToLocalPosition(final long refPosition,
+				final long underlyingPosition) {
 			if (this.underlyingDim == getBaseDim()) {
 				return underlyingPosition;
 			}
@@ -88,13 +88,13 @@ public class DimensionallyDependentIndexLayer extends AbstractTransformLayer {
 				throw new IndexOutOfBoundsException("refPosition: " + refPosition); //$NON-NLS-1$
 			}
 			
-			final int index = getBaseDim().getPositionIndex(underlyingPosition,
+			final long index = getBaseDim().getPositionIndex(underlyingPosition,
 					underlyingPosition );
 			if (this.underlyingDim.getLayer() instanceof IUniqueIndexLayer) {
 				return getPositionByIndex((IUniqueIndexLayer) this.underlyingDim.getLayer(), index);
 			}
-//				final int count = getPositionCount();
-//				for (int position = 0; position < count; position++) {
+//				final long count = getPositionCount();
+//				for (long position = 0; position < count; position++) {
 //					if (getPositionIndex(refPosition, position) == index) {
 //						return position;
 //					}
@@ -103,29 +103,29 @@ public class DimensionallyDependentIndexLayer extends AbstractTransformLayer {
 		}
 		
 		@Override
-		public int underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
-				final int underlyingPosition) {
+		public long underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
+				final long underlyingPosition) {
 			if (sourceUnderlyingLayer != getBaseDim().getLayer()) {
 				throw new IllegalArgumentException("underlyingLayer"); //$NON-NLS-1$
 			}
 			
-			final int index = getBaseDim().getPositionIndex(underlyingPosition,
+			final long index = getBaseDim().getPositionIndex(underlyingPosition,
 					underlyingPosition );
 			
-			final int count = getPositionCount();
-			for (int position = 0; position < count; position++) {
+			final long count = getPositionCount();
+			for (long position = 0; position < count; position++) {
 				if (getPositionIndex(position, position) == index) {
 					return position;
 				}
 			}
-			return Integer.MIN_VALUE;
+			return Long.MIN_VALUE;
 		}
 		
-		private int searchIndex(final ILayerDim dim, final int refPosition, final int index) {
+		private long searchIndex(final ILayerDim dim, final long refPosition, final long index) {
 			final Collection<ILayer> underlyingLayers = dim.getUnderlyingLayersByPosition(refPosition);
-			final int underlyingRefPosition = dim.localToUnderlyingPosition(refPosition, refPosition);
+			final long underlyingRefPosition = dim.localToUnderlyingPosition(refPosition, refPosition);
 			for (final ILayer underlyingLayer : underlyingLayers) {
-				final int underlyingPosition;
+				final long underlyingPosition;
 				if (underlyingLayer instanceof IUniqueIndexLayer) {
 					underlyingPosition = getPositionByIndex((IUniqueIndexLayer) underlyingLayer, index);
 				}
@@ -133,46 +133,46 @@ public class DimensionallyDependentIndexLayer extends AbstractTransformLayer {
 					underlyingPosition = searchIndex(underlyingLayer.getDim(getOrientation()),
 							underlyingRefPosition, index );
 				}
-				if (underlyingPosition != Integer.MIN_VALUE) {
-					final int position = dim.underlyingToLocalPosition(refPosition, underlyingPosition);
-					if (position != Integer.MIN_VALUE) {
+				if (underlyingPosition != Long.MIN_VALUE) {
+					final long position = dim.underlyingToLocalPosition(refPosition, underlyingPosition);
+					if (position != Long.MIN_VALUE) {
 						return position;
 					}
 				}
 			}
-			return Integer.MIN_VALUE;
+			return Long.MIN_VALUE;
 		}
 		
-		private int getPositionByIndex(final IUniqueIndexLayer indexLayer, final int index) {
+		private long getPositionByIndex(final IUniqueIndexLayer indexLayer, final long index) {
 			return (getOrientation() == HORIZONTAL) ?
 					indexLayer.getColumnPositionByIndex(index) :
 					indexLayer.getRowPositionByIndex(index);
 		}
 		
 		@Override
-		public Collection<ILayer> getUnderlyingLayersByPosition(final int position) {
+		public Collection<ILayer> getUnderlyingLayersByPosition(final long position) {
 			return Collections.<ILayer>singletonList(getLayer().getBaseLayer());
 		}
 		
 		
 		@Override
-		public int getPositionByPixel(final int pixel) {
+		public long getPositionByPixel(final long pixel) {
 			return this.underlyingDim.getPositionByPixel(pixel);
 		}
 		
 		@Override
-		public int getPositionStart(final int refPosition, final int position) {
+		public long getPositionStart(final long refPosition, final long position) {
 			return this.underlyingDim.getPositionStart(refPosition, position);
 		}
 		
 		@Override
-		public int getPositionSize(final int refPosition, final int position) {
+		public int getPositionSize(final long refPosition, final long position) {
 			return this.underlyingDim.getPositionSize(refPosition, position);
 		}
 		
 		
 		@Override
-		public boolean isPositionResizable(final int position) {
+		public boolean isPositionResizable(final long position) {
 			return this.underlyingDim.isPositionResizable(position);
 		}
 		

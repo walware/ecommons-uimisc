@@ -32,7 +32,7 @@ public class CellOverrideLabelAccumulator<T> extends AbstractOverrider {
 		this.dataProvider = dataProvider;
 	}
 
-	public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition) {
+	public void accumulateConfigLabels(LabelStack configLabels, long columnPosition, long rowPosition) {
 		List<String> cellLabels = getConfigLabels(dataProvider.getDataValue(columnPosition, rowPosition), columnPosition);
 		if (cellLabels == null) {
 			return;
@@ -42,7 +42,7 @@ public class CellOverrideLabelAccumulator<T> extends AbstractOverrider {
 		}
 	}
 
-	protected List<String> getConfigLabels(Object value, int col) {
+	protected List<String> getConfigLabels(Object value, long col) {
 		CellValueOverrideKey key = new CellValueOverrideKey(value, col);
 		return getOverrides(key);
 	}
@@ -53,7 +53,7 @@ public class CellOverrideLabelAccumulator<T> extends AbstractOverrider {
 	 * @param col column index of the cell
 	 * @param configLabel to apply. Styles for the cell have to be registered against this label.
 	 */
-	public void registerOverride(Object cellValue, int col, String configLabel) {
+	public void registerOverride(Object cellValue, long col, String configLabel) {
 		registerOverrides(new CellValueOverrideKey(cellValue, col), configLabel);
 	}
 }
@@ -66,9 +66,9 @@ class CellValueOverrideKey implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private final Object cellValue;
-	private final int col;
+	private final long col;
 	
-	CellValueOverrideKey(Object cellValue, int col) {
+	CellValueOverrideKey(Object cellValue, long col) {
 		if (cellValue != null) {
 			throw new NullPointerException();
 		}
@@ -79,7 +79,9 @@ class CellValueOverrideKey implements Serializable {
 	
 	@Override
 	public int hashCode() {
-		return cellValue.hashCode() + (col * 19);
+		int h = (int) (col ^ (col >>> 32));
+		h ^= (h >>> 7);
+		return cellValue.hashCode() ^ h;
 	}
 	
 	@Override

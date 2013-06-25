@@ -27,7 +27,7 @@ public class MultiColumnResizeCommand extends AbstractMultiColumnCommand {
 	/**
 	 * All columns are being resized to the same size e.g. during a drag resize
 	 */
-	public MultiColumnResizeCommand(ILayer layer, int[] columnPositions, int commonColumnWidth) {
+	public MultiColumnResizeCommand(ILayer layer, long[] columnPositions, int commonColumnWidth) {
 		super(layer, columnPositions);
 		this.commonColumnWidth = commonColumnWidth;
 	}
@@ -35,7 +35,7 @@ public class MultiColumnResizeCommand extends AbstractMultiColumnCommand {
 	/**
 	 * Each column is being resized to a different size e.g. during auto resize
 	 */
-	public MultiColumnResizeCommand(ILayer layer, int[] columnPositions, int[] columnWidths) {
+	public MultiColumnResizeCommand(ILayer layer, long[] columnPositions, int[] columnWidths) {
 		super(layer, columnPositions);
 		for (int i = 0; i < columnPositions.length; i++) {
 			colPositionToWidth.put(new ColumnPositionCoordinate(layer, columnPositions[i]), Integer.valueOf(columnWidths[i]));
@@ -48,11 +48,11 @@ public class MultiColumnResizeCommand extends AbstractMultiColumnCommand {
 		this.colPositionToWidth = new HashMap<ColumnPositionCoordinate, Integer>(command.colPositionToWidth);
 	}
 
-	public int getCommonColumnWidth() {
+	public long getCommonColumnWidth() {
 		return commonColumnWidth;
 	}
 	
-	public int getColumnWidth(int columnPosition) {
+	public int getColumnWidth(long columnPosition) {
 		for (ColumnPositionCoordinate columnPositionCoordinate : colPositionToWidth.keySet()) {
 			if (columnPositionCoordinate.getColumnPosition() == columnPosition) {
 				return colPositionToWidth.get(columnPositionCoordinate).intValue();

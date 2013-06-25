@@ -15,7 +15,6 @@ import static org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.NO_SE
 
 import java.util.Collection;
 
-import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.RowVisualChangeEvent;
@@ -27,17 +26,17 @@ public class RowSelectionEvent extends RowVisualChangeEvent implements ISelectio
 	
 	private final SelectionLayer selectionLayer;
 	
-	private int rowPositionToReveal;
+	private long rowPositionToReveal;
 	
 	
-	public RowSelectionEvent(SelectionLayer selectionLayer, int rowPosition, boolean revealRow) {
+	public RowSelectionEvent(SelectionLayer selectionLayer, long rowPosition, boolean revealRow) {
 		super(selectionLayer, new Range(rowPosition));
 		this.selectionLayer = selectionLayer;
 		this.rowPositionToReveal = (revealRow) ? rowPosition : NO_SELECTION;
 	}
 	
-	public RowSelectionEvent(SelectionLayer selectionLayer, Collection<Integer> rowPositions, int rowPositionToReveal) {
-		super(selectionLayer, PositionUtil.getRanges(rowPositions));
+	public RowSelectionEvent(SelectionLayer selectionLayer, Collection<Range> rowPositions, long rowPositionToReveal) {
+		super(selectionLayer, rowPositions);
 		this.selectionLayer = selectionLayer;
 		this.rowPositionToReveal = rowPositionToReveal;
 	}
@@ -57,7 +56,7 @@ public class RowSelectionEvent extends RowVisualChangeEvent implements ISelectio
 		return selectionLayer;
 	}
 	
-	public int getRowPositionToReveal() {
+	public long getRowPositionToReveal() {
 		return rowPositionToReveal;
 	}
 	

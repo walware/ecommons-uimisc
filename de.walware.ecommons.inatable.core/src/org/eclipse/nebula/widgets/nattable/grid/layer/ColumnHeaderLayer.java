@@ -100,7 +100,7 @@ public class ColumnHeaderLayer extends DimensionallyDependentIndexLayer {
 	
 	protected boolean isSelected(final LayerCellDim hDim, final LayerCellDim vDim) {
 		final ILayerDim dim = getDim(HORIZONTAL);
-		final int columnPosition = hDim.getPosition();
+		final long columnPosition = hDim.getPosition();
 		if (this.selectionLayer.isRowPositionSelected(
 				LayerUtil.convertPosition(dim, columnPosition, columnPosition, this.selectionLayer) )) {
 			return true;
@@ -109,10 +109,10 @@ public class ColumnHeaderLayer extends DimensionallyDependentIndexLayer {
 	}
 	
 	@Override
-	public LabelStack getConfigLabelsByPosition(int columnPosition, int rowPosition) {
+	public LabelStack getConfigLabelsByPosition(long columnPosition, long rowPosition) {
 		LabelStack labelStack = super.getConfigLabelsByPosition(columnPosition, rowPosition);
 
-		final int selectionLayerColumnPosition = LayerUtil.convertColumnPosition(this, columnPosition, selectionLayer);
+		final long selectionLayerColumnPosition = LayerUtil.convertColumnPosition(this, columnPosition, selectionLayer);
 		if (selectionLayer.isColumnPositionFullySelected(selectionLayerColumnPosition)) {
 			labelStack.addLabel(SelectionStyleLabels.COLUMN_FULLY_SELECTED_STYLE);
 		}
@@ -125,8 +125,8 @@ public class ColumnHeaderLayer extends DimensionallyDependentIndexLayer {
 	}
 
 	@Override
-	public Object getDataValueByPosition(int columnPosition, int rowPosition) {
-		int columnIndex = getColumnIndexByPosition(columnPosition);
+	public Object getDataValueByPosition(long columnPosition, long rowPosition) {
+		long columnIndex = getColumnIndexByPosition(columnPosition);
 		if (isColumnRenamed(columnIndex)) {
 			return getRenamedColumnLabelByIndex(columnIndex);
 		}
@@ -146,33 +146,33 @@ public class ColumnHeaderLayer extends DimensionallyDependentIndexLayer {
 	/**
 	 * @return column header as defined by the data source
 	 */
-	public String getOriginalColumnLabel(int columnPosition) {
+	public String getOriginalColumnLabel(long columnPosition) {
 		return super.getDataValueByPosition(columnPosition, 0).toString();
 	}
 
 	/**
 	 * @return renamed column header if the column has been renamed, NULL otherwise
 	 */
-	public String getRenamedColumnLabel(int columnPosition) {
-		int index = getColumnIndexByPosition(columnPosition);
+	public String getRenamedColumnLabel(long columnPosition) {
+		long index = getColumnIndexByPosition(columnPosition);
 		return getRenamedColumnLabelByIndex(index);
 	}
 
 	/**
 	 * @return renamed column header if the column has been renamed, NULL otherwise
 	 */
-	public String getRenamedColumnLabelByIndex(int columnIndex) {
+	public String getRenamedColumnLabelByIndex(long columnIndex) {
 		return renameColumnHelper.getRenamedColumnLabel(columnIndex);
 	}
 
 	/**
 	 * @return TRUE if the column at the given index has been given a custom name by the user.
 	 */
-	public boolean isColumnRenamed(int columnIndex) {
+	public boolean isColumnRenamed(long columnIndex) {
 		return renameColumnHelper.isColumnRenamed(columnIndex);
 	}
 
-    public boolean renameColumnPosition(int columnPosition, String customColumnName) {
+    public boolean renameColumnPosition(long columnPosition, String customColumnName) {
         boolean renamed = renameColumnHelper.renameColumnPosition(columnPosition, customColumnName);
         if (renamed) {
             fireLayerEvent(new RenameColumnHeaderEvent(this, columnPosition));
@@ -180,7 +180,7 @@ public class ColumnHeaderLayer extends DimensionallyDependentIndexLayer {
         return renamed;
     }
 
-    public boolean renameColumnIndex(int columnIndex, String customColumnName) {
+    public boolean renameColumnIndex(long columnIndex, String customColumnName) {
         boolean renamed = renameColumnHelper.renameColumnIndex(columnIndex, customColumnName);
         if (renamed) {
             fireLayerEvent(new RenameColumnHeaderEvent(this, columnIndex));

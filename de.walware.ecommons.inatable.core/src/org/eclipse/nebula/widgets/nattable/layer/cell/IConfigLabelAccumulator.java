@@ -27,6 +27,6 @@ public interface IConfigLabelAccumulator {
 	 * @param columnPosition of the cell for which labels are being gathered
 	 * @param rowPosition of the cell for which labels are being gathered
 	 */
-	public void accumulateConfigLabels(LabelStack configLabels, int columnPosition, int rowPosition);
+	public void accumulateConfigLabels(LabelStack configLabels, long columnPosition, long rowPosition);
 	
 }
