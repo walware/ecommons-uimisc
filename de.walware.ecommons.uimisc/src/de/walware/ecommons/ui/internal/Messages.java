@@ -43,7 +43,8 @@ public class Messages extends NLS {
 	public static String FilterFavouredContainersAction_description;
 	public static String FilterFavouredContainersAction_tooltip;
 	
-	public static String Hover_FocusAffordance_message;
+	public static String Hover_TooltipFocusAffordance_message;
+	public static String Hover_ProposalInfoFocusAffordance_message;
 	
 	public static String Variable_error_Resource_EmptySelection_message;
 	public static String Variable_error_Resource_InvalidPath_message;

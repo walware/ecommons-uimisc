@@ -14,7 +14,9 @@ package de.walware.ecommons.ui.util;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.jface.bindings.keys.SWTKeySupport;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.swt.SWT;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.keys.IBindingService;
 
@@ -25,6 +27,12 @@ public class InformationDispatchHandler extends AbstractHandler {
 	
 	
 	public static final String COMMAND_ID = "org.eclipse.ui.edit.text.showInformation"; //$NON-NLS-1$
+	
+	
+	public static final int MODE_TOOLTIP = 1;
+	public static final int MODE_PROPOSAL_INFO = 2;
+	
+	public static final int MODE_FOCUS = 0x10;
 	
 	
 	public static final String getTooltipAffordanceString() {
@@ -38,7 +46,24 @@ public class InformationDispatchHandler extends AbstractHandler {
 			return ""; //$NON-NLS-1$
 		}
 		
-		return NLS.bind(Messages.Hover_FocusAffordance_message, keySequence);
+		return NLS.bind(Messages.Hover_TooltipFocusAffordance_message, keySequence);
+	}
+	
+	public static final String getAdditionalInfoAffordanceString() {
+		final String keySequence = SWTKeySupport.getKeyFormatterForPlatform().format(SWT.TAB);
+		
+		return NLS.bind(Messages.Hover_ProposalInfoFocusAffordance_message, keySequence);
+	}
+	
+	public static final String getAffordanceString(final int mode) {
+		switch (mode) {
+		case MODE_TOOLTIP:
+			return getTooltipAffordanceString();
+		case MODE_PROPOSAL_INFO:
+			return getAdditionalInfoAffordanceString();
+		default:
+			return ""; //$NON-NLS-1$
+		}
 	}
 	
 	
