@@ -15,6 +15,7 @@ import org.eclipse.jface.viewers.IPostSelectionProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 
+import de.walware.ecommons.models.core.util.IElementSourceProvider;
 import de.walware.ecommons.ui.util.PostSelectionProviderProxy;
 import de.walware.ecommons.ui.util.StructuredSelectionProxy;
 
