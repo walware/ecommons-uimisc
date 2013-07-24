@@ -334,13 +334,13 @@ public abstract class AbstractEditorOutlinePage extends Page
 			final IActionBars actionBars, final HandlerCollection handlers) {
 		final IToolBarManager toolBarManager = actionBars.getToolBarManager();
 		
-		toolBarManager.add(new Separator(SharedUIResources.VIEW_EXPAND_MENU_ID)); 
+		toolBarManager.add(new Separator(SharedUIResources.VIEW_EXPAND_MENU_ID));
 		toolBarManager.appendToGroup(SharedUIResources.VIEW_EXPAND_MENU_ID,
 				new HandlerContributionItem(new CommandContributionItemParameter(
 						serviceLocator, null, NAVIGATE_COLLAPSE_ALL, HandlerContributionItem.STYLE_PUSH),
 						handlers.get(NAVIGATE_COLLAPSE_ALL) ));
-		toolBarManager.add(new Separator(SharedUIResources.VIEW_SORT_MENU_ID)); 
-		final Separator viewFilter = new Separator(SharedUIResources.VIEW_FILTER_MENU_ID); 
+		toolBarManager.add(new Separator(SharedUIResources.VIEW_SORT_MENU_ID));
+		final Separator viewFilter = new Separator(SharedUIResources.VIEW_FILTER_MENU_ID);
 		viewFilter.setVisible(false);
 		toolBarManager.add(viewFilter);
 	}

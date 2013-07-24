@@ -103,16 +103,23 @@ public class SearchText extends Composite {
 	
 	
 	public SearchText(final Composite parent) {
-		this(parent, null, SWT.NONE);
+		this(parent, SWT.BORDER, null, SWT.NONE);
 	}
 	
 	public SearchText(final Composite parent, final String initialText, final int textStyle) {
-		super(parent, useNativeSearchField(parent) ? SWT.NONE : SWT.BORDER);
+		this(parent, SWT.BORDER, initialText, textStyle);
+	}
+	
+	public SearchText(final Composite parent, final int style,
+			final String initialText, final int textStyle) {
+		super(parent, useNativeSearchField(parent) ? SWT.NONE : style);
 		final boolean nativeMode = useNativeSearchField.booleanValue();
 		
-		setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+		if ((style & SWT.BORDER) != 0) {
+			setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+		}
 		
-		createText(this, nativeMode, textStyle);
+		createText(this, nativeMode, (nativeMode) ? (style | textStyle) : textStyle);
 		createClearTextButtonSupport(this, nativeMode);
 		
 		if (initialText != null) {
@@ -183,7 +190,9 @@ public class SearchText extends Composite {
 	
 	public void clearText() {
 		setText(null);
-		fTextControl.setFocus();
+		if (isVisible()) {
+			fTextControl.setFocus();
+		}
 	}
 	
 	/**

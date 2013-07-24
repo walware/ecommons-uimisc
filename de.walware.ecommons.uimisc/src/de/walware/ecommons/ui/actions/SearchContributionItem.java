@@ -172,22 +172,7 @@ public class SearchContributionItem extends ContributionItem {
 	@Override
 	public void fill(final ToolBar parent, final int index) {
 		fControl = new SearchText(parent);
-		fControl.addListener(new SearchText.Listener() {
-			@Override
-			public void textChanged(final boolean user) {
-				if (fUpdateWhenTyping || !user) {
-					SearchContributionItem.this.search();
-				}
-			}
-			@Override
-			public void okPressed() {
-				SearchContributionItem.this.search();
-			}
-			@Override
-			public void downPressed() {
-				SearchContributionItem.this.selectFirst();
-			}
-		});
+		fControl.addListener(createSearchTextListener());
 		final Listener swtListener = new SWTListener();
 		fControl.addListener(SWT.Resize, swtListener);
 		fControl.setToolTipText(fToolTipText);
@@ -200,7 +185,15 @@ public class SearchContributionItem extends ContributionItem {
 	
 	public Control create(final Composite parent) {
 		fControl = new SearchText(parent);
-		fControl.addListener(new SearchText.Listener() {
+		fControl.addListener(createSearchTextListener());
+		final Listener swtListener = new SWTListener();
+		fControl.addListener(SWT.Resize, swtListener);
+		fControl.setToolTipText(fToolTipText);
+		return fControl;
+	}
+	
+	protected SearchText.Listener createSearchTextListener() {
+		return new SearchText.Listener() {
 			@Override
 			public void textChanged(final boolean user) {
 				if (fUpdateWhenTyping || !user) {
@@ -215,11 +208,7 @@ public class SearchContributionItem extends ContributionItem {
 			public void downPressed() {
 				SearchContributionItem.this.selectFirst();
 			}
-		});
-		final Listener swtListener = new SWTListener();
-		fControl.addListener(SWT.Resize, swtListener);
-		fControl.setToolTipText(fToolTipText);
-		return fControl;
+		};
 	}
 	
 	protected void search() {
