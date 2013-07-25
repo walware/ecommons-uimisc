@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009-2013 WalWare/StatET-Project (www.walware.de/goto/statet)
+ * Copyright (c) 2009, 2013 WalWare/StatET-Project (www.walware.de/goto/statet)
  * and others. All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -42,7 +42,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -89,11 +88,11 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 	protected class SearchBar implements DisposeListener {
 		
 		
-		private ToolBarManager fSearchBarManager;
-		private ToolBar fSearchBar;
-		private SearchContributionItem fSearchTextItem;
+		private ToolBarManager toolBarManager;
+		private ToolBar toolBar;
+		private SearchContributionItem searchTextItem;
 		
-		private boolean fSearchCaseSensitive;
+		private boolean searchCaseSensitive;
 		
 		
 		public SearchBar(final Composite parent) {
@@ -102,12 +101,12 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 		
 		
 		private void create(final Composite parent) {
-			fSearchBarManager = new ToolBarManager(SWT.FLAT);
-			fSearchBar = fSearchBarManager.createControl(parent);
-			fSearchBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-			fSearchBar.addDisposeListener(this);
+			this.toolBarManager = new ToolBarManager(SWT.FLAT);
+			this.toolBar = this.toolBarManager.createControl(parent);
+			this.toolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+			this.toolBar.addDisposeListener(this);
 			
-			fSearchBarManager.add(new ContributionItem() {
+			this.toolBarManager.add(new ContributionItem() {
 				@Override
 				public void fill(final ToolBar parent, final int index) {
 					final ToolItem item = new ToolItem(parent, SWT.PUSH);
@@ -123,9 +122,9 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 				}
 			});
 			
-			fSearchBarManager.add(new Separator());
+			this.toolBarManager.add(new Separator());
 			
-			fSearchTextItem = new SearchContributionItem("search.text", SWT.NONE) { //$NON-NLS-1$
+			this.searchTextItem = new SearchContributionItem("search.text", SWT.NONE) { //$NON-NLS-1$
 				@Override
 				public void fill(final ToolBar parent, final int index) {
 					super.fill(parent, index);
@@ -145,135 +144,135 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 					PageBookBrowserPage.this.search(true);
 				}
 			};
-			fSearchTextItem.setToolTip("Find Text");
-			fSearchTextItem.setSizeControl(parent);
-			fSearchBarManager.add(fSearchTextItem);
+			this.searchTextItem.setToolTip("Find Text");
+			this.searchTextItem.setSizeControl(parent);
+			this.toolBarManager.add(this.searchTextItem);
 			
 			final ImageRegistry ecommonsImages = SharedUIResources.getImages();
-			final HandlerCollection pageHandlers = fPageHandlers;
-			fSearchBarManager.add(new HandlerContributionItem(new CommandContributionItemParameter(
+			final HandlerCollection pageHandlers = PageBookBrowserPage.this.pageHandlers;
+			this.toolBarManager.add(new HandlerContributionItem(new CommandContributionItemParameter(
 					getSite(), "search.next", SharedUIResources.FIND_NEXT_COMMAND_ID, null, //$NON-NLS-1$
 					ecommonsImages.getDescriptor(SharedUIResources.LOCTOOL_DOWN_IMAGE_ID), null, ecommonsImages.getDescriptor(SharedUIResources.LOCTOOL_DOWN_H_IMAGE_ID),
 					SharedMessages.FindNext_tooltip, null, null, SWT.PUSH, null, false), pageHandlers.get(SharedUIResources.FIND_NEXT_COMMAND_ID)));
-			fSearchBarManager.add(new HandlerContributionItem(new CommandContributionItemParameter(
+			this.toolBarManager.add(new HandlerContributionItem(new CommandContributionItemParameter(
 					getSite(), "search.previous", SharedUIResources.FIND_PREVIOUS_COMMAND_ID, null, //$NON-NLS-1$
 					ecommonsImages.getDescriptor(SharedUIResources.LOCTOOL_UP_IMAGE_ID), null, ecommonsImages.getDescriptor(SharedUIResources.LOCTOOL_UP_H_IMAGE_ID),
 					SharedMessages.FindPrevious_tooltip, null, null, SWT.PUSH, null, false), pageHandlers.get(SharedUIResources.FIND_PREVIOUS_COMMAND_ID)));
 			
-			fSearchBarManager.add(new Separator());
+			this.toolBarManager.add(new Separator());
 			
 			final SimpleContributionItem caseItem = new SimpleContributionItem(new CommandContributionItemParameter(null, null, null, null,
 					ecommonsImages.getDescriptor(SharedUIResources.LOCTOOL_CASESENSITIVE_IMAGE_ID), null, null,
 					null, null, "Case Sensitive", SimpleContributionItem.STYLE_CHECK, null, false)) {
 				@Override
 				protected void execute() throws ExecutionException {
-					fSearchCaseSensitive = !fSearchCaseSensitive;
-					setChecked(fSearchCaseSensitive);
+					SearchBar.this.searchCaseSensitive = !SearchBar.this.searchCaseSensitive;
+					setChecked(SearchBar.this.searchCaseSensitive);
 				}
 			};
-			caseItem.setChecked(fSearchCaseSensitive);
-			fSearchBarManager.add(caseItem);
+			caseItem.setChecked(this.searchCaseSensitive);
+			this.toolBarManager.add(caseItem);
 			
-			fSearchBarManager.update(true);
+			this.toolBarManager.update(true);
 		}
 		
 		@Override
 		public void widgetDisposed(final DisposeEvent e) {
-			if (fSearchBar != null) {
-				fSearchBarManager.dispose();
-				fSearchBarManager = null;
+			if (this.toolBar != null) {
+				this.toolBarManager.dispose();
+				this.toolBarManager = null;
 				
-				fSearchBar = null;
+				this.toolBar = null;
 			}
 		}
 		
 		
 		public void show() {
-			final GridData gd = (GridData) fSearchBar.getLayoutData();
+			final GridData gd = (GridData) this.toolBar.getLayoutData();
 			gd.exclude = false;
-			fSearchBar.getParent().layout(true, true);
-			fSearchTextItem.getSearchText().setFocus();
+			this.toolBar.getParent().layout(true, true);
+			this.searchTextItem.getSearchText().setFocus();
 		}
 		
 		public void hide() {
 			setFocusToBrowser();
-			final GridData gd = (GridData) fSearchBar.getLayoutData();
+			final GridData gd = (GridData) this.toolBar.getLayoutData();
 			gd.exclude = true;
-			fSearchBar.getParent().layout(new Control[] { fSearchBar });
+			this.toolBar.getParent().layout(new Control[] { this.toolBar });
 		}
 		
 		public String getText() {
-			return fSearchTextItem.getText();
+			return this.searchTextItem.getText();
 		}
 		
 		public boolean isCaseSensitiveEnabled() {
-			return fSearchCaseSensitive;
+			return this.searchCaseSensitive;
 		}
 		
 	}
 	
 	
-	private final PageBookBrowserView fView;
+	private final PageBookBrowserView view;
 	
-	private final BrowserSession fSession;
+	private final BrowserSession session;
 	
-	private Composite fComposite;
+	private Composite composite;
 	
-	private Browser fBrowser;
+	private Browser browser;
 	
-	private SearchBar fSearchBar;
+	private SearchBar searchBar;
 	
-	private final HandlerCollection fPageHandlers = new HandlerCollection();
+	private final HandlerCollection pageHandlers = new HandlerCollection();
 	
-	private String fBrowserStatusText;
+	private String browserStatusText;
 	
-	private int fProgressTotal;
-	private int fProgressWorked;
+	private int progressTotal;
+	private int progressWorked;
 	
 	
 	public PageBookBrowserPage(final PageBookBrowserView view, final BrowserSession session) {
-		fView = view;
-		fSession = session;
+		this.view = view;
+		this.session = session;
 	}
 	
 	
 	@Override
 	public void createControl(final Composite parent) {
-		fComposite = new Composite(parent, SWT.NONE) {
+		this.composite = new Composite(parent, SWT.NONE) {
 			@Override
 			public boolean setFocus() {
 				return setDefaultFocus();
 			}
 		};
-		fComposite.setLayout(LayoutUtil.applySashDefaults(new GridLayout(), 1));
+		this.composite.setLayout(LayoutUtil.applySashDefaults(new GridLayout(), 1));
 		
-		{	final Control control = createAddressBar(fComposite);
+		{	final Control control = createAddressBar(this.composite);
 			if (control != null) {
 				control.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			}
 		}
-		final Control browser = createBrowser(fComposite);
+		final Control browser = createBrowser(this.composite);
 		browser.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
-		initActions(getSite(), fPageHandlers);
+		initActions(getSite(), this.pageHandlers);
 		
 		// check required for open in new window/page
-		if (fSession.fUrl != null && fSession.fUrl.length() > 0) {
-			setUrl(fSession.fUrl);
+		if (this.session.fUrl != null && this.session.fUrl.length() > 0) {
+			setUrl(this.session.fUrl);
 		}
 	}
 	
 	private Control createBrowser(final Composite parent) {
-		fBrowser = new Browser(parent, SWT.NONE);
+		this.browser = new Browser(parent, SWT.NONE);
 		
-		fBrowser.addProgressListener(this);
-		fBrowser.addLocationListener(this);
-		fBrowser.addTitleListener(this);
-		fBrowser.addStatusTextListener(this);
-		fBrowser.addOpenWindowListener(this);
-		fBrowser.addCloseWindowListener(this);
+		this.browser.addProgressListener(this);
+		this.browser.addLocationListener(this);
+		this.browser.addTitleListener(this);
+		this.browser.addStatusTextListener(this);
+		this.browser.addOpenWindowListener(this);
+		this.browser.addCloseWindowListener(this);
 		
-		return fBrowser;
+		return this.browser;
 	}
 	
 	protected Control createAddressBar(final Composite parent) {
@@ -283,18 +282,18 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 	protected void initActions(final IServiceLocator serviceLocator, final HandlerCollection handlers) {
 		final IHandlerService handlerService = (IHandlerService) serviceLocator.getService(IHandlerService.class);
 		
-		final String browserType = fBrowser.getBrowserType();
+		final String browserType = this.browser.getBrowserType();
 		if (browserType.equals("mozilla") || browserType.equals("webkit")) { //$NON-NLS-1$ //$NON-NLS-2$
 			{	final IHandler2 handler = new AbstractHandler() {
 					@Override
 					public Object execute(final ExecutionEvent event) throws ExecutionException {
-						if (!UIAccess.isOkToUse(fBrowser)) {
+						if (!UIAccess.isOkToUse(PageBookBrowserPage.this.browser)) {
 							return null;
 						}
-						if (fSearchBar == null) {
-							fSearchBar = new SearchBar(fComposite);
+						if (PageBookBrowserPage.this.searchBar == null) {
+							PageBookBrowserPage.this.searchBar = new SearchBar(PageBookBrowserPage.this.composite);
 						}
-						fSearchBar.show();
+						PageBookBrowserPage.this.searchBar.show();
 						return null;
 					}
 				};
@@ -325,14 +324,14 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 	}
 	
 	private void search(final boolean forward) {
-		if (fSearchBar == null || !UIAccess.isOkToUse(fBrowser)) {
+		if (this.searchBar == null || !UIAccess.isOkToUse(this.browser)) {
 			return;
 		}
-		final String text = fSearchBar.getText();
+		final String text = this.searchBar.getText();
 		if (text == null || text.isEmpty()) {
 			return;
 		}
-		final boolean caseSensitive = fSearchBar.isCaseSensitiveEnabled();
+		final boolean caseSensitive = this.searchBar.isCaseSensitiveEnabled();
 		
 		final String message;
 		if (doSearch(text, forward, caseSensitive, false)) {
@@ -346,8 +345,8 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 			message = "Search text not found";
 		}
 		
-		if (fView.getCurrentBrowserPage() == this) {
-			fView.setTemporaryStatus(IStatus.INFO, message);
+		if (this.view.getCurrentBrowserPage() == this) {
+			this.view.setTemporaryStatus(IStatus.INFO, message);
 		}
 	}
 	
@@ -363,22 +362,22 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 		script.append(wrap); // wrap
 		script.append(",false,true)"); // wholeWord, inFrames //$NON-NLS-1$
 						// inFrames fixes wrap in some situations
-		final Object found = fBrowser.evaluate(script.toString());
+		final Object found = this.browser.evaluate(script.toString());
 		return Boolean.TRUE.equals(found);
 	}
 	
 	
 	protected Browser getBrowser() {
-		return fBrowser;
+		return this.browser;
 	}
 	
 	BrowserSession getSession() {
-		return fSession;
+		return this.session;
 	}
 	
 	@Override
 	public Control getControl() {
-		return fComposite;
+		return this.composite;
 	}
 	
 	@Override
@@ -391,89 +390,76 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 	}
 	
 	public boolean isBrowserFocusControl() {
-		return (UIAccess.isOkToUse(fBrowser) && fBrowser.isFocusControl());
+		return (UIAccess.isOkToUse(this.browser) && this.browser.isFocusControl());
 	}
 	
 	public boolean setFocusToBrowser() {
-		return fBrowser.setFocus();
+		return this.browser.setFocus();
 	}
 	
 	
 	public void setUrl(String url) {
-		if (fBrowser == null) {
+		if (this.browser == null) {
 			return;
 		}
 		if (url == null || url.isEmpty()) {
 			url = "about:blank"; //$NON-NLS-1$
 		}
 		if (url.startsWith("html:///")) { //$NON-NLS-1$
-			final int id = fSession.putStatic(url.substring(8));
+			final int id = this.session.putStatic(url.substring(8));
 			url = "estatic:///" + id; //$NON-NLS-1$
 		}
-		fBrowser.setUrl(url);
+		this.browser.setUrl(url);
 	}
 	
 	public String getCurrentTitle() {
-		final String title = fSession.fTitle;
+		final String title = this.session.fTitle;
 		return (title != null) ? title : ""; //$NON-NLS-1$
 	}
 	
 	public String getCurrentUrl() {
-		return fSession.fUrl;
+		return this.session.fUrl;
 	}
 	
 	public String getCurrentStatusText() {
-		return fBrowserStatusText;
+		return this.browserStatusText;
 	}
 	
 	int getCurrentProgressTotal() {
-		return fProgressTotal;
+		return this.progressTotal;
 	}
 	
 	int getCurrentProgressWorked() {
-		return fProgressWorked;
+		return this.progressWorked;
 	}
 	
 	
 	@Override
 	public void changed(final ProgressEvent event) {
 		if (event.total == 0) {
-			fProgressTotal = 0;
-			fProgressWorked = 0;
+			this.progressTotal = 0;
+			this.progressWorked = 0;
 		}
 		else {
-			fProgressTotal = event.total;
-			fProgressWorked = event.current;
+			this.progressTotal = event.total;
+			this.progressWorked = event.current;
 		}
 	}
 	
 	@Override
 	public void changing(final LocationEvent event) {
 		if (event.top) {
-			fSession.fImageDescriptor = null;
+			this.session.fImageDescriptor = null;
 		}
 		if (event.location.startsWith("estatic:///")) { //$NON-NLS-1$
 			event.doit = false;
 			try {
-				final String html = fSession.getStatic(Integer.parseInt(event.location.substring(11)));
+				final String html = this.session.getStatic(Integer.parseInt(event.location.substring(11)));
 				if (html != null) {
-					fBrowser.setText(html);
+					this.browser.setText(html);
 				}
 			}
 			catch (final Exception e) {
-			}
-			return;
-		}
-		if (event.location.startsWith("esystem://")) { //$NON-NLS-1$
-			final String file = event.location.substring(10);
-			event.doit = false;
-			if (file.length() > 0) {
-				UIAccess.getDisplay().asyncExec(new Runnable() {
-					@Override
-					public void run() {
-						Program.launch(file);
-					}
-				});
 			}
 			return;
 		}
@@ -498,13 +484,13 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 		if ("about:blank".equals(location)) { //$NON-NLS-1$
 			location = ""; //$NON-NLS-1$
 		}
-		fSession.fUrl = location;
+		this.session.fUrl = location;
 	}
 	
 	@Override
 	public void completed(final ProgressEvent event) {
-		fProgressTotal = 0;
-		fProgressWorked = 0;
+		this.progressTotal = 0;
+		this.progressWorked = 0;
 	}
 	
 	@Override
@@ -519,30 +505,30 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 				title = title.substring(idx+1);
 			}
 		}
-		fSession.fTitle = title;
+		this.session.fTitle = title;
 	}
 	
 	@Override
 	public void changed(final StatusTextEvent event) {
-		fBrowserStatusText = event.text;
+		this.browserStatusText = event.text;
 	}
 	
 	protected void setIcon(final ImageDescriptor imageDescriptor) {
-		fSession.fImageDescriptor = imageDescriptor;
+		this.session.fImageDescriptor = imageDescriptor;
 	}
 	
 	
 	@Override
 	public void open(final WindowEvent event) {
-		final PageBookBrowserPage page = (PageBookBrowserPage) fView.newPage(new BrowserSession(), true);
+		final PageBookBrowserPage page = (PageBookBrowserPage) this.view.newPage(new BrowserSession(), true);
 		if (page != null) {
-			event.browser = page.fBrowser;
+			event.browser = page.browser;
 		}
 	}
 	
 	@Override
 	public void close(final WindowEvent event) {
-		fView.closePage(fSession);
+		this.view.closePage(this.session);
 	}
 	
 	public String getSelection() {
