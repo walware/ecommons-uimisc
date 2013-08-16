@@ -39,7 +39,6 @@ import org.eclipse.ui.menus.CommandContributionItemParameter;
 import org.eclipse.ui.statushandlers.StatusManager;
 
 import de.walware.ecommons.ui.SharedUIResources;
-import de.walware.ecommons.ui.util.MenuUtil;
 
 
 /**
@@ -98,13 +97,13 @@ public abstract class SimpleContributionItem extends ContributionItem {
 	
 	private boolean checkedState;
 	
-	private int style;
+	private final int style;
 	
 	private IWorkbenchHelpSystem workbenchHelpSystem;
 	
 	private String helpContextId;
 	
-	private int mode = 0;
+	private final int mode = 0;
 	
 	
 	/**
@@ -170,12 +169,12 @@ public abstract class SimpleContributionItem extends ContributionItem {
 	
 	@Override
 	public void fill(final Menu parent, final int index) {
-		if (widget != null || parent == null) {
+		if (this.widget != null || parent == null) {
 			return;
 		}
 		
 		// Menus don't support the pulldown style
-		int tmpStyle = style;
+		int tmpStyle = this.style;
 		if (tmpStyle == STYLE_PULLDOWN) {
 			tmpStyle = STYLE_PUSH;
 		}
@@ -187,12 +186,12 @@ public abstract class SimpleContributionItem extends ContributionItem {
 			item = new MenuItem(parent, tmpStyle);
 		}
 		item.setData(this);
-		if (workbenchHelpSystem != null) {
-			workbenchHelpSystem.setHelp(item, helpContextId);
+		if (this.workbenchHelpSystem != null) {
+			this.workbenchHelpSystem.setHelp(item, this.helpContextId);
 		}
 		item.addListener(SWT.Dispose, getItemListener());
 		item.addListener(SWT.Selection, getItemListener());
-		widget = item;
+		this.widget = item;
 		
 		update(null);
 		updateIcons();
@@ -200,22 +199,22 @@ public abstract class SimpleContributionItem extends ContributionItem {
 	
 	@Override
 	public void fill(final ToolBar parent, final int index) {
-		if (widget != null || parent == null) {
+		if (this.widget != null || parent == null) {
 			return;
 		}
 		
 		ToolItem item = null;
 		if (index >= 0) {
-			item = new ToolItem(parent, style, index);
+			item = new ToolItem(parent, this.style, index);
 		} else {
-			item = new ToolItem(parent, style);
+			item = new ToolItem(parent, this.style);
 		}
 		
 		item.setData(this);
 		
 		item.addListener(SWT.Selection, getItemListener());
 		item.addListener(SWT.Dispose, getItemListener());
-		widget = item;
+		this.widget = item;
 		
 		update(null);
 		updateIcons();
@@ -223,24 +222,24 @@ public abstract class SimpleContributionItem extends ContributionItem {
 	
 	@Override
 	public void fill(final Composite parent) {
-		if (widget != null || parent == null) {
+		if (this.widget != null || parent == null) {
 			return;
 		}
 		
 		// Buttons don't support the pulldown style
-		int tmpStyle = style;
+		int tmpStyle = this.style;
 		if (tmpStyle == STYLE_PULLDOWN) {
 			tmpStyle = STYLE_PUSH;
 		}
 		
 		final Button item = new Button(parent, tmpStyle);
 		item.setData(this);
-		if (workbenchHelpSystem != null) {
-			workbenchHelpSystem.setHelp(item, helpContextId);
+		if (this.workbenchHelpSystem != null) {
+			this.workbenchHelpSystem.setHelp(item, this.helpContextId);
 		}
 		item.addListener(SWT.Dispose, getItemListener());
 		item.addListener(SWT.Selection, getItemListener());
-		widget = item;
+		this.widget = item;
 		
 		update(null);
 		updateIcons();
@@ -253,19 +252,19 @@ public abstract class SimpleContributionItem extends ContributionItem {
 	
 	@Override
 	public void update(final String id) {
-		if (widget != null) {
-			if (widget instanceof MenuItem) {
+		if (this.widget != null) {
+			if (this.widget instanceof MenuItem) {
 				updateMenuItem();
-			} else if (widget instanceof ToolItem) {
+			} else if (this.widget instanceof ToolItem) {
 				updateToolItem();
-			} else if (widget instanceof Button) {
+			} else if (this.widget instanceof Button) {
 				updateButton();
 			}
 		}
 	}
 	
 	private void updateMenuItem() {
-		final MenuItem item = (MenuItem) widget;
+		final MenuItem item = (MenuItem) this.widget;
 		
 		final boolean shouldBeEnabled = isEnabled();
 		
@@ -274,7 +273,7 @@ public abstract class SimpleContributionItem extends ContributionItem {
 			return;
 		}
 		
-		String text = label;
+		String text = this.label;
 		text = updateMnemonic(text);
 		
 		final String keyBindingText = null;
@@ -286,8 +285,8 @@ public abstract class SimpleContributionItem extends ContributionItem {
 			}
 		}
 		
-		if (item.getSelection() != checkedState) {
-			item.setSelection(checkedState);
+		if (item.getSelection() != this.checkedState) {
+			item.setSelection(this.checkedState);
 		}
 		
 		if (item.getEnabled() != shouldBeEnabled) {
@@ -296,7 +295,7 @@ public abstract class SimpleContributionItem extends ContributionItem {
 	}
 	
 	private void updateToolItem() {
-		final ToolItem item = (ToolItem) widget;
+		final ToolItem item = (ToolItem) this.widget;
 		
 		final boolean shouldBeEnabled = isEnabled();
 		
@@ -305,8 +304,8 @@ public abstract class SimpleContributionItem extends ContributionItem {
 			return;
 		}
 		
-		final String text = label;
-		if ((icon == null || (mode & MODE_FORCE_TEXT) == MODE_FORCE_TEXT)
+		final String text = this.label;
+		if ((this.icon == null || (this.mode & MODE_FORCE_TEXT) == MODE_FORCE_TEXT)
 				&& text != null) {
 			item.setText(text);
 		}
@@ -314,8 +313,8 @@ public abstract class SimpleContributionItem extends ContributionItem {
 		final String toolTipText = getToolTipText(text);
 		item.setToolTipText(toolTipText);
 		
-		if (item.getSelection() != checkedState) {
-			item.setSelection(checkedState);
+		if (item.getSelection() != this.checkedState) {
+			item.setSelection(this.checkedState);
 		}
 		
 		if (item.getEnabled() != shouldBeEnabled) {
@@ -324,7 +323,7 @@ public abstract class SimpleContributionItem extends ContributionItem {
 	}
 	
 	private void updateButton() {
-		final Button item = (Button) widget;
+		final Button item = (Button) this.widget;
 		
 		final boolean shouldBeEnabled = isEnabled();
 		
@@ -333,7 +332,7 @@ public abstract class SimpleContributionItem extends ContributionItem {
 			return;
 		}
 		
-		final String text = label;
+		final String text = this.label;
 		if (text != null) {
 			item.setText(text);
 		}
@@ -341,8 +340,8 @@ public abstract class SimpleContributionItem extends ContributionItem {
 		final String toolTipText = getToolTipText(text);
 		item.setToolTipText(toolTipText);
 		
-		if (item.getSelection() != checkedState) {
-			item.setSelection(checkedState);
+		if (item.getSelection() != this.checkedState) {
+			item.setSelection(this.checkedState);
 		}
 		
 		if (item.getEnabled() != shouldBeEnabled) {
@@ -351,8 +350,8 @@ public abstract class SimpleContributionItem extends ContributionItem {
 	}
 	
 	private String getToolTipText(final String text) {
-		String tooltipText = tooltip;
-		if (tooltip == null) {
+		String tooltipText = this.tooltip;
+		if (this.tooltip == null) {
 			if (text != null) {
 				tooltipText = text;
 			} else {
@@ -364,10 +363,10 @@ public abstract class SimpleContributionItem extends ContributionItem {
 	}
 	
 	private String updateMnemonic(final String s) {
-		if (mnemonic == null || s == null) {
+		if (this.mnemonic == null || s == null) {
 			return s;
 		}
-		final int idx = s.indexOf(mnemonic);
+		final int idx = s.indexOf(this.mnemonic);
 		if (idx == -1) {
 			return s;
 		}
@@ -376,34 +375,34 @@ public abstract class SimpleContributionItem extends ContributionItem {
 	}
 	
 	private void handleWidgetDispose(final Event event) {
-		if (event.widget == widget) {
-			widget.removeListener(SWT.Selection, getItemListener());
-			widget.removeListener(SWT.Dispose, getItemListener());
-			widget = null;
+		if (event.widget == this.widget) {
+			this.widget.removeListener(SWT.Selection, getItemListener());
+			this.widget.removeListener(SWT.Dispose, getItemListener());
+			this.widget = null;
 			disposeOldImages();
 		}
 	}
 	
 	@Override
 	public void dispose() {
-		if (widget != null) {
-			widget.dispose();
-			widget = null;
+		if (this.widget != null) {
+			this.widget.dispose();
+			this.widget = null;
 		}
 		disposeOldImages();
 		super.dispose();
 	}
 	
 	private void disposeOldImages() {
-		if (localResourceManager != null) {
-			localResourceManager.dispose();
-			localResourceManager = null;
+		if (this.localResourceManager != null) {
+			this.localResourceManager.dispose();
+			this.localResourceManager = null;
 		}
 	}
 	
 	private Listener getItemListener() {
-		if (menuItemListener == null) {
-			menuItemListener = new Listener() {
+		if (this.menuItemListener == null) {
+			this.menuItemListener = new Listener() {
 				@Override
 				public void handleEvent(final Event event) {
 					switch (event.type) {
@@ -419,7 +418,7 @@ public abstract class SimpleContributionItem extends ContributionItem {
 				}
 			};
 		}
-		return menuItemListener;
+		return this.menuItemListener;
 	}
 	
 	private void handleWidgetSelection(final Event event) {
@@ -428,16 +427,16 @@ public abstract class SimpleContributionItem extends ContributionItem {
 			return;
 		}
 		
-		if ((style & (SWT.TOGGLE | SWT.CHECK)) != 0) {
+		if ((this.style & (SWT.TOGGLE | SWT.CHECK)) != 0) {
 			if (event.widget instanceof ToolItem) {
-				checkedState = ((ToolItem) event.widget).getSelection();
+				this.checkedState = ((ToolItem) event.widget).getSelection();
 			} else if (event.widget instanceof MenuItem) {
-				checkedState = ((MenuItem) event.widget).getSelection();
+				this.checkedState = ((MenuItem) event.widget).getSelection();
 			}
 		}
 		
 		try {
-			execute();
+			execute(event);
 		} catch (final ExecutionException e) {
 			StatusManager.getManager().handle(new Status(IStatus.ERROR, SharedUIResources.PLUGIN_ID,
 					"Failed to execute item " + getId(), e)); //$NON-NLS-1$
@@ -463,8 +462,8 @@ public abstract class SimpleContributionItem extends ContributionItem {
 					
 					final MenuManager menuManager = new MenuManager();
 					final Menu menu = menuManager.createContextMenu(ti.getParent());
-					if (workbenchHelpSystem != null) {
-						workbenchHelpSystem.setHelp(menu, helpContextId);
+					if (this.workbenchHelpSystem != null) {
+						this.workbenchHelpSystem.setHelp(menu, this.helpContextId);
 					}
 					initDropDownMenu(menuManager);
 					
@@ -490,7 +489,7 @@ public abstract class SimpleContributionItem extends ContributionItem {
 				dropDownMenuAboutToShow(manager);
 			}
 			@Override
-			public void menuAboutToHide(IMenuManager manager) {
+			public void menuAboutToHide(final IMenuManager manager) {
 				menu.getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
@@ -502,71 +501,71 @@ public abstract class SimpleContributionItem extends ContributionItem {
 	}
 	
 	private void updateIcons() {
-		if (widget instanceof MenuItem) {
-			final MenuItem item = (MenuItem) widget;
+		if (this.widget instanceof MenuItem) {
+			final MenuItem item = (MenuItem) this.widget;
 			final LocalResourceManager m = new LocalResourceManager(JFaceResources
 					.getResources());
 			try {
-				item.setImage(icon == null ? null : m.createImage(icon));
+				item.setImage(this.icon == null ? null : m.createImage(this.icon));
 			} catch (final DeviceResourceException e) {
-				icon = ImageDescriptor.getMissingImageDescriptor();
-				item.setImage(m.createImage(icon));
+				this.icon = ImageDescriptor.getMissingImageDescriptor();
+				item.setImage(m.createImage(this.icon));
 				// as we replaced the failed icon, log the message once.
 				StatusManager.getManager().handle(new Status(IStatus.ERROR, SharedUIResources.PLUGIN_ID,
 						"Failed to load image", e)); //$NON-NLS-1$
 			}
 			disposeOldImages();
-			localResourceManager = m;
-		} else if (widget instanceof ToolItem) {
-			final ToolItem item = (ToolItem) widget;
+			this.localResourceManager = m;
+		} else if (this.widget instanceof ToolItem) {
+			final ToolItem item = (ToolItem) this.widget;
 			final LocalResourceManager m = new LocalResourceManager(JFaceResources
 					.getResources());
-			item.setDisabledImage(disabledIcon == null ? null : m
-					.createImage(disabledIcon));
-			item.setHotImage(hoverIcon == null ? null : m
-					.createImage(hoverIcon));
-			item.setImage(icon == null ? null : m.createImage(icon));
+			item.setDisabledImage(this.disabledIcon == null ? null : m
+					.createImage(this.disabledIcon));
+			item.setHotImage(this.hoverIcon == null ? null : m
+					.createImage(this.hoverIcon));
+			item.setImage(this.icon == null ? null : m.createImage(this.icon));
 			disposeOldImages();
-			localResourceManager = m;
+			this.localResourceManager = m;
 		}
 	}
 	
 	public void setText(final String text) {
-		label = text;
+		this.label = text;
 		update(null);
 	}
 	
 	public void setChecked(final boolean checked) {
-		if (checkedState == checked) {
+		if (this.checkedState == checked) {
 			return;
 		}
-		checkedState = checked;
-		if (widget instanceof MenuItem) {
-			((MenuItem) widget).setSelection(checkedState);
-		} else if (widget instanceof ToolItem) {
-			((ToolItem) widget).setSelection(checkedState);
+		this.checkedState = checked;
+		if (this.widget instanceof MenuItem) {
+			((MenuItem) this.widget).setSelection(this.checkedState);
+		} else if (this.widget instanceof ToolItem) {
+			((ToolItem) this.widget).setSelection(this.checkedState);
 		}
 	}
 	
 	public void setTooltip(final String text) {
-		tooltip = text;
-		if (widget instanceof ToolItem) {
-			((ToolItem) widget).setToolTipText(text);
+		this.tooltip = text;
+		if (this.widget instanceof ToolItem) {
+			((ToolItem) this.widget).setToolTipText(text);
 		}
 	}
 	
 	public void setIcon(final ImageDescriptor desc) {
-		icon = desc;
+		this.icon = desc;
 		updateIcons();
 	}
 	
 	public void setDisabledIcon(final ImageDescriptor desc) {
-		disabledIcon = desc;
+		this.disabledIcon = desc;
 		updateIcons();
 	}
 	
 	public void setHoverIcon(final ImageDescriptor desc) {
-		hoverIcon = desc;
+		this.hoverIcon = desc;
 		updateIcons();
 	}
 	
@@ -574,6 +573,11 @@ public abstract class SimpleContributionItem extends ContributionItem {
 	protected void dropDownMenuAboutToShow(final IMenuManager manager) {
 	}
 	
+	protected void execute(final Event event) throws ExecutionException {
+		execute();
+	}
+	
+	@Deprecated
 	protected void execute() throws ExecutionException {
 	}
 	
