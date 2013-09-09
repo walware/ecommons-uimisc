@@ -5,7 +5,7 @@
 	
 	<groupId>de.walware.ecommons</groupId>
 	<artifactId>ecommons-uimisc</artifactId>
-	<version>1.4-SNAPSHOT</version>
+	<version>1.5-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>ECommons UIMisc</name>
 	
@@ -43,7 +43,7 @@
 						<artifact>
 							<groupId>de.walware.ecommons</groupId>
 							<artifactId>de.walware.ecommons.uimisc-default</artifactId>
-							<version>1.4.0-SNAPSHOT</version>
+							<version>1.5.0-SNAPSHOT</version>
 						</artifact>
 					</target>
 				</configuration>
