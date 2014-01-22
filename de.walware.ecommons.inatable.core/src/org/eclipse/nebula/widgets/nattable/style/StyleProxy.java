@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,6 +29,7 @@ public abstract class StyleProxy implements IStyle {
 		this.configLabels = configLabels;
 	}
 	
+	@Override
 	public <T> T getAttributeValue(ConfigAttribute<T> styleAttribute) {
 		T styleAttributeValue = null;
 		IDisplayModeOrdering displayModeOrdering = configRegistry.getDisplayModeOrdering();
@@ -45,7 +46,7 @@ public abstract class StyleProxy implements IStyle {
 			}
 
 			// default
-			IStyle cellStyle = configRegistry.getConfigAttribute(styleConfigAttribute, displayMode);
+			IStyle cellStyle = configRegistry.getSpecificConfigAttribute(styleConfigAttribute, displayMode, null);
 			if (cellStyle != null) {
 				styleAttributeValue = cellStyle.getAttributeValue(styleAttribute);
 				if (styleAttributeValue != null) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,19 +13,63 @@ package org.eclipse.nebula.widgets.nattable.tree;
 import java.util.List;
 
 
-
 public interface ITreeData <T> {
 	
-	public String formatDataForDepth(long depth, T object);
+	String formatDataForDepth(int depth, T object);
 	
-	public T getDataAtIndex(long index);
+	String formatDataForDepth(int depth, long index);
 
-	public long getDepthOfData(T object);
+	int getDepthOfData(T object);
 
-	public long indexOf(T child);
+	int getDepthOfData(long index);
+
+	/**
+	 * @param index The index for which the corresponding object in the tree
+	 * 			structure is requested.
+	 * @return The object at the given index in the tree structure.
+	 */
+	T getDataAtIndex(long index);
+
+	/**
+	 * @param child The child whose index is requested.
+	 * @return The index of the given child object in the tree structure.
+	 */
+	long indexOf(T child);
 	
-	public boolean hasChildren(T object);
+	/**
+	 * @param object The object which should be checked for children.
+	 * @return <code>true</code> if the object has children in the tree structure,
+	 * 			<code>false</code> if it is a leaf.
+	 */
+	boolean hasChildren(T object);
 	
-	public List <T> getChildren(T object);
+	/**
+	 * @param index The index of the object in the tree structure which should be checked for children.
+	 * @return <code>true</code> if the object has children in the tree structure,
+	 * 			<code>false</code> if it is a leaf.
+	 */
+	boolean hasChildren(long index);
 	
+	/**
+	 * Return the child objects below the given object if the object
+	 * is a tree node. It will only return the direct children and will
+	 * not search for sub children.
+	 * @param object The object whose children are requested.
+	 * @return The children of the given object.
+	 */
+	List<T> getChildren(T object);
+	
+	/**
+	 * Return the child objects below the object at the given index if the object
+	 * is a tree node. It will only return the direct children and will
+	 * not search for sub children.
+	 * @param index The index of the object whose children are requested.
+	 * @return The children of the object at the given index.
+	 */
+	List<T> getChildren(long index);
+	
+	/**
+	 * @return The root elements of the tree structure.
+	 */
+	List<T> getRoots();
 }

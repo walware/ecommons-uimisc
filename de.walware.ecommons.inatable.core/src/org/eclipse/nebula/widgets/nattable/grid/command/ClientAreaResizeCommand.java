@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Scrollable;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractContextFreeCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
-import org.eclipse.nebula.widgets.nattable.coordinate.SWTUtil;
+import org.eclipse.nebula.widgets.nattable.swt.SWTUtil;
 
 /**
  * Command that gives the layers access to ClientArea and the Scrollable 

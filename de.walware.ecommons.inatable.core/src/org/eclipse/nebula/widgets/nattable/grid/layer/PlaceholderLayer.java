@@ -16,6 +16,7 @@ import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICA
 import static org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell.NO_INDEX;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
@@ -72,11 +73,6 @@ public class PlaceholderLayer extends DimensionallyDependentIndexLayer {
 			}
 			
 			@Override
-			public long getPreferredPositionCount() {
-				return 1;
-			}
-			
-			@Override
 			public long localToUnderlyingPosition(final long refPosition, final long position) {
 				return position;
 			}
@@ -88,19 +84,19 @@ public class PlaceholderLayer extends DimensionallyDependentIndexLayer {
 			}
 			
 			@Override
-			public long underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
+			public long underlyingToLocalPosition(final ILayerDim sourceUnderlyingDim,
 					final long underlyingPosition) {
 				return underlyingPosition;
 			}
 			
 			@Override
-			public Collection<Range> underlyingToLocalPositions(final ILayer sourceUnderlyingLayer,
-					final Collection<Range> underlyingPositionRanges) {
+			public List<Range> underlyingToLocalPositions(final ILayerDim sourceUnderlyingDim,
+					final Collection<Range> underlyingPositions) {
 				return null;
 			}
 			
 			@Override
-			public Collection<ILayer> getUnderlyingLayersByPosition(final long position) {
+			public List<ILayerDim> getUnderlyingDimsByPosition(final long position) {
 				return null;
 			}
 			
@@ -163,7 +159,7 @@ public class PlaceholderLayer extends DimensionallyDependentIndexLayer {
 		@Override
 		protected void updateDims() {
 			for (final Orientation orientation : Orientation.values()) {
-				setDim(orientation, new Dim(orientation));
+				setDim(new Dim(orientation));
 			}
 		}
 		

@@ -13,12 +13,12 @@ package org.eclipse.nebula.widgets.nattable.group;
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.IValueIterator;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.group.config.DefaultRowGroupHeaderLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.group.model.IRowGroup;
@@ -281,14 +281,12 @@ public class RowGroupHeaderLayer<T> extends AbstractLayerTransform {
 	@Override
 	public LabelStack getConfigLabelsByPosition(long columnPosition, long rowPosition) {
 		long rowIndex = getRowIndexByPosition(rowPosition);
-		if( columnPosition == 0 && RowGroupUtils.isPartOfAGroup(model, rowIndex) ) {
-			List<Range> fullySelectedRowPositions = selectionLayer.getFullySelectedRowPositions();
-			for (Range range : fullySelectedRowPositions) {
-				for (long position = range.start; position < range.end; position++) {
-					long index = this.selectionLayer.getRowIndexByPosition(rowPosition);
-					if (rowIndex == index) {
-						return new LabelStack(SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE, GridRegion.ROW_GROUP_HEADER);
-					}
+		if (columnPosition == 0 && RowGroupUtils.isPartOfAGroup(model, rowIndex)) {
+			final RangeList fullySelectedRowPositions = selectionLayer.getFullySelectedRowPositions();
+			for (final IValueIterator rowIter = fullySelectedRowPositions.values().iterator(); rowIter.hasNext(); ) {
+				long index = this.selectionLayer.getRowIndexByPosition(rowIter.nextValue());
+				if (rowIndex == index) {
+					return new LabelStack(SelectionStyleLabels.ROW_FULLY_SELECTED_STYLE, GridRegion.ROW_GROUP_HEADER);
 				}
 			}
 			return new LabelStack(GridRegion.ROW_GROUP_HEADER);

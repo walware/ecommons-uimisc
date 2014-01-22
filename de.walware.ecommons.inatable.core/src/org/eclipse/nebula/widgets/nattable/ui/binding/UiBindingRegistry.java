@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.MouseEvent;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
@@ -22,8 +24,7 @@ import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.IKeyEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.IMouseEventMatcher;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.MouseEvent;
+
 
 public class UiBindingRegistry implements IUiBindingRegistry {
 	
@@ -41,6 +42,7 @@ public class UiBindingRegistry implements IUiBindingRegistry {
 	
 	// Lookup /////////////////////////////////////////////////////////////////
 	
+	@Override
 	public IKeyAction getKeyEventAction(KeyEvent event) {
 		for (KeyBinding keyBinding : keyBindings) {
 			if (keyBinding.getKeyEventMatcher().matches(event)) {
@@ -50,6 +52,7 @@ public class UiBindingRegistry implements IUiBindingRegistry {
 		return null;
 	}
 	
+	@Override
 	public IDragMode getDragMode(MouseEvent event) {
 		LabelStack regionLabels = natTable.getRegionLabelsByXY(event.x, event.y);
 		
@@ -62,20 +65,39 @@ public class UiBindingRegistry implements IUiBindingRegistry {
 		return null;
 	}
 	
+	@Override
 	public IMouseAction getMouseMoveAction(MouseEvent event) {
 		return getMouseEventAction(MouseEventTypeEnum.MOUSE_MOVE, event);
 	}
 	
+	@Override
 	public IMouseAction getMouseDownAction(MouseEvent event) {
 		return getMouseEventAction(MouseEventTypeEnum.MOUSE_DOWN, event);
 	}
 	
+	@Override
 	public IMouseAction getSingleClickAction(MouseEvent event) {
 		return getMouseEventAction(MouseEventTypeEnum.MOUSE_SINGLE_CLICK, event);
 	}
 	
+	@Override
 	public IMouseAction getDoubleClickAction(MouseEvent event) {
 		return getMouseEventAction(MouseEventTypeEnum.MOUSE_DOUBLE_CLICK, event);
+	}
+	
+	@Override
+	public IMouseAction getMouseHoverAction(MouseEvent event) {
+		return getMouseEventAction(MouseEventTypeEnum.MOUSE_HOVER, event);
+	}
+	
+	@Override
+	public IMouseAction getMouseEnterAction(MouseEvent event) {
+		return getMouseEventAction(MouseEventTypeEnum.MOUSE_ENTER, event);		
+	}
+	
+	@Override
+	public IMouseAction getMouseExitAction(MouseEvent event) {
+		return getMouseEventAction(MouseEventTypeEnum.MOUSE_EXIT, event);
 	}
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -200,6 +222,48 @@ public class UiBindingRegistry implements IUiBindingRegistry {
 		unregisterMouseBinding(MouseEventTypeEnum.MOUSE_DOUBLE_CLICK, mouseEventMatcher);
 	}
 	
+	// Mouse hover
+	
+	public void registerFirstMouseHoverBinding(IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
+		registerMouseBinding(true, MouseEventTypeEnum.MOUSE_HOVER, mouseEventMatcher, action);
+	}
+	
+	public void registerMouseHoverBinding(IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
+		registerMouseBinding(false, MouseEventTypeEnum.MOUSE_HOVER, mouseEventMatcher, action);
+	}
+	
+	public void unregisterMouseHoverBinding(IMouseEventMatcher mouseEventMatcher) {
+		unregisterMouseBinding(MouseEventTypeEnum.MOUSE_HOVER, mouseEventMatcher);
+	}
+	
+	// Mouse enter
+	
+	public void registerFirstMouseEnterBinding(IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
+		registerMouseBinding(true, MouseEventTypeEnum.MOUSE_ENTER, mouseEventMatcher, action);
+	}
+	
+	public void registerMouseEnterBinding(IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
+		registerMouseBinding(false, MouseEventTypeEnum.MOUSE_ENTER, mouseEventMatcher, action);
+	}
+	
+	public void unregisterMouseEnterBinding(IMouseEventMatcher mouseEventMatcher) {
+		unregisterMouseBinding(MouseEventTypeEnum.MOUSE_ENTER, mouseEventMatcher);
+	}
+	
+	// Mouse exit
+	
+	public void registerFirstMouseExitBinding(IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
+		registerMouseBinding(true, MouseEventTypeEnum.MOUSE_EXIT, mouseEventMatcher, action);
+	}
+	
+	public void registerMouseExitBinding(IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
+		registerMouseBinding(false, MouseEventTypeEnum.MOUSE_EXIT, mouseEventMatcher, action);
+	}
+	
+	public void unregisterMouseExitBinding(IMouseEventMatcher mouseEventMatcher) {
+		unregisterMouseBinding(MouseEventTypeEnum.MOUSE_EXIT, mouseEventMatcher);
+	}
+	
 	///////////////////////////////////////////////////////////////////////////
 	
 	private void registerMouseBinding(boolean first, MouseEventTypeEnum mouseEventType, IMouseEventMatcher mouseEventMatcher, IMouseAction action) {
@@ -230,8 +294,10 @@ public class UiBindingRegistry implements IUiBindingRegistry {
 		MOUSE_DOWN,
 		MOUSE_MOVE,
 		MOUSE_SINGLE_CLICK,
-		MOUSE_DOUBLE_CLICK
-		
+		MOUSE_DOUBLE_CLICK,
+		MOUSE_HOVER,
+		MOUSE_ENTER,
+		MOUSE_EXIT
 	}
 
 }

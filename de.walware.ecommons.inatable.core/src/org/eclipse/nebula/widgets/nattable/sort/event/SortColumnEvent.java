@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.sort.event;
 
 import java.util.Collection;
 
-import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnVisualChangeEvent;
@@ -25,15 +24,16 @@ public class SortColumnEvent extends ColumnVisualChangeEvent {
 	public SortColumnEvent(final ILayer layer, final long columnPosition) {
 		super(layer, new Range(columnPosition));
 	}
-
-	public SortColumnEvent(final ILayer layer, final Collection<Long> columnPositions) {
-		super(layer, PositionUtil.getRanges(columnPositions));
+	
+	public SortColumnEvent(final ILayer layer, final Collection<Range> columnPositions) {
+		super(layer, columnPositions);
 	}
-
+	
 	protected SortColumnEvent(final SortColumnEvent event) {
 		super(event);
 	}
-
+	
+	@Override
 	public SortColumnEvent cloneEvent() {
 		return new SortColumnEvent(this);
 	}

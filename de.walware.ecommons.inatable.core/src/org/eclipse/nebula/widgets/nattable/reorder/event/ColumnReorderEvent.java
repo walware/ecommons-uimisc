@@ -74,6 +74,8 @@ public class ColumnReorderEvent extends ColumnStructuralChangeEvent {
 
 		Collection<Range> beforeFromColumnPositionRanges = getBeforeFromColumnPositionRanges();
 
+		final long beforeToColumnPosition = (this.reorderToLeftEdge) ?
+				this.beforeToColumnPosition : (this.beforeToColumnPosition + 1);
 		long afterAddColumnPosition = beforeToColumnPosition;
 		for (Range beforeFromColumnPositionRange : beforeFromColumnPositionRanges) {
 			if (beforeFromColumnPositionRange.start < beforeToColumnPosition) {

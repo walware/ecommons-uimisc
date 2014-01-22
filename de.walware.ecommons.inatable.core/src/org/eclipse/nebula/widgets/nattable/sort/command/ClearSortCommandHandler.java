@@ -11,12 +11,10 @@
 
 package org.eclipse.nebula.widgets.nattable.sort.command;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.eclipse.swt.custom.BusyIndicator;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.sort.ISortModel;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.sort.event.SortColumnEvent;
@@ -46,10 +44,10 @@ public class ClearSortCommandHandler extends AbstractLayerCommandHandler<ClearSo
 			public void run() {
 				// collect sorted columns for event
 				final long columnCount = sortHeaderLayer.getColumnCount();
-				Collection<Long> sortedColumns = new ArrayList<Long>();
+				final RangeList sortedColumns = new RangeList();
 				for (long i = 0; i < columnCount; i++) {
 					if (sortModel.isColumnIndexSorted(i)) {
-						sortedColumns.add(Long.valueOf(i));
+						sortedColumns.values().add(i);
 					}
 				}
 				

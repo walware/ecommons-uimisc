@@ -11,18 +11,21 @@
 // ~Selection
 package org.eclipse.nebula.widgets.nattable.selection.command;
 
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
 import static org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.NO_SELECTION;
 
 import java.util.Collection;
 
-import org.eclipse.nebula.widgets.nattable.command.AbstractMultiRowCommand;
+import org.eclipse.nebula.widgets.nattable.command.AbstractDimPositionsCommand;
 import org.eclipse.nebula.widgets.nattable.command.LayerCommandUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.ColumnPositionCoordinate;
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.coordinate.RowPositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 
-public class SelectRowsCommand extends AbstractMultiRowCommand {
+public class SelectRowsCommand extends AbstractDimPositionsCommand {
 
 
 	private final int selectionFlags;
@@ -32,31 +35,18 @@ public class SelectRowsCommand extends AbstractMultiRowCommand {
 	private RowPositionCoordinate rowPositionToReveal;
 
 
-	public SelectRowsCommand(ILayer layer, long columnPosition, long rowPosition,
+	public SelectRowsCommand(final ILayer layer,
+			final long columnPosition, final long rowPosition,
 			final int selectionFlags) {
-		super(layer, columnPosition);
-		
-		this.selectionFlags = selectionFlags;
-		init(layer, columnPosition, rowPosition);
+		this(layer, columnPosition, new RangeList(rowPosition), selectionFlags, rowPosition);
 	}
 
-	public SelectRowsCommand(final ILayer layer, final long columnPosition, final long[] rowPositions,
+	public SelectRowsCommand(final ILayer layer,
+			final long columnPosition, final Collection<Range> rowPositions,
 			final int selectionFlags, final long rowPositionToReveal) {
-		super(layer, rowPositions);
+		super(layer.getDim(VERTICAL), rowPositions);
 		
 		this.selectionFlags = selectionFlags;
-		init(layer, columnPosition, rowPositionToReveal);
-	}
-
-	public SelectRowsCommand(final ILayer layer, final long columnPosition, final Collection<Long> rowPositions,
-			final int selectionFlags, final long rowPositionToReveal) {
-		super(layer, rowPositions);
-		
-		this.selectionFlags = selectionFlags;
-		init(layer, columnPosition, rowPositionToReveal);
-	}
-
-	private void init(final ILayer layer, final long columnPosition, final long rowPositionToReveal) {
 		this.columnPositionCoordinate = new ColumnPositionCoordinate(layer, columnPosition);
 		if (rowPositionToReveal != NO_SELECTION) {
 			this.rowPositionToReveal = new RowPositionCoordinate(layer, rowPositionToReveal);
@@ -70,12 +60,13 @@ public class SelectRowsCommand extends AbstractMultiRowCommand {
 		this.columnPositionCoordinate = command.columnPositionCoordinate;
 		this.rowPositionToReveal = command.rowPositionToReveal;
 	}
-
+	
+	@Override
 	public SelectRowsCommand cloneCommand() {
 		return new SelectRowsCommand(this);
 	}
-
-
+	
+	
 	@Override
 	public boolean convertToTargetLayer(ILayer targetLayer) {
 		ColumnPositionCoordinate targetColumnPositionCoordinate = LayerCommandUtil.convertColumnPositionToTargetContext(

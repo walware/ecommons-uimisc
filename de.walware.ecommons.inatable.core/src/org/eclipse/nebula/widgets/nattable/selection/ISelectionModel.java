@@ -8,61 +8,156 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
-// ~Selection
+// ~
 package org.eclipse.nebula.widgets.nattable.selection;
 
 import java.util.List;
 
-import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 
+
 /**
  * Tracks the selections made in the table.
+ * <p>
+ * A column or row is <i>selected</i>, if any cells in that column/row are selected.
+ * A column or row is <i>fully selected</i>, if all cells in that column/row are selected.
+ * A column or row is not selected and not fully selected, if the selection layer is empty
+ * (any dim has size 0).</p>
  */
 public interface ISelectionModel {
 	
-	public boolean isMultipleSelectionAllowed();
 	
-
-	public void addSelection(long columnPosition, long rowPosition);
-
-	public void addSelection(final Rectangle range);
-
-	public void clearSelection();
-
-	public void clearSelection(long columnPosition, long rowPosition);
-
-	public void clearSelection(Rectangle removedSelection);
-
-	public boolean isEmpty();
-
-	public List<Rectangle> getSelections();
+	boolean isMultipleSelectionAllowed();
 	
-	// Cell features
-
-	public boolean isCellPositionSelected(ILayerCell cell);
 	
-	// Column features
-
-	public List<Range> getSelectedColumnPositions();
-
-	public boolean isColumnPositionSelected(long columnPosition);
-
-	public List<Range> getFullySelectedColumnPositions();
-
-	public boolean isColumnPositionFullySelected(long columnPosition);
-
-	// Row features
-
-	public long getSelectedRowCount();
+	/**
+	 * Adds the specified position to the selection.
+	 * 
+	 * @param columnPosition the column position in the selection layer
+	 * @param rowPosition the row position in the selection layer
+	 */
+	void addSelection(long columnPosition, long rowPosition);
 	
-	public List<Range> getSelectedRowPositions();
+	/**
+	 * Adds the specified position rectangle to the selection.
+	 * 
+	 * @param rect the position rectangle in the selection layer
+	 */
+	void addSelection(Rectangle positions);
 	
-	public boolean isRowPositionSelected(long rowPosition);
-
-	public List<Range> getFullySelectedRowPositions();
-
-	public boolean isRowPositionFullySelected(long rowPosition);
+	/**
+	 * Clears the selection completely.
+	 */
+	void clearSelection();
+	
+	/**
+	 * Removes the specified position from the selection.
+	 * 
+	 * @param columnPosition the column position in the selection layer
+	 * @param rowPosition the row position in the selection layer
+	 */
+	void clearSelection(long columnPosition, long rowPosition);
+	
+	/**
+	 * Removes the specified position rectangle from the selection.
+	 * 
+	 * @param rect the position rectangle in the selection layer
+	 */
+	void clearSelection(Rectangle positions);
+	
+	/**
+	 * Returns if the selection is empty.
+	 * 
+	 * @return <code>true</code> if the selection is empty, otherwise <code>false</code>
+	 */
+	boolean isEmpty();
+	
+	/**
+	 * Returns a collection of rectangles of selected positions. If a position is inside a
+	 * rectangle of the list, it is selected, otherwise it is not selected.
+	 * 
+	 * @return a list of position rectangles
+	 */
+	List<Rectangle> getSelections();
+	
+	//-- Cell features --//
+	
+	/**
+	 * Returns if the specified position is selected.
+	 * 
+	 * @param columnPosition the column position in the selection layer
+	 * @param rowPosition the row position in the selection layer
+	 * @return <code>true</code> if the position is selected, otherwise <code>false</code>
+	 */
+	boolean isCellPositionSelected(ILayerCell cell);
+	
+	//-- Column features --//
+	
+	/**
+	 * Returns the positions of all selected columns. 
+	 * 
+	 * @return the positions of selected columns as ordered and disjoint list of position ranges
+	 */
+	RangeList getSelectedColumnPositions();
+	
+	/**
+	 * Returns if the specified column position is selected. A column is selected, if any cell in 
+	 * the column is selected.
+	 * 
+	 * @param columnPosition the column position in the selection layer
+	 * @return <code>true</code> if the column is selected, otherwise <code>false</code>
+	 */
+	boolean isColumnPositionSelected(long columnPosition);
+	
+	/**
+	 * Returns the positions of all fully selected columns. 
+	 * 
+	 * @return the positions of fully selected columns as ordered and disjoint list of position ranges
+	 */
+	RangeList getFullySelectedColumnPositions();
+	
+	/**
+	 * Returns if the specified column position is fully selected.
+	 * 
+	 * @param columnPosition the column position in the selection layer
+	 * @return <code>true</code> if the column is fully selected, otherwise <code>false</code>
+	 */
+	boolean isColumnPositionFullySelected(long columnPosition);
+	
+	//-- Row features --//
+	
+	long getSelectedRowCount();
+	
+	/**
+	 * Returns the positions of all selected rows. 
+	 * 
+	 * @return the positions of selected rows as ordered and disjoint list of position ranges
+	 */
+	RangeList getSelectedRowPositions();
+	
+	/**
+	 * Returns if the specified row position is selected.
+	 * 
+	 * @param rowPosition the row position in the selection layer
+	 * @return <code>true</code> if the row is selected, otherwise <code>false</code>
+	 */
+	boolean isRowPositionSelected(long rowPosition);
+	
+	/**
+	 * Returns the positions of all fully selected rows. 
+	 * 
+	 * @return the positions of fully selected rows as ordered and disjoint list of position ranges
+	 */
+	RangeList getFullySelectedRowPositions();
+	
+	/**
+	 * Returns if the specified row position is fully selected.
+	 * 
+	 * @param rowPosition the row position in the selection layer
+	 * @return <code>true</code> if the row is fully selected, otherwise <code>false</code>
+	 */
+	boolean isRowPositionFullySelected(long rowPosition);
 	
 }

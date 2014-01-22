@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,7 +14,6 @@ import static org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes.CE
 import static org.eclipse.nebula.widgets.nattable.style.DisplayMode.NORMAL;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -23,7 +22,8 @@ import org.eclipse.swt.widgets.Display;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
-import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.IValueIterator;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
@@ -32,6 +32,7 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.style.editor.ColumnStyleEditorDialog;
+
 
 /**
  * 
@@ -75,7 +76,7 @@ public class DisplayColumnStyleEditorCommandHandler extends AbstractLayerCommand
 			return true;
 		}
 		
-		applySelectedStyleToColumns(command);
+		applySelectedStyleToColumns(command, selectionLayer.getSelectedColumnPositions());
 		return true;
 	}
 
@@ -83,26 +84,22 @@ public class DisplayColumnStyleEditorCommandHandler extends AbstractLayerCommand
 		return DisplayColumnStyleEditorCommand.class;
 	}
 
-	protected void applySelectedStyleToColumns(DisplayColumnStyleEditorCommand command) {
-		final List<Range> selectedColumnPositions = selectionLayer.getSelectedColumnPositions();
-		for (final Range range : selectedColumnPositions) {
-			for (long position = range.start; position < range.end; position++) {
-				long index = selectionLayer.getColumnIndexByPosition(position);
-				if (index >= 0) {
-					// Read the edited styles
-					Style newColumnCellStyle = dialog.getNewColumnCellStyle(); 
-					
-					String configLabel = getConfigLabel(index);
-					if (newColumnCellStyle == null) {
-						stylesToPersist.remove(configLabel);
-					} else {
-						newColumnCellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, dialog.getNewColumnBorderStyle());
-						stylesToPersist.put(configLabel, newColumnCellStyle);
-					}
-					configRegistry.registerConfigAttribute(CELL_STYLE, newColumnCellStyle, NORMAL, configLabel);
-					columnLabelAccumulator.registerColumnOverridesOnTop(index, configLabel);
-				}
+	protected void applySelectedStyleToColumns(DisplayColumnStyleEditorCommand command,
+			final RangeList columnPositions) {
+		for (final IValueIterator columnIter = columnPositions.values().iterator(); columnIter.hasNext(); ) {
+			final long columnIndex = selectionLayer.getColumnIndexByPosition(columnIter.nextValue());
+			// Read the edited styles
+			Style newColumnCellStyle = dialog.getNewColumnCellStyle(); 
+			
+			String configLabel = getConfigLabel(columnIndex);
+			if (newColumnCellStyle == null) {
+				stylesToPersist.remove(configLabel);
+			} else {
+				newColumnCellStyle.setAttributeValue(CellStyleAttributes.BORDER_STYLE, dialog.getNewColumnBorderStyle());
+				stylesToPersist.put(configLabel, newColumnCellStyle);
 			}
+			configRegistry.registerConfigAttribute(CELL_STYLE, newColumnCellStyle, NORMAL, configLabel);
+			columnLabelAccumulator.registerColumnOverridesOnTop(columnIndex, configLabel);
 		}
 	}
 

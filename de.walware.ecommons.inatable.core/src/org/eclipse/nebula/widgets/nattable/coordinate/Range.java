@@ -23,15 +23,21 @@ import java.util.List;
 public final class Range implements Comparable<Range> {
 	
 	
-	public long start = 0;
-	public long end = 0;
+	public long start;
+	public long end;
 	
 	
+	/**
+	 * Creates a new range with the specified start and end values.
+	 */
 	public Range(final long start, final long end) {
 		this.start = start;
 		this.end = end;
 	}
 	
+	/**
+	 * Creates a new range which contains the specified single value.
+	 */
 	public Range(final long value) {
 		this.start = value;
 		this.end = value + 1;
@@ -61,16 +67,16 @@ public final class Range implements Comparable<Range> {
 	}
 	
 	/**
-	 * @return TRUE if the range contains the given row position
+	 * @return <code>true</code> if the range contains the given row position
 	 */
 	public boolean contains(long position) {
-		return position >= start && position < end;
+		return ((position >= start) && (position < end));
 	}
 
 	public boolean overlap(Range range) {
-		return (start < end) &&  // this is a non-empty range
+		return ((this.start < this.end) &&  // this is a non-empty range
 				(range.start < range.end) &&  // range parameter is non-empty
-				(this.contains(range.start) || this.contains(range.end - 1) || range.contains(start) || range.contains(end - 1));
+				(contains(range.start) || contains(range.end - 1) || range.contains(this.start) || range.contains(this.end - 1)) );
 	}
 
 	public List<Long> getMembers() {
@@ -103,12 +109,12 @@ public final class Range implements Comparable<Range> {
 			return false;
 		}
 		final Range other = (Range) obj;
-		return (start == other.start) && (end == other.end);
+		return ((this.start == other.start) && (this.end == other.end));
 	}
 	
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + " [" + start + "," + end + "]";
+		return "Range {" + start + ", " + end + "}"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 	
 }

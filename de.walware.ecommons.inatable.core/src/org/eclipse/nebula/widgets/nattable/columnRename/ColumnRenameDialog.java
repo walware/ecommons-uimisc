@@ -11,8 +11,8 @@
 // -depend
 package org.eclipse.nebula.widgets.nattable.columnRename;
 
-import org.eclipse.nebula.widgets.nattable.Messages;
-import org.eclipse.nebula.widgets.nattable.style.editor.AbstractStyleEditorDialog;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
@@ -20,6 +20,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+
+import org.eclipse.nebula.widgets.nattable.Messages;
+import org.eclipse.nebula.widgets.nattable.internal.NatTablePlugin;
+import org.eclipse.nebula.widgets.nattable.style.editor.AbstractStyleEditorDialog;
 
 
 public class ColumnRenameDialog extends AbstractStyleEditorDialog {
@@ -59,7 +63,11 @@ public class ColumnRenameDialog extends AbstractStyleEditorDialog {
 		panel.setLayoutData(fillGridData);
 
 		columnLabelPanel = new ColumnLabelPanel(panel, columnLabel, renamedColumnLabel);
-		columnLabelPanel.edit(renamedColumnLabel);
+		try {
+			columnLabelPanel.edit(renamedColumnLabel);
+		} catch (Exception e) {
+			NatTablePlugin.log(new Status(IStatus.ERROR, NatTablePlugin.PLUGIN_ID, "An error occurred when initializing the edit component.", e));
+		}
 	}
 
 	@Override

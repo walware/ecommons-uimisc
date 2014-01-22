@@ -70,7 +70,7 @@ public class Node implements Serializable {
      * Returns the number of immediate children of this Node.
      * @return the number of immediate children.
      */
-    public long getNumberOfChildren() {
+    public int getNumberOfChildren() {
         if (children == null) {
             return 0;
         }

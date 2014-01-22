@@ -16,27 +16,27 @@ import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZON
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.Direction;
+import org.eclipse.nebula.widgets.nattable.coordinate.IValueIterator;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
-import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.edit.command.EditSelectionCommandHandler;
 import org.eclipse.nebula.widgets.nattable.grid.command.InitializeAutoResizeColumnsCommandHandler;
 import org.eclipse.nebula.widgets.nattable.grid.command.InitializeAutoResizeRowsCommandHandler;
-import org.eclipse.nebula.widgets.nattable.hideshow.command.ColumnHideCommand;
-import org.eclipse.nebula.widgets.nattable.hideshow.command.MultiColumnHideCommand;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractTransformIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.TransformIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
-import org.eclipse.nebula.widgets.nattable.resize.command.ColumnResizeCommand;
-import org.eclipse.nebula.widgets.nattable.resize.command.RowResizeCommand;
 import org.eclipse.nebula.widgets.nattable.search.command.SearchGridCellsCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.command.ClearAllSelectionsCommand;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectAllCommand;
@@ -55,7 +55,7 @@ import org.eclipse.nebula.widgets.nattable.style.SelectionStyleLabels;
  * @see DefaultSelectionLayerConfiguration
  * @see Direction
  */
-public class SelectionLayer extends AbstractTransformIndexLayer {
+public class SelectionLayer extends TransformIndexLayer {
 
 	public static final int MOVE_ALL = -1;
 	public static final int NO_SELECTION = -1;
@@ -183,25 +183,40 @@ public class SelectionLayer extends AbstractTransformIndexLayer {
 	}
 
 	public List<PositionCoordinate> getSelectedCellPositions() {
-		List<Range> selectedColumnPositions = getSelectedColumnPositions();
-		List<Range> selectedRowPositions = getSelectedRowPositions();
-
+		final RangeList selectedColumnPositions = getSelectedColumnPositions();
+		final RangeList selectedRowPositions = getSelectedRowPositions();
+		
 		List<PositionCoordinate> selectedCells = new ArrayList<PositionCoordinate>();
-
-		for (Range columnRange : selectedColumnPositions) {
-			for (long columnPosition = columnRange.start; columnPosition < columnRange.end; columnPosition++) {
-				for (Range rowRange : selectedRowPositions) {
-					for (long rowPosition = rowRange.start; rowPosition < rowRange.end; rowPosition++) {
-						if (isCellPositionSelected(columnPosition, rowPosition)) {
-							selectedCells.add(new PositionCoordinate(this, columnPosition, rowPosition));
-						}
-					}
+		
+		for (final IValueIterator columnIter = selectedColumnPositions.values().iterator(); columnIter.hasNext(); ) {
+			final long columnPosition = columnIter.nextValue();
+			for (final IValueIterator rowIter = selectedRowPositions.values().iterator(); rowIter.hasNext(); ) {
+				final long rowPosition = rowIter.nextValue();
+				if (isCellPositionSelected(columnPosition, rowPosition)) {
+					selectedCells.add(new PositionCoordinate(this, columnPosition, rowPosition));
 				}
 			}
 		}
+		
 		return selectedCells;
 	}
+	
+	/**
+	 * Retrieves the ILayerCells out of the SelectionLayer that are currently marked as selected in
+	 * the SelectionModel. Takes spanning into account.
+	 * @return The selected ILayerCells
+	 */
+	public Collection<ILayerCell> getSelectedCells() {
+		Set<ILayerCell> selectedCells = new HashSet<ILayerCell>();
 
+		List<PositionCoordinate> selectedCoords = getSelectedCellPositions();
+		for (PositionCoordinate coord : selectedCoords) {
+			selectedCells.add(getCellByPosition(coord.columnPosition, coord.rowPosition));
+		}
+
+		return selectedCells;
+	}
+	
 	/**
 	 * Calculates the selected cells - taking into account Shift and Ctrl key presses.
 	 */
@@ -274,7 +289,7 @@ public class SelectionLayer extends AbstractTransformIndexLayer {
 		return lastSelectedCell.columnPosition != NO_SELECTION;
 	}
 
-	public List<Range> getSelectedColumnPositions() {
+	public RangeList getSelectedColumnPositions() {
 		return selectionModel.getSelectedColumnPositions();
 	}
 
@@ -282,7 +297,7 @@ public class SelectionLayer extends AbstractTransformIndexLayer {
 		return selectionModel.isColumnPositionSelected(columnPosition);
 	}
 
-	public List<Range> getFullySelectedColumnPositions() {
+	public RangeList getFullySelectedColumnPositions() {
 		return selectionModel.getFullySelectedColumnPositions();
 	}
 
@@ -293,40 +308,6 @@ public class SelectionLayer extends AbstractTransformIndexLayer {
 //	public void selectColumn(final long columnPosition, final long rowPosition, final int selectionFlags) {
 //		selectColumnCommandHandler.;
 //	}
-
-	protected boolean hideColumnPosition(ColumnHideCommand command) {
-//		if (isColumnPositionFullySelected(command.getColumnPosition())) {
-//			return super.doCommand(new MultiColumnHideCommand(this, getFullySelectedColumnPositions()));
-//		} else {
-			return super.doCommand(command);
-//		}
-	}
-
-	/**
-	 * Any selected columns will be hidden. A column is considered selected even if a cell is selected.
-	 */
-	protected boolean hideMultipleColumnPositions(MultiColumnHideCommand command) {
-		for (long columnPosition : command.getColumnPositions()) {
-			if (isColumnPositionFullySelected(columnPosition)) {
-				Rectangle selection = new Rectangle(columnPosition, 0, 1, getRowCount());
-				clearSelection(selection);
-			}
-		}
-		return super.doCommand(command);
-	}
-
-	/**
-	 * This method will check to see if the column to resize is part of the selection model, if it is, it will create a
-	 * new MultiResizeColumnCommand and pass it.
-	 * @param command
-	 */
-	protected boolean handleColumnResizeCommand(ColumnResizeCommand command) {
-//		if (isColumnPositionFullySelected(command.getColumnPosition())) {
-//			return super.doCommand(new MultiColumnResizeCommand(this, selectionModel.getFullySelectedColumnPositions(), command.getNewColumnWidth()));
-//		} else {
-			return super.doCommand(command);
-//		}
-	}
 
 
 	// Row features
@@ -339,7 +320,7 @@ public class SelectionLayer extends AbstractTransformIndexLayer {
 		return selectionModel.getSelectedRowCount();
 	}
 
-	public List<Range> getSelectedRowPositions() {
+	public RangeList getSelectedRowPositions() {
 		return selectionModel.getSelectedRowPositions();
 	}
 
@@ -347,7 +328,7 @@ public class SelectionLayer extends AbstractTransformIndexLayer {
 		return selectionModel.isRowPositionSelected(rowPosition);
 	}
 
-	public List<Range> getFullySelectedRowPositions() {
+	public RangeList getFullySelectedRowPositions() {
 		return selectionModel.getFullySelectedRowPositions();
 	}
 
@@ -360,14 +341,6 @@ public class SelectionLayer extends AbstractTransformIndexLayer {
 //		selectRowCommandHandler.selectRows(columnPosition, Arrays.asList(Long.valueOf(rowPosition)),
 //				selectionFlags, (moveIntoViewport) ? rowPosition : -1);
 //	}
-
-	protected boolean handleRowResizeCommand(RowResizeCommand command) {
-//		if (isRowPositionFullySelected(command.getRowPosition())) {
-//			return super.doCommand(new MultiRowResizeCommand(this, selectionModel.getFullySelectedRowPositions(), command.getNewHeight()));
-//		} else {
-			return super.doCommand(command);
-//		}
-	}
 
 	// ILayer methods
 	
@@ -403,6 +376,7 @@ public class SelectionLayer extends AbstractTransformIndexLayer {
 
 	// Command handling
 
+	@Override
 	protected void registerCommandHandlers() {
 		// Command handlers also registered by the DefaultSelectionLayerConfiguration
 		registerCommandHandler(selectCellCommandHandler);
@@ -424,14 +398,6 @@ public class SelectionLayer extends AbstractTransformIndexLayer {
 		} else if (command instanceof ClearAllSelectionsCommand && command.convertToTargetLayer(this)) {
 			clear();
 			return true;
-		} else if (command instanceof MultiColumnHideCommand && command.convertToTargetLayer(this)) {
-			return hideMultipleColumnPositions((MultiColumnHideCommand)command);
-		} else if (command instanceof ColumnHideCommand && command.convertToTargetLayer(this)) {
-			return hideColumnPosition((ColumnHideCommand)command);
-		} else if (command instanceof ColumnResizeCommand && command.convertToTargetLayer(this)) {
-			return handleColumnResizeCommand((ColumnResizeCommand) command);
-		} else if (command instanceof RowResizeCommand && command.convertToTargetLayer(this)) {
-			return handleRowResizeCommand((RowResizeCommand) command);
 		}
 		return super.doCommand(command);
 	}

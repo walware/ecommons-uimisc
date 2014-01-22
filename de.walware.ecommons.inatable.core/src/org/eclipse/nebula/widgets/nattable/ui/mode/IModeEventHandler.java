@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,10 @@ import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackListener;
 
-public interface IModeEventHandler extends KeyListener, MouseListener, MouseMoveListener, FocusListener {
+public interface IModeEventHandler 
+	extends KeyListener, MouseListener, MouseMoveListener, MouseTrackListener, FocusListener {
 
 	public void cleanup();
 	

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,6 +16,8 @@ public interface SelectionStyleLabels {
     
     public static final String SELECTION_ANCHOR_STYLE = "selectionAnchor"; //$NON-NLS-1$
     
+    public static final String SELECTION_ANCHOR_GRID_LINE_STYLE = "selectionAnchorGridLine"; //$NON-NLS-1$
+
     public static final String COLUMN_FULLY_SELECTED_STYLE = GridRegion.COLUMN_HEADER + "_FULL"; //$NON-NLS-1$
     
     public static final String ROW_FULLY_SELECTED_STYLE = GridRegion.ROW_HEADER + "_FULL"; //$NON-NLS-1$

@@ -26,7 +26,7 @@ public interface IEventConflater {
 	/**
 	 * @return Number of events currently waiting to be handled
 	 */
-	public abstract long getCount();
+	public abstract int getCount();
 	
 	public Runnable getConflaterTask();
 

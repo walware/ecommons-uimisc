@@ -73,7 +73,7 @@ import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
  *   <tr><td>corner</td><td>column header</td></tr>
  *   <tr><td>row header</td><td>body</td></tr>
  * </table>
- *
+ * 
  * @see CompositeLayer
  */
 public interface ILayer extends ILayerListener, IPersistable {
@@ -83,7 +83,14 @@ public interface ILayer extends ILayerListener, IPersistable {
 	void dispose();
 	
 	
-	ILayerDim getDim(Orientation orientation);
+	/**
+	 * Returns the layer dimension of this layer for the given orientation
+	 * 
+	 * @param orientation the orientation
+	 * 
+	 * @return the layer dimension
+	 */
+	ILayerDim getDim(/*@NonNull*/ Orientation orientation);
 	
 	
 	// Persistence
@@ -172,6 +179,7 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 */
 	long getColumnCount();
 	
+	@Deprecated
 	long getPreferredColumnCount();
 	
 	/**
@@ -250,6 +258,7 @@ public interface ILayer extends ILayerListener, IPersistable {
 	 */
 	long getRowCount();
 	
+	@Deprecated
 	long getPreferredRowCount();
 	
 	/**

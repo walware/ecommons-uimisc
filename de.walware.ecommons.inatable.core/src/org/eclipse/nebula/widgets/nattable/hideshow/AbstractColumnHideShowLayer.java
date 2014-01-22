@@ -121,7 +121,7 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 			// corresponding startPosition weren't found in the underlying layer.
 			// Without that fix a bunch of ranges of kind Range [-1, 180] which
 			// causes strange behaviour in Freeze- and other Layers were returned.
-			if (startColumnPosition > -1) {
+			if (startColumnPosition > -1 && startColumnPosition < endColumnPosition) {
 				localColumnPositionRanges.add(new Range(startColumnPosition, endColumnPosition));
 			}
 		}
@@ -171,6 +171,9 @@ public abstract class AbstractColumnHideShowLayer extends AbstractLayerTransform
 
 		IUniqueIndexLayer underlyingLayer = (IUniqueIndexLayer) getUnderlyingLayer();
 		long underlyingPosition = localToUnderlyingColumnPosition(localColumnPosition);
+		if (underlyingPosition < 0) {
+			return -1;
+		}
 		long underlyingStartX = underlyingLayer.getStartXOfColumnPosition(underlyingPosition);
 
 		for (Long hiddenIndex : getHiddenColumnIndexes()) {

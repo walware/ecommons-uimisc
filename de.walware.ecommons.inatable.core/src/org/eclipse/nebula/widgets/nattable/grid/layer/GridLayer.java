@@ -12,7 +12,6 @@ package org.eclipse.nebula.widgets.nattable.grid.layer;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
-import org.eclipse.nebula.widgets.nattable.coordinate.SWTUtil;
 import org.eclipse.nebula.widgets.nattable.export.command.ExportCommandHandler;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
@@ -21,6 +20,7 @@ import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
+import org.eclipse.nebula.widgets.nattable.swt.SWTUtil;
 
 /**
  * Top level layer. It is composed of the smaller child layers: RowHeader,

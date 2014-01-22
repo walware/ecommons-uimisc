@@ -52,8 +52,8 @@ import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 public abstract class AbstractLayer implements ILayer {
 	
 	
-	private ILayerDim h;
-	private ILayerDim v;
+	private ILayerDim hDim;
+	private ILayerDim vDim;
 	
 	private String regionName;
 	protected ILayerPainter layerPainter;
@@ -75,27 +75,35 @@ public abstract class AbstractLayer implements ILayer {
 	}
 	
 	
+	// Dims
+	
+	/**
+	 * Updates the layer dimensions.
+	 * 
+	 * Override this method to set custom layer dimension implementations.
+	 */
 	protected void updateDims() {
-		setDim(HORIZONTAL, new HorizontalLayerDim<ILayer>(this));
-		setDim(VERTICAL, new VerticalLayerDim<ILayer>(this));
+		setDim(new HorizontalLayerDim(this));
+		setDim(new VerticalLayerDim(this));
 	}
 	
-	protected void setDim(final Orientation orientation, final ILayerDim dim) {
-		if (orientation == null) {
-			throw new NullPointerException("orientation"); //$NON-NLS-1$
-		}
+	/**
+	 * Sets the layer dimension of this layer for the orientation of the given dimension.
+	 * 
+	 * This method use usually called in {@link #updateDims()}.
+	 * 
+	 * @param dim the layer dimension
+	 */
+	protected void setDim(/*@NonNull*/ final ILayerDim dim) {
 		if (dim == null) {
 			throw new NullPointerException("dim"); //$NON-NLS-1$
 		}
-		if (dim.getOrientation() != orientation) {
-			throw new IllegalArgumentException("wrong orientation"); //$NON-NLS-1$
-		}
 		
-		if (orientation == HORIZONTAL) {
-			this.h = dim;
+		if (dim.getOrientation() == HORIZONTAL) {
+			this.hDim = dim;
 		}
 		else {
-			this.v = dim;
+			this.vDim = dim;
 		}
 	}
 	
@@ -105,7 +113,7 @@ public abstract class AbstractLayer implements ILayer {
 			throw new NullPointerException("orientation"); //$NON-NLS-1$
 		}
 		
-		return (orientation == HORIZONTAL) ? this.h : this.v;
+		return (orientation == HORIZONTAL) ? this.hDim : this.vDim;
 	}
 	
 	
@@ -116,11 +124,14 @@ public abstract class AbstractLayer implements ILayer {
 	
 	// Dispose
 	
+	@Override
 	public void dispose() {
 	}
 	
+	
 	// Regions
 	
+	@Override
 	public LabelStack getRegionLabelsByXY(long x, long y) {
 		LabelStack regionLabels = new LabelStack();
 		if (regionName != null) {
@@ -139,6 +150,7 @@ public abstract class AbstractLayer implements ILayer {
 	
 	// Config lables
 	
+	@Override
 	public LabelStack getConfigLabelsByPosition(long columnPosition, long rowPosition) {
 		LabelStack configLabels = new LabelStack();
 		if (configLabelAccumulator != null) {
@@ -160,22 +172,26 @@ public abstract class AbstractLayer implements ILayer {
 	
 	// Persistence
 	
+	@Override
 	public void saveState(String prefix, Properties properties) {
 		for (IPersistable persistable : persistables) {
 			persistable.saveState(prefix, properties);
 		}
 	}
 	
+	@Override
 	public void loadState(String prefix, Properties properties) {
 		for (IPersistable persistable : persistables) {
 			persistable.loadState(prefix, properties);
 		}
 	}
 	  
+	@Override
 	public void registerPersistable(IPersistable persistable){
 		persistables.add(persistable);
 	}
 
+	@Override
 	public void unregisterPersistable(IPersistable persistable){
 		persistables.remove(persistable);
 	}
@@ -190,6 +206,7 @@ public abstract class AbstractLayer implements ILayer {
 		configurations.clear();
 	}
 	
+	@Override
 	public void configure(ConfigRegistry configRegistry, UiBindingRegistry uiBindingRegistry) {
 		for (IConfiguration configuration : configurations) {
 			configuration.configureLayer(this);
@@ -200,6 +217,7 @@ public abstract class AbstractLayer implements ILayer {
 	
 	// Commands
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean doCommand(ILayerCommand command) {
 		for (Class<? extends ILayerCommand> commandClass : commandHandlers.keySet()) {
@@ -225,20 +243,24 @@ public abstract class AbstractLayer implements ILayer {
 		// No op
 	}
 	
+	@Override
 	public void registerCommandHandler(ILayerCommandHandler<?> commandHandler) {
 		commandHandlers.put(commandHandler.getCommandClass(), commandHandler);
 	}
 
+	@Override
 	public void unregisterCommandHandler(Class<? extends ILayerCommand> commandClass) {
 		commandHandlers.remove(commandClass);
 	}
 	
 	// Events
 	
+	@Override
 	public void addLayerListener(ILayerListener listener) {
 		listeners.add(listener);
 	}
 	
+	@Override
 	public void removeLayerListener(ILayerListener listener) {
 		listeners.remove(listener);
 	}
@@ -251,6 +273,7 @@ public abstract class AbstractLayer implements ILayer {
 	 * the event up the layer stack by calling <code>super.fireLayerEvent(event)</code>
 	 * - unless you plan to eat the event yourself.
 	 **/
+	@Override
 	@SuppressWarnings("unchecked")
 	public void handleLayerEvent(ILayerEvent event) {
 		for (Class<? extends ILayerEvent> eventClass : eventHandlers.keySet()) {
@@ -270,10 +293,15 @@ public abstract class AbstractLayer implements ILayer {
 		eventHandlers.put(eventHandler.getLayerEventClass(), eventHandler);
 	}
 	
+	public void unregisterEventHandler(ILayerEventHandler<?> eventHandler) {
+		eventHandlers.remove(eventHandler.getLayerEventClass());
+	}
+	
 	/**
 	 * Pass the event to all the {@link ILayerListener} registered on this layer.
 	 * A cloned copy is passed to each listener.
 	 */
+	@Override
 	public void fireLayerEvent(ILayerEvent event) {
 		final ILayerListener[] currentListeners = listeners.getListeners();
 		final int last = currentListeners.length - 1;
@@ -289,6 +317,7 @@ public abstract class AbstractLayer implements ILayer {
 	/**
 	 * @return {@link ILayerPainter}. Defaults to {@link GridLineCellLayerPainter}
 	 */
+	@Override
 	public ILayerPainter getLayerPainter() {
 		if (layerPainter == null) {
 			layerPainter = new GridLineCellLayerPainter();
@@ -302,10 +331,12 @@ public abstract class AbstractLayer implements ILayer {
 
 	// Client area
 	
+	@Override
 	public IClientAreaProvider getClientAreaProvider() {
 		return clientAreaProvider;
 	}
 	
+	@Override
 	public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
 		this.clientAreaProvider = clientAreaProvider;
 	}
@@ -315,6 +346,7 @@ public abstract class AbstractLayer implements ILayer {
 		return getClass().getSimpleName();
 	}
 	
+	@Override
 	public ILayerCell getCellByPosition(long columnPosition, long rowPosition) {
 		if (columnPosition < 0 || columnPosition >= getColumnCount()
 				|| rowPosition < 0 || rowPosition >= getRowCount()) {
@@ -328,6 +360,7 @@ public abstract class AbstractLayer implements ILayer {
 						rowPosition ));
 	}
 	
+	@Override
 	public Rectangle getBoundsByPosition(long columnPosition, long rowPosition) {
 		ILayerCell cell = getCellByPosition(columnPosition, rowPosition);
 		
@@ -361,6 +394,7 @@ public abstract class AbstractLayer implements ILayer {
 		return new Rectangle(xOffset, yOffset, width, height);
 	}
 	
+	@Override
 	public ICellPainter getCellPainter(long columnPosition, long rowPosition, ILayerCell cell, IConfigRegistry configRegistry) {
 		return configRegistry.getConfigAttribute(CellConfigAttributes.CELL_PAINTER, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
 	}

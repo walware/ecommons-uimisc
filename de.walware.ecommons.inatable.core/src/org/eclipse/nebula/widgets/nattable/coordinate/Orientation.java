@@ -18,7 +18,7 @@ public enum Orientation {
 	/**
 	 * The horizontal orientation (columns)
 	 */
-	HORIZONTAL(),
+	HORIZONTAL,
 	
 	/**
 	 * The vertical orientation (rows)
@@ -26,19 +26,8 @@ public enum Orientation {
 	VERTICAL();
 	
 	
-	private Orientation() {
-	}
-	
-	
 	public Orientation getOrthogonal() {
-		switch (this) {
-		case HORIZONTAL:
-			return VERTICAL;
-		case VERTICAL:
-			return HORIZONTAL;
-		default:
-			throw new IllegalStateException();
-		}
+		return (this == HORIZONTAL) ? VERTICAL : HORIZONTAL;
 	}
 	
 }

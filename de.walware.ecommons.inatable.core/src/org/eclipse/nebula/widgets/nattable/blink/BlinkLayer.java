@@ -69,7 +69,7 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements IUniqueInde
 	private final UpdateEventsCache<T> updateEventsCache;
 
 	/** Duration of a single blink */
-	private long blinkDurationInMilis = 1000;
+	private int blinkDurationInMilis = 1000;
 
 	/** Track the updates which are currently blinking */
 	Map<String, PropertyUpdateEvent<T>> blinkingUpdates = new HashMap<String, PropertyUpdateEvent<T>>();
@@ -244,7 +244,7 @@ public class BlinkLayer<T> extends AbstractLayerTransform implements IUniqueInde
 		return dataLayer.getRowPositionByIndex(rowIndex);
 	}
 
-	public void setBlinkDurationInMilis(long blinkDurationInMilis) {
+	public void setBlinkDurationInMilis(int blinkDurationInMilis) {
 		this.blinkDurationInMilis = blinkDurationInMilis;
 	}
 

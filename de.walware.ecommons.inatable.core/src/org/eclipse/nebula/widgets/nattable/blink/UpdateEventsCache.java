@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,10 +32,10 @@ import org.eclipse.nebula.widgets.nattable.layer.event.PropertyUpdateEvent;
 public class UpdateEventsCache<T> {
 
 	/** Initial startup delay for the expired event removal task */
-	public static final long INITIAL_DELAY = 100;
+	public static final int INITIAL_DELAY = 100;
 
 	/** TTL for an event in the cache. The event is deleted when this expires */
-	public static final long TIME_TO_LIVE = 500;
+	public static final int TIME_TO_LIVE = 500;
 
 	private final IRowIdAccessor<T> rowIdAccessor;
 	private final KeyStrategy keyStrategy;
@@ -108,7 +108,7 @@ public class UpdateEventsCache<T> {
 		return updateEvents.get(key).event;
 	}
 
-	public long getCount() {
+	public int getCount() {
 		return updateEvents.size();
 	}
 

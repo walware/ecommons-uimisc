@@ -6,26 +6,29 @@
  * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
- *     Stephan Wahlbrink - initial API and implementation
+ *     Edwin Park - original layer-based implementation supporting smooth scrolling
+ *     Stephan Wahlbrink - initial API and dim-based implementation
  ******************************************************************************/
 
 package org.eclipse.nebula.widgets.nattable.viewport;
 
 import static org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer.PAGE_INTERSECTION_SIZE;
 
+import java.util.Collection;
+
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Scrollable;
 
-import org.eclipse.nebula.widgets.nattable.coordinate.SWTUtil;
-import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerDim;
-import org.eclipse.nebula.widgets.nattable.layer.TransformDim;
+import org.eclipse.nebula.widgets.nattable.layer.TransformLayerDim;
+import org.eclipse.nebula.widgets.nattable.layer.event.StructuralDiff;
+import org.eclipse.nebula.widgets.nattable.swt.SWTUtil;
 
 
 /**
  * Implementation of {@link IViewportDim} for {@link ViewportLayer}.
  */
-public class ViewportDim extends TransformDim<ViewportLayer> implements IViewportDim {
+public class ViewportDim extends TransformLayerDim<ViewportLayer> implements IViewportDim {
 	
 	
 	private long minimumOriginPosition;
@@ -34,13 +37,15 @@ public class ViewportDim extends TransformDim<ViewportLayer> implements IViewpor
 	private long originPixel;
 	
 	private long cachedClientAreaSize;
+	private long cachedOriginPosition;
+	private int cachedOriginPositionPixelShift;
 	private long cachedPositionCount;
 	private long cachedSize;
 	
-	private ScrollBarHandlerTemplate scrollBarHandler;
+	private ScrollBarHandler scrollBarHandler;
 	
 	
-	public ViewportDim(final ViewportLayer layer, final ILayerDim underlyingDim) {
+	public ViewportDim(/*@NonNull*/ final ViewportLayer layer, /*@NonNull*/ final ILayerDim underlyingDim) {
 		super(layer, underlyingDim);
 		
 		invalidateStructure();
@@ -59,11 +64,11 @@ public class ViewportDim extends TransformDim<ViewportLayer> implements IViewpor
 	 *     information if the size has changed.
 	 */
 	protected long getClientAreaSize() {
-		final long clientAreaWidth = getLayer().getClientAreaProvider().getClientArea()
-				.getRange(this.orientation).size();
-		if (clientAreaWidth != this.cachedClientAreaSize) {
+		final long clientAreaSize = SWTUtil.getRange(this.layer.getClientAreaProvider().getClientArea(),
+				this.orientation).size();
+		if (clientAreaSize != this.cachedClientAreaSize) {
 			invalidateStructure();
-			this.cachedClientAreaSize = clientAreaWidth;
+			this.cachedClientAreaSize = clientAreaSize;
 		}
 		return this.cachedClientAreaSize;
 	}
@@ -73,6 +78,8 @@ public class ViewportDim extends TransformDim<ViewportLayer> implements IViewpor
 	 */
 	protected void invalidateStructure() {
 		this.cachedClientAreaSize = 0;
+		this.cachedOriginPosition = -1;
+		this.cachedOriginPositionPixelShift = 0;
 		this.cachedPositionCount = -1;
 		this.cachedSize = -1;
 	}
@@ -80,7 +87,7 @@ public class ViewportDim extends TransformDim<ViewportLayer> implements IViewpor
 	
 	@Override
 	public long getPositionCount() {
-		if (getLayer().isViewportOff()) {
+		if (this.layer.isViewportOff()) {
 			return Math.max(this.underlyingDim.getPositionCount() - getMinimumOriginPosition(), 0);
 		} else {
 			if (this.cachedPositionCount < 0) {
@@ -112,9 +119,9 @@ public class ViewportDim extends TransformDim<ViewportLayer> implements IViewpor
 	}
 	
 	@Override
-	public long underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
+	public long underlyingToLocalPosition(final ILayerDim sourceUnderlyingDim,
 			final long underlyingPosition) {
-		if (sourceUnderlyingLayer != getLayer().getScrollableLayer()) {
+		if (sourceUnderlyingDim != this.underlyingDim) {
 			throw new IllegalArgumentException("underlyingLayer"); //$NON-NLS-1$
 		}
 		
@@ -132,18 +139,19 @@ public class ViewportDim extends TransformDim<ViewportLayer> implements IViewpor
 		
 		this.originPixel = boundsCheckOrigin(this.originPixel);
 		
+		this.cachedOriginPosition = this.underlyingDim.getPositionByPixel(getOriginPixel());
 		this.cachedPositionCount = 0;
-		{	final long positionBound = this.underlyingDim.getPositionCount();
-			long position = getOriginPosition();
-			if (position >= 0 && position < positionBound) {
-				availableSize += getOriginPixel() - this.underlyingDim.getPositionStart(position, position);
-			}
-			while (position >= 0 && position < positionBound && availableSize > 0) {
-				final long positionSize = this.underlyingDim.getPositionSize(position, position);
-				availableSize -= positionSize;
-				position++;
-				this.cachedPositionCount++;
-			}
+		final long positionBound = this.underlyingDim.getPositionCount();
+		long position = this.cachedOriginPosition;
+		if (position >= 0 && position < positionBound) {
+			this.cachedOriginPositionPixelShift = (int) (getOriginPixel() - this.underlyingDim.getPositionStart(position, position));
+			availableSize += this.cachedOriginPositionPixelShift;
+		}
+		while (position >= 0 && position < positionBound && availableSize > 0) {
+			final int positionSize = this.underlyingDim.getPositionSize(position, position);
+			availableSize -= positionSize;
+			position++;
+			this.cachedPositionCount++;
 		}
 	}
 	
@@ -154,7 +162,7 @@ public class ViewportDim extends TransformDim<ViewportLayer> implements IViewpor
 	
 	@Override
 	public long getSize() {
-		if (getLayer().isViewportOff()) {
+		if (this.layer.isViewportOff()) {
 			return getUnderlyingSize();
 		}
 		if (this.cachedSize < 0) {
@@ -192,6 +200,9 @@ public class ViewportDim extends TransformDim<ViewportLayer> implements IViewpor
 	
 	@Override
 	public void setMinimumOriginPosition(final long scrollablePosition) {
+		if (scrollablePosition < 0 || scrollablePosition > this.underlyingDim.getPositionCount()) {
+			throw new IndexOutOfBoundsException("scrollablePosition: " + scrollablePosition); //$NON-NLS-1$
+		}
 		final long pixel = (scrollablePosition < this.underlyingDim.getPositionCount()) ?
 				this.underlyingDim.getPositionStart(scrollablePosition, scrollablePosition) :
 				this.underlyingDim.getSize();
@@ -212,7 +223,7 @@ public class ViewportDim extends TransformDim<ViewportLayer> implements IViewpor
 	
 	@Override
 	public long getOriginPixel() {
-		if (getLayer().isViewportOff()) {
+		if (this.layer.isViewportOff()) {
 			return this.minimumOriginPixel;
 		}
 		return this.originPixel;
@@ -220,7 +231,10 @@ public class ViewportDim extends TransformDim<ViewportLayer> implements IViewpor
 	
 	@Override
 	public long getOriginPosition() {
-		return this.underlyingDim.getPositionByPixel(getOriginPixel());
+		if (this.cachedOriginPosition < 0) {
+			recalculateAvailableSizeAndPositionCount();
+		}
+		return this.cachedOriginPosition;
 	}
 	
 	/**
@@ -232,11 +246,11 @@ public class ViewportDim extends TransformDim<ViewportLayer> implements IViewpor
 			return 0;
 		}
 		
-		final long availableWidth = getClientAreaSize() - (this.underlyingDim.getSize() - pixel);
-		if (availableWidth <= 0) {
+		final long availableSize = getClientAreaSize() - (this.underlyingDim.getSize() - pixel);
+		if (availableSize <= 0) {
 			return pixel;
 		}
-		return pixel - availableWidth;
+		return pixel - availableSize;
 	}
 	
 	/**
@@ -259,7 +273,7 @@ public class ViewportDim extends TransformDim<ViewportLayer> implements IViewpor
 	@Override
 	public void setOriginPixel(final long scrollablePixel) {
 		if (doSetOriginPixel(scrollablePixel)) {
-			getLayer().fireScrollEvent();
+			this.layer.fireScrollEvent();
 		}
 	}
 	
@@ -277,21 +291,28 @@ public class ViewportDim extends TransformDim<ViewportLayer> implements IViewpor
 	
 	@Override
 	public void setOriginPosition(final long scrollablePosition) {
-		final long pixel = this.underlyingDim.getPositionStart(scrollablePosition, scrollablePosition);
-		if (pixel >= 0) {
-			setOriginPixel(pixel);
+		if (scrollablePosition < getMinimumOriginPosition()
+				|| (scrollablePosition > getMinimumOriginPosition() && scrollablePosition >= this.underlyingDim.getPositionCount()) ) {
+			throw new IndexOutOfBoundsException("scrollablePosition: " + scrollablePosition); //$NON-NLS-1$
 		}
+		setOriginPixel(this.underlyingDim.getPositionStart(scrollablePosition, scrollablePosition));
 	}
 	
 	
+	@Override
 	public void reset(final long scrollablePosition) {
+		if (scrollablePosition < 0
+				|| (scrollablePosition > 0 && scrollablePosition >= this.underlyingDim.getPositionCount()) ) {
+			throw new IndexOutOfBoundsException("scrollablePosition: " + scrollablePosition); //$NON-NLS-1$
+		}
 		this.minimumOriginPosition = 0;
 		this.minimumOriginPixel = 0;
 		
-		this.originPixel = 0;
+		this.originPixel = -1; // force to reset origin
 		setOriginPosition(scrollablePosition);
 	}
 	
+	@Override
 	public void movePositionIntoViewport(final long scrollablePosition) {
 		if (this.underlyingDim.getPositionIndex(scrollablePosition, scrollablePosition) >= 0
 				&& scrollablePosition >= getMinimumOriginPosition() ) {
@@ -302,12 +323,12 @@ public class ViewportDim extends TransformDim<ViewportLayer> implements IViewpor
 				// Move forward
 				final long scrollableStart = this.underlyingDim.getPositionStart(scrollablePosition, scrollablePosition);
 				final long scrollableEnd = scrollableStart + this.underlyingDim.getPositionSize(scrollablePosition, scrollablePosition);
-				final long clientAreaHeight = getClientAreaSize();
+				final long clientAreaSize = getClientAreaSize();
 				final long originPosition = getOriginPosition();
-				final long viewportEnd = this.underlyingDim.getPositionStart(originPosition, originPosition) + clientAreaHeight;
+				final long viewportEnd = this.underlyingDim.getPositionStart(originPosition, originPosition) + clientAreaSize;
 				
 				if (viewportEnd < scrollableEnd) {
-					setOriginPixel(Math.min(scrollableEnd - clientAreaHeight, scrollableStart));
+					setOriginPixel(Math.min(scrollableEnd - clientAreaSize, scrollableStart));
 				}
 			}
 			
@@ -318,7 +339,7 @@ public class ViewportDim extends TransformDim<ViewportLayer> implements IViewpor
 	
 	@Override
 	public void scrollBackwardByStep() {
-		if (getPositionCount() == 0 || getLayer().isViewportOff()) {
+		if (getPositionCount() == 0 || this.layer.isViewportOff()) {
 			return;
 		}
 		
@@ -344,7 +365,7 @@ public class ViewportDim extends TransformDim<ViewportLayer> implements IViewpor
 	
 	@Override
 	public void scrollForwardByStep() {
-		if (getPositionCount() == 0 || getLayer().isViewportOff()) {
+		if (getPositionCount() == 0 || this.layer.isViewportOff()) {
 			return;
 		}
 		
@@ -378,7 +399,7 @@ public class ViewportDim extends TransformDim<ViewportLayer> implements IViewpor
 	
 	@Override
 	public void scrollBackwardByPosition() {
-		if (getPositionCount() == 0 || getLayer().isViewportOff()) {
+		if (getPositionCount() == 0 || this.layer.isViewportOff()) {
 			return;
 		}
 		
@@ -388,21 +409,26 @@ public class ViewportDim extends TransformDim<ViewportLayer> implements IViewpor
 			setOriginPixel(positionPixel);
 			return;
 		}
-		setOriginPosition(position - 1);
+		if (position - 1 >= getMinimumOriginPosition()) {
+			setOriginPosition(position - 1);
+		}
 	}
 	
 	@Override
 	public void scrollForwardByPosition() {
-		if (getPositionCount() == 0 || getLayer().isViewportOff()) {
+		if (getPositionCount() == 0 || this.layer.isViewportOff()) {
 			return;
 		}
 		
-		setOriginPosition(getOriginPosition() + 1);
+		final long position = getOriginPosition();
+		if (position + 1 < this.underlyingDim.getPositionCount()) {
+			setOriginPosition(position + 1);
+		}
 	}
 	
 	@Override
 	public void scrollBackwardByPage() {
-		if (getPositionCount() == 0 || getLayer().isViewportOff()) {
+		if (getPositionCount() == 0 || this.layer.isViewportOff()) {
 			return;
 		}
 		
@@ -435,7 +461,7 @@ public class ViewportDim extends TransformDim<ViewportLayer> implements IViewpor
 	
 	@Override
 	public void scrollForwardByPage() {
-		if (getPositionCount() == 0 || getLayer().isViewportOff()) {
+		if (getPositionCount() == 0 || this.layer.isViewportOff()) {
 			return;
 		}
 		
@@ -477,7 +503,7 @@ public class ViewportDim extends TransformDim<ViewportLayer> implements IViewpor
 	
 	@Override
 	public void scrollBackwardToBound() {
-		if (getPositionCount() == 0 || getLayer().isViewportOff()) {
+		if (getPositionCount() == 0 || this.layer.isViewportOff()) {
 			return;
 		}
 		
@@ -486,7 +512,7 @@ public class ViewportDim extends TransformDim<ViewportLayer> implements IViewpor
 	
 	@Override
 	public void scrollForwardToBound() {
-		if (getPositionCount() == 0 || getLayer().isViewportOff()) {
+		if (getPositionCount() == 0 || this.layer.isViewportOff()) {
 			return;
 		}
 		
@@ -498,11 +524,12 @@ public class ViewportDim extends TransformDim<ViewportLayer> implements IViewpor
 		if (this.scrollBarHandler != null) {
 			return;
 		}
-		final ScrollBar scrollBar = SWTUtil.getScrollBar(control, getOrientation());
+		final ScrollBar scrollBar = SWTUtil.getScrollBar(control, this.orientation);
 		if (scrollBar != null) {
-			this.scrollBarHandler = new ScrollBarHandlerTemplate(getLayer(), getOrientation(), scrollBar);
+			this.scrollBarHandler = new ScrollBarHandler(this, scrollBar);
 		}
 	}
+	
 	/**
 	 * Adjusts scrollbar to sync with current state of viewport.
 	 */
@@ -529,6 +556,65 @@ public class ViewportDim extends TransformDim<ViewportLayer> implements IViewpor
 		recalculateAvailableSizeAndPositionCount();
 		setOriginPixel(getOriginPixel());
 		recalculateScrollBar();
+	}
+	
+	protected void handleStructuralChange(final Collection<StructuralDiff> diffs) {
+		final long minimumOriginPosition = getMinimumOriginPosition();
+		final long minimumOriginPixel = getMinimumOriginPixel();
+		final long selectedOriginPosition = this.cachedOriginPosition;
+		final int selectedOriginPositionShift = this.cachedOriginPositionPixelShift;
+		final long selectedOriginPixel = this.originPixel;
+		
+		invalidateStructure();
+		
+		if (diffs != null) {
+			// The handling of diffs have to be in sync with FreezeEventHandler
+			int minimumPositionChange = 0;
+			int selectedPositionChange = 0;
+			int freezeMove = 0; // 0 = unset, 1 == true, -1 == false
+			
+			for (final StructuralDiff diff : diffs) {
+				final long start = diff.getBeforePositionRange().start;
+				switch (diff.getDiffType()) {
+				case ADD:
+					if (start < minimumOriginPosition
+							|| (freezeMove == 1 && start == minimumOriginPosition) ) {
+						minimumPositionChange += diff.getAfterPositionRange().size();
+					}
+					if (start < selectedOriginPosition) {
+						selectedPositionChange += diff.getAfterPositionRange().size();
+					}
+					continue;
+				case DELETE:
+					if (start < minimumOriginPosition) {
+						minimumPositionChange -= Math.min(diff.getBeforePositionRange().end, minimumOriginPosition + 1) - start;
+						if (freezeMove == 0) {
+							freezeMove = 1;
+						}
+					}
+					else {
+						freezeMove = -1;
+					}
+					if (start < selectedOriginPosition) {
+						selectedPositionChange -= Math.min(diff.getBeforePositionRange().end, selectedOriginPosition + 1) - start;
+					}
+					continue;
+				default:
+					continue;
+				}
+			}
+			
+			setMinimumOriginPosition(minimumOriginPosition + minimumPositionChange);
+			if (selectedOriginPosition >= 0) {
+				final long pixel = this.underlyingDim.getPositionStart(selectedOriginPosition + selectedPositionChange, selectedOriginPosition + selectedPositionChange);
+				if (pixel >= 0) {
+					setOriginPixel(pixel + selectedOriginPositionShift);
+				}
+			}
+			else {
+				setOriginPixel(selectedOriginPixel + (getMinimumOriginPixel() - minimumOriginPixel));
+			}
+		}
 	}
 	
 }

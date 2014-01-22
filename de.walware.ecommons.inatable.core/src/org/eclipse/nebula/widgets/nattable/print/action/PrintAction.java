@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,22 +10,21 @@
  ******************************************************************************/
 package org.eclipse.nebula.widgets.nattable.print.action;
 
+import org.eclipse.swt.events.KeyEvent;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintCommand;
-import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOffCommand;
-import org.eclipse.nebula.widgets.nattable.print.command.TurnViewportOnCommand;
 import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
-import org.eclipse.swt.events.KeyEvent;
 
+
+/**
+ * IKeyAction that is used to print a NatTable.
+ */
 public class PrintAction implements IKeyAction {
 
+	@Override
 	public void run(NatTable natTable, KeyEvent event) {
-		natTable.doCommand(new TurnViewportOffCommand());
-		
 		natTable.doCommand(new PrintCommand(natTable.getConfigRegistry(), natTable.getShell()));
-		
-		natTable.doCommand(new TurnViewportOnCommand());
 	}
 
 }

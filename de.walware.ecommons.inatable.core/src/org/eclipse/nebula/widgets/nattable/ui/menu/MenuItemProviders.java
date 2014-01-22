@@ -36,7 +36,6 @@ import org.eclipse.nebula.widgets.nattable.resize.command.InitializeAutoResizeCo
 import org.eclipse.nebula.widgets.nattable.resize.command.InitializeAutoResizeRowsCommand;
 import org.eclipse.nebula.widgets.nattable.style.editor.command.DisplayColumnStyleEditorCommand;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
-import org.eclipse.nebula.widgets.nattable.util.GCFactory;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 
 
@@ -272,7 +271,7 @@ public class MenuItemProviders {
 					@Override
 					public void widgetSelected(SelectionEvent event) {
 						long rowPosition = getNatEventData(event).getRowPosition();
-						natTable.doCommand(new InitializeAutoResizeRowsCommand(natTable, rowPosition, natTable.getConfigRegistry(), new GCFactory(natTable)));
+						natTable.doCommand(new InitializeAutoResizeRowsCommand(natTable, rowPosition));
 					}
 				});
 			}

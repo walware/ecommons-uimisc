@@ -36,17 +36,17 @@ import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 public class InvertedLayer implements IUniqueIndexLayer {
 	
 	
-	private final ILayerDim h;
-	private final ILayerDim v;
+	private final ILayerDim hDim;
+	private final ILayerDim vDim;
 	
 	private IUniqueIndexLayer underlyingLayer;
 	
 	
 	public InvertedLayer(IUniqueIndexLayer underlyingLayer) {
-		this.h = new HorizontalLayerDim<ILayer>(this);
-		this.v = new VerticalLayerDim<ILayer>(this);
-		
 		this.underlyingLayer = underlyingLayer;
+		
+		this.hDim = new HorizontalLayerDim(this);
+		this.vDim = new VerticalLayerDim(this);
 	}
 	
 	
@@ -56,8 +56,9 @@ public class InvertedLayer implements IUniqueIndexLayer {
 			throw new NullPointerException("orientation"); //$NON-NLS-1$
 		}
 		
-		return (orientation == HORIZONTAL) ? this.h : this.v;
+		return (orientation == HORIZONTAL) ? this.hDim : this.vDim;
 	}
+	
 	
 	// ILayerListener
 	

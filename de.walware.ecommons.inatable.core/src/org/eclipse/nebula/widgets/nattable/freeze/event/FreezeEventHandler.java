@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.freeze.event;
 import java.util.Collection;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
-import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEventHandler;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
@@ -36,31 +35,41 @@ public class FreezeEventHandler implements ILayerEventHandler<IStructuralChangeE
 		PositionCoordinate topLeftPosition = freezeLayer.getTopLeftPosition();
 		PositionCoordinate bottomRightPosition = freezeLayer.getBottomRightPosition();
 		
+		// The handling of diffs have to be in sync with ViewportDim#handleStructuralChanges
 		Collection<StructuralDiff> columnDiffs = event.getColumnDiffs();
 		if (columnDiffs != null) {
-			long leftOffset = 0;
-			long rightOffset = 0;
+			int leftOffset = 0;
+			int rightOffset = 0;
+			int freezeMove = 0; // 0 = unset, 1 == true, -1 == false
 			
-			for (StructuralDiff columnDiff : columnDiffs) {
-				switch (columnDiff.getDiffType()) {
+			for (StructuralDiff diff : columnDiffs) {
+				final long start = diff.getBeforePositionRange().start;
+				switch (diff.getDiffType()) {
 				case ADD:
-					Range afterPositionRange = columnDiff.getAfterPositionRange();
-					if (afterPositionRange.start < topLeftPosition.columnPosition) {
-						leftOffset += afterPositionRange.size();
+					if (start < topLeftPosition.columnPosition) {
+						leftOffset += diff.getAfterPositionRange().size();
 					}
-					if (afterPositionRange.start <= bottomRightPosition.columnPosition) {
-						rightOffset += afterPositionRange.size();
+					if (start <= bottomRightPosition.columnPosition
+							|| (freezeMove == 1 && start == bottomRightPosition.columnPosition + 1) ) {
+						rightOffset += diff.getAfterPositionRange().size();
 					}
-					break;
+					continue;
 				case DELETE:
-					Range beforePositionRange = columnDiff.getBeforePositionRange();
-					if (beforePositionRange.start < topLeftPosition.columnPosition) {
-						leftOffset -= Math.min(beforePositionRange.end, topLeftPosition.columnPosition + 1) - beforePositionRange.start;
+					if (start < topLeftPosition.columnPosition) {
+						leftOffset -= Math.min(diff.getBeforePositionRange().end, topLeftPosition.columnPosition + 1) - start;
 					}
-					if (beforePositionRange.start <= bottomRightPosition.columnPosition) {
-						rightOffset -= Math.min(beforePositionRange.end, bottomRightPosition.columnPosition + 1) - beforePositionRange.start;
+					if (start <= bottomRightPosition.columnPosition) {
+						rightOffset -= Math.min(diff.getBeforePositionRange().end, bottomRightPosition.columnPosition + 1) - start;
+						if (freezeMove == 0) {
+							freezeMove = 1;
+						}
 					}
-					break;
+					else {
+						freezeMove = -1;
+					}
+					continue;
+				default:
+					continue;
 				}
 			}
 			
@@ -70,29 +79,38 @@ public class FreezeEventHandler implements ILayerEventHandler<IStructuralChangeE
 		
 		Collection<StructuralDiff> rowDiffs = event.getRowDiffs();
 		if (rowDiffs != null) {
-			long leftOffset = 0;
-			long rightOffset = 0;
+			int leftOffset = 0;
+			int rightOffset = 0;
+			int freezeMove = 0; // 0 = unset, 1 == true, -1 == false
 			
-			for (StructuralDiff rowDiff : rowDiffs) {
-				switch (rowDiff.getDiffType()) {
+			for (StructuralDiff diff : rowDiffs) {
+				final long start = diff.getBeforePositionRange().start;
+				switch (diff.getDiffType()) {
 				case ADD:
-					Range afterPositionRange = rowDiff.getAfterPositionRange();
-					if (afterPositionRange.start < topLeftPosition.rowPosition) {
-						leftOffset += afterPositionRange.size();
+					if (start < topLeftPosition.rowPosition) {
+						leftOffset += diff.getAfterPositionRange().size();
 					}
-					if (afterPositionRange.start <= bottomRightPosition.rowPosition) {
-						rightOffset += afterPositionRange.size();
+					if (start <= bottomRightPosition.rowPosition
+							|| (freezeMove == 1 && start == bottomRightPosition.rowPosition + 1) ) {
+						rightOffset += diff.getAfterPositionRange().size();
 					}
-					break;
+					continue;
 				case DELETE:
-					Range beforePositionRange = rowDiff.getBeforePositionRange();
-					if (beforePositionRange.start < topLeftPosition.rowPosition) {
-						leftOffset -= Math.min(beforePositionRange.end, topLeftPosition.rowPosition + 1) - beforePositionRange.start;
+					if (start < topLeftPosition.rowPosition) {
+						leftOffset -= Math.min(diff.getBeforePositionRange().end, topLeftPosition.rowPosition + 1) - start;
 					}
-					if (beforePositionRange.start <= bottomRightPosition.rowPosition) {
-						rightOffset -= Math.min(beforePositionRange.end, bottomRightPosition.rowPosition + 1) - beforePositionRange.start;
+					if (start <= bottomRightPosition.rowPosition) {
+						rightOffset -= Math.min(diff.getBeforePositionRange().end, bottomRightPosition.rowPosition + 1) - start;
+						if (freezeMove == 0) {
+							freezeMove = 1;
+						}
 					}
-					break;
+					else {
+						freezeMove = -1;
+					}
+					continue;
+				default:
+					continue;
 				}
 			}
 			

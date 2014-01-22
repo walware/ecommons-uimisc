@@ -11,9 +11,10 @@
 // -GC
 package org.eclipse.nebula.widgets.nattable.resize.command;
 
-import org.eclipse.nebula.widgets.nattable.command.AbstractMultiColumnCommand;
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
+
+import org.eclipse.nebula.widgets.nattable.command.AbstractDimPositionsCommand;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
-import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 
 
 /**
@@ -25,19 +26,20 @@ import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
  * when autoresizing columns.
  */
 
-public class AutoResizeColumnsCommand extends AbstractMultiColumnCommand {
+public class AutoResizeColumnsCommand extends AbstractDimPositionsCommand {
 
 
 	public AutoResizeColumnsCommand(InitializeAutoResizeColumnsCommand initCommand) {
-		super(initCommand.getLayer(), RangeList.listRanges(initCommand.getColumnPositions()));
+		super(initCommand.getSourceLayer().getDim(HORIZONTAL), initCommand.getColumnPositions());
 	}
-
+	
 	protected AutoResizeColumnsCommand(AutoResizeColumnsCommand command) {
 		super(command);
 	}
-
+	
+	@Override
 	public ILayerCommand cloneCommand() {
 		return new AutoResizeColumnsCommand(this);
 	}
-
+	
 }

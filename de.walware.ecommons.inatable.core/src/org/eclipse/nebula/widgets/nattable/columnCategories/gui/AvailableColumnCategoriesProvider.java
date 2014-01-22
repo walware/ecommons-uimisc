@@ -11,6 +11,7 @@
 // ~
 package org.eclipse.nebula.widgets.nattable.columnCategories.gui;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -29,6 +30,7 @@ import org.eclipse.nebula.widgets.nattable.util.ObjectCloner;
 public class AvailableColumnCategoriesProvider implements ITreeContentProvider {
 
 	private final ColumnCategoriesModel model;
+	private List<String> hiddenIndexes = new ArrayList<String>();
 
 	public AvailableColumnCategoriesProvider(ColumnCategoriesModel model) {
 		this.model = (ColumnCategoriesModel) ObjectCloner.deepCopy(model);
@@ -57,8 +59,19 @@ public class AvailableColumnCategoriesProvider implements ITreeContentProvider {
 	}
 
 	public Object[] getElements(Object inputElement) {
-		return (model.getRootCategory() != null) ? 
-				model.getRootCategory().getChildren().toArray() : new Object[0];
+		return (model.getRootCategory() != null) ?
+				getFilteredChildren(model.getRootCategory().getChildren()).toArray() :
+				new Object[0];
+	}
+	
+	private List<Node> getFilteredChildren(List<Node> allChildren) {
+		List<Node> children = new ArrayList<Node>(allChildren);
+		for (Node child : allChildren) {
+			if (hiddenIndexes.contains(child.getData())) {
+				children.remove(child);
+			}
+		}
+		return children;
 	}
 
 	private Node castToNode(Object element) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -51,14 +51,13 @@ public class CellDisplayValueSearchUtil {
 	
 	
 	@SuppressWarnings("unchecked")
-	static PositionCoordinate findCell(final ILayer layer, final IConfigRegistry configRegistry, final List<PositionCoordinate> cellsToSearch, final Object valueToMatch, final Comparator comparator, final boolean caseSensitive) {	
-		final List<PositionCoordinate> cellCoordinates = cellsToSearch;
+	static PositionCoordinate findCell(final ILayer layer, final IConfigRegistry configRegistry, final List<PositionCoordinate> cellsToSearch, final Object valueToMatch, final Comparator comparator, final boolean caseSensitive) {
 		// Find cell
 		PositionCoordinate targetCoordinate = null;
 		
 		String stringValue = caseSensitive ? valueToMatch.toString() : valueToMatch.toString().toLowerCase();
-		for (int cellIndex = 0; cellIndex < cellCoordinates.size(); cellIndex++) {
-			final PositionCoordinate cellCoordinate = cellCoordinates.get(cellIndex);
+		for (int cellIndex = 0; cellIndex < cellsToSearch.size(); cellIndex++) {
+			final PositionCoordinate cellCoordinate = cellsToSearch.get(cellIndex);
 			final long columnPosition = cellCoordinate.columnPosition;
 			final long rowPosition = cellCoordinate.rowPosition;
 			
@@ -84,4 +83,5 @@ public class CellDisplayValueSearchUtil {
 		
 		return targetCoordinate;
 	}
+	
 }

@@ -15,8 +15,8 @@ import static org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.NO_SE
 
 import java.util.Collection;
 
-import org.eclipse.nebula.widgets.nattable.coordinate.PositionUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ColumnVisualChangeEvent;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -30,14 +30,15 @@ public class ColumnSelectionEvent extends ColumnVisualChangeEvent implements ISe
 	private long columnPositionToReveal;
 	
 	
-	public ColumnSelectionEvent(SelectionLayer selectionLayer, long columnPosition, boolean revealColumn) {
-		super(selectionLayer, new Range(columnPosition));
-		this.selectionLayer = selectionLayer;
-		this.columnPositionToReveal = (revealColumn) ? columnPosition : NO_SELECTION;
+	public ColumnSelectionEvent(final SelectionLayer selectionLayer,
+			final long columnPosition, final boolean revealColumn) {
+		this(selectionLayer, new RangeList(columnPosition),
+				(revealColumn) ? columnPosition : NO_SELECTION );
 	}
 	
-	public ColumnSelectionEvent(SelectionLayer selectionLayer, Collection<Long> columnPositions, long columnPositionToReveal) {
-		super(selectionLayer, PositionUtil.getRanges(columnPositions));
+	public ColumnSelectionEvent(final SelectionLayer selectionLayer,
+			final Collection<Range> columnPositions, final long columnPositionToReveal) {
+		super(selectionLayer, columnPositions);
 		this.selectionLayer = selectionLayer;
 		this.columnPositionToReveal = columnPositionToReveal;
 	}
@@ -48,10 +49,13 @@ public class ColumnSelectionEvent extends ColumnVisualChangeEvent implements ISe
 		this.columnPositionToReveal = event.columnPositionToReveal;
 	}
 	
+	@Override
 	public ColumnSelectionEvent cloneEvent() {
 		return new ColumnSelectionEvent(this);
 	}
 	
+	
+	@Override
 	public SelectionLayer getSelectionLayer() {
 		return selectionLayer;
 	}

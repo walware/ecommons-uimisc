@@ -15,24 +15,24 @@ import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZON
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
 
 
-public class AbstractTransformIndexLayer extends AbstractTransformLayer
-		implements IUniqueIndexLayer {
+public class TransformIndexLayer extends TransformLayer implements IUniqueIndexLayer {
 	
 	
-	public AbstractTransformIndexLayer(final IUniqueIndexLayer underlyingLayer) {
+	public TransformIndexLayer(/*@NonNull*/ final IUniqueIndexLayer underlyingLayer) {
 		super(underlyingLayer);
 	}
 	
-	protected AbstractTransformIndexLayer() {
+	protected TransformIndexLayer() {
 		super();
 	}
 	
 	
 	@Override
-	protected void setUnderlyingLayer(final ILayer underlyingLayer) {
+	protected void setUnderlyingLayer(/*@NonNull*/ final ILayer underlyingLayer) {
 		if (!(underlyingLayer instanceof IUniqueIndexLayer)) {
-			throw new IllegalArgumentException("underlyingLayer"); //$NON-NLS-1$
+			throw new IllegalArgumentException("underlyingLayer: !instanceof IUniqueIndexLayer"); //$NON-NLS-1$
 		}
+		
 		super.setUnderlyingLayer(underlyingLayer);
 	}
 	
@@ -44,7 +44,7 @@ public class AbstractTransformIndexLayer extends AbstractTransformLayer
 		if (underlyingPosition == Long.MIN_VALUE) {
 			return Long.MIN_VALUE;
 		}
-		return getDim(HORIZONTAL).underlyingToLocalPosition(underlyingLayer,
+		return getDim(HORIZONTAL).underlyingToLocalPosition(underlyingLayer.getDim(HORIZONTAL),
 				underlyingPosition );
 	}
 	
@@ -55,7 +55,7 @@ public class AbstractTransformIndexLayer extends AbstractTransformLayer
 		if (underlyingPosition == Long.MIN_VALUE) {
 			return Long.MIN_VALUE;
 		}
-		return getDim(VERTICAL).underlyingToLocalPosition(underlyingLayer,
+		return getDim(VERTICAL).underlyingToLocalPosition(underlyingLayer.getDim(VERTICAL),
 				underlyingPosition );
 	}
 	

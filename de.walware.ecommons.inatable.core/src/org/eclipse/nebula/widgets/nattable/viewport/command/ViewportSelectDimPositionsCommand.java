@@ -13,9 +13,8 @@ package org.eclipse.nebula.widgets.nattable.viewport.command;
 
 import java.util.Collection;
 
-import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
-import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayerDim;
 import org.eclipse.nebula.widgets.nattable.selection.command.AbstractSelectDimPositionsCommand;
 
 
@@ -25,24 +24,24 @@ import org.eclipse.nebula.widgets.nattable.selection.command.AbstractSelectDimPo
 public class ViewportSelectDimPositionsCommand extends AbstractSelectDimPositionsCommand {
 	
 	
-	public ViewportSelectDimPositionsCommand(final Orientation orienation,
-			final ILayer layer, final long position, final int selectionFlags) {
-		super(orienation, layer, position, selectionFlags);
+	public ViewportSelectDimPositionsCommand(final ILayerDim dim,
+			final long position, final int selectionFlags) {
+		super(dim, position, selectionFlags);
 	}
 	
-	public ViewportSelectDimPositionsCommand(final Orientation orientation,
-			final ILayer layer, final long refPosition, final Collection<Range> positions,
+	public ViewportSelectDimPositionsCommand(final ILayerDim dim,
+			final long refPosition, final Collection<Range> positions,
 			final long positionToReveal, final int selectionFlags) {
-		super(orientation, layer, refPosition, positions, positionToReveal, selectionFlags);
+		super(dim, refPosition, positions, positionToReveal, selectionFlags);
 	}
 	
 	protected ViewportSelectDimPositionsCommand(final ViewportSelectDimPositionsCommand command) {
 		super(command);
 	}
 	
+	@Override
 	public ViewportSelectDimPositionsCommand cloneCommand() {
 		return new ViewportSelectDimPositionsCommand(this);
 	}
-	
 	
 }

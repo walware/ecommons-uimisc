@@ -146,10 +146,10 @@ public class DefaultSelectionBindings extends AbstractUiBindingConfiguration {
 
 	protected void configureBodyMouseClickBindings(UiBindingRegistry uiBindingRegistry) {
 		IMouseAction action = new SelectCellAction();
-		uiBindingRegistry.registerFirstSingleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), action);
-		uiBindingRegistry.registerFirstSingleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.MOD2), action);
-		uiBindingRegistry.registerFirstSingleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.MOD1), action);
-		uiBindingRegistry.registerFirstSingleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.MOD2 | SWT.MOD1), action);
+		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), action);
+		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.bodyLeftClick(SWT.MOD2), action);
+		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.bodyLeftClick(SWT.MOD1), action);
+		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.bodyLeftClick(SWT.MOD2 | SWT.MOD1), action);
 	}
 
 //	protected void configureColumnHeaderMouseClickBindings(UiBindingRegistry uiBindingRegistry) {
@@ -160,10 +160,10 @@ public class DefaultSelectionBindings extends AbstractUiBindingConfiguration {
 //	}
 
 //	protected void configureRowHeaderMouseClickBindings(UiBindingRegistry uiBindingRegistry) {
-//		uiBindingRegistry.registerSingleClickBinding(MouseEventMatcher.rowHeaderLeftClick(SWT.NONE), new ViewportSelectRowAction(false, false));
-//		uiBindingRegistry.registerSingleClickBinding(MouseEventMatcher.rowHeaderLeftClick(SWT.MOD2), new ViewportSelectRowAction(true, false));
-//		uiBindingRegistry.registerSingleClickBinding(MouseEventMatcher.rowHeaderLeftClick(SWT.MOD1), new ViewportSelectRowAction(false, true));
-//		uiBindingRegistry.registerSingleClickBinding(MouseEventMatcher.rowHeaderLeftClick(SWT.MOD2 | SWT.MOD1), new ViewportSelectRowAction(true, true));
+//		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.rowHeaderLeftClick(SWT.NONE), new ViewportSelectRowAction(false, false));
+//		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.rowHeaderLeftClick(SWT.MOD2), new ViewportSelectRowAction(true, false));
+//		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.rowHeaderLeftClick(SWT.MOD1), new ViewportSelectRowAction(false, true));
+//		uiBindingRegistry.registerMouseDownBinding(MouseEventMatcher.rowHeaderLeftClick(SWT.MOD2 | SWT.MOD1), new ViewportSelectRowAction(true, true));
 //	}
 
 	protected void configureBodyMouseDragMode(UiBindingRegistry uiBindingRegistry) {

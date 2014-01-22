@@ -16,21 +16,21 @@ import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICA
 import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.freeze.event.FreezeEventHandler;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractTransformIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerDim;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
-import org.eclipse.nebula.widgets.nattable.layer.TransformDim;
+import org.eclipse.nebula.widgets.nattable.layer.TransformIndexLayer;
+import org.eclipse.nebula.widgets.nattable.layer.TransformLayerDim;
 
 
-public class FreezeLayer extends AbstractTransformIndexLayer {
+public class FreezeLayer extends TransformIndexLayer {
 	
 	
 	public static final String PERSISTENCE_TOP_LEFT_POSITION = ".freezeTopLeftPosition"; //$NON-NLS-1$
 	public static final String PERSISTENCE_BOTTOM_RIGHT_POSITION = ".freezeBottomRightPosition"; //$NON-NLS-1$
 	
 	
-	static class Dim extends TransformDim<FreezeLayer> {
+	static class Dim extends TransformLayerDim<FreezeLayer> {
 		
 		
 		private long startPosition;
@@ -69,11 +69,6 @@ public class FreezeLayer extends AbstractTransformIndexLayer {
 		}
 		
 		@Override
-		public long getPreferredPositionCount() {
-			return getPositionCount();
-		}
-		
-		@Override
 		public long localToUnderlyingPosition(final long refPosition, final long position) {
 			if (refPosition < 0 || refPosition >= getPositionCount()) {
 				throw new IndexOutOfBoundsException("refPosition: " + refPosition); //$NON-NLS-1$
@@ -93,9 +88,9 @@ public class FreezeLayer extends AbstractTransformIndexLayer {
 		}
 		
 		@Override
-		public long underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
+		public long underlyingToLocalPosition(final ILayerDim sourceUnderlyingDim,
 				final long underlyingPosition) {
-			if (sourceUnderlyingLayer != this.underlyingDim.getLayer()) {
+			if (sourceUnderlyingDim != this.underlyingDim) {
 				throw new IllegalArgumentException("underlyingLayer"); //$NON-NLS-1$
 			}
 			
@@ -120,7 +115,7 @@ public class FreezeLayer extends AbstractTransformIndexLayer {
 		@Override
 		public long getPositionByPixel(final long pixel) {
 			final long underlyingPosition = this.underlyingDim.getPositionByPixel(getStartPixel() + pixel);
-			return underlyingToLocalPosition(this.underlyingDim.getLayer(), underlyingPosition);
+			return underlyingToLocalPosition(this.underlyingDim, underlyingPosition);
 		}
 		
 		@Override
@@ -144,8 +139,8 @@ public class FreezeLayer extends AbstractTransformIndexLayer {
 		if (underlying == null) {
 			return;
 		}
-		setDim(HORIZONTAL, new Dim(this, underlying.getDim(HORIZONTAL)));
-		setDim(VERTICAL, new Dim(this, underlying.getDim(VERTICAL)));
+		setDim(new Dim(this, underlying.getDim(HORIZONTAL)));
+		setDim(new Dim(this, underlying.getDim(VERTICAL)));
 	}
 	
 	final Dim get(final Orientation orientation) {

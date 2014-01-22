@@ -37,6 +37,7 @@ public class GridLineCellLayerPainter extends CellLayerPainter {
 		return gridColor;
 	}
 	
+	@Override
 	public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, org.eclipse.swt.graphics.Rectangle rectangle, IConfigRegistry configRegistry) {
 		//Draw GridLines
 		drawGridLines(natLayer, gc, rectangle);

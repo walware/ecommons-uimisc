@@ -39,17 +39,17 @@ import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
  * 
  * The layer is similar to {@link AbstractLayerTransform}, but is {@link DimBasedLayer dim-based}.
  */
-public abstract class AbstractTransformLayer extends DimBasedLayer {
+public abstract class TransformLayer extends DimBasedLayer {
 	
 	
 	private ILayer underlyingLayer;
 	
 	
-	public AbstractTransformLayer(final ILayer underlyingLayer) {
+	public TransformLayer(/*@NonNull*/ final ILayer underlyingLayer) {
 		setUnderlyingLayer(underlyingLayer);
 	}
 	
-	protected AbstractTransformLayer() {
+	protected TransformLayer() {
 	}
 	
 	
@@ -59,11 +59,14 @@ public abstract class AbstractTransformLayer extends DimBasedLayer {
 		if (underlying == null) {
 			return;
 		}
-		setDim(HORIZONTAL, new TransformDim<ILayer>(this, underlying.getDim(HORIZONTAL)));
-		setDim(VERTICAL, new TransformDim<ILayer>(this, underlying.getDim(VERTICAL)));
+		setDim(new TransformLayerDim<ILayer>(this, underlying.getDim(HORIZONTAL)));
+		setDim(new TransformLayerDim<ILayer>(this, underlying.getDim(VERTICAL)));
 	}
 	
-	protected void setUnderlyingLayer(final ILayer underlyingLayer) {
+	protected void setUnderlyingLayer(/*@NonNull*/ final ILayer underlyingLayer) {
+		if (underlyingLayer == null) {
+			throw new NullPointerException("underlyingLayer"); //$NON-NLS-1$
+		}
 		if (this.underlyingLayer != null) {
 			this.underlyingLayer.removeLayerListener(this);
 		}
@@ -198,7 +201,8 @@ public abstract class AbstractTransformLayer extends DimBasedLayer {
 	}
 	
 	@Override
-	public ICellPainter getCellPainter(final long columnPosition, final long rowPosition, final ILayerCell cell, final IConfigRegistry configRegistry) {
+	public ICellPainter getCellPainter(final long columnPosition, final long rowPosition, final ILayerCell cell,
+			final IConfigRegistry configRegistry) {
 		return this.underlyingLayer.getCellPainter(columnPosition, rowPosition, cell, configRegistry);
 	}
 	
@@ -214,6 +218,7 @@ public abstract class AbstractTransformLayer extends DimBasedLayer {
 		return regionLabels;
 	}
 	
+	@Override
 	public ILayer getUnderlyingLayerByPosition(final long columnPosition, final long rowPosition) {
 		return this.underlyingLayer;
 	}

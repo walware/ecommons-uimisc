@@ -7,8 +7,9 @@
  * 
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Stephan Wahlbrink - dim-based implementation
  ******************************************************************************/
-// ~
+
 package org.eclipse.nebula.widgets.nattable.viewport;
 
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
@@ -20,10 +21,9 @@ import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
-import org.eclipse.nebula.widgets.nattable.coordinate.SWTUtil;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractTransformIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.layer.TransformIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.layer.event.IStructuralChangeEvent;
 import org.eclipse.nebula.widgets.nattable.print.command.PrintEntireGridCommand;
@@ -33,6 +33,7 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.selection.event.ColumnSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.selection.event.RowSelectionEvent;
+import org.eclipse.nebula.widgets.nattable.swt.SWTUtil;
 import org.eclipse.nebula.widgets.nattable.viewport.command.RecalculateScrollBarsCommandHandler;
 import org.eclipse.nebula.widgets.nattable.viewport.command.ScrollPageCommandHandler;
 import org.eclipse.nebula.widgets.nattable.viewport.command.ScrollStepCommandHandler;
@@ -47,11 +48,12 @@ import org.eclipse.nebula.widgets.nattable.viewport.event.ScrollEvent;
 
 /**
  * Viewport - the visible area of NatTable
+ * 
  * Places a 'viewport' over the table. Introduces scroll bars over the table and
  * keeps them in sync with the data being displayed. This is typically placed over the
  * {@link SelectionLayer}.
  */
-public class ViewportLayer extends AbstractTransformIndexLayer {
+public class ViewportLayer extends TransformIndexLayer {
 	
 	static final int EDGE_HOVER_REGION_SIZE = 16;
 	
@@ -65,17 +67,19 @@ public class ViewportLayer extends AbstractTransformIndexLayer {
 	private final long[] savedOriginPixel = new long[2];
 	
 	// Edge hover scrolling
-	
 	private MoveViewportRunnable edgeHoverRunnable;
 	
 	
-	public ViewportLayer(final IUniqueIndexLayer underlyingLayer) {
+	/**
+	 * Creates a new viewport layer.
+	 * 
+	 * @param underlyingLayer the underlying scrollable layer
+	 */
+	public ViewportLayer(/*@NonNull*/ final IUniqueIndexLayer underlyingLayer) {
 		super(underlyingLayer);
 		this.scrollableLayer = underlyingLayer;
 		
 		registerCommandHandlers();
-		
-		registerEventHandler(new ViewportEventHandler(this));
 		
 		updateDims();
 	}
@@ -106,7 +110,7 @@ public class ViewportLayer extends AbstractTransformIndexLayer {
 		}
 		for (final Orientation orientation : Orientation.values()) {
 			disposeDim(orientation);
-			setDim(orientation, new ViewportDim(this, scrollable.getDim(orientation)));
+			setDim(new ViewportDim(this, scrollable.getDim(orientation)));
 		}
 	}
 	
@@ -178,11 +182,13 @@ public class ViewportLayer extends AbstractTransformIndexLayer {
 			
 			//after handling the scrollbars recalculate the area to use for percentage calculation
 			final Rectangle possibleArea = SWTUtil.toNatTable(clientAreaResizeCommand.getScrollable().getClientArea());
-			possibleArea.width = possibleArea.width - widthDiff;
-			possibleArea.height = possibleArea.height - heightDiff;
+			possibleArea.width -= widthDiff;
+			possibleArea.height -= heightDiff;
 			clientAreaResizeCommand.setCalcArea(possibleArea);
-			
-			return true;
+			//we don't return true here because the ClientAreaResizeCommand needs to be handled
+			//by the DataLayer in case percentage sizing is enabled
+			//if we would return true, the DataLayer wouldn't be able to calculate the column/row
+			//sizes regarding the client area
 		} else if (command instanceof TurnViewportOffCommand) {
 			if (!isViewportOff()) {
 				for (final Orientation orientation : Orientation.values()) {
@@ -223,10 +229,10 @@ public class ViewportLayer extends AbstractTransformIndexLayer {
 		if (event instanceof IStructuralChangeEvent) {
 			final IStructuralChangeEvent structuralChangeEvent = (IStructuralChangeEvent) event;
 			if (structuralChangeEvent.isHorizontalStructureChanged()) {
-				get(HORIZONTAL).invalidateStructure();
+				get(HORIZONTAL).handleStructuralChange(structuralChangeEvent.getColumnDiffs());
 			}
 			if (structuralChangeEvent.isVerticalStructureChanged()) {
-				get(VERTICAL).invalidateStructure();
+				get(VERTICAL).handleStructuralChange(structuralChangeEvent.getRowDiffs());
 			}
 		}
 		
@@ -260,7 +266,6 @@ public class ViewportLayer extends AbstractTransformIndexLayer {
 		final long explicitePosition = selectionEvent.getColumnPositionToReveal();
 		if (explicitePosition >= 0) {
 			get(HORIZONTAL).movePositionIntoViewport(explicitePosition);
-			return;
 		}
 	}
 
@@ -313,7 +318,7 @@ public class ViewportLayer extends AbstractTransformIndexLayer {
 		
 		final Rectangle clientArea = getClientAreaProvider().getClientArea();
 		for (final Orientation orientation : Orientation.values()) {
-			Range range = clientArea.getRange(orientation);
+			final Range range = clientArea.getRange(orientation);
 			final long pixel = (orientation == HORIZONTAL) ? x : y;
 			int change = 0;
 			if (pixel >= range.start && pixel < range.start + EDGE_HOVER_REGION_SIZE) {

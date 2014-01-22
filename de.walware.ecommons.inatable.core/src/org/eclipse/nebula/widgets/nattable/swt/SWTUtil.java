@@ -9,7 +9,7 @@
  *     Stephan Wahlbrink - initial API and implementation
  ******************************************************************************/
 
-package org.eclipse.nebula.widgets.nattable.coordinate;
+package org.eclipse.nebula.widgets.nattable.swt;
 
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
 
@@ -18,11 +18,51 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Scrollable;
 
+import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
+import org.eclipse.nebula.widgets.nattable.coordinate.Point;
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyle;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignment;
 
 
 public class SWTUtil {
+	
+	
+	public static final int getMouseWheelEventType(/*@NonNull*/ final Orientation orientation) {
+		if (orientation == null) {
+			throw new NullPointerException("orientation"); //$NON-NLS-1$
+		}
+		return (orientation == HORIZONTAL) ?
+				SWT.MouseHorizontalWheel :
+				SWT.MouseVerticalWheel;
+	}
+	
+	public static final ScrollBar getScrollBar(/*@NonNull*/ final Scrollable control,
+			/*@NonNull*/ final Orientation orientation) {
+		if (control == null) {
+			throw new NullPointerException("control"); //$NON-NLS-1$
+		}
+		if (orientation == null) {
+			throw new NullPointerException("orientation"); //$NON-NLS-1$
+		}
+		return (orientation == HORIZONTAL) ?
+				control.getHorizontalBar() :
+				control.getVerticalBar();
+	}
+	
+	public static final Range getRange(/*@NonNull*/ final Rectangle rectangle,
+			/*@NonNull*/ final Orientation orientation) {
+		if (rectangle == null) {
+			throw new NullPointerException("rectangle"); //$NON-NLS-1$
+		}
+		if (orientation == null) {
+			throw new NullPointerException("orientation"); //$NON-NLS-1$
+		}
+		return (orientation == HORIZONTAL) ?
+				new Range(rectangle.x, rectangle.x + rectangle.width) :
+				new Range(rectangle.y, rectangle.y + rectangle.height);
+	}
 	
 	
 	public static final int getStart(final org.eclipse.swt.graphics.Rectangle rect, final Orientation orientation) {
@@ -56,18 +96,6 @@ public class SWTUtil {
 		return new org.eclipse.swt.graphics.Point((int) point.x, (int) point.y);
 	}
 	
-	
-	public static final ScrollBar getScrollBar(final Scrollable control, final Orientation orientation) {
-		return (orientation == HORIZONTAL) ?
-				control.getHorizontalBar() :
-				control.getVerticalBar();
-	}
-	
-	public static final int getMouseWheelEventType(final Orientation orientation) {
-		return (orientation == HORIZONTAL) ?
-				SWT.MouseHorizontalWheel :
-				SWT.MouseVerticalWheel;
-	}
 	
 	public static final int getPixel(final MouseEvent event, final Orientation orientation) {
 		return (orientation == HORIZONTAL) ?

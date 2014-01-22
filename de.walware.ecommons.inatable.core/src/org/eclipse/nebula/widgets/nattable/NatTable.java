@@ -57,7 +57,6 @@ import org.eclipse.nebula.widgets.nattable.conflation.VisualChangeEventConflater
 import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
-import org.eclipse.nebula.widgets.nattable.coordinate.SWTUtil;
 import org.eclipse.nebula.widgets.nattable.edit.ActiveCellEditorRegistry;
 import org.eclipse.nebula.widgets.nattable.grid.command.ClientAreaResizeCommand;
 import org.eclipse.nebula.widgets.nattable.grid.command.InitializeGridCommand;
@@ -79,6 +78,7 @@ import org.eclipse.nebula.widgets.nattable.painter.layer.ILayerPainter;
 import org.eclipse.nebula.widgets.nattable.painter.layer.NatLayerPainter;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
+import org.eclipse.nebula.widgets.nattable.swt.SWTUtil;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.mode.ConfigurableModeEventHandler;
 import org.eclipse.nebula.widgets.nattable.ui.mode.Mode;
@@ -92,6 +92,9 @@ public class NatTable extends Canvas implements ILayer, PaintListener, ILayerLis
 	
 	public static final int DEFAULT_STYLE_OPTIONS = SWT.NO_BACKGROUND | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED  | SWT.V_SCROLL | SWT.H_SCROLL;
 	
+	
+	private final ILayerDim hDim;
+	private final ILayerDim vDim;
 	
 	private IClientAreaProvider clientAreaProvider = new IClientAreaProvider() {
 		@Override
@@ -114,9 +117,6 @@ public class NatTable extends Canvas implements ILayer, PaintListener, ILayerLis
 	private final List<IOverlayPainter> overlayPainters = new ArrayList<IOverlayPainter>();
 	
 	private final List<IPersistable> persistables = new LinkedList<IPersistable>();
-	
-	private final ILayerDim h;
-	private final ILayerDim v;
 	
 	private ILayer underlyingLayer;
 	
@@ -170,8 +170,8 @@ public class NatTable extends Canvas implements ILayer, PaintListener, ILayerLis
 	public NatTable(final Composite parent, final int style, final ILayer layer, boolean autoconfigure) {
 		super(parent, style);
 		
-		this.h = new HorizontalLayerDim<ILayer>(this);
-		this.v = new VerticalLayerDim<ILayer>(this);
+		this.hDim = new HorizontalLayerDim(this);
+		this.vDim = new VerticalLayerDim(this);
 		
 		// Disable scroll bars by default; if a Viewport is available, it will enable the scroll bars
 		disableScrollBar(getHorizontalBar());
@@ -201,6 +201,16 @@ public class NatTable extends Canvas implements ILayer, PaintListener, ILayerLis
 			}
 			
 		});
+	}
+	
+	
+	@Override
+	public ILayerDim getDim(final Orientation orientation) {
+		if (orientation == null) {
+			throw new NullPointerException("orientation"); //$NON-NLS-1$
+		}
+		
+		return (orientation == HORIZONTAL) ? this.hDim : this.vDim;
 	}
 	
 	
@@ -607,16 +617,6 @@ public class NatTable extends Canvas implements ILayer, PaintListener, ILayerLis
 		}
 		
 		return underlyingColumnPositionRanges;
-	}
-	
-	
-	@Override
-	public ILayerDim getDim(final Orientation orientation) {
-		if (orientation == null) {
-			throw new NullPointerException("orientation"); //$NON-NLS-1$
-		}
-		
-		return (orientation == HORIZONTAL) ? this.h : this.v;
 	}
 	
 	

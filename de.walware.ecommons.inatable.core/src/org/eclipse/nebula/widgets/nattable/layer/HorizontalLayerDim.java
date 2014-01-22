@@ -11,34 +11,24 @@
 
 package org.eclipse.nebula.widgets.nattable.layer;
 
-import java.util.Collection;
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
 
-import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 
 
-public class HorizontalLayerDim<T extends ILayer> implements ILayerDim {
+/**
+ * Implementation of horizontal layer dimension which forwards all method calls to the
+ * corresponding "column" methods in the layer.
+ */
+public class HorizontalLayerDim extends AbstractLayerDim<ILayer> {
 	
 	
-	private final T layer;
-	
-	
-	public HorizontalLayerDim(final T layer) {
-		if (layer == null) {
-			throw new NullPointerException("layer"); //$NON-NLS-1$
-		}
-		this.layer = layer;
-	}
-	
-	
-	@Override
-	public T getLayer() {
-		return this.layer;
-	}
-	
-	@Override
-	public Orientation getOrientation() {
-		return Orientation.HORIZONTAL;
+	public HorizontalLayerDim(/*@NonNull*/ final ILayer layer) {
+		super(layer, HORIZONTAL);
 	}
 	
 	
@@ -54,11 +44,6 @@ public class HorizontalLayerDim<T extends ILayer> implements ILayerDim {
 	}
 	
 	@Override
-	public long getPreferredPositionCount() {
-		return this.layer.getPreferredColumnCount();
-	}
-	
-	@Override
 	public long localToUnderlyingPosition(final long refPosition, final long position) {
 		return this.layer.localToUnderlyingColumnPosition(position);
 	}
@@ -66,10 +51,10 @@ public class HorizontalLayerDim<T extends ILayer> implements ILayerDim {
 	@Override
 	public long underlyingToLocalPosition(final long refPosition,
 			final long underlyingPosition) {
-		final Collection<ILayer> underlyingLayers = getUnderlyingLayersByPosition(refPosition);
-		if (underlyingLayers != null) {
-			for (final ILayer underlyingLayer : underlyingLayers) {
-				final long position = underlyingToLocalPosition(underlyingLayer, underlyingPosition);
+		final List<ILayerDim> underlyingDims = getUnderlyingDimsByPosition(refPosition);
+		if (underlyingDims != null) {
+			for (final ILayerDim underlyingDim : underlyingDims) {
+				final long position = underlyingToLocalPosition(underlyingDim, underlyingPosition);
 				if (position != Long.MIN_VALUE) {
 					return position;
 				}
@@ -79,20 +64,35 @@ public class HorizontalLayerDim<T extends ILayer> implements ILayerDim {
 	}
 	
 	@Override
-	public long underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
+	public long underlyingToLocalPosition(final ILayerDim sourceUnderlyingDim,
 			final long underlyingPosition) {
-		return this.layer.underlyingToLocalColumnPosition(sourceUnderlyingLayer, underlyingPosition);
+		return this.layer.underlyingToLocalColumnPosition(sourceUnderlyingDim.getLayer(),
+				underlyingPosition );
 	}
 	
 	@Override
-	public Collection<Range> underlyingToLocalPositions(final ILayer sourceUnderlyingLayer,
-			final Collection<Range> underlyingPositionRanges) {
-		return this.layer.underlyingToLocalColumnPositions(sourceUnderlyingLayer, underlyingPositionRanges);
+	public List<Range> underlyingToLocalPositions(final ILayerDim sourceUnderlyingDim,
+			final Collection<Range> underlyingPositions) {
+		final Collection<Range> localPositions = this.layer.underlyingToLocalColumnPositions(
+				sourceUnderlyingDim.getLayer(), underlyingPositions );
+		return (localPositions instanceof List) ?
+				(List<Range>) localPositions :
+				new ArrayList<Range>(localPositions);
 	}
 	
 	@Override
-	public Collection<ILayer> getUnderlyingLayersByPosition(final long position) {
-		return this.layer.getUnderlyingLayersByColumnPosition(position);
+	public List<ILayerDim> getUnderlyingDimsByPosition(final long position) {
+		final Collection<ILayer> underlyingLayers = this.layer.getUnderlyingLayersByColumnPosition(
+				position );
+		if (underlyingLayers == null) {
+			return null;
+		}
+		
+		final List<ILayerDim> underlyingDims = new ArrayList<ILayerDim>(underlyingLayers.size());
+		for (final ILayer underlyingLayer : underlyingLayers) {
+			underlyingDims.add(underlyingLayer.getDim(this.orientation));
+		}
+		return underlyingDims;
 	}
 	
 	
@@ -120,7 +120,6 @@ public class HorizontalLayerDim<T extends ILayer> implements ILayerDim {
 	public int getPositionSize(final long refPosition, final long position) {
 		return this.layer.getColumnWidthByPosition(position);
 	}
-	
 	
 	@Override
 	public boolean isPositionResizable(final long position) {

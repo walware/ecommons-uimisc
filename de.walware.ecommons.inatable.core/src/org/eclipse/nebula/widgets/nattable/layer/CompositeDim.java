@@ -15,6 +15,7 @@ import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZON
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
@@ -39,7 +40,7 @@ public class CompositeDim implements ILayerDim {
 		
 		@Override
 		public long localToUnderlyingPosition(final long refPosition, final long position) {
-			return super.localToUnderlyingPosition(refPosition, position);
+			return super.localToUnderlyingPosition(position, position);
 		}
 		
 		@Override
@@ -98,7 +99,7 @@ public class CompositeDim implements ILayerDim {
 	
 	
 	void updateChild(final int layout, final int layout2, final ILayer childLayer) {
-		this.childDims[layout][layout2] = childLayer.getDim(getOrientation());
+		this.childDims[layout][layout2] = childLayer.getDim(this.orientation);
 	}
 	
 	
@@ -125,11 +126,11 @@ public class CompositeDim implements ILayerDim {
 		return -1;
 	}
 	
-	protected final int getLayoutByChildLayer(final ILayer childLayer) {
+	protected final int getLayoutByDim(final ILayerDim childDim) {
 		for (int layout = 0; layout < this.childDims.length; layout++) {
 			final ILayerDim[] layoutDims = this.childDims[layout];
 			for (int layout2 = 0; layout2 < layoutDims.length; layout2++) {
-				if (layoutDims[layout2].getLayer() == childLayer) {
+				if (layoutDims[layout2] == childDim) {
 					return layout;
 				}
 			}
@@ -178,15 +179,6 @@ public class CompositeDim implements ILayerDim {
 	}
 	
 	@Override
-	public long getPreferredPositionCount() {
-		long count = 0;
-		for (int layout = 0; layout < this.childDims.length; layout++) {
-			count += this.childDims[layout][0].getPreferredPositionCount();
-		}
-		return count;
-	}
-	
-	@Override
 	public long localToUnderlyingPosition(final long refPosition, final long position) {
 		final int layout = getLayoutByPosition(refPosition);
 		if (layout < 0) {
@@ -209,9 +201,9 @@ public class CompositeDim implements ILayerDim {
 	}
 	
 	@Override
-	public long underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
+	public long underlyingToLocalPosition(final ILayerDim sourceUnderlyingDim,
 			final long underlyingPosition) {
-		final int layout = getLayoutByChildLayer(sourceUnderlyingLayer);
+		final int layout = getLayoutByDim(sourceUnderlyingDim);
 		if (layout < 0) {
 			throw new IllegalArgumentException("underlyingLayer"); //$NON-NLS-1$
 		}
@@ -221,14 +213,14 @@ public class CompositeDim implements ILayerDim {
 	}
 	
 	@Override
-	public Collection<Range> underlyingToLocalPositions(final ILayer sourceUnderlyingLayer,
+	public List<Range> underlyingToLocalPositions(final ILayerDim sourceUnderlyingDim,
 			final Collection<Range> underlyingPositionRanges) {
-		final int layout = getLayoutByChildLayer(sourceUnderlyingLayer);
+		final int layout = getLayoutByDim(sourceUnderlyingDim);
 		if (layout < 0) {
 			throw new IllegalArgumentException("underlyingLayer"); //$NON-NLS-1$
 		}
 		
-		final Collection<Range> localPositionRanges = new ArrayList<Range>();
+		final List<Range> localPositionRanges = new ArrayList<Range>();
 		
 		final long layoutPosition = getLayoutPosition(layout);
 		for (final Range underlyingPositionRange : underlyingPositionRanges) {
@@ -241,20 +233,20 @@ public class CompositeDim implements ILayerDim {
 	}
 	
 	@Override
-	public Collection<ILayer> getUnderlyingLayersByPosition(final long position) {
+	public List<ILayerDim> getUnderlyingDimsByPosition(final long position) {
 		final int layout = getLayoutByPosition(position);
 		if (layout < 0) {
 			return null;
 		}
 		
-		final Collection<ILayer> underlyingLayers = new ArrayList<ILayer>(this.childDims.length);
+		final List<ILayerDim> underlyingDims = new ArrayList<ILayerDim>(this.childDims.length);
 		
 		final ILayerDim[] layoutDims = this.childDims[layout];
 		for (int layout2 = 0; layout2 < layoutDims.length; layout2++) {
-			underlyingLayers.add(layoutDims[layout2].getLayer());
+			underlyingDims.add(layoutDims[layout2]);
 		}
 		
-		return underlyingLayers;
+		return underlyingDims;
 	}
 	
 	

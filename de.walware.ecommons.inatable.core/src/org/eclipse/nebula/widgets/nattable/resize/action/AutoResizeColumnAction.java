@@ -29,5 +29,5 @@ public class AutoResizeColumnAction implements IMouseAction {
 		InitializeAutoResizeColumnsCommand command = new InitializeAutoResizeColumnsCommand(natTable, column);
 		natTable.doCommand(command);
 	}
-
+	
 }

@@ -15,8 +15,6 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
-import org.eclipse.nebula.widgets.nattable.coordinate.Direction;
-
 
 /**
  * This implementation is a proof of concept for special cell editors that wrap dialogs.
@@ -82,7 +80,7 @@ public class FileDialogCellEditor extends AbstractDialogCellEditor {
 	 */
 	@Override
 	public void setEditorValue(Object value) {
-		//do nothing ... usually it should set the selection
+		getDialogInstance().setFileName(value != null ? value.toString() : null);
 	}
 
 	/* (non-Javadoc)
@@ -90,7 +88,7 @@ public class FileDialogCellEditor extends AbstractDialogCellEditor {
 	 */
 	@Override
 	public void close() {
-		//as the FileDialog does not support a programmatical way of closing, this method is forced to do nothing
+		//as the FileDialog does not support a programmatically way of closing, this method is forced to do nothing
 	}
 
 	/* (non-Javadoc)

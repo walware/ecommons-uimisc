@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -155,6 +156,8 @@ public abstract class AbstractDialogCellEditor implements ICellEditor, ICellEdit
 				configRegistry, EditConfigAttributes.VALIDATION_ERROR_HANDLER, configLabels);
 
 		this.dialog = createDialogInstance();
+		
+		setCanonicalValue(originalCanonicalValue);
 		
 		//this method is only needed to initialize the dialog editor, there will be no control to return
 		return null;
@@ -367,9 +370,6 @@ public abstract class AbstractDialogCellEditor implements ICellEditor, ICellEdit
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor#supportMultiEdit(org.eclipse.nebula.widgets.nattable.config.IConfigRegistry, java.util.List)
-	 */
 	@Override
 	public boolean supportMultiEdit(IConfigRegistry configRegistry, List<String> configLabels) {
 		Boolean supportMultiEdit = configRegistry.getConfigAttribute(
@@ -377,9 +377,11 @@ public abstract class AbstractDialogCellEditor implements ICellEditor, ICellEdit
 		return (supportMultiEdit == null || supportMultiEdit);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor#openAdjacentEditor()
-	 */
+	@Override
+	public boolean openMultiEditDialog() {
+		return true;
+	}
+	
 	@Override
 	public boolean openAdjacentEditor() {
 		//as editing with a dialog should only result in committing the value and then 
@@ -387,67 +389,49 @@ public abstract class AbstractDialogCellEditor implements ICellEditor, ICellEdit
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor#activateAtAnyPosition()
-	 */
 	@Override
 	public boolean activateAtAnyPosition() {
 		return true;
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor#addEditorControlListeners()
-	 */
 	@Override
 	public void addEditorControlListeners() {
 		//there is no need for special editor control listeners here
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor#removeEditorControlListeners()
-	 */
 	@Override
 	public void removeEditorControlListeners() {
 		//there is no need for special editor control listeners here
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.nebula.widgets.nattable.edit.gui.ICellEditDialog#setDialogSettings(java.util.Map)
-	 */
+	@Override
+	public Rectangle calculateControlBounds(Rectangle cellBounds) {
+		return cellBounds;
+	}
+
 	@Override
 	public void setDialogSettings(Map<String, Object> editDialogSettings) {
 		this.editDialogSettings = editDialogSettings;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor#getColumnIndex()
-	 */
 	@Override
 	public long getColumnIndex() {
 		return layerCell.getColumnIndex();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor#getRowIndex()
-	 */
 	@Override
 	public long getRowIndex() {
 		return layerCell.getRowIndex();
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor#getColumnPosition()
-	 */
 	@Override
 	public long getColumnPosition() {
 		return layerCell.getColumnPosition();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.nebula.widgets.nattable.edit.editor.ICellEditor#getRowPosition()
-	 */
 	@Override
 	public long getRowPosition() {
 		return layerCell.getRowPosition();
 	}
+	
 }

@@ -33,15 +33,13 @@ public class CellSelectionDragMode implements IDragMode {
 	}
 
 
+	@Override
 	public void mouseDown(NatTable natTable, MouseEvent event) {
 		natTable.forceFocus();
-
-		fireSelectionCommand(natTable,
-				natTable.getColumnPositionByX(event.x),
-				natTable.getRowPositionByY(event.y),
-				SelectionFlags.swt2Flags(event.stateMask) );
+		lastDragInCellPosition = new Point(natTable.getColumnPositionByX(event.x), natTable.getRowPositionByY(event.y));
 	}
 
+	@Override
 	public void mouseMove(NatTable natTable, MouseEvent event) {
 		if (event.x > natTable.getWidth()) {
 			return;
@@ -51,7 +49,7 @@ public class CellSelectionDragMode implements IDragMode {
 
 		if (selectedColumnPosition > -1 && selectedRowPosition > -1) {
 			Point dragInCellPosition = new Point(selectedColumnPosition, selectedRowPosition);
-			if(lastDragInCellPosition == null || !dragInCellPosition.equals(lastDragInCellPosition)){
+			if (lastDragInCellPosition == null || !dragInCellPosition.equals(lastDragInCellPosition)){
 				lastDragInCellPosition = dragInCellPosition;
 
 				fireSelectionCommand(natTable, selectedColumnPosition, selectedRowPosition, SelectionFlags.RANGE_SELECTION);
@@ -63,6 +61,7 @@ public class CellSelectionDragMode implements IDragMode {
 		natTable.doCommand(new SelectCellCommand(natTable, columnPosition, rowPosition, selectionFlags ));
 	}
 
+	@Override
 	public void mouseUp(NatTable natTable, MouseEvent event) {
 		endDrag();
 	}

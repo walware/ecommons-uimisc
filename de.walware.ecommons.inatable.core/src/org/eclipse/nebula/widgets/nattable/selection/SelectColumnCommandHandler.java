@@ -11,12 +11,10 @@
 // ~Selection
 package org.eclipse.nebula.widgets.nattable.selection;
 
-import java.util.Collection;
-import java.util.Iterator;
-
-import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
-
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectColumnsCommand;
 import org.eclipse.nebula.widgets.nattable.selection.event.ColumnSelectionEvent;
 
@@ -38,18 +36,18 @@ public class SelectColumnCommandHandler extends AbstractLayerCommandHandler<Sele
 
 	@Override
 	protected boolean doCommand(final SelectColumnsCommand command) {
-		toggleOrSelectColumn(command.getColumnPositions(), command.getRowPosition(),
+		toggleOrSelectColumn(RangeList.toRangeList(command.getPositions()), command.getRowPosition(),
 				command.getSelectionFlags(), command.getColumnPositionToReveal() );
 		return true;
 	}
 
-	protected void toggleOrSelectColumn(final Collection<Long> columnPositions, final long rowPosition,
+	protected void toggleOrSelectColumn(final RangeList columnPositions, final long rowPosition,
 			final int selectionFlags, final long columnPositionToReveal) {
 		long singleColumnPosition;
 		if ((selectionFlags & (SelectionFlags.RETAIN_SELECTION | SelectionFlags.RANGE_SELECTION)) == SelectionFlags.RETAIN_SELECTION
-				&& columnPositions.size() == 1
+				&& columnPositions.values().size() == 1
 				&& this.selectionLayer.isColumnPositionFullySelected(
-						singleColumnPosition = columnPositions.iterator().next()) ) {
+						singleColumnPosition = columnPositions.values().first() )) {
 			final Rectangle columnRegion = new Rectangle(
 					singleColumnPosition, 0, 1, this.selectionLayer.getRowCount());
 			this.selectionLayer.clearSelection(columnRegion);
@@ -60,42 +58,43 @@ public class SelectColumnCommandHandler extends AbstractLayerCommandHandler<Sele
 		selectColumn(columnPositions, rowPosition, selectionFlags, columnPositionToReveal );
 	}
 
-	protected void selectColumn(final Collection<Long> columnPositions, final long rowPosition,
+	protected void selectColumn(final RangeList columnPositions, final long rowPosition,
 			final int selectionFlags, final long columnPositionToReveal) {
+		final long rowCount = this.selectionLayer.getRowCount();
 		long lastPosition = Long.MIN_VALUE;
 		if ((selectionFlags & (SelectionFlags.RETAIN_SELECTION | SelectionFlags.RANGE_SELECTION)) == 0) {
 			this.selectionLayer.clearSelections();
 		}
-		if (columnPositions.isEmpty() || ((selectionFlags & SelectionFlags.RANGE_SELECTION) != 0 && columnPositions.size() > 1)) {
+		if (columnPositions.isEmpty()
+				|| ((selectionFlags & SelectionFlags.RANGE_SELECTION) != 0 && columnPositions.values().size() > 1)) {
 		}
-		if ((selectionFlags & SelectionFlags.RANGE_SELECTION) != 0 && this.selectionLayer.lastSelectedRegion != null
+		else if (this.selectionLayer.getSelectionModel().isMultipleSelectionAllowed()
+				&& (selectionFlags & SelectionFlags.RANGE_SELECTION) != 0 && this.selectionLayer.lastSelectedRegion != null
 				&& this.selectionLayer.selectionAnchor.columnPosition >= 0) {
 			if ((selectionFlags & SelectionFlags.RETAIN_SELECTION) != 0) {
 				this.selectionLayer.lastSelectedRegion = new Rectangle(0, 0, 0, 0);
 			}
 			
-			final long position = columnPositions.iterator().next();
+			final long position = columnPositions.values().first();
 			this.selectionLayer.lastSelectedRegion.x = Math.min(this.selectionLayer.selectionAnchor.columnPosition, position);
 			this.selectionLayer.lastSelectedRegion.width = Math.abs(this.selectionLayer.selectionAnchor.columnPosition - position) + 1;
 			this.selectionLayer.lastSelectedRegion.y = 0;
-			this.selectionLayer.lastSelectedRegion.height = this.selectionLayer.getRowCount();
+			this.selectionLayer.lastSelectedRegion.height = rowCount;
 			
 			lastPosition = position;
 			
 			this.selectionLayer.addSelection(this.selectionLayer.lastSelectedRegion);
 		}
 		else {
-			long position = Long.MIN_VALUE;
-			for (final Iterator<Long> iterator = columnPositions.iterator(); iterator.hasNext();) {
-				position = iterator.next();
-				if (position == columnPositionToReveal) {
-					lastPosition = position;
+			for (final Range range : columnPositions) {
+				if (range.contains(columnPositionToReveal)) {
+					lastPosition = columnPositionToReveal;
 				}
-				this.selectionLayer.addSelection(new Rectangle(position, 0, 1, this.selectionLayer.getRowCount()));
+				this.selectionLayer.addSelection(new Rectangle(range.start, 0, range.size(), rowCount));
 			}
 			
 			if (lastPosition == Long.MIN_VALUE) {
-				lastPosition = position;
+				lastPosition = columnPositions.values().last();
 			}
 			this.selectionLayer.selectionAnchor.columnPosition = lastPosition;
 			this.selectionLayer.selectionAnchor.rowPosition = rowPosition;
@@ -103,7 +102,7 @@ public class SelectColumnCommandHandler extends AbstractLayerCommandHandler<Sele
 		
 		if (lastPosition >= 0) {
 			this.selectionLayer.lastSelectedCell.columnPosition = lastPosition;
-			this.selectionLayer.lastSelectedCell.rowPosition = this.selectionLayer.getRowCount() - 1;
+			this.selectionLayer.lastSelectedCell.rowPosition = rowCount - 1;
 		}
 		
 		// TODO correct change set

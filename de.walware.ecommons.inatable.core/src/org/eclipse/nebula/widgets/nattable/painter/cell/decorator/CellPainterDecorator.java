@@ -15,10 +15,9 @@ import static org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils.saf
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 
-import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
-import org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
@@ -31,15 +30,15 @@ import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 public class CellPainterDecorator implements ICellPainter {
 
 	/**
-	 * The base {@link ICellPainter} that should be decorated
+	 * The base {@link ICellPainter} that is decorated.
 	 */
 	private final ICellPainter baseCellPainter;
 	/**
-	 * The edge of the cell at which the decoration should be applied
+	 * The edge of the cell at which the decoration is applied.
 	 */
 	private final CellEdgeEnum cellEdge;
 	/**
-	 * The {@link ICellPainter} that should be used to render the decoration.
+	 * The {@link ICellPainter} that is used to render the decoration.
 	 */
 	private final ICellPainter decoratorCellPainter;
 	/**

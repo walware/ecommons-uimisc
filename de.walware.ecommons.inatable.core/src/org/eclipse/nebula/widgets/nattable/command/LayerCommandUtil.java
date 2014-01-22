@@ -13,7 +13,7 @@ package org.eclipse.nebula.widgets.nattable.command;
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.ColumnPositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
@@ -77,11 +77,13 @@ public class LayerCommandUtil {
 				return null;
 			}
 			
-			Collection<ILayer> underlyingLayers = dim.getUnderlyingLayersByPosition(columnPosition);
-			if (underlyingLayers != null) {
-				for (ILayer underlyingLayer : underlyingLayers) {
-					if (underlyingLayer != null) {
-						ColumnPositionCoordinate convertedColumnPositionCoordinate = convertColumnPositionToTargetContext(new ColumnPositionCoordinate(underlyingLayer, underlyingColumnPosition), targetLayer);
+			List<ILayerDim> underlyingDims = dim.getUnderlyingDimsByPosition(columnPosition);
+			if (underlyingDims != null) {
+				for (ILayerDim underlyingDim : underlyingDims) {
+					if (underlyingDim != null) {
+						ColumnPositionCoordinate convertedColumnPositionCoordinate = convertColumnPositionToTargetContext(
+								new ColumnPositionCoordinate(underlyingDim.getLayer(), underlyingColumnPosition),
+								targetLayer );
 						if (convertedColumnPositionCoordinate != null) {
 							return convertedColumnPositionCoordinate;
 						}
@@ -116,11 +118,13 @@ public class LayerCommandUtil {
 				return null;
 			}
 			
-			Collection<ILayer> underlyingLayers = dim.getUnderlyingLayersByPosition(rowPosition);
-			if (underlyingLayers != null) {
-				for (ILayer underlyingLayer : underlyingLayers) {
-					if (underlyingLayer != null) {
-						RowPositionCoordinate convertedRowPositionCoordinate = convertRowPositionToTargetContext(new RowPositionCoordinate(underlyingLayer, underlyingRowPosition), targetLayer);
+			List<ILayerDim> underlyingDims = dim.getUnderlyingDimsByPosition(rowPosition);
+			if (underlyingDims != null) {
+				for (ILayerDim underlyingDim : underlyingDims) {
+					if (underlyingDim != null) {
+						RowPositionCoordinate convertedRowPositionCoordinate = convertRowPositionToTargetContext(
+								new RowPositionCoordinate(underlyingDim.getLayer(), underlyingRowPosition),
+								targetLayer );
 						if (convertedRowPositionCoordinate != null) {
 							return convertedRowPositionCoordinate;
 						}
@@ -131,8 +135,8 @@ public class LayerCommandUtil {
 		return null;
 	}
 	
-	public static long convertPositionToTargetContext(ILayerDim dim, long refPosition,
-			long position, ILayerDim targetDim) {
+	public static long convertPositionToTargetContext(/*@NonNull*/ final ILayerDim dim,
+			final long refPosition, final long position, /*@NonNull*/ final ILayerDim targetDim) {
 		if (dim == targetDim) {
 			return position;
 		}
@@ -143,11 +147,11 @@ public class LayerCommandUtil {
 			return Long.MIN_VALUE;
 		}
 		
-		final Collection<ILayer> underlyingLayers = dim.getUnderlyingLayersByPosition(refPosition);
-		if (underlyingLayers != null) {
-			for (ILayer underlyingLayer : underlyingLayers) {
-				if (underlyingLayer != null) {
-					long targetPosition = convertPositionToTargetContext(underlyingLayer.getDim(dim.getOrientation()),
+		final List<ILayerDim> underlyingDims = dim.getUnderlyingDimsByPosition(refPosition);
+		if (underlyingDims != null) {
+			for (ILayerDim underlyingDim : underlyingDims) {
+				if (underlyingDim != null) {
+					final long targetPosition = convertPositionToTargetContext(underlyingDim,
 							underlyingRefPosition, underlyingPosition, targetDim );
 					if (targetPosition != Long.MIN_VALUE) {
 						return targetPosition;

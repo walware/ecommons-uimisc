@@ -15,8 +15,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.coordinate.Point;
 import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
-import org.eclipse.nebula.widgets.nattable.coordinate.SWTUtil;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.swt.SWTUtil;
 
 public class DisplayColumnRenameDialogCommandHandler extends
 		AbstractLayerCommandHandler<DisplayColumnRenameDialogCommand> {

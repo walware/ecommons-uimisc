@@ -11,6 +11,7 @@
 // ~
 package org.eclipse.nebula.widgets.nattable.edit.command;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -72,10 +73,8 @@ public class EditUtils {
 	 * 			at least one cell is not editable.
 	 */
 	public static boolean allCellsEditable(SelectionLayer selectionLayer, IConfigRegistry configRegistry) {
-		List<PositionCoordinate> selectedCells = selectionLayer.getSelectedCellPositions();
-		ILayerCell layerCell = null;
-		for (PositionCoordinate cell : selectedCells) {
-			layerCell = selectionLayer.getCellByPosition(cell.columnPosition, cell.rowPosition);
+		Collection<ILayerCell> selectedCells = selectionLayer.getSelectedCells();
+		for (ILayerCell layerCell : selectedCells) {
 			LabelStack labelStack = layerCell.getConfigLabels();
 			IEditableRule editableRule = configRegistry.getConfigAttribute(
 					EditConfigAttributes.CELL_EDITABLE_RULE, 
@@ -152,7 +151,7 @@ public class EditUtils {
 	 * Checks if all selected cells have the same {@link IDisplayConverter} configured. This is needed
 	 * for the multi edit feature to determine if a multi edit is possible. 
 	 * <p>
-	 * Let's assume there are two columns, one containing an Long, the other a Date. 
+	 * Let's assume there are two columns, one containing an Integer, the other a Date. 
 	 * Both have a TextCellEditor configured, so if only the editor is checked, the multi edit dialog
 	 * would open. On committing a changed value an error would occur because of wrong conversion.
 	 * @param selectionLayer The {@link SelectionLayer} to retrieve the current selection.
@@ -190,11 +189,9 @@ public class EditUtils {
 	 */
 	public static boolean isValueSame(SelectionLayer selectionLayer) {
 		Object lastSelectedValue = null;
-		List<PositionCoordinate> selectedCells = selectionLayer.getSelectedCellPositions();
-		for (PositionCoordinate selectedCell : selectedCells) {
-			Object cellValue = selectionLayer
-					.getCellByPosition(selectedCell.columnPosition, selectedCell.rowPosition)
-					.getDataValue();
+		Collection<ILayerCell> selectedCells = selectionLayer.getSelectedCells();
+		for (ILayerCell layerCell : selectedCells) {
+			Object cellValue = layerCell.getDataValue();
 			if (lastSelectedValue == null) {
 				lastSelectedValue = cellValue;
 			}

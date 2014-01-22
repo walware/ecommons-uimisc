@@ -13,6 +13,7 @@ package org.eclipse.nebula.widgets.nattable.edit.editor;
 
 import java.util.List;
 
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -273,6 +274,22 @@ public interface ICellEditor {
 	boolean supportMultiEdit(IConfigRegistry configRegistry, List<String> configLabels);
 	
 	/**
+	 * This is a very special configuration to tell whether an ICellEditor should open a multi
+	 * edit dialog for multi editing or not. Usually for multi editing there should be always a 
+	 * multi edit dialog be opened. There are only special cases where this doesn't make sense.
+	 * The only types of ICellEditors that shouldn't open multi edit dialogs are editors that 
+	 * change their values directly and there is no interactively editor control opened, 
+	 * e.g. checkboxes.
+	 * 
+	 * @return <code>true</code> if for multi editing a multi edit dialog should be opened,
+	 * 			<code>false</code> if the multi editing should be performed directly without
+	 * 			opening a multi edit dialog. Note: <code>true</code> is the default value
+	 * 			and changing it to <code>false</code> for a custom editor might cause issues
+	 * 			if not dealed correctly.
+	 */
+	boolean openMultiEditDialog();
+	
+	/**
 	 * Determines behaviour after committing the value of this editor in combination with selection
 	 * movement. If this method return <code>true</code> and the selection is moved after committing, 
 	 * the editor for the newly selected cell will be activated immediately. If this method returns
@@ -340,5 +357,20 @@ public interface ICellEditor {
 	 * by the framework if you are not using the abstract implementation of {@link ICellEditor}.
 	 */
 	void removeEditorControlListeners();
+	
+	/**
+	 * This method is used to calculate the bounds of the edit control when opened inline.
+	 * By default it should return the given cell bounds to match the cell structure in NatTable.
+	 * For several cases it might be useful to return the preferred size to show all content
+	 * rather than trimming the control to the cell size.
+	 * <p>
+	 * Note: By changing the bounds you should ensure to only modify width and height attributes
+	 * 			and not x and y coordinate, otherwise the editor control will show up somewhere else
+	 * 			and not in place of the cell that is edited.
+	 * @param cellBounds The bounds of the cell for which the editor is opened.
+	 * @return The bounds of the editor control that should be applied. By default the cell bounds
+	 * 			for several cases bigger.
+	 */
+	Rectangle calculateControlBounds(Rectangle cellBounds);
 	
 }

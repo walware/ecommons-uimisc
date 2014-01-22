@@ -13,7 +13,6 @@ package org.eclipse.nebula.widgets.nattable.viewport.command;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
-import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectColumnsCommand;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
@@ -38,6 +37,7 @@ public class ViewportSelectDimPositionsCommandHandler extends AbstractLayerComma
 	}
 	
 	
+	@Override
 	public Class<ViewportSelectDimPositionsCommand> getCommandClass() {
 		return ViewportSelectDimPositionsCommand.class;
 	}
@@ -52,12 +52,12 @@ public class ViewportSelectDimPositionsCommandHandler extends AbstractLayerComma
 		switch (command.getOrientation()) {
 		case HORIZONTAL:
 			this.viewportLayer.doCommand(new SelectColumnsCommand(this.viewportLayer,
-					RangeList.listRanges(command.getPositions()), 0,
+					command.getPositions(), 0,
 					command.getSelectionFlags(), command.getPositionToReveal() ));
 			return true;
 		case VERTICAL:
 			this.viewportLayer.doCommand(new SelectRowsCommand(this.viewportLayer,
-					0, RangeList.listRanges(command.getPositions()),
+					0, command.getPositions(),
 					command.getSelectionFlags(), command.getPositionToReveal() ));
 			return true;
 		default:

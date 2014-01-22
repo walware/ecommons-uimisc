@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,7 +26,7 @@ public class TreeExportFormatter extends DefaultExportFormatter {
 	@Override
 	public Object formatForExport(ILayerCell cell, IConfigRegistry configRegistry) {
 		long index = cell.getLayer().getRowIndexByPosition(cell.getRowPosition());
-		long depth = treeRowModel.depth(index);
+		int depth = treeRowModel.depth(index);
 		
 		StringBuilder str = new StringBuilder();
 		if (depth > 0) {

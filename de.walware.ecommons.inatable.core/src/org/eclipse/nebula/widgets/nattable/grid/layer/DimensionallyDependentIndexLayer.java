@@ -14,17 +14,17 @@ package org.eclipse.nebula.widgets.nattable.grid.layer;
 
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
 
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractTransformLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerDim;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
-import org.eclipse.nebula.widgets.nattable.layer.TransformDim;
+import org.eclipse.nebula.widgets.nattable.layer.TransformLayer;
+import org.eclipse.nebula.widgets.nattable.layer.TransformLayerDim;
 
 
 /**
@@ -46,10 +46,10 @@ import org.eclipse.nebula.widgets.nattable.layer.TransformDim;
  * ILayer rowHeaderLayer = new DimensionallyDependentIndexLayer(rowHeaderColumnDataLayer, bodyLayer, rowHeaderColumnDataLayer);
  * </pre>
  */
-public class DimensionallyDependentIndexLayer extends AbstractTransformLayer {
+public class DimensionallyDependentIndexLayer extends TransformLayer {
 	
 	
-	protected static class Dim extends TransformDim<DimensionallyDependentIndexLayer> {
+	protected static class Dim extends TransformLayerDim<DimensionallyDependentIndexLayer> {
 		
 		
 		public Dim(final DimensionallyDependentIndexLayer layer, final ILayerDim underlyingDim) {
@@ -58,7 +58,7 @@ public class DimensionallyDependentIndexLayer extends AbstractTransformLayer {
 		
 		
 		protected ILayerDim getBaseDim() {
-			return getLayer().getBaseLayer().getDim(getOrientation());
+			return this.layer.getBaseLayer().getDim(this.orientation);
 		}
 		
 		
@@ -74,7 +74,7 @@ public class DimensionallyDependentIndexLayer extends AbstractTransformLayer {
 				return position;
 			}
 			
-			return LayerUtil.convertPosition(this, refPosition, position, getLayer().getBaseLayer());
+			return LayerUtil.convertPosition(this, refPosition, position, this.layer.getBaseLayer());
 		}
 		
 		@Override
@@ -103,9 +103,9 @@ public class DimensionallyDependentIndexLayer extends AbstractTransformLayer {
 		}
 		
 		@Override
-		public long underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
+		public long underlyingToLocalPosition(final ILayerDim sourceUnderlyingDim,
 				final long underlyingPosition) {
-			if (sourceUnderlyingLayer != getBaseDim().getLayer()) {
+			if (sourceUnderlyingDim != getBaseDim()) {
 				throw new IllegalArgumentException("underlyingLayer"); //$NON-NLS-1$
 			}
 			
@@ -122,21 +122,22 @@ public class DimensionallyDependentIndexLayer extends AbstractTransformLayer {
 		}
 		
 		private long searchIndex(final ILayerDim dim, final long refPosition, final long index) {
-			final Collection<ILayer> underlyingLayers = dim.getUnderlyingLayersByPosition(refPosition);
-			final long underlyingRefPosition = dim.localToUnderlyingPosition(refPosition, refPosition);
-			for (final ILayer underlyingLayer : underlyingLayers) {
-				final long underlyingPosition;
-				if (underlyingLayer instanceof IUniqueIndexLayer) {
-					underlyingPosition = getPositionByIndex((IUniqueIndexLayer) underlyingLayer, index);
-				}
-				else {
-					underlyingPosition = searchIndex(underlyingLayer.getDim(getOrientation()),
-							underlyingRefPosition, index );
-				}
-				if (underlyingPosition != Long.MIN_VALUE) {
-					final long position = dim.underlyingToLocalPosition(refPosition, underlyingPosition);
-					if (position != Long.MIN_VALUE) {
-						return position;
+			final List<ILayerDim> uDims = dim.getUnderlyingDimsByPosition(refPosition);
+			if (uDims != null) {
+				final long uRefPosition = dim.localToUnderlyingPosition(refPosition, refPosition);
+				for (final ILayerDim uDim : uDims) {
+					final long underlyingPosition;
+					if (uDim.getLayer() instanceof IUniqueIndexLayer) {
+						underlyingPosition = getPositionByIndex((IUniqueIndexLayer) uDim.getLayer(), index);
+					}
+					else {
+						underlyingPosition = searchIndex(uDim, uRefPosition, index);
+					}
+					if (underlyingPosition != Long.MIN_VALUE) {
+						final long position = dim.underlyingToLocalPosition(refPosition, underlyingPosition);
+						if (position != Long.MIN_VALUE) {
+							return position;
+						}
 					}
 				}
 			}
@@ -144,14 +145,14 @@ public class DimensionallyDependentIndexLayer extends AbstractTransformLayer {
 		}
 		
 		private long getPositionByIndex(final IUniqueIndexLayer indexLayer, final long index) {
-			return (getOrientation() == HORIZONTAL) ?
+			return (this.orientation == HORIZONTAL) ?
 					indexLayer.getColumnPositionByIndex(index) :
 					indexLayer.getRowPositionByIndex(index);
 		}
 		
 		@Override
-		public Collection<ILayer> getUnderlyingLayersByPosition(final long position) {
-			return Collections.<ILayer>singletonList(getLayer().getBaseLayer());
+		public List<ILayerDim> getUnderlyingDimsByPosition(final long position) {
+			return Collections.<ILayerDim>singletonList(getBaseDim());
 		}
 		
 		
@@ -217,7 +218,7 @@ public class DimensionallyDependentIndexLayer extends AbstractTransformLayer {
 		
 		for (final Orientation orientation : Orientation.values()) {
 			final ILayerDim dependency = getLayerDependency(orientation).getDim(orientation);
-			setDim(orientation, new Dim(this, dependency));
+			setDim(new Dim(this, dependency));
 		}
 	}
 	

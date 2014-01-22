@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,7 @@ import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.resize.command.AutoResizeRowsCommand;
 import org.eclipse.nebula.widgets.nattable.resize.command.InitializeAutoResizeRowsCommand;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+
 
 public class InitializeAutoResizeRowsCommandHandler extends AbstractLayerCommandHandler<InitializeAutoResizeRowsCommand> {
 
@@ -36,11 +37,9 @@ public class InitializeAutoResizeRowsCommandHandler extends AbstractLayerCommand
 		if (selectionLayer.isRowPositionFullySelected(rowPosition)) {
 			initCommand.setSelectedRowPositions(selectionLayer.getFullySelectedRowPositions());
 		} else {
-			RangeList list = new RangeList();
-			list.addValue(rowPosition);
-			initCommand.setSelectedRowPositions(list);
+			initCommand.setSelectedRowPositions(new RangeList(rowPosition));
 		}
-
+		
 		// Fire command carrying the selected columns
 		initCommand.getSourceLayer().doCommand(new AutoResizeRowsCommand(initCommand));
 		return true;

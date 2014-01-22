@@ -14,55 +14,34 @@ package org.eclipse.nebula.widgets.nattable.layer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 
 
 /**
- * Dim implementation for {@link AbstractTransformLayer}
+ * Dim implementation for {@link TransformLayer}.
  *
- * @param <T>
+ * @param <T> the type of the layer
  */
-public class TransformDim<T extends ILayer> implements ILayerDim {
+public class TransformLayerDim<T extends ILayer> extends AbstractLayerDim<T> {
 	
-	
-	protected final T layer;
-	
-	protected final Orientation orientation;
 	
 	protected final ILayerDim underlyingDim;
 	
 	
-	public TransformDim(final T layer, final ILayerDim underlyingDim) {
+	public TransformLayerDim(/*@NonNull*/ final T layer, /*@NonNull*/ final ILayerDim underlyingDim) {
 		this(layer, underlyingDim.getOrientation(), underlyingDim);
 	}
 	
-	public TransformDim(final T layer, final Orientation orientation,
-			final ILayerDim underlyingDim) {
-		if (layer == null) {
-			throw new NullPointerException("layer"); //$NON-NLS-1$
-		}
-		if (orientation == null) {
-			throw new NullPointerException("orientation"); //$NON-NLS-1$
-		}
+	public TransformLayerDim(/*@NonNull*/ final T layer, /*@NonNull*/ final Orientation orientation,
+			/*@NonNull*/ final ILayerDim underlyingDim) {
+		super(layer, orientation);
 		if (underlyingDim == null) {
 			throw new NullPointerException("underlyingDim"); //$NON-NLS-1$
 		}
-		this.layer = layer;
-		this.orientation = orientation;
 		this.underlyingDim = underlyingDim;
-	}
-	
-	
-	@Override
-	public T getLayer() {
-		return this.layer;
-	}
-	
-	@Override
-	public Orientation getOrientation() {
-		return this.orientation;
 	}
 	
 	
@@ -82,11 +61,6 @@ public class TransformDim<T extends ILayer> implements ILayerDim {
 	}
 	
 	@Override
-	public long getPreferredPositionCount() {
-		return this.underlyingDim.getPreferredPositionCount();
-	}
-	
-	@Override
 	public long localToUnderlyingPosition(final long refPosition, final long position) {
 		return position;
 	}
@@ -99,9 +73,9 @@ public class TransformDim<T extends ILayer> implements ILayerDim {
 	}
 	
 	@Override
-	public long underlyingToLocalPosition(final ILayer sourceUnderlyingLayer,
+	public long underlyingToLocalPosition(final ILayerDim sourceUnderlyingDim,
 			final long underlyingPosition) {
-		if (sourceUnderlyingLayer != this.underlyingDim.getLayer()) {
+		if (sourceUnderlyingDim != this.underlyingDim) {
 			throw new IllegalArgumentException("underlyingLayer"); //$NON-NLS-1$
 		}
 		
@@ -109,22 +83,29 @@ public class TransformDim<T extends ILayer> implements ILayerDim {
 	}
 	
 	@Override
-	public Collection<Range> underlyingToLocalPositions(final ILayer sourceUnderlyingLayer,
-			final Collection<Range> underlyingPositionRanges) {
-		final Collection<Range> localPositionRanges = new ArrayList<Range>();
+	public List<Range> underlyingToLocalPositions(final ILayerDim sourceUnderlyingDim,
+			final Collection<Range> underlyingPositions) {
+		final List<Range> localPositions = new ArrayList<Range>(underlyingPositions.size());
 		
-		for (final Range underlyingPositionRange : underlyingPositionRanges) {
-			localPositionRanges.add(new Range(
-					underlyingToLocalPosition(sourceUnderlyingLayer, underlyingPositionRange.start),
-					underlyingToLocalPosition(sourceUnderlyingLayer, underlyingPositionRange.end) ));
+		for (final Range underlyingPositionRange : underlyingPositions) {
+			if (underlyingPositionRange.start == underlyingPositionRange.end) {
+				final long position = underlyingToLocalPosition(sourceUnderlyingDim, underlyingPositionRange.start);
+				localPositions.add(new Range(position, position));
+			}
+			else {
+				final long first = underlyingToLocalPosition(sourceUnderlyingDim, underlyingPositionRange.start);
+				final long last = underlyingToLocalPosition(sourceUnderlyingDim, underlyingPositionRange.end - 1);
+				if (first <= last) {
+					localPositions.add(new Range(first, last + 1));
+				}
+			}
 		}
-		
-		return localPositionRanges;
+		return localPositions;
 	}
 	
 	@Override
-	public Collection<ILayer> getUnderlyingLayersByPosition(final long position) {
-		return Collections.singletonList(this.underlyingDim.getLayer());
+	public List<ILayerDim> getUnderlyingDimsByPosition(final long position) {
+		return Collections.singletonList(this.underlyingDim);
 	}
 	
 	
@@ -140,7 +121,7 @@ public class TransformDim<T extends ILayer> implements ILayerDim {
 	
 	@Override
 	public long getPositionByPixel(final long pixel) {
-		return underlyingToLocalPosition(this.underlyingDim.getLayer(),
+		return underlyingToLocalPosition(this.underlyingDim,
 				this.underlyingDim.getPositionByPixel(pixel) );
 	}
 	
@@ -164,17 +145,8 @@ public class TransformDim<T extends ILayer> implements ILayerDim {
 	
 	@Override
 	public boolean isPositionResizable(final long position) {
-		return this.underlyingDim.isPositionResizable(
-				localToUnderlyingPosition(position, position) );
-	}
-	
-	
-	@Override
-	public String toString() {
-		final StringBuilder sb = new StringBuilder("LayerDim"); //$NON-NLS-1$
-		sb.append(" ").append(this.orientation); //$NON-NLS-1$
-		sb.append(" of \n").append(this.layer); //$NON-NLS-1$
-		return sb.toString();
+		final long underlyingPosition = localToUnderlyingPosition(position, position);
+		return this.underlyingDim.isPositionResizable(underlyingPosition);
 	}
 	
 }

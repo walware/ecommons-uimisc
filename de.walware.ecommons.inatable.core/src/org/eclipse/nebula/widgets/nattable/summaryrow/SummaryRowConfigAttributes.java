@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,8 +12,17 @@ package org.eclipse.nebula.widgets.nattable.summaryrow;
 
 import org.eclipse.nebula.widgets.nattable.style.ConfigAttribute;
 
+/**
+ * This class contains the {@link ConfigAttribute}s that are interpreted by the 
+ * {@link SummaryRowLayer}.
+ * 
+ * @see SummaryRowLayer
+ */
 public class SummaryRowConfigAttributes {
 
+	/**
+	 * The configuration attribute that is used to calculate the summary for a column.
+	 */
 	public static final ConfigAttribute<ISummaryProvider> SUMMARY_PROVIDER = new ConfigAttribute<ISummaryProvider>();
 
 }

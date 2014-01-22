@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Vendor: WalWare.de
 Bundle-Name: Integrated NatTable Core
 Bundle-SymbolicName: de.walware.ecommons.inatable.core
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.1.qualifier
 Bundle-Activator: org.eclipse.nebula.widgets.nattable.internal.NatTablePlugin
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
@@ -118,6 +118,7 @@ Export-Package: org.eclipse.nebula.widgets.nattable,
  org.eclipse.nebula.widgets.nattable.style.editor,
  org.eclipse.nebula.widgets.nattable.style.editor.command,
  org.eclipse.nebula.widgets.nattable.summaryrow,
+ org.eclipse.nebula.widgets.nattable.swt,
  org.eclipse.nebula.widgets.nattable.tickupdate,
  org.eclipse.nebula.widgets.nattable.tickupdate.action,
  org.eclipse.nebula.widgets.nattable.tickupdate.command,

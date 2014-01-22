@@ -87,6 +87,8 @@ public class RowReorderEvent extends RowStructuralChangeEvent {
 
 		Collection<Range> beforeFromRowPositionRanges = getBeforeFromRowPositionRanges();
 
+		final long beforeToRowPosition = (this.reorderToTopEdge) ?
+				this.beforeToRowPosition : (this.beforeToRowPosition + 1);
 		long afterAddRowPosition = beforeToRowPosition;
 		for (Range beforeFromRowPositionRange : beforeFromRowPositionRanges) {
 			if (beforeFromRowPositionRange.start < beforeToRowPosition) {

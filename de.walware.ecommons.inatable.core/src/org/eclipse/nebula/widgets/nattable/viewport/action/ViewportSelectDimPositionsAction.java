@@ -19,6 +19,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.layer.ILayerDim;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.cell.LayerCellDim;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionFlags;
@@ -48,17 +49,18 @@ public class ViewportSelectDimPositionsAction implements IMouseAction {
 		if (cell == null) {
 			return;
 		}
-		final LayerCellDim dim = cell.getDim(this.orientation);
-		if (dim.getPositionSpan() > 1) {
+		final ILayerDim layerDim = natTable.getDim(this.orientation);
+		final LayerCellDim cellDim = cell.getDim(this.orientation);
+		if (cellDim.getPositionSpan() > 1) {
 			final List<Range> positions = Collections.singletonList(
-					new Range(dim.getOriginPosition(), dim.getOriginPosition() + dim.getPositionSpan()) );
-			natTable.doCommand(new ViewportSelectDimPositionsCommand(this.orientation,
-					natTable, dim.getPosition(), positions, dim.getPosition(),
+					new Range(cellDim.getOriginPosition(), cellDim.getOriginPosition() + cellDim.getPositionSpan()) );
+			natTable.doCommand(new ViewportSelectDimPositionsCommand(layerDim,
+					cellDim.getPosition(), positions, cellDim.getPosition(),
 					SelectionFlags.swt2Flags(event.stateMask) ));
 		}
 		else {
-			natTable.doCommand(new ViewportSelectDimPositionsCommand(this.orientation,
-					natTable, dim.getPosition(),
+			natTable.doCommand(new ViewportSelectDimPositionsCommand(layerDim,
+					cellDim.getPosition(),
 					SelectionFlags.swt2Flags(event.stateMask) ));
 		}
 	}

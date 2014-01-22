@@ -14,10 +14,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
-import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+
 
 /**
  * Event indicating a change in the structure of the columns. 
@@ -25,14 +25,29 @@ import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
  */
 public abstract class ColumnStructuralChangeEvent extends ColumnVisualChangeEvent implements IStructuralChangeEvent {
 
+	/**
+	 * Creates a new ColumnStructuralChangeEvent based on the given information.
+	 * @param layer The ILayer to which the given column positions match.
+	 * @param columnPositionRanges The column position ranges for the columns that have changed.
+	 */
 	public ColumnStructuralChangeEvent(ILayer layer, Range...columnPositionRanges) {
 		this(layer, Arrays.asList(columnPositionRanges));
 	}
 	
+	/**
+	 * Creates a new ColumnStructuralChangeEvent based on the given information.
+	 * @param layer The ILayer to which the given column positions match.
+	 * @param columnPositionRanges The column position ranges for the columns that have changed.
+	 */
 	public ColumnStructuralChangeEvent(ILayer layer, Collection<Range> columnPositionRanges) {
 		super(layer, columnPositionRanges);
 	}
 	
+	/**
+	 * Creates a new ColumnStructuralChangeEvent based on the given instance.
+	 * Mainly needed for cloning.
+	 * @param event The ColumnStructuralChangeEvent out of which the new instance should be created.
+	 */
 	protected ColumnStructuralChangeEvent(ColumnStructuralChangeEvent event) {
 		super(event);
 	}
@@ -58,14 +73,17 @@ public abstract class ColumnStructuralChangeEvent extends ColumnVisualChangeEven
 		return changedPositionRectangles;
 	}
 	
+	@Override
 	public boolean isHorizontalStructureChanged() {
 		return true;
 	}
 	
+	@Override
 	public boolean isVerticalStructureChanged() {
 		return false;
 	}
 	
+	@Override
 	public Collection<StructuralDiff> getRowDiffs() {
 		return null;
 	}

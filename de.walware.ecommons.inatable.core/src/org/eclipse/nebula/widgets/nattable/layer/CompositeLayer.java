@@ -76,7 +76,7 @@ public class CompositeLayer extends DimBasedLayer {
 		}
 		
 		for (final Orientation orientation : Orientation.values()) {
-			setDim(orientation, (ignoreRef(orientation)) ?
+			setDim((ignoreRef(orientation)) ?
 					new CompositeDim.IgnoreRef(this, orientation) :
 					new CompositeDim(this, orientation) );
 		}

@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.Status;
 
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
+import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.internal.NatTablePlugin;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.event.CellVisualChangeEvent;
@@ -41,17 +42,25 @@ public class UpdateDataCommandHandler extends AbstractLayerCommandHandler<Update
 		this.dataLayer = dataLayer;
 	}
 	
+	@Override
 	public Class<UpdateDataCommand> getCommandClass() {
 		return UpdateDataCommand.class;
 	}
-	
+
 	@Override
 	protected boolean doCommand(UpdateDataCommand command) {
 		try {
 			long columnPosition = command.getColumnPosition();
 			long rowPosition = command.getRowPosition();
-			dataLayer.getDataProvider().setDataValue(columnPosition, rowPosition, command.getNewValue());
-			dataLayer.fireLayerEvent(new CellVisualChangeEvent(dataLayer, columnPosition, rowPosition));
+			final IDataProvider dataProvider = dataLayer.getDataProvider();
+			Object oldValue = dataProvider.getDataValue(columnPosition, rowPosition);
+			Object newValue = command.getNewValue();
+			if ((oldValue != null) ? !oldValue.equals(newValue) : null != newValue)  {
+				dataProvider.setDataValue(columnPosition, rowPosition, newValue);
+				dataLayer.fireLayerEvent(new CellVisualChangeEvent(dataLayer, columnPosition, rowPosition));
+				
+				//TODO implement a new event which is a mix of PropertyUpdateEvent and CellVisualChangeEvent
+			}
 			return true;
 		} catch (UnsupportedOperationException e) {
 			NatTablePlugin.log(new Status(IStatus.ERROR, NatTablePlugin.PLUGIN_ID,

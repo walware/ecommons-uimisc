@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,10 +34,12 @@ public class RowResizeEvent extends RowStructuralChangeEvent {
 		super(event);
 	}
 	
+	@Override
 	public RowResizeEvent cloneEvent() {
 		return new RowResizeEvent(this);
 	}
 	
+	@Override
 	public Collection<StructuralDiff> getRowDiffs() {
 		Collection<StructuralDiff> rowDiffs = new ArrayList<StructuralDiff>();
 		

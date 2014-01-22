@@ -7,8 +7,9 @@
  * 
  * Contributors:
  *     Original authors and others - initial API and implementation
+ *     Stephan Wahlbrink - dim-based implementation prepared for long datasets
  ******************************************************************************/
-// ~
+
 package org.eclipse.nebula.widgets.nattable.viewport;
 
 import org.eclipse.swt.SWT;
@@ -16,17 +17,14 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
 
-import org.eclipse.nebula.widgets.nattable.coordinate.Orientation;
-import org.eclipse.nebula.widgets.nattable.coordinate.SWTUtil;
 import org.eclipse.nebula.widgets.nattable.edit.command.EditUtils;
+import org.eclipse.nebula.widgets.nattable.swt.SWTUtil;
 
 
-public class ScrollBarHandlerTemplate implements Listener {
+public class ScrollBarHandler implements Listener {
 	
 	
-	private final ViewportLayer viewportLayer;
-	
-	private final Orientation orientation;
+	private final IViewportDim dim;
 	
 	private final ScrollBar scrollBar;
 	
@@ -43,25 +41,24 @@ public class ScrollBarHandlerTemplate implements Listener {
 	private boolean dragging = false;
 	
 	
-	public ScrollBarHandlerTemplate(final ViewportLayer viewportLayer, final Orientation orientation,
-			final ScrollBar scrollBar) {
-		this.viewportLayer = viewportLayer;
-		this.orientation = orientation;
+	public ScrollBarHandler(final IViewportDim dim, final ScrollBar scrollBar) {
+		this.dim = dim;
 		this.scrollBar = scrollBar;
 		this.scrollBar.addListener(SWT.Selection, this);
 		
-		scrollBar.getParent().addListener(SWTUtil.getMouseWheelEventType(this.orientation), this);
+		scrollBar.getParent().addListener(SWTUtil.getMouseWheelEventType(this.dim.getOrientation()), this);
 	}
 	
 	
 	public void dispose() {
 		if (this.scrollBar != null && !this.scrollBar.isDisposed()) {
 			this.scrollBar.removeListener(SWT.Selection, this);
-			this.scrollBar.removeListener(SWTUtil.getMouseWheelEventType(this.orientation), this);
+			this.scrollBar.removeListener(SWTUtil.getMouseWheelEventType(this.dim.getOrientation()), this);
 		}
 	}
 	
 	
+	@Override
 	public void handleEvent(final Event event) {
 		boolean handle = true;
 		
@@ -77,18 +74,17 @@ public class ScrollBarHandlerTemplate implements Listener {
 			return;
 		}
 		
-		final IViewportDim dim = this.viewportLayer.getDim(this.orientation);
 		switch (event.type) {
 		case SWT.MouseHorizontalWheel:
 		case SWT.MouseVerticalWheel:
 			if (event.count > 0) {
 				for (; event.count > 0; event.count--) {
-					dim.scrollBackwardByStep();
+					this.dim.scrollBackwardByStep();
 				}
 			}
 			else if (event.count < 0) {
 				for (; event.count < 0; event.count++) {
-					dim.scrollForwardByStep();
+					this.dim.scrollForwardByStep();
 				}
 			}
 			event.doit = false;
@@ -96,27 +92,27 @@ public class ScrollBarHandlerTemplate implements Listener {
 		case SWT.Selection:
 			switch (event.detail) {
 			case SWT.HOME:
-				dim.scrollBackwardToBound();
+				this.dim.scrollBackwardToBound();
 				return;
 			case SWT.END:
-				dim.scrollForwardToBound();
+				this.dim.scrollForwardToBound();
 				return;
 			case SWT.PAGE_UP:
-				dim.scrollBackwardByPage();
+				this.dim.scrollBackwardByPage();
 				return;
 			case SWT.PAGE_DOWN:
-				dim.scrollForwardByPage();
+				this.dim.scrollForwardByPage();
 				return;
 			case SWT.ARROW_UP:
 			case SWT.ARROW_LEFT:
-				dim.scrollBackwardByStep();
+				this.dim.scrollBackwardByStep();
 				return;
 			case SWT.ARROW_DOWN:
 			case SWT.ARROW_RIGHT:
-				dim.scrollForwardByStep();
+				this.dim.scrollForwardByStep();
 				return;
 			default:
-				dim.setOriginPixel(dim.getMinimumOriginPixel()
+				this.dim.setOriginPixel(this.dim.getMinimumOriginPixel()
 						+ (long) (this.scrollBar.getSelection() / this.factor) );
 				return;
 			}
@@ -131,9 +127,7 @@ public class ScrollBarHandlerTemplate implements Listener {
 		if (this.scrollBar.isDisposed()) {
 			return;
 		}
-		final IViewportDim dim = this.viewportLayer.getDim(this.orientation);
-		
-		final long startPixel = dim.getOriginPixel() - dim.getMinimumOriginPixel();
+		final long startPixel = this.dim.getOriginPixel() - this.dim.getMinimumOriginPixel();
 		
 		this.scrollBar.setSelection((int) (this.factor * startPixel));
 	}
@@ -143,10 +137,8 @@ public class ScrollBarHandlerTemplate implements Listener {
 			return;
 		}
 		
-		final IViewportDim dim = this.viewportLayer.getDim(this.orientation);
-		
-		final long scrollablePixel = dim.getScrollable().getSize() - dim.getMinimumOriginPixel();
-		final long viewportWindowPixel = dim.getSize();
+		final long scrollablePixel = this.dim.getScrollable().getSize() - this.dim.getMinimumOriginPixel();
+		final long viewportWindowPixel = this.dim.getSize();
 		
 		final int max;
 		final int viewportWindowSpan;

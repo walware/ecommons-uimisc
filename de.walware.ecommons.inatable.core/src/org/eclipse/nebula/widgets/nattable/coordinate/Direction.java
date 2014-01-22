@@ -8,7 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
-// +
+
 package org.eclipse.nebula.widgets.nattable.coordinate;
 
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
@@ -16,6 +16,7 @@ import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICA
 
 
 public enum Direction {
+	
 	
 	LEFT (HORIZONTAL),
 	RIGHT (HORIZONTAL),
@@ -55,6 +56,8 @@ public enum Direction {
 		case LEFT:
 		case UP:
 			return true;
+		case RIGHT:
+		case DOWN:
 		default:
 			return false;
 		}
@@ -65,6 +68,8 @@ public enum Direction {
 		case RIGHT:
 		case DOWN:
 			return true;
+		case LEFT:
+		case UP:
 		default:
 			return false;
 		}
@@ -79,9 +84,8 @@ public enum Direction {
 		case UP:
 			return DOWN;
 		case DOWN:
-			return UP;
 		default:
-			throw new IllegalStateException();
+			return UP;
 		}
 	}
 	

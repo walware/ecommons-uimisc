@@ -15,12 +15,51 @@ import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZON
 import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.VERTICAL;
 import static org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell.NO_INDEX;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 
 
+/**
+ * This abstract layer can be used if a layer implementation bases on implementation of layer
+ * dimensions.
+ */
 public abstract class DimBasedLayer extends AbstractLayer {
+	
+	
+	private static long computePreferredPositionCount(final ILayerDim dim) {
+		final long preferredSize = dim.getPreferredSize();
+		long position = 0;
+		long size = 0;
+		try {
+			while (size < preferredSize) {
+				size += dim.getPositionSize(position, position++);
+			}
+		}
+		catch (final Exception e) {}
+		return position;
+	}
+	
+	private static List<ILayer> convertDim2LayerList(final Collection<ILayerDim> dims) {
+		if (dims == null) {
+			return null;
+		}
+		switch (dims.size()) {
+		case 0:
+			return Collections.emptyList();
+		case 1:
+			return Collections.singletonList(dims.iterator().next().getLayer());
+		default:
+			final List<ILayer> layers = new ArrayList<ILayer>(dims.size());
+			for (final ILayerDim underlyingDim : dims) {
+				layers.add(underlyingDim.getLayer());
+			}
+			return layers;
+		}
+	}
 	
 	
 	protected DimBasedLayer() {
@@ -31,6 +70,7 @@ public abstract class DimBasedLayer extends AbstractLayer {
 	protected abstract void updateDims();
 	
 	
+	@Override
 	public long getColumnIndexByPosition(long columnPosition) {
 		if (columnPosition < 0 || columnPosition >= getColumnCount()) {
 			return NO_INDEX;
@@ -46,7 +86,7 @@ public abstract class DimBasedLayer extends AbstractLayer {
 	
 	@Override
 	public final long getPreferredColumnCount() {
-		return super.getDim(HORIZONTAL).getPreferredPositionCount();
+		return computePreferredPositionCount(super.getDim(HORIZONTAL));
 	}
 	
 	@Override
@@ -57,15 +97,15 @@ public abstract class DimBasedLayer extends AbstractLayer {
 	@Override
 	public final long underlyingToLocalColumnPosition(final ILayer sourceUnderlyingLayer,
 			final long underlyingColumnPosition) {
-		return super.getDim(HORIZONTAL).underlyingToLocalPosition(sourceUnderlyingLayer,
-				underlyingColumnPosition );
+		return super.getDim(HORIZONTAL).underlyingToLocalPosition(
+				sourceUnderlyingLayer.getDim(HORIZONTAL), underlyingColumnPosition );
 	}
 	
 	@Override
 	public final Collection<Range> underlyingToLocalColumnPositions(final ILayer sourceUnderlyingLayer,
-			final Collection<Range> underlyingColumnPositionRanges) {
-		return super.getDim(HORIZONTAL).underlyingToLocalPositions(sourceUnderlyingLayer,
-				underlyingColumnPositionRanges );
+			final Collection<Range> underlyingColumnPositions) {
+		return super.getDim(HORIZONTAL).underlyingToLocalPositions(
+				sourceUnderlyingLayer.getDim(HORIZONTAL), underlyingColumnPositions );
 	}
 	
 	@Override
@@ -101,10 +141,11 @@ public abstract class DimBasedLayer extends AbstractLayer {
 	@Override
 	public final Collection<ILayer> getUnderlyingLayersByColumnPosition(
 			final long columnPosition) {
-		return super.getDim(HORIZONTAL).getUnderlyingLayersByPosition(columnPosition);
+		return convertDim2LayerList(super.getDim(HORIZONTAL).getUnderlyingDimsByPosition(columnPosition));
 	}
 	
 	
+	@Override
 	public final long getRowIndexByPosition(long rowPosition) {
 		if (rowPosition < 0 || rowPosition >= getRowCount()) {
 			return NO_INDEX;
@@ -120,7 +161,7 @@ public abstract class DimBasedLayer extends AbstractLayer {
 	
 	@Override
 	public final long getPreferredRowCount() {
-		return super.getDim(VERTICAL).getPreferredPositionCount();
+		return computePreferredPositionCount(super.getDim(VERTICAL));
 	}
 	
 	@Override
@@ -131,15 +172,15 @@ public abstract class DimBasedLayer extends AbstractLayer {
 	@Override
 	public final long underlyingToLocalRowPosition(final ILayer sourceUnderlyingLayer,
 			final long underlyingRowPosition) {
-		return super.getDim(VERTICAL).underlyingToLocalPosition(sourceUnderlyingLayer,
-				underlyingRowPosition );
+		return super.getDim(VERTICAL).underlyingToLocalPosition(
+				sourceUnderlyingLayer.getDim(VERTICAL), underlyingRowPosition );
 	}
 	
 	@Override
-	public final Collection<Range> underlyingToLocalRowPositions(final ILayer sourceUnderlyingLayer,
-			final Collection<Range> underlyingRowPositionRanges) {
-		return super.getDim(VERTICAL).underlyingToLocalPositions(sourceUnderlyingLayer,
-				underlyingRowPositionRanges );
+	public final List<Range> underlyingToLocalRowPositions(final ILayer sourceUnderlyingLayer,
+			final Collection<Range> underlyingRowPositions) {
+		return super.getDim(VERTICAL).underlyingToLocalPositions(
+				sourceUnderlyingLayer.getDim(VERTICAL), underlyingRowPositions );
 	}
 	
 	@Override
@@ -174,7 +215,7 @@ public abstract class DimBasedLayer extends AbstractLayer {
 	
 	@Override
 	public final Collection<ILayer> getUnderlyingLayersByRowPosition(final long rowPosition) {
-		return super.getDim(VERTICAL).getUnderlyingLayersByPosition(rowPosition);
+		return convertDim2LayerList(super.getDim(VERTICAL).getUnderlyingDimsByPosition(rowPosition));
 	}
 	
 }

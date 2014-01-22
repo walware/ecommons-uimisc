@@ -39,6 +39,7 @@ public class DefaultNatTableStyleConfiguration extends AbstractRegistryConfigura
 
 	public ICellPainter cellPainter = new LineBorderDecorator(new TextPainter());
 	
+	@Override
 	public void configureRegistry(IConfigRegistry configRegistry) {
 		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER, cellPainter);
 
@@ -55,7 +56,5 @@ public class DefaultNatTableStyleConfiguration extends AbstractRegistryConfigura
 		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle);
 	
 		configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, new DefaultDisplayConverter());
-		
-		configRegistry.registerConfigAttribute(CellConfigAttributes.EXPORT_FORMATTER, new DefaultExportFormatter());
 	}
 }

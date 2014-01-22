@@ -11,9 +11,9 @@
 // ~
 package org.eclipse.nebula.widgets.nattable.sort;
 
-import org.eclipse.nebula.widgets.nattable.layer.AbstractTransformLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
+import org.eclipse.nebula.widgets.nattable.layer.TransformLayer;
 import org.eclipse.nebula.widgets.nattable.persistence.IPersistable;
 import org.eclipse.nebula.widgets.nattable.sort.command.ClearSortCommandHandler;
 import org.eclipse.nebula.widgets.nattable.sort.command.SortColumnCommandHandler;
@@ -27,7 +27,7 @@ import org.eclipse.nebula.widgets.nattable.sort.config.DefaultSortConfiguration;
  * @see DefaultSortConfiguration
  * @see SortStatePersistor
  */
-public class SortHeaderLayer<T> extends AbstractTransformLayer implements IPersistable {
+public class SortHeaderLayer<T> extends TransformLayer implements IPersistable {
 	
 	
 	/** Handles the actual sorting of underlying data */
@@ -85,7 +85,10 @@ public class SortHeaderLayer<T> extends AbstractTransformLayer implements IPersi
 		return configLabels;
 	}
 	
-	protected ISortModel getSortModel() {
+	/**
+	 * @return The ISortModel that is used to handle the sorting of the underlying data.
+	 */
+	public ISortModel getSortModel() {
 		return sortModel;
 	}
 	

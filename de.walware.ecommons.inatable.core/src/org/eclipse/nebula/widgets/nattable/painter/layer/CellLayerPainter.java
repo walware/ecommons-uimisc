@@ -33,6 +33,7 @@ public class CellLayerPainter implements ILayerPainter {
 	private Map<Long, Long> verticalPositionToPixelMap;
 	
 	
+	@Override
 	public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, org.eclipse.swt.graphics.Rectangle pixelRectangle, IConfigRegistry configRegistry) {
 		if (pixelRectangle.width <= 0 || pixelRectangle.height <= 0) {
 			return;
@@ -100,6 +101,7 @@ public class CellLayerPainter implements ILayerPainter {
 		}
 	}
 
+	@Override
 	public Rectangle adjustCellBounds(long columnPosition, long rowPosition, Rectangle cellBounds) {
 		return cellBounds;
 	}

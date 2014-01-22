@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) Sep 7, 2012 Edwin Park and others.
+ * Copyright (c) 2012, 2013 Edwin Park and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@ package org.eclipse.nebula.widgets.nattable.tree.config;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
+import org.eclipse.nebula.widgets.nattable.export.ExportConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
@@ -60,7 +61,7 @@ public class DefaultTreeLayerConfiguration implements IConfiguration {
 				TreeLayer.TREE_COLUMN_CELL
 		);
 		configRegistry.registerConfigAttribute(
-				CellConfigAttributes.EXPORT_FORMATTER,
+				ExportConfigAttributes.EXPORT_FORMATTER,
 				new TreeExportFormatter(treeLayer.getModel()),
 				DisplayMode.NORMAL,
 				TreeLayer.TREE_COLUMN_CELL

@@ -11,18 +11,21 @@
 // ~Selection
 package org.eclipse.nebula.widgets.nattable.selection.command;
 
+import static org.eclipse.nebula.widgets.nattable.coordinate.Orientation.HORIZONTAL;
 import static org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.NO_SELECTION;
 
 import java.util.Collection;
 
-import org.eclipse.nebula.widgets.nattable.command.AbstractMultiColumnCommand;
+import org.eclipse.nebula.widgets.nattable.command.AbstractDimPositionsCommand;
 import org.eclipse.nebula.widgets.nattable.command.LayerCommandUtil;
 import org.eclipse.nebula.widgets.nattable.coordinate.ColumnPositionCoordinate;
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.coordinate.RowPositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
 
-public class SelectColumnsCommand extends AbstractMultiColumnCommand {
+public class SelectColumnsCommand extends AbstractDimPositionsCommand {
 
 
 	private final int selectionFlags;
@@ -32,28 +35,18 @@ public class SelectColumnsCommand extends AbstractMultiColumnCommand {
 	private ColumnPositionCoordinate columnPositionToReveal;
 
 
-	public SelectColumnsCommand(final ILayer layer, final long columnPosition, final long rowPosition,
+	public SelectColumnsCommand(final ILayer layer,
+			final long columnPosition, final long rowPosition,
 			final int selectionFlags) {
-		super(layer, columnPosition);
+		this(layer, new RangeList(columnPosition), rowPosition, selectionFlags, columnPosition);
+	}
+
+	public SelectColumnsCommand(final ILayer layer,
+			final Collection<Range> columnPositions, final long rowPosition,
+			final int selectionFlags, final long columnPositionToReveal) {
+		super(layer.getDim(HORIZONTAL), columnPositions);
 		
 		this.selectionFlags = selectionFlags;
-		init(layer, rowPosition, columnPosition);
-	}
-
-	public SelectColumnsCommand(final ILayer layer, final Collection<Long> columnPositions, final long rowPosition,
-			final int selectionFlags) {
-		this(layer, columnPositions, rowPosition, selectionFlags, columnPositions.iterator().next());
-	}
-
-	public SelectColumnsCommand(final ILayer layer, final Collection<Long> columnPositions, final long rowPosition,
-			final int selectionFlags, long columnPositionToReveal) {
-		super(layer, columnPositions);
-		
-		this.selectionFlags = selectionFlags;
-		init(layer, rowPosition, columnPositionToReveal);
-	}
-
-	private void init(final ILayer layer, final long rowPosition, final long columnPositionToReveal) {
 		this.rowPositionCoordinate = new RowPositionCoordinate(layer, rowPosition);
 		if (columnPositionToReveal != NO_SELECTION) {
 			this.columnPositionToReveal = new ColumnPositionCoordinate(layer, columnPositionToReveal);
@@ -67,26 +60,26 @@ public class SelectColumnsCommand extends AbstractMultiColumnCommand {
 		this.rowPositionCoordinate = command.rowPositionCoordinate;
 		this.columnPositionToReveal = command.columnPositionToReveal;
 	}
-
+	
+	@Override
 	public SelectColumnsCommand cloneCommand() {
 		return new SelectColumnsCommand(this);
 	}
-
-
+	
+	
 	@Override
 	public boolean convertToTargetLayer(ILayer targetLayer) {
 		RowPositionCoordinate targetRowPositionCoordinate = LayerCommandUtil.convertRowPositionToTargetContext(
 				rowPositionCoordinate, targetLayer );
-		if (targetRowPositionCoordinate != null
-				&& super.convertToTargetLayer(targetLayer)) {
-			rowPositionCoordinate = targetRowPositionCoordinate;
-			columnPositionToReveal = LayerCommandUtil.convertColumnPositionToTargetContext(
-					columnPositionToReveal, targetLayer);
+		if (targetRowPositionCoordinate != null && targetRowPositionCoordinate.getRowPosition() >= 0
+				&& super.convertToTargetLayer(targetLayer) ) {
+			this.rowPositionCoordinate = targetRowPositionCoordinate;
+			this.columnPositionToReveal = LayerCommandUtil.convertColumnPositionToTargetContext(
+					this.columnPositionToReveal, targetLayer);
 			return true;
 		}
 		return false;
 	}
-
 
 	public long getRowPosition() {
 		return rowPositionCoordinate.rowPosition;

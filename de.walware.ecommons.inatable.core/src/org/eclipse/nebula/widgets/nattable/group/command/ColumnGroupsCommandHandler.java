@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Original authors and others.
+ * Copyright (c) 2012, 2013 Original authors and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,9 +13,7 @@ package org.eclipse.nebula.widgets.nattable.group.command;
 import static org.eclipse.nebula.widgets.nattable.painter.cell.GraphicsUtils.safe;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +24,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.columnRename.ColumnRenameDialog;
 import org.eclipse.nebula.widgets.nattable.command.AbstractLayerCommandHandler;
-import org.eclipse.nebula.widgets.nattable.coordinate.Range;
+import org.eclipse.nebula.widgets.nattable.coordinate.IValueIterator;
+import org.eclipse.nebula.widgets.nattable.coordinate.RangeList;
 import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
@@ -105,24 +104,20 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
 	
 	protected void loadSelectedColumnsIndexesWithPositions() {
 		columnIndexesToPositionsMap = new LinkedHashMap<Long, Long>();
-		List<Range> fullySelectedColumns = selectionLayer.getFullySelectedColumnPositions();
+		final RangeList fullySelectedColumns = selectionLayer.getFullySelectedColumnPositions();
 		
-		if (!fullySelectedColumns.isEmpty()) {
-			for (final Range range : fullySelectedColumns) {
-				for (long position = range.start; position < range.end; position++) {
-					long columnIndex = selectionLayer.getColumnIndexByPosition(position);
-					if (columnIndex >= 0 && model.isPartOfAGroup(columnIndex)){
-						columnIndexesToPositionsMap.clear();
-						break;
-					}
-					columnIndexesToPositionsMap.put(Long.valueOf(columnIndex), Long.valueOf(position));
-				}
+		for (final IValueIterator columnIter = fullySelectedColumns.values().iterator(); columnIter.hasNext(); ) {
+			final long position = columnIter.nextValue();
+			long columnIndex = selectionLayer.getColumnIndexByPosition(position);
+			if (model.isPartOfAGroup(columnIndex)) {
+				columnIndexesToPositionsMap.clear();
+				break;
 			}
+			columnIndexesToPositionsMap.put(Long.valueOf(columnIndex), Long.valueOf(position));
 		}
 	}
 
 	public void handleGroupColumnsCommand(String columnGroupName) {
-			
 		try {
 			List<Long> selectedPositions = new ArrayList<Long>();
 			long[] fullySelectedColumns = new long[columnIndexesToPositionsMap.size()];
@@ -141,28 +136,25 @@ public class ColumnGroupsCommandHandler extends AbstractLayerCommandHandler<ICol
 
 	public void handleUngroupCommand() {
 		// Grab fully selected column positions
-		List<Range> fullySelectedColumns = selectionLayer.getFullySelectedColumnPositions();
+		final RangeList fullySelectedColumns = selectionLayer.getFullySelectedColumnPositions();
 		Map<String, Long> toColumnPositions = new HashMap<String, Long>();
-		if (!fullySelectedColumns.isEmpty()) {
 		
-		// Pick the ones which belong to a group and remove them from the group
-			for (final Range range : fullySelectedColumns) {
-				for (long position = range.start; position < range.end; position++) {
-					long columnIndex = selectionLayer.getColumnIndexByPosition(position);
-					if (columnIndex >= 0 && model.isPartOfAGroup(columnIndex) && !model.isPartOfAnUnbreakableGroup(columnIndex)){
-						handleRemovalFromGroup(toColumnPositions, columnIndex);
-					}
-				}
+		for (final IValueIterator columnIter = fullySelectedColumns.values().iterator(); columnIter.hasNext(); ) {
+			// Pick the ones which belong to a group and remove them from the group
+			final long position = columnIter.nextValue();
+			long index = selectionLayer.getColumnIndexByPosition(position);
+			if (model.isPartOfAGroup(index) && !model.isPartOfAnUnbreakableGroup(index)) {
+				handleRemovalFromGroup(toColumnPositions, index);
 			}
-		// The groups which were affected should be reordered to the start position, this should group all columns together
-			Collection<Long> values = toColumnPositions.values();
-			final Iterator<Long> toColumnPositionsIterator = values.iterator();
-			while(toColumnPositionsIterator.hasNext()) {
-				Long toColumnPosition = toColumnPositionsIterator.next();
-				selectionLayer.doCommand(new ReorderColumnGroupCommand(selectionLayer, toColumnPosition.longValue(), toColumnPosition.longValue()));
+		}
+		
+		if (!toColumnPositions.isEmpty()) {
+			// The groups which were affected should be reordered to the start position, this should group all columns together
+			for (final Long position : toColumnPositions.values()) {
+				selectionLayer.doCommand(new ReorderColumnGroupCommand(selectionLayer, position, position));
 			}
 			selectionLayer.clear();
-		} 
+		}
 		
 		contextLayer.fireLayerEvent(new UngroupColumnsEvent(contextLayer));
 	}

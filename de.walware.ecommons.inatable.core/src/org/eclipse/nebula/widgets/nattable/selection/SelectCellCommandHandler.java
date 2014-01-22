@@ -29,7 +29,8 @@ public class SelectCellCommandHandler extends AbstractLayerCommandHandler<Select
 	public Class<SelectCellCommand> getCommandClass() {
 		return SelectCellCommand.class;
 	}
-
+	
+	@Override
 	protected boolean doCommand(SelectCellCommand command) {
 		toggleOrSelectCell(command.getColumnPosition(), command.getRowPosition(), 
 				command.getSelectionFlags(), command.getRevealCell());
@@ -64,7 +65,8 @@ public class SelectCellCommandHandler extends AbstractLayerCommandHandler<Select
 		this.selectionLayer.lastSelectedCell.columnPosition = columnPosition;
 		this.selectionLayer.lastSelectedCell.rowPosition = rowPosition;
 		
-		if ((selectionFlags & SelectionFlags.RANGE_SELECTION) != 0 && this.selectionLayer.lastSelectedRegion != null
+		if (this.selectionLayer.getSelectionModel().isMultipleSelectionAllowed()
+				&& (selectionFlags & SelectionFlags.RANGE_SELECTION) != 0 && this.selectionLayer.lastSelectedRegion != null
 				&& this.selectionLayer.selectionAnchor.columnPosition >= 0) {
 			if ((selectionFlags & SelectionFlags.RETAIN_SELECTION) != 0) {
 				this.selectionLayer.lastSelectedRegion = new Rectangle(0, 0, 0, 0);

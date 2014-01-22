@@ -14,13 +14,14 @@ package org.eclipse.nebula.widgets.nattable.painter.layer;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Rectangle;
 import org.eclipse.nebula.widgets.nattable.internal.NatTablePlugin;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.painter.IOverlayPainter;
+import org.eclipse.nebula.widgets.nattable.swt.SWTUtil;
 
 
 public class NatLayerPainter implements ILayerPainter {
@@ -31,15 +32,22 @@ public class NatLayerPainter implements ILayerPainter {
 		this.natTable = natTable;
 	}
 	
-	public void paintLayer(ILayer natLayer, GC gc, int xOffset, int yOffset, org.eclipse.swt.graphics.Rectangle rectangle, IConfigRegistry configRegistry) {
+	@Override
+	public void paintLayer(final ILayer natLayer, final GC gc, final int xOffset, final int yOffset,
+			final org.eclipse.swt.graphics.Rectangle rectangle, final IConfigRegistry configRegistry) {
 		try {
 			paintBackground(natLayer, gc, xOffset, yOffset, rectangle, configRegistry);
 			
 			gc.setForeground(natTable.getForeground());
-
+			
 			ILayerPainter layerPainter = natTable.getLayer().getLayerPainter();
-			layerPainter.paintLayer(natLayer, gc, xOffset, yOffset, rectangle, configRegistry);
-
+			final org.eclipse.swt.graphics.Rectangle natTableArea = SWTUtil.toSWT(
+					new Rectangle(xOffset, yOffset, natLayer.getWidth(), natLayer.getHeight()) );
+			if (rectangle.intersects(natTableArea)) {
+				layerPainter.paintLayer(natLayer, gc, xOffset, yOffset, rectangle.intersection(natTableArea),
+						configRegistry );
+			}
+			
 			paintOverlays(natLayer, gc, xOffset, yOffset, rectangle, configRegistry);
 		} catch (Exception e) {
 			NatTablePlugin.log(new Status(IStatus.ERROR, NatTablePlugin.PLUGIN_ID,
@@ -60,6 +68,7 @@ public class NatLayerPainter implements ILayerPainter {
 		}
 	}
 
+	@Override
 	public Rectangle adjustCellBounds(long columnPosition, long rowPosition, Rectangle cellBounds) {
 		ILayerPainter layerPainter = natTable.getLayer().getLayerPainter();
 		return layerPainter.adjustCellBounds(columnPosition, rowPosition, cellBounds);

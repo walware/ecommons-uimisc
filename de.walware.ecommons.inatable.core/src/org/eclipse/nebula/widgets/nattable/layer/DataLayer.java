@@ -129,10 +129,12 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
 	// Columns
 
+	@Override
 	public long getColumnCount() {
 		return dataProvider.getColumnCount();
 	}
 
+	@Override
 	public long getPreferredColumnCount() {
 		return getColumnCount();
 	}
@@ -140,6 +142,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
     /**
 	 * This is the root coordinate system, so the column index is always equal to the column position.
 	 */
+	@Override
 	public long getColumnIndexByPosition(final long columnPosition) {
 		if (!enableColumnIndex || columnPosition < 0 || columnPosition >= getColumnCount()) {
 			return NO_INDEX;
@@ -150,6 +153,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 	/**
 	 * This is the root coordinate system, so the column position is always equal to the column index.
 	 */
+	@Override
 	public long getColumnPositionByIndex(final long columnIndex) {
 		if (!enableColumnIndex || columnIndex < 0 || columnIndex >= getColumnCount()) {
 			return Long.MIN_VALUE;
@@ -157,28 +161,34 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 		return columnIndex;
 	}
 
+	@Override
 	public long localToUnderlyingColumnPosition(long localColumnPosition) {
 		return localColumnPosition;
 	}
 
+	@Override
 	public long underlyingToLocalColumnPosition(ILayer sourceUnderlyingLayer, long underlyingColumnPosition) {
 		return underlyingColumnPosition;
 	}
 	
+	@Override
 	public Collection<Range> underlyingToLocalColumnPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingColumnPositionRanges) {
 		return underlyingColumnPositionRanges;
 	}
 
 	// Width
 
+	@Override
     public long getWidth() {
 		return columnWidthConfig.getAggregateSize(getColumnCount());
 	}
 
+	@Override
 	public long getPreferredWidth() {
 		return getWidth();
 	}
 
+	@Override
 	public int getColumnWidthByPosition(long columnPosition) {
         return columnWidthConfig.getSize(columnPosition);
     }
@@ -203,6 +213,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
 	// Column resize
 
+	@Override
 	public boolean isColumnPositionResizable(long columnPosition) {
 		return columnWidthConfig.isPositionResizable(columnPosition);
 	}
@@ -217,6 +228,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
 	// Underlying
 
+	@Override
 	public Collection<ILayer> getUnderlyingLayersByColumnPosition(long columnPosition) {
 		return null;
 	}
@@ -225,10 +237,12 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
 	// Rows
 
+	@Override
 	public long getRowCount() {
 		return dataProvider.getRowCount();
 	}
 
+	@Override
 	public long getPreferredRowCount() {
 		return getRowCount();
 	}
@@ -236,6 +250,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 	/**
 	 * This is the root coordinate system, so the row index is always equal to the row position.
 	 */
+	@Override
 	public long getRowIndexByPosition(final long rowPosition) {
 		if (!enableRowIndex || rowPosition < 0 || rowPosition >= getRowCount()) {
 			return NO_INDEX;
@@ -246,6 +261,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 	/**
 	 * This is the root coordinate system, so the row position is always equal to the row index.
 	 */
+	@Override
 	public long getRowPositionByIndex(final long rowIndex) {
 		if (!enableRowIndex || rowIndex < 0 || rowIndex >= getRowCount()) {
 			return Long.MIN_VALUE;
@@ -253,28 +269,34 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 		return rowIndex;
 	}
 
+	@Override
 	public long localToUnderlyingRowPosition(long localRowPosition) {
 		return localRowPosition;
 	}
 
+	@Override
 	public long underlyingToLocalRowPosition(ILayer sourceUnderlyingLayer, long underlyingRowPosition) {
 		return underlyingRowPosition;
 	}
 	
+	@Override
 	public Collection<Range> underlyingToLocalRowPositions(ILayer sourceUnderlyingLayer, Collection<Range> underlyingRowPositionRanges) {
 		return underlyingRowPositionRanges;
 	}
 
 	// Height
 
+	@Override
     public long getHeight() {
 		return rowHeightConfig.getAggregateSize(getRowCount());
 	}
 
+	@Override
 	public long getPreferredHeight() {
 		return getHeight();
 	}
 
+	@Override
 	public int getRowHeightByPosition(long rowPosition) {
 		return rowHeightConfig.getSize(rowPosition);
 	}
@@ -299,6 +321,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
 	// Row resize
 
+	@Override
 	public boolean isRowPositionResizable(long rowPosition) {
 		return rowHeightConfig.isPositionResizable(rowPosition);
 	}
@@ -313,34 +336,41 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 
 	// Underlying
 
+	@Override
 	public Collection<ILayer> getUnderlyingLayersByRowPosition(long rowPosition) {
 		return null;
 	}
 
 	// Cell features
 
+	@Override
 	public Object getDataValueByPosition(final long columnPosition, final long rowPosition) {
 //		long columnIndex = getColumnIndexByPosition(columnPosition);
 //		long rowIndex = getRowIndexByPosition(rowPosition);
 		return dataProvider.getDataValue(columnPosition, rowPosition);
 	}
 
+	@Override
 	public long getColumnPositionByX(long x) {
 		return LayerUtil.getColumnPositionByX(this, x);
 	}
 
+	@Override
 	public long getRowPositionByY(long y) {
 		return LayerUtil.getRowPositionByY(this, y);
 	}
 
+	@Override
 	public long getStartXOfColumnPosition(long columnPosition) {
 		return columnWidthConfig.getAggregateSize(columnPosition);
 	}
 
+	@Override
 	public long getStartYOfRowPosition(long rowPosition) {
 		return rowHeightConfig.getAggregateSize(rowPosition);
 	}
 
+	@Override
 	public ILayer getUnderlyingLayerByPosition(long columnPosition, long rowPosition) {
 		return null;
 	}
@@ -370,7 +400,7 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 	}
 	
 	/**
-	 * @return <code>true</code> if the column sizing is done percentaged,
+	 * @return <code>true</code> if the column sizing is done by percentage calculation,
 	 * 			<code>false</code> if the column sizing is done by pixel (default)
 	 */
 	public boolean isColumnPercentageSizing() {
@@ -382,15 +412,37 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 	 * Default is pixel sizing.
 	 * If percentage sizing should be used you have to ensure that the size value for every 
 	 * column is set explicitly and that the sum of the column sizes doesn't exceed 100.
-	 * @param percentageSizing <code>true</code> if the column sizing should be done percentaged,
-	 * 			<code>false</code> if the column sizing should be done by pixel (default)
+	 * @param percentageSizing <code>true</code> if the column sizing should be done by percentage 
+	 * 			calculation, <code>false</code> if the column sizing should be done by pixel (default)
 	 */
 	public void setColumnPercentageSizing(boolean percentageSizing) {
 		this.columnWidthConfig.setPercentageSizing(percentageSizing);
 	}
 	
 	/**
-	 * @return <code>true</code> if the row sizing is done percentaged,
+	 * @param position The position which is asked for the percentage sizing configuration.
+	 * @return <code>true</code> if the column sizing for the given position is done by percentage 
+	 * 			calculation, <code>false</code> if the column sizing is done by pixel (default)
+	 */
+	public boolean isColumnPercentageSizing(long position) {
+		return this.columnWidthConfig.isPercentageSizing(position);
+	}
+	
+	/**
+	 * Configures how the column sizing of this {@link DataLayer} is handled.
+	 * Default is pixel sizing.
+	 * If percentage sizing should be used you have to ensure that the size value for every 
+	 * column is set explicitly and that the sum of the column sizes doesn't exceed 100.
+	 * @param position The position for which the sizing configuration should be set.
+	 * @param percentageSizing <code>true</code> if the column sizing should be done by percentage 
+	 * 			calculation, <code>false</code> if the column sizing should be done by pixel (default)
+	 */
+	public void setColumnPercentageSizing(long position, boolean percentageSizing) {
+		this.columnWidthConfig.setPercentageSizing(position, percentageSizing);
+	}
+	
+	/**
+	 * @return <code>true</code> if the row sizing is done by percentage calculation, 
 	 * 			<code>false</code> if the row sizing is done by pixel (default)
 	 */
 	public boolean isRowPercentageSizing() {
@@ -402,10 +454,33 @@ public class DataLayer extends AbstractLayer implements IUniqueIndexLayer {
 	 * Default is pixel sizing.
 	 * If percentage sizing should be used you have to ensure that the size value for every 
 	 * row is set explicitly and that the sum of the row sizes doesn't exceed 100.
-	 * @param percentageSizing <code>true</code> if the row sizing should be done percentaged,
-	 * 			<code>false</code> if the row sizing should be done by pixel (default)
+	 * @param percentageSizing <code>true</code> if the row sizing should be done by percentage 
+	 * 			calculation, <code>false</code> if the row sizing should be done by pixel (default)
 	 */
 	public void setRowPercentageSizing(boolean percentageSizing) {
 		this.rowHeightConfig.setPercentageSizing(percentageSizing);
 	}
+	
+	/**
+	 * @param position The position which is asked for the percentage sizing configuration.
+	 * @return <code>true</code> if the row sizing for the given position is done by percentage 
+	 * 			calculation, <code>false</code> if the row sizing is done by pixel (default)
+	 */
+	public boolean isRowPercentageSizing(long position) {
+		return this.rowHeightConfig.isPercentageSizing(position);
+	}
+	
+	/**
+	 * Configures how the row sizing of this {@link DataLayer} is handled.
+	 * Default is pixel sizing.
+	 * If percentage sizing should be used you have to ensure that the size value for every 
+	 * row is set explicitly and that the sum of the row sizes doesn't exceed 100.
+	 * @param position The row position for which the sizing configuration should be set.
+	 * @param percentageSizing <code>true</code> if the row sizing should be done by percentage 
+	 * 			calculation, <code>false</code> if the row sizing should be done by pixel (default)
+	 */
+	public void setRowPercentageSizing(long position, boolean percentageSizing) {
+		this.rowHeightConfig.setPercentageSizing(position, percentageSizing);
+	}
+	
 }

@@ -8,12 +8,9 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
-// ~Selection
 package org.eclipse.nebula.widgets.nattable.selection;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -38,65 +35,109 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
  * @see SelectionLayer
  */
 public class SelectionModel implements ISelectionModel {
-
-
+	
+	
+	//-- Utility --//
+	
+	private static final Rectangle getLeftSelection(final Rectangle intersection, final Rectangle selection) {
+		if (intersection.x > selection.x) {
+			return new Rectangle(selection.x, selection.y,
+					intersection.x - selection.x, selection.height);
+		}
+		return null;
+	}
+	
+	private static final Rectangle getRightSelection(final Rectangle intersection, final Rectangle selection) {
+		final long newX = intersection.x + intersection.width;
+		if (newX < selection.x + selection.width) {
+			return new Rectangle(newX, selection.y,
+					selection.x + selection.width - newX, selection.height);
+		}
+		return null;
+	}
+	
+	private static final Rectangle getTopSelection(final Rectangle intersection, final Rectangle selection) {
+		if (intersection.y > selection.y) {
+			return new Rectangle(selection.x, selection.y,
+					selection.width, intersection.y - selection.y);
+		}
+		return null;
+	}
+	
+	private static final Rectangle getBottomSelection(final Rectangle intersection, final Rectangle selection) {
+		final long newY = intersection.y + intersection.height;
+		if (newY < selection.y + selection.height) {
+			return new Rectangle(selection.x, newY,
+					selection.width, selection.y + selection.height - newY);
+		}
+		return null;
+	}
+	
+	
 	private final ILayer selectionLayer;
-
+	
 	private boolean multipleSelectionAllowed;
 	
 	private final List<Rectangle> selections;
-
 	private final ReadWriteLock selectionsLock;
-
-
-	public SelectionModel(ILayer selectionLayer) {
+	
+	
+	public SelectionModel(/*@NotNull*/ final ILayer selectionLayer) {
 		this(selectionLayer, true);
 	}
-
-	public SelectionModel(ILayer selectionLayer, boolean multipleSelectionAllowed) {
+	
+	public SelectionModel(/*@NotNull*/ final ILayer selectionLayer, final boolean multipleSelectionAllowed) {
+		if (selectionLayer == null) {
+			throw new NullPointerException("selectionLayer"); //$NON-NLS-1$
+		}
 		this.selectionLayer = selectionLayer;
 		this.multipleSelectionAllowed = multipleSelectionAllowed;
 		
-		selections = new LinkedList<Rectangle>();
-		selectionsLock = new ReentrantReadWriteLock();
-	}
-
-
-	public boolean isMultipleSelectionAllowed() {
-		return multipleSelectionAllowed;
+		this.selections = new LinkedList<Rectangle>();
+		this.selectionsLock = new ReentrantReadWriteLock();
 	}
 	
-	public void setMultipleSelectionAllowed(boolean multipleSelectionAllowed) {
+	
+	@Override
+	public boolean isMultipleSelectionAllowed() {
+		return this.multipleSelectionAllowed;
+	}
+	
+	public void setMultipleSelectionAllowed(final boolean multipleSelectionAllowed) {
 		this.multipleSelectionAllowed = multipleSelectionAllowed;
 	}
 	
-	public void addSelection(long columnPosition, long rowPosition) {
+	
+	@Override
+	public void addSelection(final long columnPosition, final long rowPosition) {
 		addSelectionIntoList(new Rectangle(columnPosition, rowPosition, 1, 1));
 	}
-
-	public void addSelection(final Rectangle range) {
-		if (range != null) {
-			addSelectionIntoList(range);
+	
+	@Override
+	public void addSelection(final Rectangle positions) {
+		if (positions != null) {
+			addSelectionIntoList(positions);
 		}
 	}
-
-	private void addSelectionIntoList(Rectangle selection) {
-		selectionsLock.writeLock().lock();
+	
+	private void addSelectionIntoList(final Rectangle selection) {
+		this.selectionsLock.writeLock().lock();
 		try {
-			if (multipleSelectionAllowed) {
+			if (this.multipleSelectionAllowed) {
 				ArrayList<Rectangle> itemsToRemove = null;
-				for (Rectangle r : selections) {
+				for (final Rectangle r : this.selections) {
 					if (selection.intersects(r)) {
 						if (r.equals(selection)) {
 							break;
 						}
 						
-						Rectangle intersection = selection.intersection(r);
+						final Rectangle intersection = selection.intersection(r);
 						if (intersection.equals(r)) {
 							// r is a subset of intersection
-							if (itemsToRemove == null)
+							if (itemsToRemove == null) {
 								itemsToRemove = new ArrayList<Rectangle>();
-	
+							}
+							
 							itemsToRemove.add(r);
 						} else if (intersection.equals(selection)) {
 							// selection is a subset of r
@@ -106,107 +147,115 @@ public class SelectionModel implements ISelectionModel {
 				}
 				
 				if (itemsToRemove != null) {
-					selections.removeAll(itemsToRemove);
+					this.selections.removeAll(itemsToRemove);
 				}
 			} else {
-				selections.clear();
+				this.selections.clear();
+				//as no multiple selection is allowed, ensure that only one column 
+				//and one row will be selected
+				selection.height = 1;
+				selection.width = 1;
 			}
-
-			selections.add(selection);
+			
+			this.selections.add(selection);
 		} finally {
-			selectionsLock.writeLock().unlock();
+			this.selectionsLock.writeLock().unlock();
 		}
 	}
-
+	
+	@Override
 	public void clearSelection() {
-		selectionsLock.writeLock().lock();
+		this.selectionsLock.writeLock().lock();
 		try {
-			selections.clear();
+			this.selections.clear();
 		} finally {
-			selectionsLock.writeLock().unlock();
+			this.selectionsLock.writeLock().unlock();
 		}
 	}
-
-	public void clearSelection(long columnPosition, long rowPosition) {
+	
+	@Override
+	public void clearSelection(final long columnPosition, final long rowPosition) {
 		clearSelection(new Rectangle(columnPosition, rowPosition, 1, 1));
 	}
-
-	public void clearSelection(Rectangle removedSelection) {
-
-		List<Rectangle> removedItems = new LinkedList<Rectangle>();
-		List<Rectangle> addedItems = new LinkedList<Rectangle>();
-
-		selectionsLock.readLock().lock();
-
+	
+	@Override
+	public void clearSelection(final Rectangle positions) {
+		final List<Rectangle> removedItems = new LinkedList<Rectangle>();
+		final List<Rectangle> addedItems = new LinkedList<Rectangle>();
+		
+		this.selectionsLock.readLock().lock();
 		try {
-			for (Rectangle r : selections) {
-				if (r.intersects(removedSelection)) {
-					Rectangle intersection = removedSelection.intersection(r);
+			for (final Rectangle r : this.selections) {
+				if (r.intersects(positions)) {
+					final Rectangle intersection = positions.intersection(r);
 					removedItems.add(r);
-
-					Rectangle topSelection = getTopSelection(intersection, r);
+					
+					final Rectangle topSelection = getTopSelection(intersection, r);
 					if (topSelection != null) {
 						addedItems.add(topSelection);
 					}
-
-					Rectangle rightSelection = getRightSelection(intersection, r);
-					if (rightSelection != null)
+					final Rectangle rightSelection = getRightSelection(intersection, r);
+					if (rightSelection != null) {
 						addedItems.add(rightSelection);
-
-					Rectangle leftSelection = getLeftSelection(intersection, r);
-					if (leftSelection != null)
+					}
+					final Rectangle leftSelection = getLeftSelection(intersection, r);
+					if (leftSelection != null) {
 						addedItems.add(leftSelection);
-
-					Rectangle bottomSelection = getBottomSelection(intersection, r);
-					if (bottomSelection != null)
+					}
+					final Rectangle bottomSelection = getBottomSelection(intersection, r);
+					if (bottomSelection != null) {
 						addedItems.add(bottomSelection);
+					}
 				}
 			}
 		} finally {
-			selectionsLock.readLock().unlock();
+			this.selectionsLock.readLock().unlock();
 		}
-
+		
 		if (removedItems.size() > 0) {
-			selectionsLock.writeLock().lock();
+			this.selectionsLock.writeLock().lock();
 			try {
-				selections.removeAll(removedItems);
+				this.selections.removeAll(removedItems);
 			} finally {
-				selectionsLock.writeLock().unlock();
+				this.selectionsLock.writeLock().unlock();
 			}
-
+			
 			removedItems.clear();
 		}
-
+		
 		if (addedItems.size() > 0) {
-			selectionsLock.writeLock().lock();
+			this.selectionsLock.writeLock().lock();
 			try {
-				selections.addAll(addedItems);
+				this.selections.addAll(addedItems);
 			} finally {
-				selectionsLock.writeLock().unlock();
+				this.selectionsLock.writeLock().unlock();
 			}
-
+			
 			addedItems.clear();
 		}
-
 	}
-
+	
+	
+	@Override
 	public boolean isEmpty() {
-		selectionsLock.readLock().lock();
+		this.selectionsLock.readLock().lock();
 		try {
-			return selections.isEmpty();
+			return this.selections.isEmpty();
 		} finally {
-			selectionsLock.readLock().unlock();
+			this.selectionsLock.readLock().unlock();
 		}
 	}
-
+	
+	@Override
 	public List<Rectangle> getSelections() {
-		return selections;
+		return this.selections;
 	}
 	
 	// Cell features
-
+	
+	@Override
 	public boolean isCellPositionSelected(final ILayerCell cell) {
-		selectionsLock.readLock().lock();
+		this.selectionsLock.readLock().lock();
 		try {
 			final Rectangle cellRectangle = new Rectangle(
 					cell.getOriginColumnPosition(),
@@ -214,26 +263,28 @@ public class SelectionModel implements ISelectionModel {
 					cell.getColumnSpan(),
 					cell.getRowSpan());
 			
-			for (Rectangle selectionRectangle : selections) {
-				if (selectionRectangle.intersects(cellRectangle))
+			for (final Rectangle selectionRectangle : this.selections) {
+				if (selectionRectangle.intersects(cellRectangle)) {
 					return true;
+				}
 			}
+			
+			return false;
 		} finally {
-			selectionsLock.readLock().unlock();
+			this.selectionsLock.readLock().unlock();
 		}
-		
-		return false;
 	}
 	
 	// Column features
-
+	
+	@Override
 	public RangeList getSelectedColumnPositions() {
-		selectionsLock.readLock().lock();
+		this.selectionsLock.readLock().lock();
 		try {
 			final RangeList selected = new RangeList();
+			final long columnCount = this.selectionLayer.getColumnCount();
 			
-			final long columnCount = selectionLayer.getColumnCount();
-			for (final Rectangle r : selections) {
+			for (final Rectangle r : this.selections) {
 				if (r.x < columnCount) {
 					selected.add(new Range(r.x, Math.min(r.x + r.width, columnCount)));
 				}
@@ -241,101 +292,96 @@ public class SelectionModel implements ISelectionModel {
 			
 			return selected;
 		} finally {
-			selectionsLock.readLock().unlock();
+			this.selectionsLock.readLock().unlock();
 		}
 	}
 	
-	public boolean isColumnPositionSelected(long columnPosition) {
-		selectionsLock.readLock().lock();
+	@Override
+	public boolean isColumnPositionSelected(final long columnPosition) {
+		this.selectionsLock.readLock().lock();
 		try {
-			long columnCount = selectionLayer.getColumnCount();
-			if (columnPosition < 0 || columnPosition >= columnCount) {
-				return false;
-			}
+			final long columnCount = this.selectionLayer.getColumnCount();
 			
-			for (final Rectangle r : selections) {
-				if (columnPosition >= r.x && columnPosition < r.x + r.width) {
-					return true;
+			if (columnPosition >= 0 && columnPosition < columnCount) {
+				for (final Rectangle r : this.selections) {
+					if (columnPosition >= r.x && columnPosition < r.x + r.width) {
+						return true;
+					}
 				}
 			}
 			
 			return false;
 		} finally {
-			selectionsLock.readLock().unlock();
+			this.selectionsLock.readLock().unlock();
 		}
 	}
-
-	public List<Range> getFullySelectedColumnPositions() {
-		selectionsLock.readLock().lock();
+	
+	@Override
+	public RangeList getFullySelectedColumnPositions() {
+		this.selectionsLock.readLock().lock();
 		try {
 			final RangeList selected = new RangeList();
+			final long rowCount = this.selectionLayer.getRowCount();
 			
-			final RangeList selectedColumns = getSelectedColumnPositions();
-			final long rowCount = selectionLayer.getRowCount();
-			for (final Range range : selectedColumns) {
-				for (long position = range.start; position < range.end; position++) {
-					if (isColumnPositionFullySelected(position, rowCount)) {
-						selected.addValue(position);
+			if (rowCount > 0) {
+				final RangeList selectedColumns = getSelectedColumnPositions();
+				for (final Range range : selectedColumns) {
+					for (long position = range.start; position < range.end; position++) {
+						if (isColumnPositionFullySelected(position, rowCount)) {
+							selected.values().add(position);
+						}
 					}
 				}
 			}
 			
 			return selected;
 		} finally {
-			selectionsLock.readLock().unlock();
+			this.selectionsLock.readLock().unlock();
 		}
 	}
-
-	/**
-	 * Are all cells in this column selected?
-	 * Different selection rectangles might aggregate to cover the entire column.
-	 * We need to take into account any overlapping selections or any selection rectangles
-	 * contained within each other.
-	 * 
-	 * See the related tests for a better understanding.
-	 */
+	
+	@Override
 	public boolean isColumnPositionFullySelected(final long columnPosition) {
-		selectionsLock.readLock().lock();
+		this.selectionsLock.readLock().lock();
 		try {
-			final long rowCount = selectionLayer.getRowCount();
-			return isColumnPositionFullySelected(columnPosition, rowCount);
+			final long rowCount = this.selectionLayer.getRowCount();
+			
+			return ((rowCount > 0)
+					&& isColumnPositionFullySelected(columnPosition, rowCount) );
 		} finally {
-			selectionsLock.readLock().unlock();
+			this.selectionsLock.readLock().unlock();
 		}
 	}
 	
 	private boolean isColumnPositionFullySelected(final long columnPosition, final long rowCount) {
 		// Aggregate all rows of selection rectangles including the column
-		final RangeList selectedRangesInColumn = new RangeList();
+		final RangeList selectedRowsInColumn = new RangeList();
 		
-		for (final Rectangle r : selections) {
+		for (final Rectangle r : this.selections) {
 			if (columnPosition >= r.x && columnPosition < r.x + r.width) {
-				selectedRangesInColumn.add(new Range(r.y, r.y + r.height));
+				selectedRowsInColumn.add(new Range(r.y, r.y + r.height));
 			}
 		}
 		
-		final Range range = selectedRangesInColumn.getRange(0);
+		final Range range = selectedRowsInColumn.values().getRangeOf(0);
 		return (range != null && range.end >= rowCount);
 	}
 	
 	// Row features
-
+	
+	@Override
 	public long getSelectedRowCount() {
-		List<Range> selectedRows = getSelectedRowPositions();
-		long count = 0;
-		for (Range range : selectedRows) {
-			count += range.size();
-		}
-		return count;
+		return getSelectedRowPositions().values().size();
 	}
-
+	
+	@Override
 	public RangeList getSelectedRowPositions() {
-		selectionsLock.readLock().lock();
+		this.selectionsLock.readLock().lock();
 		try {
 			final RangeList selected = new RangeList();
+			final long rowCount = this.selectionLayer.getRowCount();
 			
-			final long rowCount = selectionLayer.getRowCount();
-			for (Rectangle r : selections) {
+			for (final Rectangle r : this.selections) {
 				if (r.y < rowCount) {
 					selected.add(new Range(r.y, Math.min(r.y + r.height, rowCount)));
 				}
@@ -343,41 +389,44 @@ public class SelectionModel implements ISelectionModel {
 			
 			return selected;
 		} finally {
-			selectionsLock.readLock().unlock();
+			this.selectionsLock.readLock().unlock();
 		}
 	}
-
+	
+	@Override
 	public boolean isRowPositionSelected(final long rowPosition) {
-		selectionsLock.readLock().lock();
+		this.selectionsLock.readLock().lock();
 		try {
-			final long rowCount = selectionLayer.getRowCount();
-			if (rowPosition < 0 || rowPosition >= rowCount) {
-				return false;
-			}
+			final long rowCount = this.selectionLayer.getRowCount();
 			
-			for (final Rectangle r : selections) {
-				if (rowPosition >= r.y && rowPosition < r.y + r.height) {
-					return true;
+			if (rowPosition >= 0 && rowPosition < rowCount) {
+				for (final Rectangle r : this.selections) {
+					if (rowPosition >= r.y && rowPosition < r.y + r.height) {
+						return true;
+					}
 				}
 			}
 			
 			return false;
 		} finally {
-			selectionsLock.readLock().unlock();
+			this.selectionsLock.readLock().unlock();
 		}
 	}
-
-	public List<Range> getFullySelectedRowPositions() {
-		selectionsLock.readLock().lock();
+	
+	@Override
+	public RangeList getFullySelectedRowPositions() {
+		this.selectionsLock.readLock().lock();
 		try {
 			final RangeList selected = new RangeList();
+			final long columnCount = this.selectionLayer.getColumnCount();
 			
-			final RangeList selectedRows = getSelectedRowPositions();
-			long columnCount = selectionLayer.getColumnCount();
-			for (final Range range : selectedRows) {
-				for (long position = range.start; position < range.end; position++) {
-					if (isRowPositionFullySelected(position, columnCount)) {
-						selected.addValue(position);
+			if (columnCount > 0) {
+				final RangeList selectedRows = getSelectedRowPositions();
+				for (final Range range : selectedRows) {
+					for (long position = range.start; position < range.end; position++) {
+						if (isRowPositionFullySelected(position, columnCount)) {
+							selected.values().add(position);
+						}
 					}
 				}
 			}
@@ -385,112 +434,46 @@ public class SelectionModel implements ISelectionModel {
 			return selected;
 		}
 		finally {
-			selectionsLock.readLock().unlock();
+			this.selectionsLock.readLock().unlock();
 		}
 	}
-
+	
+	@Override
 	public boolean isRowPositionFullySelected(final long rowPosition) {
-		selectionsLock.readLock().lock();
+		this.selectionsLock.readLock().lock();
 		try {
-			final long columnCount = selectionLayer.getColumnCount();
-			return isRowPositionFullySelected(rowPosition, columnCount);
+			final long columnCount = this.selectionLayer.getColumnCount();
+			
+			return ((columnCount > 0)
+					&& isRowPositionFullySelected(rowPosition, columnCount) );
 		} finally {
-			selectionsLock.readLock().unlock();
+			this.selectionsLock.readLock().unlock();
 		}
 	}
 	
 	private boolean isRowPositionFullySelected(final long rowPosition, final long columnCount) {
-		// Aggregate all rows of selection rectangles including the column
-		final RangeList selectedRangesInRow = new RangeList();
+		// Aggregate all columns of selection rectangles including the row
+		final RangeList selectedColumnsInRow = new RangeList();
 		
-		for (final Rectangle r : selections) {
+		for (final Rectangle r : this.selections) {
 			if (rowPosition >= r.y && rowPosition < r.y + r.height) {
-				selectedRangesInRow.add(new Range(r.x, r.x + r.width));
+				selectedColumnsInRow.add(new Range(r.x, r.x + r.width));
 			}
 		}
 		
-		final Range range = selectedRangesInRow.getRange(0);
+		final Range range = selectedColumnsInRow.values().getRangeOf(0);
 		return (range != null && range.end >= columnCount);
 	}
-
-
-	protected static final boolean contains(Rectangle containerRectangle, Rectangle rectangle) {
-		Rectangle union = containerRectangle.union(rectangle);
-		return union.equals(containerRectangle);
-	}
-
-	protected static final void sortByX(List<Rectangle> selectionRectanglesInRow) {
-		Collections.sort(selectionRectanglesInRow, new Comparator<Rectangle>(){
-			public int compare(Rectangle rectangle1, Rectangle rectangle2) {
-				return (rectangle1.x < rectangle2.x) ? -1 :
-						((rectangle1.x == rectangle2.x) ? 0 : 1);
-			}
-		});
-	}
-
-	protected static final void sortByY(List<Rectangle> selectionRectanglesInColumn) {
-		Collections.sort(selectionRectanglesInColumn, new Comparator<Rectangle>(){
-			public int compare(Rectangle rectangle1, Rectangle rectangle2) {
-				return (rectangle1.y < rectangle2.y) ? -1 :
-					((rectangle1.y == rectangle2.y) ? 0 : 1);
-			}
-		});
-	}
-	private static final Rectangle getLeftSelection(Rectangle intersection, Rectangle selection) {
-		if (intersection.x > selection.x) {
-			Rectangle leftSelection = new Rectangle(selection.x, selection.y,
-					intersection.x - selection.x, selection.height);
-			return leftSelection;
-		}
-
-		return null;
-	}
-
-	private static final Rectangle getRightSelection(Rectangle intersection, Rectangle selection) {
-		long newX = intersection.x + intersection.width;
-
-		if (newX < selection.x + selection.width) {
-			Rectangle rightSelection = new Rectangle(newX, selection.y,
-					selection.x + selection.width - newX, selection.height);
-
-			return rightSelection;
-		}
-
-		return null;
-	}
-
-	private static final Rectangle getTopSelection(Rectangle intersection,
-			Rectangle selectoin) {
-		if (intersection.y > selectoin.y) {
-			Rectangle topSelection = new Rectangle(selectoin.x, selectoin.y,
-					selectoin.width, intersection.y - selectoin.y);
-			return topSelection;
-		}
-		return null;
-	}
-
-	private static final Rectangle getBottomSelection(Rectangle intersection,
-			Rectangle selection) {
-		long newY = intersection.y + intersection.height;
-
-		if (newY < selection.y + selection.height) {
-			Rectangle bottomSelection = new Rectangle(selection.x, newY,
-					selection.width, selection.y + selection.height - newY);
-			return bottomSelection;
-		}
-
-		return null;
-	}
-
-	// Object methods
-
+	
+	//-- Object methods --//
+	
 	@Override
 	public String toString() {
-		selectionsLock.readLock().lock();
+		this.selectionsLock.readLock().lock();
 		try {
-			return selections.toString();
+			return this.selections.toString();
 		} finally {
-			selectionsLock.readLock().unlock();
+			this.selectionsLock.readLock().unlock();
 		}
 	}
 	
