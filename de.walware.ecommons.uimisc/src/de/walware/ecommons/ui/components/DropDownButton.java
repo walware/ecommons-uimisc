@@ -1,14 +1,14 @@
-/*******************************************************************************
- * Copyright (c) 2010-2013 WalWare/StatET-Project (www.walware.de/goto/statet)
- * and others. All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation (TextCellEditor)
- *     Stephan Wahlbrink - initial API and implementation
- *******************************************************************************/
+/*=============================================================================#
+ # Copyright (c) 2010-2014 Stephan Wahlbrink (WalWare.de) and others.
+ # All rights reserved. This program and the accompanying materials
+ # are made available under the terms of the Eclipse Public License v1.0
+ # which accompanies this distribution, and is available at
+ # http://www.eclipse.org/legal/epl-v10.html
+ # 
+ # Contributors:
+ #     IBM Corporation - initial API and implementation (TextCellEditor)
+ #     Stephan Wahlbrink - initial API and implementation
+ #=============================================================================*/
 
 package de.walware.ecommons.ui.components;
 
@@ -84,9 +84,9 @@ public class DropDownButton extends Composite {
 		
 		addListener(SWT.Resize, new Listener() {
 			@Override
-			public void handleEvent(Event event) {
-				Rectangle clientArea = getClientArea();
-				Point size = fDownButton.computeSize(SWT.DEFAULT, clientArea.height);
+			public void handleEvent(final Event event) {
+				final Rectangle clientArea = getClientArea();
+				final Point size = fDownButton.computeSize(SWT.DEFAULT, clientArea.height);
 				fDownButton.setBounds(clientArea.width - size.x, clientArea.y, size.x, clientArea.height);
 				fMainButton.setBounds(clientArea.x, clientArea.y, clientArea.width - size.x + 1, clientArea.height);
 			}
@@ -94,12 +94,12 @@ public class DropDownButton extends Composite {
 	}
 	
 	@Override
-	public Point computeSize(int wHint, int hHint, boolean changed) {
+	public Point computeSize(final int wHint, final int hHint, final boolean changed) {
 		final Point downSize = fDownButton.computeSize(SWT.DEFAULT, hHint);
 		final Point mainSize = (wHint == SWT.DEFAULT) ?
 				fMainButton.computeSize(wHint, hHint) :
 				fMainButton.computeSize(Math.max(0, wHint - downSize.x), hHint);
-		Rectangle trim = super.computeTrim(0, 0, mainSize.x + downSize.x - 1, Math.max(mainSize.y, downSize.y));
+		final Rectangle trim = super.computeTrim(0, 0, mainSize.x + downSize.x - 1, Math.max(mainSize.y, downSize.y));
 		return new Point (trim.width, trim.height);
 	}
 	
@@ -152,7 +152,7 @@ public class DropDownButton extends Composite {
 			menu = createDropDownMenu();
 			final Listener listener = new Listener() {
 				@Override
-				public void handleEvent(Event event) {
+				public void handleEvent(final Event event) {
 					switch (event.type) {
 						
 					case SWT.Dispose:

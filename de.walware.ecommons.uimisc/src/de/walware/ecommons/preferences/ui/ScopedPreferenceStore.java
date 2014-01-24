@@ -1,14 +1,14 @@
-/*******************************************************************************
- * Copyright (c) 2004-2013 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *     Stephan Wahlbrink - support of multiple search contexts and bug fixes
- *******************************************************************************/
+/*=============================================================================#
+ # Copyright (c) 2004-2014 IBM Corporation and others.
+ # All rights reserved. This program and the accompanying materials
+ # are made available under the terms of the Eclipse Public License v1.0
+ # which accompanies this distribution, and is available at
+ # http://www.eclipse.org/legal/epl-v10.html
+ # 
+ # Contributors:
+ #     IBM Corporation - initial API and implementation
+ #     Stephan Wahlbrink - support of multiple search contexts and bug fixes
+ #=============================================================================*/
 
 package de.walware.ecommons.preferences.ui;
 
@@ -21,10 +21,10 @@ import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.INodeChangeListener;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.NodeChangeEvent;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
+import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.JFaceResources;
@@ -59,7 +59,7 @@ public class ScopedPreferenceStore extends EventManager implements
 	 * setValue methods. If there are no searchContexts this will be the search
 	 * context. (along with the "default" context)
 	 */
-	private IScopeContext storeContext;
+	private final IScopeContext storeContext;
 	
 	/**
 	 * The searchContext is the array of contexts that will be used by the get
@@ -84,7 +84,7 @@ public class ScopedPreferenceStore extends EventManager implements
 	 * The default context is the context where getDefault and setDefault
 	 * methods will search. This context is also used in the search.
 	 */
-	private IScopeContext defaultContext = new DefaultScope();
+	private final IScopeContext defaultContext = new DefaultScope();
 	
 	/**
 	 * The nodeQualifer is the string used to look up the node in the contexts.

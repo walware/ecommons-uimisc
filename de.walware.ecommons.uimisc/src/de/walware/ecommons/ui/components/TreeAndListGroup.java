@@ -1,13 +1,13 @@
-/*******************************************************************************
- * Copyright (c) 2006-2013 WalWare/StatET-Project (www.walware.de/goto/statet)
- * and others. All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
+/*=============================================================================#
+ # Copyright (c) 2006-2014 Stephan Wahlbrink (WalWare.de) and others.
+ # All rights reserved. This program and the accompanying materials
+ # are made available under the terms of the Eclipse Public License v1.0
+ # which accompanies this distribution, and is available at
+ # http://www.eclipse.org/legal/epl-v10.html
+ # 
+ # Contributors:
+ #     IBM Corporation - initial API and implementation
+ #=============================================================================*/
 
 package de.walware.ecommons.ui.components;
 
@@ -53,7 +53,7 @@ public class TreeAndListGroup implements ISelectionChangedListener {
 	private final ViewerComparator fComparator;
 	
 	// widgets
-	private Composite fControl;
+	private final Composite fControl;
 	private SashForm fSplitControl;
 	private TreeViewer fTreeViewer;
 	private TableViewer fListViewer;

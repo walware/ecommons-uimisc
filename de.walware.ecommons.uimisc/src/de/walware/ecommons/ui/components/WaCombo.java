@@ -1,13 +1,13 @@
-/*******************************************************************************
- * Copyright (c) 2000-2013 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
+/*=============================================================================#
+ # Copyright (c) 2000-2014 IBM Corporation and others.
+ # All rights reserved. This program and the accompanying materials
+ # are made available under the terms of the Eclipse Public License v1.0
+ # which accompanies this distribution, and is available at
+ # http://www.eclipse.org/legal/epl-v10.html
+ # 
+ # Contributors:
+ #     IBM Corporation - initial API and implementation
+ #=============================================================================*/
 
 package de.walware.ecommons.ui.components;
 
@@ -75,7 +75,7 @@ import de.walware.ecommons.ui.internal.UIMiscellanyPlugin;
  * <dt><b>Events:</b>
  * <dd>DefaultSelection, Modify, Selection, Verify</dd>
  * </dl>
- *
+ * 
  * @see <a href="http://www.eclipse.org/swt/snippets/#ccombo">CCombo snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: CustomControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
@@ -248,7 +248,7 @@ public class WaCombo extends Composite {
 		};
 		
 		for (int i = 0; i < COMBO_EVENTS.length; i++) {
-			this.addListener(COMBO_EVENTS[i], fListener);
+			addListener(COMBO_EVENTS[i], fListener);
 		}
 		
 		for (int i = 0; i < TEXT_EVENTS.length; i++) {
@@ -719,7 +719,7 @@ public class WaCombo extends Composite {
 	}
 	
 	boolean isParentScrolling(final Control scrollableParent) {
-		Control parent = this.getParent();
+		Control parent = getParent();
 		while (parent != null) {
 			if (parent.equals(scrollableParent)) {
 				return true;

@@ -1,13 +1,13 @@
-/*******************************************************************************
- * Copyright (c) 2010-2013 WalWare/StatET-Project (www.walware.de/goto/statet)
- * and others. All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors:
- *     Stephan Wahlbrink - initial API and implementation
- *******************************************************************************/
+/*=============================================================================#
+ # Copyright (c) 2010-2014 Stephan Wahlbrink (WalWare.de) and others.
+ # All rights reserved. This program and the accompanying materials
+ # are made available under the terms of the Eclipse Public License v1.0
+ # which accompanies this distribution, and is available at
+ # http://www.eclipse.org/legal/epl-v10.html
+ # 
+ # Contributors:
+ #     Stephan Wahlbrink - initial API and implementation
+ #=============================================================================*/
 
 package de.walware.ecommons.ui.util;
 
@@ -27,18 +27,18 @@ public class ComparatorViewerComparator extends ViewerComparator {
 	private final Comparator fComparator;
 	
 	
-	public ComparatorViewerComparator(Comparator comparator) {
+	public ComparatorViewerComparator(final Comparator comparator) {
 		fComparator = comparator;
 	}
 	
 	
 	@Override
-	public int compare(Viewer viewer, Object e1, Object e2) {
+	public int compare(final Viewer viewer, final Object e1, final Object e2) {
 		return fComparator.compare(e1, e2);
 	}
 	
 	@Override
-	public void sort(Viewer viewer, Object[] elements) {
+	public void sort(final Viewer viewer, final Object[] elements) {
 		Arrays.sort(elements, fComparator);
 	}
 	

@@ -1,13 +1,13 @@
-/*******************************************************************************
- * Copyright (c) 2012-2013 WalWare/StatET-Project (www.walware.de/goto/statet).
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors:
- *     Stephan Wahlbrink - initial API and implementation
- *******************************************************************************/
+/*=============================================================================#
+ # Copyright (c) 2012-2014 Stephan Wahlbrink (WalWare.de) and others.
+ # All rights reserved. This program and the accompanying materials
+ # are made available under the terms of the Eclipse Public License v1.0
+ # which accompanies this distribution, and is available at
+ # http://www.eclipse.org/legal/epl-v10.html
+ # 
+ # Contributors:
+ #     Stephan Wahlbrink - initial API and implementation
+ #=============================================================================*/
 
 package de.walware.ecommons.ui.components;
 
@@ -264,6 +264,7 @@ public class WaScale extends Composite implements IIntValueWidget {
 			return 1;
 		}
 		
+		@Override
 		protected int checkValue(int value) {
 			final List<Knob> knobs = getKnobs();
 			final int idx = getIdx();
@@ -518,20 +519,24 @@ public class WaScale extends Composite implements IIntValueWidget {
 		fIncrement = increment;
 	}
 	
+	@Override
 	public int getValue(final int knobIdx) {
 		return fKnobs.get(knobIdx).getValue();
 	}
 	
+	@Override
 	public void setValue(final int knobIdx, final int value) {
 		fKnobs.get(knobIdx).setValue(0, value);
 		updateButtonPositions();
 		redraw();
 	}
 	
+	@Override
 	public void addValueListener(final IIntValueListener listener) {
 		fSelectionListeners.add(listener);
 	}
 	
+	@Override
 	public void removeValueListener(final IIntValueListener listener) {
 		fSelectionListeners.remove(listener);
 	}

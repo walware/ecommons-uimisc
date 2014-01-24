@@ -1,13 +1,13 @@
-/*******************************************************************************
- * Copyright (c) 2007-2013 WalWare/StatET-Project (www.walware.de/goto/statet)
- * and others. All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors:
- *     Stephan Wahlbrink - initial API and implementation
- *******************************************************************************/
+/*=============================================================================#
+ # Copyright (c) 2007-2014 Stephan Wahlbrink (WalWare.de) and others.
+ # All rights reserved. This program and the accompanying materials
+ # are made available under the terms of the Eclipse Public License v1.0
+ # which accompanies this distribution, and is available at
+ # http://www.eclipse.org/legal/epl-v10.html
+ # 
+ # Contributors:
+ #     Stephan Wahlbrink - initial API and implementation
+ #=============================================================================*/
 
 package de.walware.ecommons.ui.workbench;
 
@@ -108,7 +108,7 @@ public class ResourceInputComposite extends Composite {
 	private boolean fDoOpen;
 	private boolean fWSOnly;
 	private boolean fControlledChange;
-	private FileValidator fValidator;
+	private final FileValidator fValidator;
 	
 	private Text fLocationTextField;
 	private Combo fLocationComboField;
@@ -234,11 +234,11 @@ public class ResourceInputComposite extends Composite {
 		String[] extensions0;
 		String[] names;
 		if (filters != null) {
-			int n = filters.size() + 1;
+			final int n = filters.size() + 1;
 			extensions0 = new String[n];
 			names = new String[n];
 			for (int i = 0; i < n - 1; i++) {
-				String[] strings = filters.get(i);
+				final String[] strings = filters.get(i);
 				extensions0[i] = strings[0];
 				names[i] = strings[1] + " ("+strings[0]+")"; //$NON-NLS-1$ //$NON-NLS-2$
 			}
@@ -566,7 +566,7 @@ public class ResourceInputComposite extends Composite {
 	protected void handleVariablesButton() {
 		final CustomizableVariableSelectionDialog dialog = new CustomizableVariableSelectionDialog(getShell());
 		if (fShowInsertVariableFilters != null) {
-			for (VariableFilter filter : fShowInsertVariableFilters) {
+			for (final VariableFilter filter : fShowInsertVariableFilters) {
 				dialog.addVariableFilter(filter);
 			}
 		}
@@ -593,8 +593,9 @@ public class ResourceInputComposite extends Composite {
 		if (fAsCombo) {
 			fLocationComboField.addModifyListener(listener);
 		}
-		else
+		else {
 			fLocationTextField.addModifyListener(listener);
+		}
 	}
 	
 	public IResource getResourceAsWorkspaceResource() {

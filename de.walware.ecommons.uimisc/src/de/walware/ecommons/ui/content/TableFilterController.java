@@ -1,15 +1,15 @@
-/*******************************************************************************
- * Copyright (c) 2004-2013 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation of Filtered Tree
- *     Jacek Pospychala - bug 187762
- *     Stephan Wahlbrink
- *******************************************************************************/
+/*=============================================================================#
+ # Copyright (c) 2004-2014 IBM Corporation and others.
+ # All rights reserved. This program and the accompanying materials
+ # are made available under the terms of the Eclipse Public License v1.0
+ # which accompanies this distribution, and is available at
+ # http://www.eclipse.org/legal/epl-v10.html
+ # 
+ # Contributors:
+ #     IBM Corporation - initial API and implementation of Filtered Tree
+ #     Jacek Pospychala - bug 187762
+ #     Stephan Wahlbrink
+ #=============================================================================*/
 
 package de.walware.ecommons.ui.content;
 
@@ -524,7 +524,7 @@ public class TableFilterController {
 		if (fUpdate == 0 && fRefreshJob.fActiveInput != null) {
 			int[] idxs = new int[elements.size()];
 			int i = 0;
-			for (Object element : elements) {
+			for (final Object element : elements) {
 				int idx = fRefreshJob.fActiveInput.indexOf(element);
 				if (idx < 0) {
 					continue;
@@ -551,7 +551,7 @@ public class TableFilterController {
 		}
 		addListener(new Listener() {
 			@Override
-			public void inputUpdated(boolean newInput) {
+			public void inputUpdated(final boolean newInput) {
 				removeListener(this);
 				runnable.run();
 			}
