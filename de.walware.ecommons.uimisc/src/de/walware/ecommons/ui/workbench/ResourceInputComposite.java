@@ -53,6 +53,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.dialogs.FilteredResourcesSelectionDialog;
 
+import de.walware.ecommons.collections.CollectionUtils;
 import de.walware.ecommons.collections.ConstList;
 import de.walware.ecommons.io.FileValidator;
 import de.walware.ecommons.ui.SharedMessages;
@@ -116,8 +117,8 @@ public class ResourceInputComposite extends Composite {
 	private Label fLabel;
 	private WidgetToolsButton fTools;
 	private boolean fShowInsertVariable;
-	private List<VariableFilter> fShowInsertVariableFilters;
-	private List<IStringVariable> fShowInsertVariableAdditionals;
+	private ConstList<? extends VariableFilter> fShowInsertVariableFilters;
+	private ConstList<? extends IStringVariable> fShowInsertVariableAdditionals;
 	
 	private String fDefaultFilesystemPath;
 	private String[] fFileFilters;
@@ -190,7 +191,7 @@ public class ResourceInputComposite extends Composite {
 	public void setShowInsertVariable(final boolean enable,
 			final List<VariableFilter> filters, final List<? extends IStringVariable> additionals) {
 		fShowInsertVariable = enable;
-		fShowInsertVariableFilters = (filters != null) ? new ConstList<VariableFilter>(filters) : null;
+		fShowInsertVariableFilters = (filters != null) ? CollectionUtils.asConstList(filters) : null;
 		if (fShowInsertVariableAdditionals != null) {
 			for (final IStringVariable variable : fShowInsertVariableAdditionals) {
 				final String name = variable.getName();
@@ -198,7 +199,7 @@ public class ResourceInputComposite extends Composite {
 				fValidator.setOnPattern(pattern, -1);
 			}
 		}
-		fShowInsertVariableAdditionals = (additionals != null) ? new ConstList<IStringVariable>(additionals) : null;
+		fShowInsertVariableAdditionals = (additionals != null) ? CollectionUtils.asConstList(additionals) : null;
 		if (fShowInsertVariableAdditionals != null) {
 			for (final IStringVariable variable : fShowInsertVariableAdditionals) {
 				final String name = variable.getName();
@@ -300,7 +301,7 @@ public class ResourceInputComposite extends Composite {
 		Composite content;
 		final GridLayout layout;
 		if ((fStyle & STYLE_GROUP) == STYLE_GROUP) {
-			this.setLayout(new FillLayout());
+			setLayout(new FillLayout());
 			final Group group = new Group(this, SWT.NONE);
 			group.setText(fResourceLabel + ':');
 			content = group;

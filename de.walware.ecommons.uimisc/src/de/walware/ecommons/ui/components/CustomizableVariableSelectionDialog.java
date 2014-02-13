@@ -71,7 +71,7 @@ public class CustomizableVariableSelectionDialog extends StringVariableSelection
 		fAdditionals.add(variable);
 	}
 	
-	public void setAdditionals(final List<IStringVariable> variables) {
+	public void setAdditionals(final List<? extends IStringVariable> variables) {
 		fAdditionals.addAll(variables);
 	}
 	

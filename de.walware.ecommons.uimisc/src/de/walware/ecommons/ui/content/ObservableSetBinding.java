@@ -17,7 +17,7 @@ import org.eclipse.core.databinding.observable.set.IObservableSet;
 import org.eclipse.core.databinding.observable.set.ISetChangeListener;
 import org.eclipse.core.databinding.observable.set.SetChangeEvent;
 
-import de.walware.ecommons.collections.ConstList;
+import de.walware.ecommons.collections.ConstArrayList;
 
 
 public class ObservableSetBinding implements ISetChangeListener {
@@ -40,7 +40,7 @@ public class ObservableSetBinding implements ISetChangeListener {
 	}
 	
 	protected Collection<?> createFilterSet(final Collection<?> set) {
-		return new ConstList<Object>(set);
+		return new ConstArrayList<Object>(set);
 	}
 	
 	@Override

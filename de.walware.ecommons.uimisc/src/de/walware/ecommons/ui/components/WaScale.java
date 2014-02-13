@@ -36,7 +36,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
 import de.walware.ecommons.FastList;
-import de.walware.ecommons.collections.ConstList;
+import de.walware.ecommons.collections.ConstArrayList;
 import de.walware.ecommons.ui.internal.UIMiscellanyPlugin;
 
 
@@ -427,7 +427,7 @@ public class WaScale extends Composite implements IIntValueWidget {
 //		setKnobs(new ConstList<Knob>(
 //				new DefaultKnob(getMinimum(), "Lower Bound"),
 //				new DefaultKnob(getMaximum(), "Upper Bound") ));
-		setKnobs(new ConstList<Knob>(
+		setKnobs(new ConstArrayList<Knob>(
 				new Knob(getMinimum()),
 				new Knob(getMaximum()) ));
 	}
@@ -435,7 +435,7 @@ public class WaScale extends Composite implements IIntValueWidget {
 	protected void setKnobs(List<Knob> knobs) {
 		stopOperations(0);
 		
-		knobs = new ConstList<Knob>(knobs);
+		knobs = new ConstArrayList<Knob>(knobs);
 		if (fKnobs != null) {
 			for (int idx = 0; idx < fKnobs.size(); idx++) {
 				

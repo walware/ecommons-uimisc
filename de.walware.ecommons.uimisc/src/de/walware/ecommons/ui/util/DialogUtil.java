@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
-import de.walware.ecommons.collections.ConstList;
+import de.walware.ecommons.collections.ConstArrayList;
 
 
 /**
@@ -175,7 +175,7 @@ public class DialogUtil {
 	 * @param enable
 	 */
 	public static void setVisible(final Control control, final List<? extends Control> exceptions, final boolean enable) {
-		setVisible(new ConstList<Control>(control), exceptions, enable);
+		setVisible(new ConstArrayList<Control>(control), exceptions, enable);
 	}
 	
 	/**
@@ -294,14 +294,14 @@ public class DialogUtil {
 	/**
 	 * Common set of filters for use cases, in which user interaction is possible.
 	 */
-	public static final List<VariableFilter> DEFAULT_INTERACTIVE_FILTERS = new ConstList<VariableFilter>(
+	public static final List<VariableFilter> DEFAULT_INTERACTIVE_FILTERS = new ConstArrayList<VariableFilter>(
 			EXCLUDE_JAVA_FILTER,
 			EXCLUDE_BUILD_FILTER );
 	
 	/**
 	 * Common set of filters for use cases, in which user interaction is not possible.
 	 */
-	public static final List<VariableFilter> DEFAULT_NON_ITERACTIVE_FILTERS = new ConstList<VariableFilter>(
+	public static final List<VariableFilter> DEFAULT_NON_ITERACTIVE_FILTERS = new ConstArrayList<VariableFilter>(
 			EXCLUDE_JAVA_FILTER,
 			EXCLUDE_BUILD_FILTER,
 			EXCLUDE_INTERACTIVE_FILTER );
