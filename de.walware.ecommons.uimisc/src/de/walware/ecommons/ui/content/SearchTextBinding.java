@@ -21,14 +21,14 @@ public class SearchTextBinding implements SearchText.Listener {
 	
 	protected final TableFilterController fController;
 	
-	protected final TextFilterProvider fFilter;
+	protected final TextElementFilter fFilter;
 	
 	
 	/**
 	 * Create a new instance of the controller.
 	 */
 	public SearchTextBinding(final SearchText text,
-			final TableFilterController controller, final TextFilterProvider filter) {
+			final TableFilterController controller, final TextElementFilter filter) {
 		fTextControl = text;
 		fController = controller;
 		fFilter = filter;

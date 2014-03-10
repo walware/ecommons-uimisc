@@ -15,77 +15,76 @@ import java.util.Collection;
 import java.util.Collections;
 
 
-public class SetFilter implements IElementFilter {
+public class SetElementFilter implements IElementFilter {
 	
 	
 	private class Filter implements IFinalFilter {
 		
 		
-		private final Collection<?> fSet;
+		private final Collection<?> set;
 		
 		
 		Filter(final Collection<?> set) {
-			fSet = set;
+			this.set= set;
 		}
 		
 		
 		@Override
 		public boolean select(final Object element) {
-			return SetFilter.this.select(fSet, element);
+			return SetElementFilter.this.select(this.set, element);
 		}
 		
 		@Override
 		public boolean isSubOf(final IFinalFilter other) {
-			return (other == this || other == null || ((Filter) other).fSet.containsAll(fSet));
+			return (other == this || other == null || ((Filter) other).set.containsAll(this.set));
 		}
 		
 		@Override
 		public boolean isEqualTo(final IFinalFilter other) {
 			return (other == this || ((other instanceof Filter)
-					&& fSet.equals((((Filter) other).fSet)) ));
+					&& this.set.equals((((Filter) other).set)) ));
 		}
 		
 	}
 	
 	
-	private Collection<?> fSet;
-	private boolean fChanged;
+	private Collection<?> set;
+	private boolean changed;
 	
-	private Filter fCurrentFilter;
+	private Filter currentFilter;
 	
 	
-	public SetFilter() {
-		fSet = Collections.EMPTY_LIST;
+	public SetElementFilter() {
+		this.set= Collections.EMPTY_LIST;
 	}
 	
 	
 	public synchronized boolean setSet(Collection<?> set) {
 		if (set == null || set.isEmpty()) {
-			set = Collections.EMPTY_LIST;
+			set= Collections.EMPTY_LIST;
 		}
-		fChanged |= !fSet.equals(set);
-		fSet = set;
-		return fChanged;
+		this.changed |= !this.set.equals(set);
+		this.set= set;
+		return this.changed;
 	}
 	
 	@Override
 	public synchronized IFinalFilter getFinal(final boolean newData) {
-		if (fSet.isEmpty()) {
-			fCurrentFilter = null;
+		if (this.set.isEmpty()) {
+			this.currentFilter= null;
 		}
-		else if (fCurrentFilter == null
-				|| (newData && fCurrentFilter.fSet != fSet)
-				|| (fChanged && fCurrentFilter.fSet != fSet) ) {
-			fCurrentFilter = new Filter(fSet);
+		else if (this.currentFilter == null
+				|| (newData && this.currentFilter.set != this.set)
+				|| (this.changed && this.currentFilter.set != this.set) ) {
+			this.currentFilter= new Filter(this.set);
 		}
-		fChanged = false;
-		return fCurrentFilter;
+		this.changed= false;
+		return this.currentFilter;
 	}
 	
 	
 	protected boolean select(final Collection<?> set, final Object element) {
 		return set.contains(element.toString());
 	}
-	
 	
 }

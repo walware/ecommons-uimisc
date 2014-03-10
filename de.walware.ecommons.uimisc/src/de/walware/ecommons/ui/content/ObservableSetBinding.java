@@ -25,10 +25,10 @@ public class ObservableSetBinding implements ISetChangeListener {
 	
 	private final TableFilterController fController;
 	
-	private final SetFilter fFilter;
+	private final SetElementFilter fFilter;
 	
 	
-	public ObservableSetBinding(final TableFilterController controller, final IObservableSet set, final SetFilter filter) {
+	public ObservableSetBinding(final TableFilterController controller, final IObservableSet set, final SetElementFilter filter) {
 		fController = controller;
 		fFilter = filter;
 		set.addSetChangeListener(this);

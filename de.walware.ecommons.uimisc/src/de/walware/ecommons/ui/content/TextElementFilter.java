@@ -14,71 +14,73 @@ package de.walware.ecommons.ui.content;
 import org.eclipse.ui.dialogs.SearchPattern;
 
 
-public class TextFilterProvider implements IElementFilter {
+public class TextElementFilter implements ITextElementFilter {
 	
 	
 	private class Filter implements IFinalFilter {
 		
-		private final SearchPattern fPattern;
+		private final SearchPattern pattern;
 		
 		Filter(final SearchPattern pattern) {
-			fPattern = pattern;
+			this.pattern= pattern;
 		}
 		
 		@Override
 		public boolean select(final Object element) {
-			return TextFilterProvider.this.select(fPattern, element);
+			return TextElementFilter.this.select(this.pattern, element);
 		}
 		
 		@Override
 		public boolean isSubOf(final IFinalFilter other) {
-			return (other == null || ((Filter) other).fPattern.isSubPattern(fPattern));
+			return (other == null || (other instanceof TextElementFilter.Filter
+					&& ((Filter) other).pattern.isSubPattern(this.pattern) ));
 		}
 		
 		@Override
 		public boolean isEqualTo(final IFinalFilter other) {
-			return (this == other || ((other instanceof TextFilterProvider.Filter)
-					&& fPattern.equalsPattern(((Filter) other).fPattern) ));
+			return (this == other || (other instanceof TextElementFilter.Filter
+					&& this.pattern.equalsPattern(((Filter) other).pattern) ));
 		}
 		
 	}
 	
 	
-	private volatile String fText;
+	private volatile String text;
 	
-	private String fCurrentText;
-	private Filter fCurrentFilter;
+	private String currentText;
+	private Filter currentFilter;
 	
 	
-	public TextFilterProvider() {
-		fText = ""; //$NON-NLS-1$
+	public TextElementFilter() {
+		this.text= ""; //$NON-NLS-1$
 	}
 	
 	
+	@Override
 	public boolean setText(String text) {
 		if (text == null) {
-			text = ""; //$NON-NLS-1$
+			text= ""; //$NON-NLS-1$
 		}
-		final boolean changed = !fText.equals(text);
-		fText = text;
+		final boolean changed= !this.text.equals(text);
+		this.text= text;
 		return changed;
 	}
 	
 	@Override
 	public IFinalFilter getFinal(final boolean newData) {
-		final String text = fText;
+		final String text= this.text;
 		if (text.length() == 0) {
-			fCurrentFilter = null;
+			this.currentFilter= null;
 		}
-		else if (fCurrentFilter == null
-				|| (newData && fText != fCurrentText)
-				|| !text.equals(fCurrentText)) {
-			fCurrentText = text;
-			final SearchPattern pattern = createSearchPattern();
+		else if (this.currentFilter == null
+				|| (newData && this.text != this.currentText)
+				|| !text.equals(this.currentText)) {
+			this.currentText= text;
+			final SearchPattern pattern= createSearchPattern();
 			pattern.setPattern(text);
-			fCurrentFilter = new Filter(pattern);
+			this.currentFilter= new Filter(pattern);
 		}
-		return fCurrentFilter;
+		return this.currentFilter;
 	}
 	
 	
