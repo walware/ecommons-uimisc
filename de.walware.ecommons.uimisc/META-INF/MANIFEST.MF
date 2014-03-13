@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Vendor: WalWare.de
 Bundle-Name: Miscellany of ECommons UI Packages
 Bundle-SymbolicName: de.walware.ecommons.uimisc;singleton:=true
-Bundle-Version: 1.4.0.qualifier
+Bundle-Version: 1.4.1.qualifier
 Bundle-Activator: de.walware.ecommons.ui.internal.UIMiscellanyPlugin
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
