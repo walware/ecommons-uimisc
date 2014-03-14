@@ -602,7 +602,9 @@ public class ScopedPreferenceStore extends EventManager implements
 			// API directly
 			getStorePreferences().remove(name);
 			dirty = true;
-			firePropertyChangeEvent(name, oldValue, defaultValue);
+			if (oldValue != defaultValue){
+				firePropertyChangeEvent(name, oldValue, defaultValue);
+			}
 		} finally {
 			silentRunning = false;// Restart listening to preferences
 		}
