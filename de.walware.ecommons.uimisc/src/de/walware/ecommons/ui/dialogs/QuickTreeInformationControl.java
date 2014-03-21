@@ -12,12 +12,20 @@
 
 package de.walware.ecommons.ui.dialogs;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.bindings.TriggerSequence;
+import org.eclipse.jface.bindings.keys.KeySequence;
+import org.eclipse.jface.bindings.keys.KeyStroke;
+import org.eclipse.jface.bindings.keys.SWTKeySupport;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.jface.text.IInformationControl;
@@ -32,10 +40,14 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -56,12 +68,17 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.keys.IBindingService;
 import org.eclipse.ui.statushandlers.StatusManager;
 
+import de.walware.ecommons.models.core.util.IElementProxy;
+import de.walware.ecommons.ui.SharedMessages;
 import de.walware.ecommons.ui.SharedUIResources;
 import de.walware.ecommons.ui.components.SearchText;
 import de.walware.ecommons.ui.content.IElementFilter;
-import de.walware.ecommons.ui.content.TextFilterProvider;
+import de.walware.ecommons.ui.content.ITextElementFilter;
+import de.walware.ecommons.ui.content.TextElementFilter;
 import de.walware.ecommons.ui.internal.UIMiscellanyPlugin;
 import de.walware.ecommons.ui.util.LayoutUtil;
 import de.walware.ecommons.ui.util.UIAccess;
@@ -71,6 +88,37 @@ import de.walware.ecommons.ui.util.UIAccess;
  * Abstract class for showing tree in light-weight controls.
  */
 public abstract class QuickTreeInformationControl extends PopupDialog implements IInformationControl, IInformationControlExtension, IInformationControlExtension2, DisposeListener {
+	
+	private static class ElementWithName implements IElementProxy {
+		
+		
+		private IAdaptable element;
+		
+		private String name;
+		
+		
+		public void set(final IAdaptable element, final String name) {
+			this.element= element;
+			this.name= name;
+		}
+		
+		@Override
+		public IAdaptable getElement() {
+			return this.element;
+		}
+		
+		@Override
+		public Object getAdapter(final Class adapter) {
+			return this.element.getAdapter(adapter);
+		}
+		
+		
+		@Override
+		public String toString() {
+			return this.name;
+		}
+		
+	}
 	
 	/**
 	 * The filter selects the elements which match the given string patterns.
@@ -87,9 +135,9 @@ public abstract class QuickTreeInformationControl extends PopupDialog implements
 			}
 			
 			// has unfiltered child?
-			final Object[] children =  ((ITreeContentProvider) QuickTreeInformationControl.this.treeViewer.getContentProvider())
+			final Object[] children=  ((ITreeContentProvider) QuickTreeInformationControl.this.treeViewer.getContentProvider())
 					.getChildren(element);
-			for (int i = 0; i < children.length; i++) {
+			for (int i= 0; i < children.length; i++) {
 				if (select(viewer, element, children[i])) {
 					return true;
 				}
@@ -107,11 +155,19 @@ public abstract class QuickTreeInformationControl extends PopupDialog implements
 	private TreeViewer treeViewer;
 	
 	/** The current string matcher */
-	protected TextFilterProvider nameFilter;
+	protected ITextElementFilter nameFilter;
 	
 	private IElementFilter.IFinalFilter finalNameFilter;
+	private final ElementWithName nameFilterElement= new ElementWithName();
+	
+	private final int iterationCount;
+	private int iterationPosition;
 	
 	private final String commandId;
+	
+	private String commandBestKeyStrokeFormatted;
+	private List<KeyStroke> commandActiveKeyStrokes;
+	private KeyListener commandKeyListener;
 	
 //	private IAction fShowViewMenuAction;
 //	private HandlerSubmission fShowViewMenuHandlerSubmission;
@@ -123,37 +179,94 @@ public abstract class QuickTreeInformationControl extends PopupDialog implements
 	 * @param parent the parent shell
 	 * @param shellStyle the additional styles for the shell
 	 * @param treeStyle the additional styles for the tree widget
-	 * @param invokingCommandId the id of the command that invoked this control or <code>null</code>
-	 * @param showStatusField <code>true</code> iff the control has a status field at the bottom
+	 * @param commandId the id of the command that invoked this control or <code>null</code>
 	 */
 	public QuickTreeInformationControl(final Shell parent, final int shellStyle,
-			final boolean showStatusField, final String commandId) {
+			final boolean showStatusField, final String commandId, final int iterationCount) {
 		super(parent, shellStyle, true, true, false, true, true, null, null);
 		
-		if (commandId != null) {
-			this.commandId = commandId;
-//			final IBindingService bindingService = (IBindingService) PlatformUI.getWorkbench().getService(IBindingService.class);
+		if (iterationCount < 1) {
+			throw new IllegalArgumentException("iterationCount"); //$NON-NLS-1$
 		}
-		else {
-			this.commandId = null;
+		
+		this.commandId= commandId;
+		this.iterationCount= iterationCount;
+		if (this.commandId != null && this.iterationCount > 1) {
+			initIterateKeys();
 		}
 		
 		// Title and status text must be set to get the title label created, so force empty values here.
 		setInfoText(""); //  //$NON-NLS-1$
 		
-		this.nameFilter = createNameFilter();
+		this.nameFilter= createNameFilter();
 		
-		// Create all controls early to preserve the life cycle of the original implementation.
 		create();
-		
-		updateInfoText();
+	}
+	
+	private void initIterateKeys() {
+		if (this.commandId == null || this.iterationCount == 1) {
+			return;
+		}
+		final IBindingService bindingSvc= (IBindingService) PlatformUI.getWorkbench().getService(IBindingService.class);
+		if (bindingSvc == null) {
+			return;
+		}
+		{	final TriggerSequence sequence= bindingSvc.getBestActiveBindingFor(this.commandId);
+			final KeyStroke keyStroke= getKeyStroke(sequence);
+			if (keyStroke == null) {
+				return;
+			}
+			this.commandBestKeyStrokeFormatted= keyStroke.format();
+		}
+		{	final TriggerSequence[] sequences= bindingSvc.getActiveBindingsFor(this.commandId);
+			this.commandActiveKeyStrokes= new ArrayList<KeyStroke>(sequences.length);
+			for (int i= 0; i < sequences.length; i++) {
+				final KeyStroke keyStroke= getKeyStroke(sequences[i]);
+				if (keyStroke != null) {
+					this.commandActiveKeyStrokes.add(keyStroke);
+				}
+			}
+		}
+		this.commandKeyListener= new KeyAdapter() {
+			@Override
+			public void keyPressed(final KeyEvent event) {
+				final KeyStroke keyStroke= SWTKeySupport.convertAcceleratorToKeyStroke(
+						SWTKeySupport.convertEventToUnmodifiedAccelerator(event) );
+				for (final KeyStroke activeKeyStroke : QuickTreeInformationControl.this.commandActiveKeyStrokes) {
+					if (activeKeyStroke.equals(keyStroke)) {
+						event.doit= false;
+						iterate();
+						return;
+					}
+				}
+			}
+		};
+	}
+	
+	private KeyStroke getKeyStroke(final TriggerSequence triggerSequence) {
+		if (triggerSequence instanceof KeySequence) {
+			final KeyStroke[] keyStrokes= ((KeySequence) triggerSequence).getKeyStrokes();
+			if (keyStrokes.length == 1) {
+				return keyStrokes[0];
+			}
+		}
+		return null;
 	}
 	
 	
-	protected abstract String getDescription();
+	protected abstract String getDescription(int iterationPosition);
 	
 	protected void updateInfoText() {
-		setInfoText(getDescription());
+		final StringBuilder sb= new StringBuilder(
+				getDescription(getIterationPosition()) );
+		if (this.commandBestKeyStrokeFormatted != null) {
+			sb.append("\u2004\u2004"); //$NON-NLS-1$
+			sb.append(NLS.bind(SharedMessages.DoToShow_message,
+					this.commandBestKeyStrokeFormatted,
+					getDescription(getNextIterationPosition()) ));
+		}
+		sb.append('\u2006');
+		setInfoText(sb.toString());
 	}
 	
 	
@@ -166,10 +279,10 @@ public abstract class QuickTreeInformationControl extends PopupDialog implements
 	 */
 	@Override
 	protected Control createDialogArea(final Composite parent) {
-		final TreeViewer viewer = new TreeViewer(parent, SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
-		final Tree tree = viewer.getTree();
-		{	final GridData gd = new GridData(GridData.FILL_BOTH);
-			gd.heightHint = LayoutUtil.hintHeight(tree, 12);
+		final TreeViewer viewer= new TreeViewer(parent, SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
+		final Tree tree= viewer.getTree();
+		{	final GridData gd= new GridData(GridData.FILL_BOTH);
+			gd.heightHint= LayoutUtil.hintHeight(tree, 12);
 			tree.setLayoutData(gd);
 		}
 		
@@ -179,9 +292,9 @@ public abstract class QuickTreeInformationControl extends PopupDialog implements
 		
 		viewer.addFilter(new SearchFilter());
 		
-//		this.fCustomFiltersActionGroup = new CustomFiltersActionGroup(getId(), this.viewer);
+//		this.fCustomFiltersActionGroup= new CustomFiltersActionGroup(getId(), this.viewer);
 		
-		this.treeViewer = viewer;
+		this.treeViewer= viewer;
 		
 		tree.addSelectionListener(new SelectionListener() {
 			@Override
@@ -195,25 +308,25 @@ public abstract class QuickTreeInformationControl extends PopupDialog implements
 		});
 		
 		tree.addMouseMoveListener(new MouseMoveListener()	 {
-			TreeItem lastItem = null;
+			TreeItem lastItem= null;
 			@Override
 			public void mouseMove(final MouseEvent e) {
 				if (tree.equals(e.getSource())) {
-					final Object o = tree.getItem(new Point(e.x, e.y));
+					final Object o= tree.getItem(new Point(e.x, e.y));
 					if (this.lastItem == null ^ o == null) {
 						tree.setCursor(o == null ? null : tree.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
 					}
 					if (o instanceof TreeItem) {
-						final Rectangle clientArea = tree.getClientArea();
+						final Rectangle clientArea= tree.getClientArea();
 						if (!o.equals(this.lastItem)) {
-							this.lastItem = (TreeItem)o;
+							this.lastItem= (TreeItem)o;
 							tree.setSelection(new TreeItem[] { this.lastItem });
 						} else if (e.y - clientArea.y < tree.getItemHeight() / 4) {
 							// Scroll up
-							final Point p = tree.toDisplay(e.x, e.y);
+							final Point p= tree.toDisplay(e.x, e.y);
 							final Item item= QuickTreeInformationControl.this.treeViewer.scrollUp(p.x, p.y);
 							if (item instanceof TreeItem) {
-								this.lastItem = (TreeItem)item;
+								this.lastItem= (TreeItem)item;
 								tree.setSelection(new TreeItem[] { this.lastItem });
 							}
 						} else if (clientArea.y + clientArea.height - e.y < tree.getItemHeight() / 4) {
@@ -221,7 +334,7 @@ public abstract class QuickTreeInformationControl extends PopupDialog implements
 							final Point p= tree.toDisplay(e.x, e.y);
 							final Item item= QuickTreeInformationControl.this.treeViewer.scrollDown(p.x, p.y);
 							if (item instanceof TreeItem) {
-								this.lastItem = (TreeItem)item;
+								this.lastItem= (TreeItem)item;
 								tree.setSelection(new TreeItem[] { this.lastItem });
 							}
 						}
@@ -232,6 +345,9 @@ public abstract class QuickTreeInformationControl extends PopupDialog implements
 			}
 		});
 		
+		if (this.commandKeyListener != null) {
+			tree.addKeyListener(this.commandKeyListener);
+		}
 		tree.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(final MouseEvent e) {
@@ -245,7 +361,7 @@ public abstract class QuickTreeInformationControl extends PopupDialog implements
 				
 				if (tree.equals(e.getSource())) {
 					final Object o= tree.getItem(new Point(e.x, e.y));
-					final TreeItem selection = tree.getSelection()[0];
+					final TreeItem selection= tree.getSelection()[0];
 					if (selection.equals(o)) {
 						gotoSelectedElement();
 					}
@@ -266,9 +382,9 @@ public abstract class QuickTreeInformationControl extends PopupDialog implements
 	protected SearchText getFilterText() {
 		return this.filterText;
 	}
-
+	
 	protected SearchText createFilterText(final Composite parent) {
-		this.filterText = new SearchText(parent, SWT.NONE, "", SWT.NONE); //$NON-NLS-1$
+		this.filterText= new SearchText(parent, SWT.NONE, "", SWT.NONE); //$NON-NLS-1$
 		
 		Dialog.applyDialogFont(this.filterText);
 		
@@ -291,16 +407,19 @@ public abstract class QuickTreeInformationControl extends PopupDialog implements
 			public void handleEvent(final Event event) {
 				if (event.character == SWT.ESC) {
 					close();
-					event.doit = false;
+					event.doit= false;
 				}
 			}
 		});
+		if (this.commandKeyListener != null) {
+			this.filterText.getTextControl().addKeyListener(this.commandKeyListener);
+		}
 		
 		return this.filterText;
 	}
 	
 	protected void createHorizontalSeparator(final Composite parent) {
-		final Label separator = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL | SWT.LINE_DOT);
+		final Label separator= new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL | SWT.LINE_DOT);
 		separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 	}
 	
@@ -325,7 +444,7 @@ public abstract class QuickTreeInformationControl extends PopupDialog implements
 	protected void stringMatcherUpdated() {
 		// refresh viewer to re-filter
 		this.treeViewer.getControl().setRedraw(false);
-		this.finalNameFilter = this.nameFilter.getFinal(false);
+		this.finalNameFilter= this.nameFilter.getFinal(false);
 		this.treeViewer.refresh();
 		this.treeViewer.expandAll();
 		selectFirstMatch();
@@ -346,7 +465,7 @@ public abstract class QuickTreeInformationControl extends PopupDialog implements
 	}
 	
 	protected void gotoSelectedElement() {
-		final Object selectedElement = getSelectedElement();
+		final Object selectedElement= getSelectedElement();
 		if (selectedElement != null) {
 			try {
 				dispose();
@@ -367,8 +486,8 @@ public abstract class QuickTreeInformationControl extends PopupDialog implements
 	 * Selects the first element in the tree which matches the current filter pattern.
 	 */
 	protected void selectFirstMatch() {
-		final Tree tree = this.treeViewer.getTree();
-		final Object element = findFirstMatch(tree.getItems());
+		final Tree tree= this.treeViewer.getTree();
+		final Object element= findFirstMatch(tree.getItems());
 		if (element != null) {
 			this.treeViewer.setSelection(new StructuredSelection(element), true);
 		} else {
@@ -379,8 +498,8 @@ public abstract class QuickTreeInformationControl extends PopupDialog implements
 	private Object findFirstMatch(final TreeItem[] items) {
 		if (items.length > 0) {
 			// Process each item in the tree
-			for (int i = 0; i < items.length; i++) {
-				final Object element = items[i].getData();
+			for (int i= 0; i < items.length; i++) {
+				final Object element= items[i].getData();
 				if (element == null) {
 					continue;
 				}
@@ -389,9 +508,9 @@ public abstract class QuickTreeInformationControl extends PopupDialog implements
 				}
 			}
 			
-			for (int i = 0; i < items.length; i++) {
+			for (int i= 0; i < items.length; i++) {
 				// Recursively check the elements children for a match
-				final Object element = findFirstMatch(items[i].getItems());
+				final Object element= findFirstMatch(items[i].getItems());
 				// Return the child element match if found
 				if (element != null) {
 					return element;
@@ -403,7 +522,6 @@ public abstract class QuickTreeInformationControl extends PopupDialog implements
 	}
 	
 	
-	
 	@Override
 	public void setInformation(final String information) {
 		// this method is ignored, see IInformationControlExtension2
@@ -412,9 +530,14 @@ public abstract class QuickTreeInformationControl extends PopupDialog implements
 	@Override
 	public abstract void setInput(Object information);
 	
-	protected void inputChanged(final Object newInput, final Object newSelection) {
+	protected void inputChanged(final int iterationPage, final Object newInput,
+			final Object newSelection) {
 		this.filterText.clearText();
 		resetFilter();
+		
+		this.iterationPosition= iterationPage;
+		updateInfoText();
+		
 		this.treeViewer.setInput(newInput);
 		if (newSelection != null) {
 			this.treeViewer.setSelection(new StructuredSelection(newSelection));
@@ -422,17 +545,17 @@ public abstract class QuickTreeInformationControl extends PopupDialog implements
 	}
 	
 	
-	protected TextFilterProvider createNameFilter() {
-		return new TextFilterProvider();
+	protected ITextElementFilter createNameFilter() {
+		return new TextElementFilter();
 	}
 	
 	protected void resetFilter() {
 		this.nameFilter.setText(null);
-		this.finalNameFilter = this.nameFilter.getFinal(true);
+		this.finalNameFilter= this.nameFilter.getFinal(true);
 	}
 	
-	protected String getElementName(final Object element) {
-		final IBaseLabelProvider labelProvider = this.treeViewer.getLabelProvider();
+	protected String getElementName(final IAdaptable element) {
+		final IBaseLabelProvider labelProvider= this.treeViewer.getLabelProvider();
 		if (labelProvider instanceof ILabelProvider) {
 			return ((ILabelProvider) labelProvider).getText(element);
 		}
@@ -443,8 +566,15 @@ public abstract class QuickTreeInformationControl extends PopupDialog implements
 		if (this.finalNameFilter == null) {
 			return true;
 		}
-		final String name = getElementName(element);
-		return (name != null && this.finalNameFilter.select(name));
+		if (element instanceof IAdaptable) {
+			final IAdaptable adaptable= (IAdaptable) element;
+			final String name= getElementName(adaptable);
+			if (name != null) {
+				this.nameFilterElement.set(adaptable, name);
+				return this.finalNameFilter.select(this.nameFilterElement);
+			}
+		}
+		return false;
 	}
 	
 	
@@ -482,8 +612,8 @@ public abstract class QuickTreeInformationControl extends PopupDialog implements
 	public void widgetDisposed(final DisposeEvent event) {
 		disableActions();
 		
-		this.treeViewer = null;
-		this.filterText = null;
+		this.treeViewer= null;
+		this.filterText= null;
 	}
 	
 	/**
@@ -574,7 +704,7 @@ public abstract class QuickTreeInformationControl extends PopupDialog implements
 	
 	@Override
 	public boolean isFocusControl() {
-		final Shell shell = getShell();
+		final Shell shell= getShell();
 		return (shell != null && shell.getDisplay().getActiveShell() == shell);
 	}
 	
@@ -599,24 +729,47 @@ public abstract class QuickTreeInformationControl extends PopupDialog implements
 		return this.commandId;
 	}
 	
-	protected boolean canIterate() {
-		return false;
+	
+	protected final int getIterationPosition() {
+		return this.iterationPosition;
+	}
+	
+	private int getNextIterationPosition() {
+		final int page= this.iterationPosition + 1;
+		return (page < this.iterationCount) ? page : 0;
+	}
+	
+	private void iterate() {
+		this.iterationPosition= getNextIterationPosition();
+		updateInfoText();
+		iterated(this.iterationPosition);
+	}
+	
+	protected void iterated(final int iterationPosition) {
+		final Object selectedElement= ((IStructuredSelection) this.treeViewer.getSelection()).getFirstElement();
+		
+		this.treeViewer.refresh();
+		
+		if (selectedElement != null && this.treeViewer.getTree().getSelectionCount() == 0) {
+			// if tree path changed, try again
+			treeViewer.setSelection(new StructuredSelection(selectedElement), true);
+		}
 	}
 	
 	
 	@Override
 	protected Control createTitleControl(final Composite parent) {
-		this.filterText = createFilterText(parent);
+		this.filterText= createFilterText(parent);
 		this.filterText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		return this.filterText;
 	}
 	
 	protected IProgressMonitor getProgressMonitor() {
-		final IWorkbenchPart part = UIAccess.getActiveWorkbenchPart(true);
+		final IWorkbenchPart part= UIAccess.getActiveWorkbenchPart(true);
 		
 		IEditorPart editor;
 		if (part instanceof IEditorPart) {
-			editor = (IEditorPart) part;
+			editor= (IEditorPart) part;
 		}
 		else {
 			return null;

@@ -80,6 +80,10 @@ public class SharedMessages extends NLS {
 	public static String NavigateBack_1_tooltip;
 	public static String NavigateForward_1_tooltip;
 	
+	public static String Affordance_Press_message;
+	public static String Affordance_Click_message;
+	public static String DoToShow_message;
+	
 	
 	static {
 		NLS.initializeMessages(SharedMessages.class.getName(), SharedMessages.class);
