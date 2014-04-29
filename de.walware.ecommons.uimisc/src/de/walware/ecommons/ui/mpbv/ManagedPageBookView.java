@@ -74,7 +74,7 @@ public abstract class ManagedPageBookView<S extends ISession> extends PageBookVi
 		
 		@Override
 		public IWorkbenchPartSite getSite() {
-			return null;
+			return ManagedPageBookView.this.getSite();
 		}
 		
 		public S getSession() {
