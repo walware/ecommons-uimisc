@@ -88,6 +88,11 @@ public abstract class ConfigurationBlockPreferencePage<Block extends Configurati
 		
 		applyDialogFont(fBlockControl);
 		
+		final String explTitle= fBlock.getTitle();
+		if (explTitle != null) {
+			setTitle(explTitle);
+		}
+		
 		final String helpContext = getHelpContext();
 		if (helpContext != null) {
 			PlatformUI.getWorkbench().getHelpSystem().setHelp(fBlockControl, helpContext);
@@ -96,6 +101,7 @@ public abstract class ConfigurationBlockPreferencePage<Block extends Configurati
 		return fBlockControl;
 	}
 	
+	
 	/**
 	 * Overwrite to enable a help context
 	 * 
@@ -103,7 +109,7 @@ public abstract class ConfigurationBlockPreferencePage<Block extends Configurati
 	 */
 	protected String getHelpContext() {
 		return fBlock.getHelpContext();
- 	}
+	}
 	
 	
 	@Override

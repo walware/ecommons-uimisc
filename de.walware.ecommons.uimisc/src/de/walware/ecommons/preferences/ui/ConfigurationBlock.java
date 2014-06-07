@@ -102,6 +102,10 @@ public abstract class ConfigurationBlock {
 	public void dispose() {
 	}
 	
+	protected String getTitle() {
+		return null;
+	}
+	
 	/**
 	 * Returns the help context for the configuration block.
 	 * <p>
@@ -148,11 +152,6 @@ public abstract class ConfigurationBlock {
 		link.setText(text);
 		link.addSelectionListener(listener);
 		return link;
-	}
-	
-	protected GridData applyLinkDefaults(final GridData gd) {
-		gd.widthHint = 300;
-		return gd;
 	}
 	
 	protected void scheduleChangeNotification(final Set<String> groupIds, final boolean directly) {
