@@ -25,6 +25,7 @@ import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.statushandlers.StatusManager;
 
 import de.walware.ecommons.ui.SharedUIResources;
+import de.walware.ecommons.ui.components.StatusInfo;
 import de.walware.ecommons.ui.util.UIAccess;
 
 
@@ -38,7 +39,7 @@ public abstract class BrowserHandler extends AbstractHandler {
 		
 		Browser getBrowser();
 		
-		void showMessage(int severity, String message);
+		void showMessage(IStatus status);
 		
 	}
 	
@@ -184,7 +185,7 @@ public abstract class BrowserHandler extends AbstractHandler {
 				return browser;
 			}
 			@Override
-			public void showMessage(final int severity, final String message) {
+			public void showMessage(final IStatus status) {
 			}
 		};
 	}
@@ -199,7 +200,7 @@ public abstract class BrowserHandler extends AbstractHandler {
 	}
 	
 	protected void showMessage(final int severity, final String message) {
-		fBrowserProvider.showMessage(severity, message);
+		fBrowserProvider.showMessage(new StatusInfo(severity, message));
 	}
 	
 }

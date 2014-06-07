@@ -49,6 +49,7 @@ import de.walware.ecommons.ui.SharedUIResources;
 import de.walware.ecommons.ui.actions.HandlerCollection;
 import de.walware.ecommons.ui.actions.HandlerContributionItem;
 import de.walware.ecommons.ui.actions.SimpleContributionItem;
+import de.walware.ecommons.ui.util.StatusLineMessageManager;
 
 
 public abstract class ManagedPageBookView<S extends ISession> extends PageBookView {
@@ -204,6 +205,9 @@ public abstract class ManagedPageBookView<S extends ISession> extends PageBookVi
 	
 	private final HandlerCollection fViewHandlers = new HandlerCollection();
 	
+	private StatusLineMessageManager statusManager;
+	
+	
 	
 	public ManagedPageBookView() {
 	}
@@ -229,6 +233,7 @@ public abstract class ManagedPageBookView<S extends ISession> extends PageBookVi
 		super.createPartControl(parent);
 		
 		final IViewSite site = getViewSite();
+		this.statusManager= new StatusLineMessageManager(site.getActionBars().getStatusLineManager());
 		initActions(site, fViewHandlers);
 		initPageSwitcher();
 		contributeToActionBars(site, site.getActionBars(), fViewHandlers);
@@ -364,20 +369,26 @@ public abstract class ManagedPageBookView<S extends ISession> extends PageBookVi
 	}
 	
 	
+	protected boolean getPageControlByUser() {
+		return true;
+	}
+	
 	protected void initActions(final IServiceLocator serviceLocator, final HandlerCollection handlers) {
 		final IHandlerService handlerService = (IHandlerService) serviceLocator.getService(IHandlerService.class);
 		
-		final IHandler2 newPageHandler = createNewPageHandler();
-		if (newPageHandler != null) {
-			handlers.add(SharedUIResources.NEW_PAGE_COMMAND_ID, newPageHandler);
-			handlerService.activateHandler(SharedUIResources.NEW_PAGE_COMMAND_ID, newPageHandler);
+		if (getPageControlByUser()) {
+			final IHandler2 newPageHandler = createNewPageHandler();
+			if (newPageHandler != null) {
+				handlers.add(SharedUIResources.NEW_PAGE_COMMAND_ID, newPageHandler);
+				handlerService.activateHandler(SharedUIResources.NEW_PAGE_COMMAND_ID, newPageHandler);
+			}
+			final IHandler2 closePageHandler = new CloseCurrentPageHandler();
+			handlers.add(SharedUIResources.CLOSE_PAGE_COMMAND_ID, closePageHandler);
+			handlerService.activateHandler(SharedUIResources.CLOSE_PAGE_COMMAND_ID, closePageHandler);
+			final IHandler2 closeAllPagesHandler = new CloseAllPagesHandler();
+			handlers.add(SharedUIResources.CLOSE_ALL_PAGES_COMMAND_ID, closeAllPagesHandler);
+			handlerService.activateHandler(SharedUIResources.CLOSE_ALL_PAGES_COMMAND_ID, closeAllPagesHandler);
 		}
-		final IHandler2 closePageHandler = new CloseCurrentPageHandler();
-		handlers.add(SharedUIResources.CLOSE_PAGE_COMMAND_ID, closePageHandler);
-		handlerService.activateHandler(SharedUIResources.CLOSE_PAGE_COMMAND_ID, closePageHandler);
-		final IHandler2 closeAllPagesHandler = new CloseAllPagesHandler();
-		handlers.add(SharedUIResources.CLOSE_ALL_PAGES_COMMAND_ID, closeAllPagesHandler);
-		handlerService.activateHandler(SharedUIResources.CLOSE_ALL_PAGES_COMMAND_ID, closeAllPagesHandler);
 	}
 	
 	protected IHandler2 createNewPageHandler() {
@@ -521,6 +532,10 @@ public abstract class ManagedPageBookView<S extends ISession> extends PageBookVi
 	
 	protected void onPageShowing(final IPageBookViewPage page, final S session) {
 		updateState();
+	}
+	
+	protected StatusLineMessageManager getStatusManager() {
+		return this.statusManager;
 	}
 	
 	protected void updateState() {

@@ -25,7 +25,6 @@ import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
@@ -33,7 +32,6 @@ import org.eclipse.swt.browser.StatusTextEvent;
 import org.eclipse.swt.browser.StatusTextListener;
 import org.eclipse.swt.browser.TitleEvent;
 import org.eclipse.swt.browser.TitleListener;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IActionBars;
@@ -56,7 +54,6 @@ import de.walware.ecommons.ui.mpbv.BrowserHandler.IBrowserProvider;
 import de.walware.ecommons.ui.mpbv.BrowserHandler.NavigateBackHandler;
 import de.walware.ecommons.ui.mpbv.BrowserHandler.NavigateForwardHandler;
 import de.walware.ecommons.ui.mpbv.BrowserHandler.OpenExternalHandler;
-import de.walware.ecommons.ui.util.UIAccess;
 
 
 public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
@@ -191,7 +188,6 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 		
 		@Override
 		public void changed(final StatusTextEvent event) {
-			setStatus(event.text);
 			updateTitle();
 		}
 		
@@ -207,13 +203,9 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 	private IProgressMonitor fCurrentProgress;
 	private int fCurrentProgressWorked;
 	
-	private int fStatusCounter;
-	private Image fStatusImage;
-	private String fStatusMessage;
-	
 	private BookmarkCollection fBookmarks;
 	
-	private final IBrowserProvider fBrowserInterface = new IBrowserProvider() {
+	private final IBrowserProvider fBrowserInterface= new IBrowserProvider() {
 		@Override
 		public Browser getBrowser() {
 			if (fCurrentBrowserPage != null) {
@@ -222,8 +214,8 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 			return null;
 		}
 		@Override
-		public void showMessage(final int severity, final String message) {
-			setTemporaryStatus(severity, message);
+		public void showMessage(final IStatus status) {
+			getStatusManager().setMessage(status, 10);
 		}
 	};
 	
@@ -395,13 +387,14 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 			browser.removeTitleListener(fBrowserListener);
 			browser.removeStatusTextListener(fBrowserListener);
 			
+			fCurrentBrowserPage.setStatusManager(null);
 			clearProgress();
 		}
 		else {
 			browserPage = null;
 		}
 		fCurrentBrowserPage = null;
-		setStatus(""); //$NON-NLS-1$
+		getStatusManager().clearAll();
 		
 		super.onPageHiding(page, session);
 	}
@@ -416,7 +409,7 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 			browser.addStatusTextListener(fBrowserListener);
 			
 			initProgress(fCurrentBrowserPage.getCurrentProgressTotal(), fCurrentBrowserPage.getCurrentProgressWorked());
-			setStatus(fCurrentBrowserPage.getCurrentStatusText());
+			fCurrentBrowserPage.setStatusManager(getStatusManager());
 		}
 		
 		super.onPageShowing(page, session);
@@ -425,72 +418,6 @@ public class PageBookBrowserView extends ManagedPageBookView<BrowserSession> {
 	protected void updateBrowserState() {
 		for (final IHandler2 handler : fBrowserHandlers) {
 			handler.setEnabled(null);
-		}
-	}
-	
-	private void setStatus(final String text) {
-		fStatusCounter++;
-		fStatusImage = null;
-		fStatusMessage = (text != null && text.length() > 0) ? text : null;
-		
-		final IStatusLineManager statusLine = getViewSite().getActionBars().getStatusLineManager();
-		statusLine.setErrorMessage(null);
-		statusLine.setMessage(fStatusImage, fStatusMessage);
-	}
-	
-	void setTemporaryStatus(final int severity, String message) {
-		final IStatusLineManager statusLine = getViewSite().getActionBars().getStatusLineManager();
-		if (statusLine == null) {
-			return;
-		}
-		
-		boolean error = false;
-		Image image;
-		if (message != null && message.length() > 0) {
-			switch (severity) {
-			case IStatus.INFO:
-				image = JFaceResources.getImage(Dialog.DLG_IMG_MESSAGE_INFO);
-				break;
-			case IStatus.WARNING:
-				image = JFaceResources.getImage(Dialog.DLG_IMG_MESSAGE_WARNING);
-				break;
-			case IStatus.ERROR:
-				image = JFaceResources.getImage(Dialog.DLG_IMG_MESSAGE_ERROR);
-				error = true;
-				break;
-			default:
-				image = null;
-			}
-		}
-		else {
-			image = null;
-			message = null;
-		}
-		
-		final int id = ++fStatusCounter;
-		if (error) {
-			statusLine.setErrorMessage(image, message);
-			Display.getCurrent().timerExec(5000, new Runnable() {
-				@Override
-				public void run() {
-					if (fStatusCounter == id && UIAccess.isOkToUse(getPageBook())) {
-						statusLine.setErrorMessage(null);
-						statusLine.setMessage(fStatusImage, fStatusMessage);
-					}
-				}
-			});
-		}
-		else {
-			statusLine.setMessage(image, message);
-			Display.getCurrent().timerExec(5000, new Runnable() {
-				@Override
-				public void run() {
-					if (fStatusCounter == id &&  UIAccess.isOkToUse(getPageBook())) {
-						statusLine.setErrorMessage(null);
-						statusLine.setMessage(fStatusImage, fStatusMessage);
-					}
-				}
-			});
 		}
 	}
 	

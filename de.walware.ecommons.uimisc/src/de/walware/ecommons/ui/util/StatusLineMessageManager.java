@@ -165,6 +165,12 @@ public class StatusLineMessageManager {
 		setMessage(status, 30);
 	}
 	
+	/**
+	 * Sets the specified message to the status line.
+	 * 
+	 * @param status the status to show
+	 * @param timeout timeout for the status in seconds
+	 */
 	public void setMessage(final IStatus status, final int timeout) {
 		getHandler(status).setMessage(status, timeout);
 	}

@@ -59,30 +59,15 @@ import de.walware.ecommons.ui.actions.HandlerCollection;
 import de.walware.ecommons.ui.actions.HandlerContributionItem;
 import de.walware.ecommons.ui.actions.SearchContributionItem;
 import de.walware.ecommons.ui.actions.SimpleContributionItem;
+import de.walware.ecommons.ui.components.StatusInfo;
+import de.walware.ecommons.ui.util.BrowserUtil;
 import de.walware.ecommons.ui.util.LayoutUtil;
+import de.walware.ecommons.ui.util.StatusLineMessageManager;
 import de.walware.ecommons.ui.util.UIAccess;
 
 
 public class PageBookBrowserPage extends Page implements ProgressListener,
 		LocationListener, TitleListener, StatusTextListener, OpenWindowListener, CloseWindowListener {
-	
-	
-	protected static void appendEscapedJavascriptString(final StringBuilder sb, final String s) {
-		for (int i = 0; i < s.length(); i++) {
-			final char c = s.charAt(i);
-			switch (c) {
-			case '\\':
-			case '\"':
-			case '\'':
-				sb.append('\\');
-				sb.append(c);
-				continue;
-			default:
-				sb.append(c);
-				continue;
-			}
-		}
-	}
 	
 	
 	protected class SearchBar implements DisposeListener {
@@ -101,15 +86,15 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 		
 		
 		private void create(final Composite parent) {
-			this.toolBarManager = new ToolBarManager(SWT.FLAT);
-			this.toolBar = this.toolBarManager.createControl(parent);
+			this.toolBarManager= new ToolBarManager(SWT.FLAT);
+			this.toolBar= this.toolBarManager.createControl(parent);
 			this.toolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			this.toolBar.addDisposeListener(this);
 			
 			this.toolBarManager.add(new ContributionItem() {
 				@Override
 				public void fill(final ToolBar parent, final int index) {
-					final ToolItem item = new ToolItem(parent, SWT.PUSH);
+					final ToolItem item= new ToolItem(parent, SWT.PUSH);
 					item.setImage(SharedUIResources.getImages().get(SharedUIResources.LOCTOOL_CLOSETRAY_IMAGE_ID));
 					item.setHotImage(SharedUIResources.getImages().get(SharedUIResources.LOCTOOL_CLOSETRAY_H_IMAGE_ID));
 					item.setToolTipText("Close Search");
@@ -124,7 +109,7 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 			
 			this.toolBarManager.add(new Separator());
 			
-			this.searchTextItem = new SearchContributionItem("search.text", SWT.NONE) { //$NON-NLS-1$
+			this.searchTextItem= new SearchContributionItem("search.text", SWT.NONE) { //$NON-NLS-1$
 				@Override
 				public void fill(final ToolBar parent, final int index) {
 					super.fill(parent, index);
@@ -133,7 +118,7 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 						public void keyPressed(final KeyEvent e) {
 							if (e.keyCode == SWT.ESC && e.doit) {
 								hide();
-								e.doit = false;
+								e.doit= false;
 								return;
 							}
 						}
@@ -148,8 +133,8 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 			this.searchTextItem.setSizeControl(parent);
 			this.toolBarManager.add(this.searchTextItem);
 			
-			final ImageRegistry ecommonsImages = SharedUIResources.getImages();
-			final HandlerCollection pageHandlers = PageBookBrowserPage.this.pageHandlers;
+			final ImageRegistry ecommonsImages= SharedUIResources.getImages();
+			final HandlerCollection pageHandlers= PageBookBrowserPage.this.pageHandlers;
 			this.toolBarManager.add(new HandlerContributionItem(new CommandContributionItemParameter(
 					getSite(), "search.next", SharedUIResources.FIND_NEXT_COMMAND_ID, null, //$NON-NLS-1$
 					ecommonsImages.getDescriptor(SharedUIResources.LOCTOOL_DOWN_IMAGE_ID), null, ecommonsImages.getDescriptor(SharedUIResources.LOCTOOL_DOWN_H_IMAGE_ID),
@@ -161,12 +146,12 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 			
 			this.toolBarManager.add(new Separator());
 			
-			final SimpleContributionItem caseItem = new SimpleContributionItem(new CommandContributionItemParameter(null, null, null, null,
+			final SimpleContributionItem caseItem= new SimpleContributionItem(new CommandContributionItemParameter(null, null, null, null,
 					ecommonsImages.getDescriptor(SharedUIResources.LOCTOOL_CASESENSITIVE_IMAGE_ID), null, null,
 					null, null, "Case Sensitive", SimpleContributionItem.STYLE_CHECK, null, false)) {
 				@Override
 				protected void execute() throws ExecutionException {
-					SearchBar.this.searchCaseSensitive = !SearchBar.this.searchCaseSensitive;
+					SearchBar.this.searchCaseSensitive= !SearchBar.this.searchCaseSensitive;
 					setChecked(SearchBar.this.searchCaseSensitive);
 				}
 			};
@@ -180,24 +165,24 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 		public void widgetDisposed(final DisposeEvent e) {
 			if (this.toolBar != null) {
 				this.toolBarManager.dispose();
-				this.toolBarManager = null;
+				this.toolBarManager= null;
 				
-				this.toolBar = null;
+				this.toolBar= null;
 			}
 		}
 		
 		
 		public void show() {
-			final GridData gd = (GridData) this.toolBar.getLayoutData();
-			gd.exclude = false;
+			final GridData gd= (GridData) this.toolBar.getLayoutData();
+			gd.exclude= false;
 			this.toolBar.getParent().layout(true, true);
 			this.searchTextItem.getSearchText().setFocus();
 		}
 		
 		public void hide() {
 			setFocusToBrowser();
-			final GridData gd = (GridData) this.toolBar.getLayoutData();
-			gd.exclude = true;
+			final GridData gd= (GridData) this.toolBar.getLayoutData();
+			gd.exclude= true;
 			this.toolBar.getParent().layout(new Control[] { this.toolBar });
 		}
 		
@@ -212,7 +197,7 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 	}
 	
 	
-	private final PageBookBrowserView view;
+	private final ManagedPageBookView view;
 	
 	private final BrowserSession session;
 	
@@ -222,23 +207,26 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 	
 	private SearchBar searchBar;
 	
-	private final HandlerCollection pageHandlers = new HandlerCollection();
+	private final HandlerCollection pageHandlers= new HandlerCollection();
 	
-	private String browserStatusText;
+	private IStatus browserStatus;
 	
 	private int progressTotal;
 	private int progressWorked;
 	
+	private StatusLineMessageManager statusManager;
 	
-	public PageBookBrowserPage(final PageBookBrowserView view, final BrowserSession session) {
-		this.view = view;
-		this.session = session;
+	
+	public PageBookBrowserPage(final ManagedPageBookView view,
+			final BrowserSession session) {
+		this.view= view;
+		this.session= session;
 	}
 	
 	
 	@Override
 	public void createControl(final Composite parent) {
-		this.composite = new Composite(parent, SWT.NONE) {
+		this.composite= new Composite(parent, SWT.NONE) {
 			@Override
 			public boolean setFocus() {
 				return setDefaultFocus();
@@ -246,12 +234,12 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 		};
 		this.composite.setLayout(LayoutUtil.applySashDefaults(new GridLayout(), 1));
 		
-		{	final Control control = createAddressBar(this.composite);
+		{	final Control control= createAddressBar(this.composite);
 			if (control != null) {
 				control.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			}
 		}
-		final Control browser = createBrowser(this.composite);
+		final Control browser= createBrowser(this.composite);
 		browser.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
 		initActions(getSite(), this.pageHandlers);
@@ -263,7 +251,7 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 	}
 	
 	private Control createBrowser(final Composite parent) {
-		this.browser = new Browser(parent, SWT.NONE);
+		this.browser= new Browser(parent, SWT.NONE);
 		
 		this.browser.addProgressListener(this);
 		this.browser.addLocationListener(this);
@@ -279,19 +267,26 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 		return null;
 	}
 	
+	void setStatusManager(final StatusLineMessageManager statusManager) {
+		this.statusManager= statusManager;
+		if (this.statusManager != null) {
+			this.statusManager.setSelectionMessage(this.browserStatus);
+		}
+	}
+	
 	protected void initActions(final IServiceLocator serviceLocator, final HandlerCollection handlers) {
-		final IHandlerService handlerService = (IHandlerService) serviceLocator.getService(IHandlerService.class);
+		final IHandlerService handlerService= (IHandlerService) serviceLocator.getService(IHandlerService.class);
 		
-		final String browserType = this.browser.getBrowserType();
+		final String browserType= this.browser.getBrowserType();
 		if (browserType.equals("mozilla") || browserType.equals("webkit")) { //$NON-NLS-1$ //$NON-NLS-2$
-			{	final IHandler2 handler = new AbstractHandler() {
+			{	final IHandler2 handler= new AbstractHandler() {
 					@Override
 					public Object execute(final ExecutionEvent event) throws ExecutionException {
 						if (!UIAccess.isOkToUse(PageBookBrowserPage.this.browser)) {
 							return null;
 						}
 						if (PageBookBrowserPage.this.searchBar == null) {
-							PageBookBrowserPage.this.searchBar = new SearchBar(PageBookBrowserPage.this.composite);
+							PageBookBrowserPage.this.searchBar= new SearchBar(PageBookBrowserPage.this.composite);
 						}
 						PageBookBrowserPage.this.searchBar.show();
 						return null;
@@ -300,7 +295,7 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 				handlers.add(IWorkbenchCommandConstants.EDIT_FIND_AND_REPLACE, handler);
 				handlerService.activateHandler(IWorkbenchCommandConstants.EDIT_FIND_AND_REPLACE, handler);
 			}
-			{	final IHandler2 handler = new AbstractHandler() {
+			{	final IHandler2 handler= new AbstractHandler() {
 					@Override
 					public Object execute(final ExecutionEvent arg0) {
 						PageBookBrowserPage.this.search(true);
@@ -310,7 +305,7 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 				handlers.add(SharedUIResources.FIND_NEXT_COMMAND_ID, handler);
 				handlerService.activateHandler("org.eclipse.ui.navigate.next", handler); //$NON-NLS-1$
 			}
-			{	final IHandler2 handler = new AbstractHandler() {
+			{	final IHandler2 handler= new AbstractHandler() {
 					@Override
 					public Object execute(final ExecutionEvent arg0) {
 						PageBookBrowserPage.this.search(false);
@@ -327,43 +322,27 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 		if (this.searchBar == null || !UIAccess.isOkToUse(this.browser)) {
 			return;
 		}
-		final String text = this.searchBar.getText();
+		final String text= this.searchBar.getText();
 		if (text == null || text.isEmpty()) {
 			return;
 		}
-		final boolean caseSensitive = this.searchBar.isCaseSensitiveEnabled();
+		final boolean caseSensitive= this.searchBar.isCaseSensitiveEnabled();
 		
 		final String message;
-		if (doSearch(text, forward, caseSensitive, false)) {
-			message = null;
+		if (BrowserUtil.searchText(this.browser, text, forward, caseSensitive, false)) {
+			message= null;
 		}
-		else if (doSearch(text, forward, caseSensitive, true)) {
-			message = forward ? "Search continued from top" : "Search continued from bottom";
+		else if (BrowserUtil.searchText(this.browser, text, forward, caseSensitive, true)) {
+			message= forward ? "Search continued from top" : "Search continued from bottom";
 		}
 		else {
 			Display.getCurrent().beep();
-			message = "Search text not found";
+			message= "Search text not found";
 		}
 		
-		if (this.view.getCurrentBrowserPage() == this) {
-			this.view.setTemporaryStatus(IStatus.INFO, message);
+		if (this.statusManager != null) {
+			this.statusManager.setMessage(new StatusInfo(IStatus.INFO, message));
 		}
-	}
-	
-	private boolean doSearch(final String text, final boolean forward, final boolean caseSensitive, final boolean wrap) {
-		final StringBuilder script = new StringBuilder(50);
-		script.append("return window.find(\""); //$NON-NLS-1$
-		appendEscapedJavascriptString(script, text);
-		script.append("\","); //$NON-NLS-1$
-		script.append(caseSensitive);
-		script.append(',');
-		script.append(!forward); // upward
-		script.append(',');
-		script.append(wrap); // wrap
-		script.append(",false,true)"); // wholeWord, inFrames //$NON-NLS-1$
-						// inFrames fixes wrap in some situations
-		final Object found = this.browser.evaluate(script.toString());
-		return Boolean.TRUE.equals(found);
 	}
 	
 	
@@ -403,26 +382,22 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 			return;
 		}
 		if (url == null || url.isEmpty()) {
-			url = "about:blank"; //$NON-NLS-1$
+			url= "about:blank"; //$NON-NLS-1$
 		}
 		if (url.startsWith("html:///")) { //$NON-NLS-1$
-			final int id = this.session.putStatic(url.substring(8));
-			url = "estatic:///" + id; //$NON-NLS-1$
+			final int id= this.session.putStatic(url.substring(8));
+			url= "estatic:///" + id; //$NON-NLS-1$
 		}
 		this.browser.setUrl(url);
 	}
 	
 	public String getCurrentTitle() {
-		final String title = this.session.fTitle;
+		final String title= this.session.fTitle;
 		return (title != null) ? title : ""; //$NON-NLS-1$
 	}
 	
 	public String getCurrentUrl() {
 		return this.session.fUrl;
-	}
-	
-	public String getCurrentStatusText() {
-		return this.browserStatusText;
 	}
 	
 	int getCurrentProgressTotal() {
@@ -437,24 +412,24 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 	@Override
 	public void changed(final ProgressEvent event) {
 		if (event.total == 0) {
-			this.progressTotal = 0;
-			this.progressWorked = 0;
+			this.progressTotal= 0;
+			this.progressWorked= 0;
 		}
 		else {
-			this.progressTotal = event.total;
-			this.progressWorked = event.current;
+			this.progressTotal= event.total;
+			this.progressWorked= event.current;
 		}
 	}
 	
 	@Override
 	public void changing(final LocationEvent event) {
 		if (event.top) {
-			this.session.fImageDescriptor = null;
+			this.session.fImageDescriptor= null;
 		}
 		if (event.location.startsWith("estatic:///")) { //$NON-NLS-1$
-			event.doit = false;
+			event.doit= false;
 			try {
-				final String html = this.session.getStatic(Integer.parseInt(event.location.substring(11)));
+				final String html= this.session.getStatic(Integer.parseInt(event.location.substring(11)));
 				if (html != null) {
 					this.browser.setText(html);
 				}
@@ -465,12 +440,12 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 		}
 		if (event.location.startsWith("about:")) { //$NON-NLS-1$
 			if (!event.location.equals("about:blank")) { //$NON-NLS-1$
-				event.doit = false;
+				event.doit= false;
 			}
 			return;
 		}
 		if (event.location.startsWith("res:")) { //$NON-NLS-1$
-			event.doit = false;
+			event.doit= false;
 			return;
 		}
 	}
@@ -480,49 +455,53 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 		if (!event.top) {
 			return;
 		}
-		String location = event.location;
+		String location= event.location;
 		if ("about:blank".equals(location)) { //$NON-NLS-1$
-			location = ""; //$NON-NLS-1$
+			location= ""; //$NON-NLS-1$
 		}
-		this.session.fUrl = location;
+		this.session.fUrl= location;
 	}
 	
 	@Override
 	public void completed(final ProgressEvent event) {
-		this.progressTotal = 0;
-		this.progressWorked = 0;
+		this.progressTotal= 0;
+		this.progressWorked= 0;
 	}
 	
 	@Override
 	public void changed(final TitleEvent event) {
-		String title = event.title;
+		String title= event.title;
 		if (title == null) {
-			title = ""; //$NON-NLS-1$
+			title= ""; //$NON-NLS-1$
 		}
 		else if (title.startsWith("http://")) { //$NON-NLS-1$
-			final int idx = title.lastIndexOf('/');
+			final int idx= title.lastIndexOf('/');
 			if (idx >= 0) {
-				title = title.substring(idx+1);
+				title= title.substring(idx+1);
 			}
 		}
-		this.session.fTitle = title;
+		this.session.fTitle= title;
 	}
 	
 	@Override
 	public void changed(final StatusTextEvent event) {
-		this.browserStatusText = event.text;
+		this.browserStatus= (event.text != null && !event.text.isEmpty()) ?
+				new StatusInfo(IStatus.OK, event.text) : null;
+		if (this.statusManager != null) {
+			this.statusManager.setSelectionMessage(this.browserStatus);
+		}
 	}
 	
 	protected void setIcon(final ImageDescriptor imageDescriptor) {
-		this.session.fImageDescriptor = imageDescriptor;
+		this.session.fImageDescriptor= imageDescriptor;
 	}
 	
 	
 	@Override
 	public void open(final WindowEvent event) {
-		final PageBookBrowserPage page = (PageBookBrowserPage) this.view.newPage(new BrowserSession(), true);
+		final PageBookBrowserPage page= (PageBookBrowserPage) this.view.newPage(new BrowserSession(), true);
 		if (page != null) {
-			event.browser = page.browser;
+			event.browser= page.browser;
 		}
 	}
 	
@@ -531,28 +510,8 @@ public class PageBookBrowserPage extends Page implements ProgressListener,
 		this.view.closePage(this.session);
 	}
 	
-	public String getSelection() {
-		final Object value = getBrowser().evaluate(
-				"if (window.getSelection) {" + //$NON-NLS-1$
-					"var sel = window.getSelection();" + //$NON-NLS-1$
-					"if (sel.getRangeAt) {" + //$NON-NLS-1$
-						"return sel.getRangeAt(0).toString();" + //$NON-NLS-1$
-					"}" + //$NON-NLS-1$
-					"return sel;" + //$NON-NLS-1$
-				"}" + //$NON-NLS-1$
-				"else if (document.getSelection) {" + //$NON-NLS-1$
-					"return document.getSelection();" + //$NON-NLS-1$
-				"}" + //$NON-NLS-1$
-				"else if (document.selection) {" + //$NON-NLS-1$
-					"return document.selection.createRange().text;" + //$NON-NLS-1$
-				"}" + //$NON-NLS-1$
-				"else {" + //$NON-NLS-1$
-					"return '';" + //$NON-NLS-1$
-				"}"); //$NON-NLS-1$
-		if (value instanceof String) {
-			return (String) value;
-		}
-		return null;
+	public String getSelectedText() {
+		return BrowserUtil.getSelectedText(this.browser);
 	}
 	
 }
