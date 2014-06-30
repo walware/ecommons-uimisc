@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Vendor: WalWare.de
 Bundle-Name: Integrated NatTable Core
 Bundle-SymbolicName: de.walware.ecommons.inatable.core
-Bundle-Version: 1.0.1.qualifier
+Bundle-Version: 1.0.1.b201406211200E43
 Bundle-Activator: org.eclipse.nebula.widgets.nattable.internal.NatTablePlugin
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
