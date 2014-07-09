@@ -41,6 +41,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 
+import de.walware.ecommons.collections.ImCollections;
+
 
 public class LayoutUtil {
 	
@@ -204,6 +206,10 @@ public class LayoutUtil {
 	}
 	
 	public static int hintWidth(final Combo combo, final String[] items) {
+		return hintWidth(combo, ImCollections.newList(items));
+	}
+	
+	public static int hintWidth(final Combo combo, final Collection<String> items) {
 		int max = 0;
 		for (final String s : items) {
 			max = Math.max(max, s.length());
