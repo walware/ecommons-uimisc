@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.Control;
 
 import de.walware.ecommons.ui.SharedMessages;
 import de.walware.ecommons.ui.util.LayoutUtil;
+import de.walware.ecommons.ui.util.ViewerUtil;
 
 
 /**
@@ -698,7 +699,7 @@ public class ButtonGroup<ItemType> extends Composite {
 //			Display.getCurrent().asyncExec(new Runnable() {
 //				public void run() {
 					if (fTreeMode) {
-						((TreeViewer) fViewer).expandToLevel(elementToSelect, 0);
+						ViewerUtil.expandToLevel((TreeViewer) fViewer, elementToSelect, 0);
 					}
 					fViewer.setSelection(new StructuredSelection(elementToSelect), true);
 //				}

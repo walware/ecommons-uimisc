@@ -14,6 +14,7 @@ package de.walware.ecommons.ui.util;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.util.Policy;
+import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.CellNavigationStrategy;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLayoutData;
@@ -466,6 +467,19 @@ public class ViewerUtil {
 				}
 			}
 		});
+	}
+	
+	/**
+	 * {@link AbstractTreeViewer#expandToLevel(Object, int)}
+	 * 
+	 * Workaround for E bug #54116
+	 */
+	public static void expandToLevel(final AbstractTreeViewer viewer, final Object element, final int level) {
+		viewer.expandToLevel(element, level);
+		for (TreeItem item= (TreeItem) viewer.testFindItem(element); item != null;
+				item= item.getParentItem()) {
+			item.setExpanded(true);
+		}
 	}
 	
 	
