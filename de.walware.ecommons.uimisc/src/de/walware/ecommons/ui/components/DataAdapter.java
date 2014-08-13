@@ -200,10 +200,18 @@ public class DataAdapter<ItemType> {
 		return null;
 	}
 	
+	protected IObservableValue getDefaultFor(final ItemType item) {
+		return fDefault;
+	}
+	
 	public void setDefault(final ItemType item) {
+		final IObservableValue observable= getDefaultFor(item);
+		if (observable == null) {
+			return;
+		}
 		fIsDirty = true;
-		if (fDefault != null && item != null) {
-			fDefault.setValue(getDefaultValue(item));
+		if (item != null) {
+			observable.setValue(getDefaultValue(item));
 		}
 	}
 	
@@ -217,13 +225,17 @@ public class DataAdapter<ItemType> {
 	}
 	
 	protected void changeDefault(final ItemType oldItem, final ItemType newItem) {
-		if (oldItem == null || fDefault == null) {
+		if (oldItem == null) {
+			return;
+		}
+		final IObservableValue observable= getDefaultFor(oldItem);
+		if (observable == null) {
 			return;
 		}
 		final Object oldValue = getDefaultValue(oldItem);
 		final Object newValue = getDefaultValue(newItem);
-		if (oldValue != newValue && oldValue.equals(fDefault.getValue())) {
-			fDefault.setValue(newValue);
+		if (oldValue != newValue && oldValue.equals(observable.getValue())) {
+			observable.setValue(newValue);
 		}
 	}
 	
@@ -245,14 +257,21 @@ public class DataAdapter<ItemType> {
 	}
 	
 	protected void deleteDefault(final List<? extends Object> elements) {
-		if (elements.isEmpty() || fDefault == null) {
+		if (elements.isEmpty()) {
 			return;
 		}
-		final Object defaultValue = fDefault.getValue();
 		for (final Object element : elements) {
 			final ItemType item = getModelItem(element);
-			if (item != null && getDefaultValue(item).equals(defaultValue)) {
-				fDefault.setValue(null);
+			if (item == null) {
+				continue;
+			}
+			final IObservableValue observable= getDefaultFor(item);
+			if (observable == null) {
+				continue;
+			}
+			final Object itemValue= getDefaultValue(item);
+			if (itemValue != null && itemValue.equals(observable.getValue())) {
+				observable.setValue(null);
 				return;
 			}
 		}
