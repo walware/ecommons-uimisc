@@ -50,8 +50,7 @@ import de.walware.ecommons.ui.util.LayoutUtil;
 /**
  * Base for project property and preference pages
  */
-public abstract class PropertyAndPreferencePage<Block extends ConfigurationBlock>
-		extends ConfigurationBlockPreferencePage<Block>
+public abstract class PropertyAndPreferencePage extends ConfigurationBlockPreferencePage
 		implements IWorkbenchPreferencePage, IWorkbenchPropertyPage {
 	
 	
@@ -78,7 +77,7 @@ public abstract class PropertyAndPreferencePage<Block extends ConfigurationBlock
 	protected abstract String getPropertyPageID();
 	
 	@Override
-	protected abstract Block createConfigurationBlock() throws CoreException;
+	protected abstract ConfigurationBlock createConfigurationBlock() throws CoreException;
 	
 	protected abstract boolean hasProjectSpecificSettings(IProject project);
 	

@@ -39,11 +39,11 @@ import de.walware.ecommons.ui.util.LayoutUtil;
  * Abstract preference page which is used to wrap a
  * Configuration Block
  */
-public abstract class ConfigurationBlockPreferencePage<Block extends ConfigurationBlock> extends PreferencePage
+public abstract class ConfigurationBlockPreferencePage extends PreferencePage
 		implements IWorkbenchPreferencePage {
 	
 	
-	protected Block fBlock;
+	protected ConfigurationBlock fBlock;
 	protected Composite fBlockControl;
 	protected IStatus fBlockStatus;
 	
@@ -56,7 +56,7 @@ public abstract class ConfigurationBlockPreferencePage<Block extends Configurati
 	}
 	
 	
-	protected abstract Block createConfigurationBlock() throws CoreException;
+	protected abstract ConfigurationBlock createConfigurationBlock() throws CoreException;
 	
 	@Override
 	public void init(final IWorkbench workbench) {
