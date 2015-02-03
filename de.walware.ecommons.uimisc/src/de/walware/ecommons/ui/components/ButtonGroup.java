@@ -12,6 +12,7 @@
 package de.walware.ecommons.ui.components;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +29,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -40,8 +42,11 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import de.walware.ecommons.collections.ImCollections;
+import de.walware.ecommons.collections.ImList;
 import de.walware.ecommons.ui.SharedMessages;
 import de.walware.ecommons.ui.util.LayoutUtil;
+import de.walware.ecommons.ui.util.UIAccess;
 import de.walware.ecommons.ui.util.ViewerUtil;
 
 
@@ -627,7 +632,7 @@ public class ButtonGroup<ItemType> extends Composite {
 		}
 		element = fDataAdapter.change(((command & ADD_ANY) == 0) ? orgItem : null, editItem, 
 				parent, fDataAdapter.getContainerFor(element) );
-		refresh0(element);
+		refresh0(element, null);
 		if (/*fCellMode &&*/ fViewer instanceof ColumnViewer) {
 			((ColumnViewer) fViewer).editElement(element, 0);
 		}
@@ -641,7 +646,7 @@ public class ButtonGroup<ItemType> extends Composite {
 			final Object element = fDataAdapter.change(oldItem, newItem, null,
 					fDataAdapter.getContainerFor(fDataAdapter.getViewerElement(
 							(oldItem != null) ? oldItem : newItem, null )));
-			refresh0(element);
+			refresh0(element, null);
 		}
 	}
 	
@@ -662,24 +667,85 @@ public class ButtonGroup<ItemType> extends Composite {
 	}
 	
 	private void delete0(final List<? extends Object> elements) {
+		if (elements.isEmpty()) {
+			return;
+		}
+		
+		final Object elementToSelect= getBestNeighbour(elements);
+		
 		fDataAdapter.delete(elements);
-		refresh0(null);
+		refresh0(null, elementToSelect);
+	}
+	
+	private Object getBestNeighbour(final List<? extends Object> elements) {
+		final Object parent= fDataAdapter.getParent(elements.get(elements.size() - 1));
+		final ImList<ItemType> neighbours;
+		{	Object[] array= null;
+			if (parent != null) {
+				array= fDataAdapter.getChildren(parent);
+			}
+			if (array == null) {
+				final Object container= fDataAdapter.getContainerFor(elements.get(elements.size() - 1));
+				if (container instanceof Collection) {
+					array= ((Collection<?>) container).toArray();
+				}
+			}
+			if (array == null) {
+				return null;
+			}
+			
+			{	final ViewerComparator comparator= fViewer.getComparator();
+				if (comparator != null) {
+					comparator.sort(fViewer, array);
+				}
+			}
+			
+			neighbours= ImCollections.newList((ItemType[]) array);
+		}
+		
+		{	int idx= neighbours.indexOf(elements.get(elements.size() - 1));
+			if (idx >= 0) {
+				int i= idx + 1;
+				// forward
+				for (; i < neighbours.size(); i++) {
+					if (!elements.contains(neighbours.get(i))) {
+						break;
+					}
+				}
+				if (i == neighbours.size()) {
+					// backward
+					i= idx - 1;
+					for (; i >= 0; i--) {
+						if (!elements.contains(neighbours.get(i))) {
+							break;
+						}
+					}
+				}
+				idx= i;
+			}
+			if (idx >= 0) {
+				return neighbours.get(idx);
+			}
+			else {
+				return parent;
+			}
+		}
 	}
 	
 	private void setDefault0(final Object element) {
 		final ItemType item = fDataAdapter.getModelItem(element);
 		fDataAdapter.setDefault(item);
-		refresh0(null);
+		refresh0(null, null);
 	}
 	
 	private void move0(final Object element, final int direction) {
 		fDataAdapter.move(element, direction);
-		refresh0(element);
+		refresh0(element, null);
 	}
 	
 	private void import0() {
 		((IImportExportActions<?>) fActions).importItems();
-		refresh0(null);
+		refresh0(null, null);
 	}
 	
 	private void export0(final List<? extends Object> items) {
@@ -690,23 +756,35 @@ public class ButtonGroup<ItemType> extends Composite {
 	}
 	
 	public void refresh() {
-		refresh0(null);
+		refresh0(null, null);
 	}
 	
-	private void refresh0(final Object elementToSelect) {
+	private void refresh0(final Object elementToSelect, final Object elementToSelect2) {
 		refresh1();
-		if (elementToSelect != null) {
+		if (elementToSelect != null || elementToSelect2 != null) {
 //			Display.getCurrent().asyncExec(new Runnable() {
 //				public void run() {
-					if (fTreeMode) {
-						ViewerUtil.expandToLevel((TreeViewer) fViewer, elementToSelect, 0);
+					if (UIAccess.isOkToUse(fViewer)) {
+						if (elementToSelect != null) {
+							select(elementToSelect);
+						}
+						if (elementToSelect2 != null && fViewer.getSelection().isEmpty()) {
+							select(elementToSelect2);
+						}
 					}
-					fViewer.setSelection(new StructuredSelection(elementToSelect), true);
 //				}
 //			});
 		}
 		updateState();
 	}
+	
+	private void select(final Object element) {
+		if (fTreeMode) {
+			ViewerUtil.expandToLevel((TreeViewer) fViewer, element, 0);
+		}
+		fViewer.setSelection(new StructuredSelection(element), true);
+	}
+	
 	
 	protected void refresh1() {
 		fViewer.refresh();
