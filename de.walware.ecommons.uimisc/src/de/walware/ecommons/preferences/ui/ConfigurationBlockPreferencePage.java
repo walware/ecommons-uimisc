@@ -137,6 +137,14 @@ public abstract class ConfigurationBlockPreferencePage extends PreferencePage
 		super.performDefaults();
 	}
 	
+	@Override
+	public boolean performCancel() {
+		if (fBlock != null) {
+			fBlock.performCancel();
+		}
+		return true;
+	}
+	
 	/**
 	 * Returns a new status change listener
 	 * @return The new listener
