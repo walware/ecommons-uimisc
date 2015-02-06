@@ -323,12 +323,4 @@ public abstract class PropertyAndPreferencePage<Block extends ConfigurationBlock
 		super.performDefaults();
 	}
 	
-	@Override
-	public boolean performCancel() {
-		if (fBlock != null) {
-			fBlock.performCancel();
-		}
-		return super.performCancel();
-	}
-	
 }
