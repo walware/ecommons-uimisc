@@ -370,15 +370,21 @@ public abstract class ManagedConfigurationBlock extends ConfigurationBlock
 	private Composite fPageComposite;
 	
 	
+	protected ManagedConfigurationBlock(final IProject project) {
+		this(project, null, null);
+	}
+	
 	protected ManagedConfigurationBlock(final IProject project, final IStatusChangeListener statusListener) {
-		super();
+		this(project, null, statusListener);
+	}
+	
+	protected ManagedConfigurationBlock(final IProject project, final String title,
+			final IStatusChangeListener statusListener) {
+		super(title);
 		fProject = project;
 		fStatusListener = statusListener;
 	}
 	
-	protected ManagedConfigurationBlock(final IProject project) {
-		this(project, null);
-	}
 	
 	protected void setStatusListener(final IStatusChangeListener listener) {
 		fStatusListener = listener;

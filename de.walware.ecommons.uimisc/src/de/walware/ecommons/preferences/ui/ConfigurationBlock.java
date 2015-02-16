@@ -37,14 +37,14 @@ public abstract class ConfigurationBlock {
 	
 	
 	public static GridData applyWrapWidth(final GridData gd) {
-		gd.widthHint = 300;
+		gd.widthHint= 300;
 		return gd;
 	}
 	
 	public static void scheduleChangeNotification(final IWorkbenchPreferenceContainer container, final String[] groupIds, final boolean directly) {
 		if (groupIds != null) {
-			final String source = (directly) ? null : container.toString();
-			final Job job = PreferencesUtil.getSettingsChangeNotifier().getNotifyJob(source, groupIds);
+			final String source= (directly) ? null : container.toString();
+			final Job job= PreferencesUtil.getSettingsChangeNotifier().getNotifyJob(source, groupIds);
 			if (job == null) {
 				return;
 			}
@@ -77,23 +77,32 @@ public abstract class ConfigurationBlock {
 	}
 	
 	
-	private Shell fShell;
-	private IWorkbenchPreferenceContainer fContainer;
-	protected boolean fUseProjectSettings = true;
+	private Shell shell;
+	
+	private final String title;
+	
+	private IWorkbenchPreferenceContainer container;
+	
+	private boolean useProjectSettings= true;
 	
 	
 	protected ConfigurationBlock() {
+		this(null);
+	}
+	
+	protected ConfigurationBlock(final String title) {
+		this.title= title;
 	}
 	
 	
 	public IWorkbenchPreferenceContainer getContainer() {
-		return fContainer;
+		return this.container;
 	}
 	
 	public void createContents(final Composite pageComposite, final IWorkbenchPreferenceContainer container,
 			final IPreferenceStore preferenceStore) {
-		fShell = pageComposite.getShell();
-		fContainer = container;
+		this.shell= pageComposite.getShell();
+		this.container= container;
 		createBlockArea(pageComposite);
 	}
 	
@@ -103,7 +112,7 @@ public abstract class ConfigurationBlock {
 	}
 	
 	protected String getTitle() {
-		return null;
+		return this.title;
 	}
 	
 	/**
@@ -129,15 +138,19 @@ public abstract class ConfigurationBlock {
 	}
 	
 	public void setUseProjectSpecificSettings(final boolean enable) {
-		fUseProjectSettings = enable;
+		this.useProjectSettings= enable;
+	}
+	
+	public boolean isUseProjectSpecificSettings() {
+		return this.useProjectSettings;
 	}
 	
 	protected Shell getShell() {
-		return fShell;
+		return this.shell;
 	}
 	
 	protected void addLinkHeader(final Composite pageComposite, final String text) {
-		final Link link = addLinkControl(pageComposite, text);
+		final Link link= addLinkControl(pageComposite, text);
 		link.setLayoutData(applyWrapWidth(new GridData(SWT.FILL, SWT.FILL, false, false)));
 		LayoutUtil.addSmallFiller(pageComposite, false);
 	}
@@ -148,14 +161,14 @@ public abstract class ConfigurationBlock {
 	
 	protected Link addLinkControl(final Composite composite, final String text,
 			final LinkSelectionListener listener) {
-		final Link link = new Link(composite, SWT.NONE);
+		final Link link= new Link(composite, SWT.NONE);
 		link.setText(text);
 		link.addSelectionListener(listener);
 		return link;
 	}
 	
 	protected void scheduleChangeNotification(final Set<String> groupIds, final boolean directly) {
-		scheduleChangeNotification(fContainer, groupIds.toArray(new String[groupIds.size()]), directly);
+		scheduleChangeNotification(this.container, groupIds.toArray(new String[groupIds.size()]), directly);
 	}
 	
 	protected void logSaveError(final BackingStoreException e) {
