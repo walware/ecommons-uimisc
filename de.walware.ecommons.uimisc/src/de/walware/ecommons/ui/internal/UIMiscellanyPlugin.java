@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
@@ -46,13 +47,25 @@ public class UIMiscellanyPlugin extends AbstractUIPlugin {
 	/** The shared instance */
 	private static UIMiscellanyPlugin gPlugin;
 	
-	/**
-	 * Returns the shared plug-in instance
-	 *
-	 * @return the shared instance
-	 */
+	@Deprecated
 	public static UIMiscellanyPlugin getDefault() {
 		return gPlugin;
+	}
+	
+	/**
+	 * Returns the shared instance
+	 * 
+	 * @return the plug-in instance
+	 */
+	public static UIMiscellanyPlugin getInstance() {
+		return gPlugin;
+	}
+	
+	public static void log(final IStatus status) {
+		final Plugin plugin= getInstance();
+		if (plugin != null) {
+			plugin.getLog().log(status);
+		}
 	}
 	
 	
