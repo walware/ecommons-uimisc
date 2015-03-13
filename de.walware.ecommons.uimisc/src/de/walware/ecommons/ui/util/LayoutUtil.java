@@ -217,7 +217,7 @@ public class LayoutUtil {
 		return hintWidth(combo, JFaceResources.DIALOG_FONT, max);
 	}
 	
-	public static int hintWidth(final Combo combo, final java.util.List<Object> input,
+	public static int hintWidth(final Combo combo, final java.util.List<?> input,
 			final ILabelProvider labelProvider) {
 		combo.setFont(JFaceResources.getFontRegistry().get(JFaceResources.DIALOG_FONT));
 		final GC gc = new GC(combo);
@@ -347,8 +347,14 @@ public class LayoutUtil {
 	}
 	
 	public static int hintHeight(final StyledText control, final int lines) {
-		final PixelConverter converter = new PixelConverter(control);
-		return converter.convertHeightInCharsToPixels(lines);
+		int height= control.getLineHeight() * lines;
+		
+		ScrollBar hBar= control.getHorizontalBar();
+		if (hBar != null) {
+			height+= hBar.getSize().y;
+		}
+		
+		return height;
 	}
 	
 	
