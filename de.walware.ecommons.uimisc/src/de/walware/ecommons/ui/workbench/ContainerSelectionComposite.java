@@ -25,9 +25,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -35,7 +32,6 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -45,14 +41,16 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.DrillDownAdapter;
+import org.eclipse.ui.views.navigator.ResourceComparator;
 
 import de.walware.ecommons.ui.SharedMessages;
 import de.walware.ecommons.ui.SharedUIResources;
 import de.walware.ecommons.ui.components.StatusInfo;
+import de.walware.ecommons.ui.components.WidgetToolBarComposite;
 import de.walware.ecommons.ui.internal.Messages;
+import de.walware.ecommons.ui.util.ViewerUtil;
 
 
 /**
@@ -267,8 +265,8 @@ public class ContainerSelectionComposite extends Composite {
 		
 		if (fAllowNewContainerName) {
 			fContainerNameField = new Text(this, SWT.SINGLE | SWT.BORDER);
-			fContainerNameField.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-			fContainerNameField.setFont(this.getFont());
+			fContainerNameField.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+			fContainerNameField.setFont(getFont());
 		}
 		else {
 			// filler...
@@ -286,39 +284,23 @@ public class ContainerSelectionComposite extends Composite {
 	 * @return a new drill down viewer
 	 */
 	protected void createTreeViewer(final int heightHint) {
-		// Create group with dril down toolbar and tree.
-		final Composite treeGroup = new Composite(this, SWT.BORDER);
+		final WidgetToolBarComposite treeGroup= new WidgetToolBarComposite(this, SWT.BORDER);
+		{	final GridData gd= new GridData(SWT.FILL, SWT.FILL, true, true);
+			gd.widthHint= SIZING_SELECTION_PANE_WIDTH;
+			gd.heightHint= heightHint;
+			treeGroup.setLayoutData(gd);
+		}
 		
-		final GridLayout layout = new GridLayout();
-		layout.marginHeight = layout.marginWidth = layout.verticalSpacing = layout.horizontalSpacing = 0;
-		layout.numColumns = 2;
-		treeGroup.setLayout(layout);
+		final ToolBarManager leftToolBarMgr= new ToolBarManager(treeGroup.getLeftToolBar());
 		
-		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gd.widthHint = SIZING_SELECTION_PANE_WIDTH;
-		gd.heightHint = heightHint;
-		treeGroup.setLayoutData(gd);
-		
-		// Create a toolbars.
-		final ToolBarManager leftToolBarMgr = new ToolBarManager(SWT.FLAT);
-		ToolBar toolBar = leftToolBarMgr.createControl(treeGroup);
-		toolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-		
-		toolBar = new ToolBar(treeGroup, SWT.FLAT);
-		toolBar.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, false, 1, 1));
-		fRightToolBarMgr = new ToolBarManager(toolBar);
-		
-		final Label filler = new Label(treeGroup, SWT.LEFT );
-		gd = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
-		gd.heightHint = 2;
-		filler.setLayoutData(gd);
+		fRightToolBarMgr= new ToolBarManager(treeGroup.getRightToolBar());
 		
 		// Create tree viewer
-		fTreeViewer = new TreeViewer(treeGroup, SWT.NONE);
-		fTreeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+		fTreeViewer= new TreeViewer(treeGroup, SWT.NONE);
+		fTreeViewer.getTree().setLayoutData(treeGroup.getContentLayoutData());
 		
 		// Fill toolbars
-		final DrillDownAdapter adapter = new DrillDownAdapter(fTreeViewer);
+		final DrillDownAdapter adapter= new DrillDownAdapter(fTreeViewer);
 		adapter.addNavigationActions(leftToolBarMgr);
 		
 		fRightToolBarMgr.add(new CollapseAllAction());
@@ -330,11 +312,12 @@ public class ContainerSelectionComposite extends Composite {
 		// layout group
 		treeGroup.layout();
 		
-		final ContainerContentProvider cp = new ContainerContentProvider();
+		fTreeViewer.setUseHashlookup(true);
+		final ContainerContentProvider cp= new ContainerContentProvider();
 		cp.showClosedProjects(fShowClosedProjects);
 		fTreeViewer.setContentProvider(cp);
+		fTreeViewer.setComparator(new ResourceComparator(ResourceComparator.NAME));
 		fTreeViewer.setLabelProvider(WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider());
-		fTreeViewer.setSorter(new ViewerSorter());
 		fTreeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			@Override
 			public void selectionChanged(final SelectionChangedEvent event) {
@@ -342,23 +325,7 @@ public class ContainerSelectionComposite extends Composite {
 				containerSelectionChanged((IContainer) selection.getFirstElement()); // allow null
 			}
 		});
-		fTreeViewer.addDoubleClickListener(new IDoubleClickListener() {
-			@Override
-			public void doubleClick(final DoubleClickEvent event) {
-				final ISelection selection = event.getSelection();
-				if (selection instanceof IStructuredSelection) {
-					final Object item = ((IStructuredSelection) selection).getFirstElement();
-					if(item == null) {
-						return;
-					}
-					if (fTreeViewer.getExpandedState(item)) {
-						fTreeViewer.collapseToLevel(item, 1);
-					} else {
-						fTreeViewer.expandToLevel(item, 1);
-					}
-				}
-			}
-		});
+		ViewerUtil.addDoubleClickExpansion(fTreeViewer);
 		
 		// This has to be done after the viewer has been laid out
 		fTreeViewer.setInput(ResourcesPlugin.getWorkspace());
