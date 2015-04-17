@@ -12,12 +12,18 @@
 package de.walware.ecommons.ui.components;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.variables.IStringVariable;
 import org.eclipse.debug.ui.StringVariableSelectionDialog;
 import org.eclipse.swt.widgets.Shell;
+
+import de.walware.ecommons.collections.ImCollections;
+import de.walware.ecommons.collections.ImList;
+import de.walware.ecommons.variables.core.VariableUtils;
 
 
 /**
@@ -26,34 +32,35 @@ import org.eclipse.swt.widgets.Shell;
 public class CustomizableVariableSelectionDialog extends StringVariableSelectionDialog {
 	
 	
-	private final List<IStringVariable> fAdditionals = new ArrayList<IStringVariable>();
+	private final List<IStringVariable> extraVariables= new ArrayList<>();
 	
-	private boolean fInitialized;
-	private Object[] fElements;
+	private final boolean initialized;
+	private ImList<IStringVariable> elements;
 	
 	
 	public CustomizableVariableSelectionDialog(final Shell parent) {
 		super(parent);
 		
-		fInitialized = true;
+		if (this.elements == null) {
+			this.elements= ImCollections.emptyList();
+		}
+		this.initialized= true;
 	}
 	
 	
 	@Override
 	public void setElements(final Object[] elements) {
-		fElements = elements;
-		if (fInitialized) {
+		this.elements= ImCollections.newList((IStringVariable[]) elements);
+		if (this.initialized) {
 			initElements();
 		}
 	}
 	
 	private void initElements() {
-		final IStringVariable[] orginals = (IStringVariable[]) fElements;
-		final List<IStringVariable> list = new ArrayList<IStringVariable>(
-				orginals.length + fAdditionals.size());
-		list.addAll(fAdditionals);
-		list.addAll(Arrays.asList(orginals));
-		super.setElements(list.toArray(new IStringVariable[list.size()]));
+		final Map<String, IStringVariable> variables= new HashMap<>();
+		VariableUtils.add(variables, this.elements);
+		VariableUtils.add(variables, this.extraVariables);
+		super.setElements(variables.values().toArray(new IStringVariable[variables.size()]));
 	}
 	
 	@Override
@@ -67,12 +74,13 @@ public class CustomizableVariableSelectionDialog extends StringVariableSelection
 		super.setFilters(filters.toArray(new VariableFilter[filters.size()]));
 	}
 	
-	public void addAdditional(final IStringVariable variable) {
-		fAdditionals.add(variable);
+	public void setAdditionals(final Collection<? extends IStringVariable> variables) {
+		this.extraVariables.clear();
+		this.extraVariables.addAll(variables);
 	}
 	
-	public void setAdditionals(final List<? extends IStringVariable> variables) {
-		fAdditionals.addAll(variables);
+	public void addAdditional(final IStringVariable variable) {
+		this.extraVariables.add(variable);
 	}
 	
 }

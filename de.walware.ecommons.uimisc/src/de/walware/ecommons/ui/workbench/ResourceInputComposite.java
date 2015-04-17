@@ -12,9 +12,13 @@
 package de.walware.ecommons.ui.workbench;
 
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.observable.value.IValueChangeListener;
+import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IContainer;
@@ -28,7 +32,7 @@ import org.eclipse.core.variables.IStringVariable;
 import org.eclipse.core.variables.IStringVariableManager;
 import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.debug.ui.StringVariableSelectionDialog.VariableFilter;
-import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
@@ -53,9 +57,9 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.dialogs.FilteredResourcesSelectionDialog;
 
-import de.walware.ecommons.collections.CollectionUtils;
-import de.walware.ecommons.collections.ConstList;
-import de.walware.ecommons.io.FileValidator;
+import de.walware.ecommons.collections.ImCollections;
+import de.walware.ecommons.collections.ImList;
+import de.walware.ecommons.io.ObservableFileValidator;
 import de.walware.ecommons.ui.SharedMessages;
 import de.walware.ecommons.ui.components.CustomizableVariableSelectionDialog;
 import de.walware.ecommons.ui.components.WidgetToolsButton;
@@ -71,7 +75,7 @@ import de.walware.ecommons.ui.util.MessageUtil;
  * 
  * XXX: Not yet all combinations are tested!
  */
-public class ResourceInputComposite extends Composite {
+public class ResourceInputComposite extends Composite implements IValueChangeListener {
 	
 	
 	private static final String VAR_WORKSPACE_LOC = "workspace_loc"; //$NON-NLS-1$
@@ -109,7 +113,8 @@ public class ResourceInputComposite extends Composite {
 	private boolean fDoOpen;
 	private boolean fWSOnly;
 	private boolean fControlledChange;
-	private final FileValidator fValidator;
+	
+	private final ObservableFileValidator fValidator;
 	
 	private Text fLocationTextField;
 	private Combo fLocationComboField;
@@ -117,8 +122,8 @@ public class ResourceInputComposite extends Composite {
 	private Label fLabel;
 	private WidgetToolsButton fTools;
 	private boolean fShowInsertVariable;
-	private ConstList<? extends VariableFilter> fShowInsertVariableFilters;
-	private ConstList<? extends IStringVariable> fShowInsertVariableAdditionals;
+	private ImList<? extends VariableFilter> fShowInsertVariableFilters;
+	private ImList<? extends IStringVariable> fShowInsertVariableAdditionals;
 	
 	private String fDefaultFilesystemPath;
 	private String[] fFileFilters;
@@ -129,7 +134,7 @@ public class ResourceInputComposite extends Composite {
 			final int mode, final String resourceLabel) {
 		super(parent, SWT.NONE);
 		
-		fValidator = new FileValidator();
+		fValidator = new ObservableFileValidator(Realm.getDefault());
 		setMode(mode);
 		
 		fStyle = style;
@@ -171,6 +176,13 @@ public class ResourceInputComposite extends Composite {
 		fWSOnly = (mode & MODE_WS_ONLY) == MODE_WS_ONLY;
 		fValidator.setRequireWorkspace(fWSOnly, fWSOnly);
 		
+		if (fWSOnly) {
+			fValidator.getWorkspaceResourceObservable().addValueChangeListener(this);
+		}
+		else {
+			fValidator.getFileStoreObservable().addValueChangeListener(this);
+		}
+		
 		if (fTools != null) {
 			fTools.resetMenu();
 		}
@@ -191,7 +203,7 @@ public class ResourceInputComposite extends Composite {
 	public void setShowInsertVariable(final boolean enable,
 			final List<VariableFilter> filters, final List<? extends IStringVariable> additionals) {
 		fShowInsertVariable = enable;
-		fShowInsertVariableFilters = (filters != null) ? CollectionUtils.asConstList(filters) : null;
+		fShowInsertVariableFilters= (filters != null) ? ImCollections.toList(filters) : null;
 		if (fShowInsertVariableAdditionals != null) {
 			for (final IStringVariable variable : fShowInsertVariableAdditionals) {
 				final String name = variable.getName();
@@ -199,7 +211,7 @@ public class ResourceInputComposite extends Composite {
 				fValidator.setOnPattern(pattern, -1);
 			}
 		}
-		fShowInsertVariableAdditionals = (additionals != null) ? CollectionUtils.asConstList(additionals) : null;
+		fShowInsertVariableAdditionals= (additionals != null) ? ImCollections.toList(additionals) : null;
 		if (fShowInsertVariableAdditionals != null) {
 			for (final IStringVariable variable : fShowInsertVariableAdditionals) {
 				final String name = variable.getName();
@@ -264,7 +276,18 @@ public class ResourceInputComposite extends Composite {
 		}
 	}
 	
-	protected void setText(final String s, final boolean validate) {
+	protected String escapeText(final String text) {
+		if (this.fValidator.getVariableResolver() != null) {
+			return this.fValidator.getVariableResolver().escapeText(text);
+		}
+		return text;
+	}
+	
+	protected void setText(final String text) {
+		setText(text, true);
+	}
+	
+	private void setText(final String s, final boolean validate) {
 		if (!validate) {
 			fControlledChange = true;
 		}
@@ -333,6 +356,7 @@ public class ResourceInputComposite extends Composite {
 			public void modifyText(final ModifyEvent e) {
 				if (!fControlledChange) {
 					fValidator.setExplicit(getText());
+//					fValidator.getStatus();
 				}
 			}
 		});
@@ -472,7 +496,7 @@ public class ResourceInputComposite extends Composite {
 		final String wsPath = resource.getFullPath().toString();
 		
 		fValidator.setExplicit(resource);
-		setText(newVariableExpression(VAR_WORKSPACE_LOC, wsPath), false); 
+		setText(newVariableExpression(VAR_WORKSPACE_LOC, escapeText(wsPath)), false); 
 	}
 	
 	protected void handleBrowseWorkspaceButton(final int mode) {
@@ -509,23 +533,25 @@ public class ResourceInputComposite extends Composite {
 			if (results == null || results.length < 1) {
 				return;
 			}
-			resource = (IFile) results[0];
-			res = resource.getParent();
-			final StringBuilder path = new StringBuilder('/'+resource.getName());
+			resource= (IFile) results[0];
+			res= resource.getParent();
+			final StringBuilder path= new StringBuilder(resource.getName());
+			path.insert(0, '/');
 			while (!res.exists()) {
-				res = res.getParent();
-				path.insert(0, '/'+res.getName());
+				res= res.getParent();
+				path.insert(0, res.getName());
+				path.insert(0, '/');
 			}
-			wsPath = res.getFullPath().toString();
-			appendPath = path.toString();
+			wsPath= res.getFullPath().toString();
+			appendPath= path.toString();
 		}
 		
 		fValidator.setExplicit(resource);
 		if (fWSOnly) {
-			setText(wsPath + appendPath, false);
+			setText(escapeText(wsPath + appendPath), false);
 		}
 		else {
-			setText(newVariableExpression(VAR_WORKSPACE_LOC, wsPath) + appendPath, false);
+			setText(newVariableExpression(VAR_WORKSPACE_LOC, escapeText(wsPath)) + escapeText(appendPath), false);
 		}
 	}
 	
@@ -560,6 +586,8 @@ public class ResourceInputComposite extends Composite {
 		if (path == null) {
 			return;
 		}
+		
+		path= escapeText(path);
 		fValidator.setExplicit(path);
 		setText(path, false);
 	}
@@ -574,6 +602,13 @@ public class ResourceInputComposite extends Composite {
 		if (fShowInsertVariableAdditionals != null) {
 			dialog.setAdditionals(fShowInsertVariableAdditionals);
 		}
+		else if (this.fValidator.getVariableResolver() != null) {
+			final Map<String, IStringVariable> extraVariables= this.fValidator.getVariableResolver()
+					.getExtraVariables();
+			if (extraVariables != null) {
+				dialog.setAdditionals(extraVariables.values());
+			}
+		}
 		if (dialog.open() != Dialog.OK) {
 			return;
 		}
@@ -582,6 +617,39 @@ public class ResourceInputComposite extends Composite {
 			return;
 		}
 		insertText(variable);
+	}
+	
+	@Override
+	public void handleValueChange(final ValueChangeEvent event) {
+		String path= null;
+		if (fWSOnly) {
+			final IResource resource= fValidator.getWorkspaceResource();
+			if (resource != null) {
+				path= resource.getFullPath().toString();
+			}
+		}
+		else {
+			final IFileStore fileStore= fValidator.getFileStore();
+			if (fileStore != null) {
+				try {
+					if (fValidator.isLocalFile()) {
+						path= URIUtil.toPath(fileStore.toURI()).toOSString();
+					}
+					else {
+						path= fileStore.toURI().toString();
+					}
+				}
+				catch (final Exception e) {
+				}
+			}
+		}
+		if (path != null && !path.isEmpty()) {
+//			path= "\u21FF " + path; //$NON-NLS-1$
+		}
+		else {
+			path= ""; //$NON-NLS-1$
+		}
+		getTextControl().setToolTipText(path);
 	}
 	
 	
@@ -613,14 +681,14 @@ public class ResourceInputComposite extends Composite {
 	
 	public IObservableValue getObservable() {
 		if (fAsCombo) {
-			return SWTObservables.observeText(fLocationComboField);
+			return WidgetProperties.text().observe(fLocationComboField);
 		}
 		else {
-			return SWTObservables.observeText(fLocationTextField, SWT.Modify);
+			return WidgetProperties.text(SWT.Modify).observe(fLocationTextField);
 		}
 	}
 	
-	public FileValidator getValidator() {
+	public ObservableFileValidator getValidator() {
 		return fValidator;
 	}
 	
