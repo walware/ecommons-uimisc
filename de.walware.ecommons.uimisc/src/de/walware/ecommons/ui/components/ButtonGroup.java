@@ -80,10 +80,10 @@ public class ButtonGroup<ItemType> extends Composite {
 	}
 	
 	
-	public static class SelectionHandler extends SelectionAdapter implements DisposeListener {
+	public static class SelectionHandler<ItemType> extends SelectionAdapter implements DisposeListener {
 		
 		
-		private ButtonGroup<?> fGroup;
+		private ButtonGroup<ItemType> fGroup;
 		
 		private Control fControl;
 		
@@ -92,7 +92,7 @@ public class ButtonGroup<ItemType> extends Composite {
 			setEnabled(getElement(selection) != null);
 		}
 		
-		protected ButtonGroup<?> getGroup() {
+		protected ButtonGroup<ItemType> getGroup() {
 			return fGroup;
 		}
 		
