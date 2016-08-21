@@ -39,7 +39,7 @@ public class CellOverrideLabelAccumulator<T> extends AbstractOverrider {
 	@Override
 	public void accumulateConfigLabels(final LabelStack configLabels, final long columnIndex, final long rowIndex) {
 		final List<String> cellLabels= getConfigLabels(
-				this.dataProvider.getDataValue(columnIndex, rowIndex, 0), columnIndex);
+				this.dataProvider.getDataValue(columnIndex, rowIndex, 0, null), columnIndex);
 		if (cellLabels == null) {
 			return;
 		}

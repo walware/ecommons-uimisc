@@ -14,6 +14,8 @@ package de.walware.ecommons.waltable.grid.labeled;
 import static de.walware.ecommons.waltable.coordinate.Orientation.HORIZONTAL;
 import static de.walware.ecommons.waltable.coordinate.Orientation.VERTICAL;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import de.walware.ecommons.waltable.data.IDataProvider;
 import de.walware.ecommons.waltable.grid.GridRegion;
 import de.walware.ecommons.waltable.grid.layer.CornerLayer;
@@ -75,10 +77,10 @@ public class LabelCornerLayer extends CornerLayer {
 					return new LabelStack(GridRegion.COLUMN_HEADER_LABEL);
 				}
 				@Override
-				public Object getDataValue(final int flags) {
+				public Object getDataValue(final int flags, final IProgressMonitor monitor) {
 					return (LabelCornerLayer.this.columnHeaderLabelProvider != null) ? 
 							LabelCornerLayer.this.columnHeaderLabelProvider.getDataValue(
-									0, getRowPosition(), flags ) :
+									0, getRowPosition(), flags, monitor ) :
 							""; //$NON-NLS-1$
 				}
 			};
@@ -92,10 +94,10 @@ public class LabelCornerLayer extends CornerLayer {
 					return new LabelStack(GridRegion.ROW_HEADER_LABEL);
 				}
 				@Override
-				public Object getDataValue(final int flags) {
+				public Object getDataValue(final int flags, final IProgressMonitor monitor) {
 					return (LabelCornerLayer.this.rowHeaderLabelProvider != null) ? 
 							LabelCornerLayer.this.rowHeaderLabelProvider.getDataValue(
-									getColumnPosition(), 0, flags) :
+									getColumnPosition(), 0, flags, monitor) :
 							""; //$NON-NLS-1$
 				}
 			};

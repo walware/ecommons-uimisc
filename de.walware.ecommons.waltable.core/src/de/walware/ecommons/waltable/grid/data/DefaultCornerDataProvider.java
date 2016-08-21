@@ -12,6 +12,8 @@
 
 package de.walware.ecommons.waltable.grid.data;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import de.walware.ecommons.waltable.data.IDataProvider;
 
 
@@ -38,7 +40,7 @@ public class DefaultCornerDataProvider implements IDataProvider {
 	}
 	
 	@Override
-	public Object getDataValue(final long columnIndex, final long rowIndex, final int flags) {
+	public Object getDataValue(final long columnIndex, final long rowIndex, final int flags, final IProgressMonitor monitor) {
 		return ""; //$NON-NLS-1$
 	}
 	

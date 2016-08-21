@@ -17,6 +17,8 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import de.walware.ecommons.waltable.layer.cell.DataCell;
 import de.walware.ecommons.waltable.persistence.IPersistable;
 
@@ -95,8 +97,8 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 	}
 	
 	@Override
-	public Object getDataValue(final long columnIndex, final long rowIndex, final int flags) {
-		return this.underlyingDataProvider.getDataValue(columnIndex, rowIndex, flags);
+	public Object getDataValue(final long columnIndex, final long rowIndex, final int flags, final IProgressMonitor monitor) {
+		return this.underlyingDataProvider.getDataValue(columnIndex, rowIndex, flags, monitor);
 	}
 	
 	@Override
@@ -238,9 +240,9 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 		}
 		
 		//get value for the given column
-		final Object current= getDataValue(columnPosition, rowPosition, 0);
+		final Object current= getDataValue(columnPosition, rowPosition, 0, null);
 		//get value of the column to the left
-		final Object before= getDataValue(columnPosition-1, rowPosition, 0);
+		final Object before= getDataValue(columnPosition-1, rowPosition, 0, null);
 		
 		if (!Objects.equals(current, before)) {
 			//the both values are not equal, therefore return the given column position
@@ -266,9 +268,9 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 		}
 		
 		//get value of given row
-		final Object current= getDataValue(columnPosition, rowPosition, 0);
+		final Object current= getDataValue(columnPosition, rowPosition, 0, null);
 		//get value of row before
-		final Object before= getDataValue(columnPosition, rowPosition - 1, 0);
+		final Object before= getDataValue(columnPosition, rowPosition - 1, 0, null);
 		
 		if (!Objects.equals(current, before)) {
 			//the both values are not equal, therefore return the given row
@@ -291,8 +293,8 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 				&& isAutoSpanColumn(columnPosition)
 				&& isAutoSpanColumn(columnPosition+1)
 				&& Objects.equals(
-					getDataValue(columnPosition, rowPosition, 0), 
-					getDataValue(columnPosition+1, rowPosition, 0) )) {
+					getDataValue(columnPosition, rowPosition, 0, null), 
+					getDataValue(columnPosition+1, rowPosition, 0, null) )) {
 			span++;
 			columnPosition++;
 		}
@@ -313,8 +315,8 @@ public class AutomaticSpanningDataProvider implements ISpanningDataProvider, IPe
 				&& isAutoSpanRow(rowPosition)
 				&& isAutoSpanRow(rowPosition + 1)
 				&& Objects.equals(
-					getDataValue(columnPosition, rowPosition, 0), 
-					getDataValue(columnPosition, rowPosition + 1, 0) )) {
+					getDataValue(columnPosition, rowPosition, 0, null), 
+					getDataValue(columnPosition, rowPosition + 1, 0, null) )) {
 			span++;
 			rowPosition++;
 		}

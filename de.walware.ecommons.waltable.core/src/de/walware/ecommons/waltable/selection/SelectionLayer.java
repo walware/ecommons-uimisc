@@ -28,7 +28,6 @@ import de.walware.ecommons.waltable.coordinate.LRectangle;
 import de.walware.ecommons.waltable.coordinate.Orientation;
 import de.walware.ecommons.waltable.coordinate.PositionCoordinate;
 import de.walware.ecommons.waltable.coordinate.PositionOutOfBoundsException;
-import de.walware.ecommons.waltable.copy.CopyToClipboardCommandHandler;
 import de.walware.ecommons.waltable.edit.EditSelectionCommandHandler;
 import de.walware.ecommons.waltable.layer.ForwardLayer;
 import de.walware.ecommons.waltable.layer.ILayer;
@@ -409,7 +408,7 @@ public class SelectionLayer extends ForwardLayer {
 		registerCommandHandler(this.selectDimPositionsCommandHandler);
 		
 		registerCommandHandler(new EditSelectionCommandHandler(this));
-		registerCommandHandler(new CopyToClipboardCommandHandler(this));
+//		registerCommandHandler(new CopyToClipboardCommandHandler(this));
 	}
 	
 	@Override

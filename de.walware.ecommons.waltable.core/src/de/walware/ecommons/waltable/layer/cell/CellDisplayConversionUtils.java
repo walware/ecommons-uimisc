@@ -19,7 +19,7 @@ public final class CellDisplayConversionUtils {
 	
 	
 	public static String convertDataType(final ILayerCell cell, final IConfigRegistry configRegistry) {
-		return convertDataType(cell, cell.getDataValue(0), configRegistry);
+		return convertDataType(cell, cell.getDataValue(0, null), configRegistry);
 	}
 	
 	public static String convertDataType(final ILayerCell cell, final Object canonicalValue, final IConfigRegistry configRegistry) {

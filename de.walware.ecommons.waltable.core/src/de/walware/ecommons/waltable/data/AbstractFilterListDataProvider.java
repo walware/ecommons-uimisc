@@ -12,6 +12,8 @@ package de.walware.ecommons.waltable.data;
 
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 /**
  * Enables the use of a {@link List} containing POJO(s) as a backing data source.
  * 
@@ -60,7 +62,7 @@ public abstract class AbstractFilterListDataProvider<T> extends ListDataProvider
 	 * Get the data value for the columnIndex and the visible rowIndex.
 	 */
 	@Override
-	public Object getDataValue(final long columnIndex, final long rowIndex, final int flags) {
+	public Object getDataValue(final long columnIndex, final long rowIndex, final int flags, final IProgressMonitor monitor) {
 		final T rowObj= getRowObject(rowIndex);
 		return this.columnAccessor.getDataValue(rowObj, columnIndex);
 	}

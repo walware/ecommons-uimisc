@@ -30,7 +30,7 @@ public class ClassNameConfigLabelAccumulator implements IConfigLabelAccumulator 
 	
 	@Override
 	public void accumulateConfigLabels(final LabelStack configLabel, final long columnPosition, final long rowPosition) {
-		final Object value= this.dataProvider.getDataValue(columnPosition, rowPosition, 0);
+		final Object value= this.dataProvider.getDataValue(columnPosition, rowPosition, 0, null);
 		if (value != null) {
 			configLabel.addLabel(value.getClass().getName());
 		}
