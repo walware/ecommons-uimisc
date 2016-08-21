@@ -1,0 +1,33 @@
+/*******************************************************************************
+ * Copyright (c) 2012-2016 Original authors and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Original authors and others - initial API and implementation
+ ******************************************************************************/
+package de.walware.ecommons.waltable.ui.menu;
+
+
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.widgets.Menu;
+
+import de.walware.ecommons.waltable.NatTable;
+import de.walware.ecommons.waltable.ui.action.IMouseAction;
+
+public class PopupMenuAction implements IMouseAction {
+	
+	private final Menu menu;
+	
+	public PopupMenuAction(final Menu menu) {
+		this.menu= menu;
+	}
+	
+	@Override
+	public void run(final NatTable natTable, final MouseEvent event) {
+		this.menu.setData(event.data);
+		this.menu.setVisible(true);
+	}
+}
