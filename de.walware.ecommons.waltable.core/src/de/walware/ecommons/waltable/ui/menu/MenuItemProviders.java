@@ -192,7 +192,7 @@ public class MenuItemProviders {
 						
 						final String msg= "Display mode: " + cell.getDisplayMode() + //$NON-NLS-1$
 								"\nConfig labels: " + cell.getConfigLabels() + //$NON-NLS-1$
-								"\nData value: " + cell.getDataValue(0) + //$NON-NLS-1$
+								"\nData value: " + cell.getDataValue(0, null) + //$NON-NLS-1$
 								"\n\nColumn position: " + columnPosition + //$NON-NLS-1$
 								"\nColumn id: " + cell.getDim(Orientation.HORIZONTAL).getId() + //$NON-NLS-1$
 								"\n\nRow position: " + rowPosition + //$NON-NLS-1$

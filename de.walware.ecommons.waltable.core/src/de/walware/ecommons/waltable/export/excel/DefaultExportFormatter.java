@@ -20,7 +20,7 @@ public class DefaultExportFormatter implements IExportFormatter {
 
 	@Override
 	public Object formatForExport(final ILayerCell cell, final IConfigRegistry configRegistry) {
-		final Object dataValue= cell.getDataValue(0);
+		final Object dataValue= cell.getDataValue(0, null);
 		final IDisplayConverter displayConverter= configRegistry.getConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
 		return displayConverter.canonicalToDisplayValue(cell, configRegistry, dataValue);
 	}

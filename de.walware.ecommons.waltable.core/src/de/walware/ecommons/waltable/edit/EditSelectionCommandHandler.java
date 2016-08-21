@@ -63,14 +63,14 @@ public class EditSelectionCommandHandler extends AbstractLayerCommandHandler<Edi
 								new PositionCoordinate(this.selectionLayer, cell.getColumnPosition(), cell.getRowPosition()), 
 								parent, 
 								configRegistry, 
-								(initialValue != null ? initialValue : cell.getDataValue(0))));
+								(initialValue != null ? initialValue : cell.getDataValue(0, null))));
 			}
 			else if (selectedCells.size() > 1) {
 				//determine the initial value
 				Object initialEditValue= initialValue;
 				if (initialValue == null && EditUtils.isValueSame(this.selectionLayer)) {
 					final ILayerCell cell= selectedCells.iterator().next();
-					initialEditValue= cell.getDataValue(0);
+					initialEditValue= cell.getDataValue(0, null);
 				}
 				
 				EditController.editCells(selectedCells, parent, initialEditValue, configRegistry);

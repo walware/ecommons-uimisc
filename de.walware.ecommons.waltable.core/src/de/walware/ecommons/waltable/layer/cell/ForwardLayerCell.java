@@ -11,6 +11,8 @@
 
 package de.walware.ecommons.waltable.layer.cell;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import de.walware.ecommons.waltable.layer.ILayer;
 import de.walware.ecommons.waltable.layer.LabelStack;
 import de.walware.ecommons.waltable.style.DisplayMode;
@@ -47,8 +49,8 @@ public class ForwardLayerCell extends LayerCell {
 	
 	
 	@Override
-	public Object getDataValue(final int flags) {
-		return this.underlyingCell.getDataValue(flags);
+	public Object getDataValue(final int flags, final IProgressMonitor monitor) {
+		return this.underlyingCell.getDataValue(flags, monitor);
 	}
 	
 }

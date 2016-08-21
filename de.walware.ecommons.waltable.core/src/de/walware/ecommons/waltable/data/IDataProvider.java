@@ -10,6 +10,8 @@
  ******************************************************************************/
 package de.walware.ecommons.waltable.data;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import de.walware.ecommons.waltable.layer.DataLayer;
 
 /**
@@ -35,9 +37,11 @@ public interface IDataProvider {
 	 * @param columnIndex
 	 * @param rowIndex
 	 * @param flags
+	 * @param monitor
 	 * @return the data value associated with the specified cell
 	 */
-	Object getDataValue(long columnIndex, long rowIndex, final int flags);
+	Object getDataValue(long columnIndex, long rowIndex,
+			int flags, IProgressMonitor monitor);
 	
 	/**
 	 * Sets the value at the given column and row index. Optional operation. Should throw UnsupportedOperationException

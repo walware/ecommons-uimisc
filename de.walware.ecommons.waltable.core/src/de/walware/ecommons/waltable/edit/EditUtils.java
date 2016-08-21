@@ -190,7 +190,7 @@ public class EditUtils {
 		Object lastSelectedValue= null;
 		final Collection<ILayerCell> selectedCells= selectionLayer.getSelectedCells();
 		for (final ILayerCell layerCell : selectedCells) {
-			final Object cellValue= layerCell.getDataValue(0);
+			final Object cellValue= layerCell.getDataValue(0, null);
 			if (lastSelectedValue == null) {
 				lastSelectedValue= cellValue;
 			}

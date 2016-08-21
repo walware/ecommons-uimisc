@@ -13,6 +13,8 @@ package de.walware.ecommons.waltable.layer.cell;
 import static de.walware.ecommons.waltable.coordinate.Orientation.HORIZONTAL;
 import static de.walware.ecommons.waltable.coordinate.Orientation.VERTICAL;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import de.walware.ecommons.waltable.coordinate.LRectangle;
 import de.walware.ecommons.waltable.coordinate.Orientation;
 import de.walware.ecommons.waltable.data.ControlData;
@@ -104,7 +106,7 @@ public class LayerCell implements ILayerCell {
 	}
 	
 	@Override
-	public Object getDataValue(final int flags) {
+	public Object getDataValue(final int flags, final IProgressMonitor monitor) {
 		return NO_DATA;
 	}
 	
@@ -170,7 +172,7 @@ public class LayerCell implements ILayerCell {
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + " (" //$NON-NLS-1$
-			+ "\n\tdata= " + getDataValue(0) //$NON-NLS-1$
+			+ "\n\tdata= " + getDataValue(0, null) //$NON-NLS-1$
 			+ "\n\tlayer= " + getLayer().getClass().getSimpleName() //$NON-NLS-1$
 			+ "\n\thorizontal= " + this.h //$NON-NLS-1$
 			+ "\n\tvertical= " + this.v //$NON-NLS-1$

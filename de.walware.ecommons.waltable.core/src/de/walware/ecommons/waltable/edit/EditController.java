@@ -175,7 +175,7 @@ public class EditController {
 						for (final ILayerCell selectedCell : cells) {
 							Object editorValue= dialog.getCommittedValue();
 							if (!(dialog.getEditType() == EditTypeEnum.SET)) {
-								editorValue= dialog.calculateValue(selectedCell.getDataValue(0), editorValue);
+								editorValue= dialog.calculateValue(selectedCell.getDataValue(0, null), editorValue);
 							}
 							final ILayer layer= selectedCell.getLayer();
 							

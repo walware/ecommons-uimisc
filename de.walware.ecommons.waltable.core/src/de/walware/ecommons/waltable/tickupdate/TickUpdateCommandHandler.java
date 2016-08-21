@@ -135,7 +135,7 @@ public class TickUpdateCommandHandler extends AbstractLayerCommandHandler<TickUp
 				DisplayMode.EDIT, 
 				cell.getConfigLabels().getLabels());
 
-		final Object dataValue= cell.getDataValue(0);
+		final Object dataValue= cell.getDataValue(0, null);
 
 		if (tickUpdateHandler != null && tickUpdateHandler.isApplicableFor(dataValue)) {
 			if (command.isIncrement()) {

@@ -10,6 +10,13 @@
  ******************************************************************************/
 package de.walware.ecommons.waltable.copy;
 
+import java.lang.reflect.InvocationTargetException;
+
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
@@ -19,10 +26,13 @@ import de.walware.ecommons.waltable.command.AbstractLayerCommandHandler;
 import de.walware.ecommons.waltable.coordinate.ILValueIterator;
 import de.walware.ecommons.waltable.coordinate.LRangeList;
 import de.walware.ecommons.waltable.data.ControlData;
+import de.walware.ecommons.waltable.data.IDataProvider;
+import de.walware.ecommons.waltable.internal.WaLTablePlugin;
 import de.walware.ecommons.waltable.layer.ILayer;
 import de.walware.ecommons.waltable.layer.cell.CellDisplayConversionUtils;
 import de.walware.ecommons.waltable.layer.cell.ILayerCell;
 import de.walware.ecommons.waltable.selection.SelectionLayer;
+import de.walware.ecommons.waltable.ui.ITableUIContext;
 
 
 /**
@@ -51,14 +61,17 @@ public class CopyToClipboardCommandHandler extends AbstractLayerCommandHandler<C
 	 */
 	private final ILayer rowHeaderDataLayer;
 	
+	private final ITableUIContext uiContext;
+	
 	
 	/**
 	 * Creates an instance that only checks the {@link SelectionLayer} for data to add to the
 	 * clipboard.
 	 * @param selectionLayer The {@link SelectionLayer} within the NatTable. Can not be <code>null</code>.
 	 */
-	public CopyToClipboardCommandHandler(final SelectionLayer selectionLayer) {
-		this(selectionLayer, null, null);
+	public CopyToClipboardCommandHandler(final SelectionLayer selectionLayer,
+			final ITableUIContext uiContext) {
+		this(selectionLayer, null, null, uiContext);
 	}
 	
 	/**
@@ -67,14 +80,20 @@ public class CopyToClipboardCommandHandler extends AbstractLayerCommandHandler<C
 	 * @param columnHeaderDataLayer The column header data layer within the NatTable grid. Can be <code>null</code>.
 	 * @param rowHeaderDataLayer The row header data layer within the NatTable grid. Can be <code>null</code>.
 	 */
-	public CopyToClipboardCommandHandler(final SelectionLayer selectionLayer, final ILayer columnHeaderDataLayer, final ILayer rowHeaderDataLayer) {
+	public CopyToClipboardCommandHandler(final SelectionLayer selectionLayer,
+			final ILayer columnHeaderDataLayer, final ILayer rowHeaderDataLayer,
+			final ITableUIContext uiContext) {
 		if (selectionLayer == null) {
 			throw new NullPointerException("selectionLayer"); //$NON-NLS-1$
+		}
+		if (uiContext == null) {
+			throw new NullPointerException("uiContext"); //$NON-NLS-1$
 		}
 		
 		this.selectionLayer= selectionLayer;
 		this.columnHeaderDataLayer= columnHeaderDataLayer;
 		this.rowHeaderDataLayer= rowHeaderDataLayer;
+		this.uiContext= uiContext;
 	}
 	
 	
@@ -93,18 +112,44 @@ public class CopyToClipboardCommandHandler extends AbstractLayerCommandHandler<C
 		final int colCount= copiedCells[0].length;
 		
 		final Object[][] values= new Object[rowCount][colCount];
-		{	for (int rowIdx= 0; rowIdx < rowCount; rowIdx++) {
-				for (int colIdx= 0; colIdx < colCount; colIdx++) {
-					final ILayerCell cell= copiedCells[rowIdx][colIdx];
-					if (cell != null) {
-						final Object dataValue= cell.getDataValue(0);
-						if (dataValue instanceof ControlData && (((ControlData) dataValue).getCode() & ControlData.ASYNC) != 0) {
-							throw new UnsupportedOperationException("Data not loaded.");
+		try {
+			if (rowCount <= 1000 && colCount <= 1000) {
+				for (int rowIdx= 0; rowIdx < rowCount; rowIdx++) {
+					for (int colIdx= 0; colIdx < colCount; colIdx++) {
+						final ILayerCell cell= copiedCells[rowIdx][colIdx];
+						if (cell != null) {
+							final Object dataValue= cell.getDataValue(0, null);
+							if (dataValue instanceof ControlData) {
+								if ((((ControlData) dataValue).getCode() & ControlData.ASYNC) != 0) {
+									loadAsync(copiedCells, values, rowIdx, colIdx);
+									break;
+								}
+								else if ((((ControlData) dataValue).getCode() & ControlData.ERROR) != 0) {
+									throw new CoreException(
+											new Status(IStatus.ERROR, WaLTablePlugin.PLUGIN_ID, 0,
+													"Failed to load required data.",
+													null ));
+								}
+							}
+							values[rowIdx][colIdx]= dataValue;
 						}
-						values[rowIdx][colIdx]= dataValue;
 					}
 				}
 			}
+			else {
+				loadAsync(copiedCells, values, 0, 0);
+			}
+		}
+		catch (final CoreException e) {
+			if (e.getStatus().getSeverity() != IStatus.ERROR) {
+				return;
+			}
+			final Status status= new Status(IStatus.ERROR, WaLTablePlugin.PLUGIN_ID, 0,
+					"Copy table data to clipboard failed.",
+					e );
+			WaLTablePlugin.log(status);
+			this.uiContext.show(status);
+			return;
 		}
 		
 		final String textData;
@@ -138,6 +183,66 @@ public class CopyToClipboardCommandHandler extends AbstractLayerCommandHandler<C
 			finally {
 				clipboard.dispose();
 			}
+		}
+	}
+	
+	private void loadAsync(final ILayerCell[][] copiedCells, final Object[][] values,
+			final int startRowIdx, final int startColIdx) throws CoreException {
+		try {
+			this.uiContext.run(true, true, new IRunnableWithProgress() {
+				@Override
+				public void run(final IProgressMonitor monitor)
+						throws InvocationTargetException {
+					try {
+						final int rowCount= copiedCells.length;
+						final int colCount= copiedCells[0].length;
+						
+						monitor.beginTask("Collecting data to copy...", rowCount - startRowIdx);
+						
+						for (int rowIdx= startRowIdx; rowIdx < rowCount; rowIdx++) {
+							for (int colIdx= (rowIdx == startRowIdx) ? startColIdx : 0; colIdx < colCount; colIdx++) {
+								final ILayerCell cell= copiedCells[rowIdx][colIdx];
+								if (cell != null) {
+									final Object dataValue= cell.getDataValue(IDataProvider.FORCE_SYNC,
+											monitor );
+									if (dataValue instanceof ControlData) {
+										if ((((ControlData) dataValue).getCode() & ControlData.ERROR) != 0) {
+											throw new CoreException((monitor.isCanceled()) ?
+													Status.CANCEL_STATUS :
+													new Status(IStatus.ERROR, WaLTablePlugin.PLUGIN_ID, 0,
+															"Failed to load required data.",
+															null ));
+										}
+									}
+									values[rowIdx][colIdx]= dataValue;
+								}
+							}
+							
+							if (monitor.isCanceled()) {
+								throw new CoreException(Status.CANCEL_STATUS);
+							}
+							monitor.worked(1);
+						}
+					}
+					catch (final Exception e) {
+						throw new InvocationTargetException(e);
+					}
+				}
+			});
+		}
+		catch (final InvocationTargetException e) {
+			final Throwable cause= e.getCause();
+			if (cause instanceof CoreException) {
+				throw (CoreException) cause;
+			}
+			throw new CoreException(new Status(IStatus.ERROR, WaLTablePlugin.PLUGIN_ID, 0,
+					"An error occurred when loading required data.",
+					cause ));
+		}
+		catch (final InterruptedException e) {
+			throw new CoreException(new Status(IStatus.ERROR, WaLTablePlugin.PLUGIN_ID, 0,
+					"An error occurred when loading required data.",
+					e ));
 		}
 	}
 	

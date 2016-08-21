@@ -16,6 +16,8 @@ import static de.walware.ecommons.waltable.coordinate.Orientation.VERTICAL;
 
 import java.util.Properties;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import de.walware.ecommons.waltable.command.StructuralRefreshCommandHandler;
 import de.walware.ecommons.waltable.command.VisualRefreshCommandHandler;
 import de.walware.ecommons.waltable.data.IDataProvider;
@@ -51,9 +53,9 @@ public class DataLayer extends AbstractLayer implements ILayer {
 		
 		
 		@Override
-		public Object getDataValue(final int flags) {
+		public Object getDataValue(final int flags, final IProgressMonitor monitor) {
 			return DataLayer.this.dataProvider.getDataValue(getColumnPosition(), getRowPosition(),
-					flags );
+					flags, monitor );
 		}
 		
 	}

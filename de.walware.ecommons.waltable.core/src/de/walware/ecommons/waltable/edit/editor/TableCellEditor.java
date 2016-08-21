@@ -195,23 +195,23 @@ public class TableCellEditor extends AbstractCellEditor {
 			dataValues[i]= canonicalValue;
 		}
 		
-		if (this.layerCell.getDataValue(0).getClass().isArray()) {
-			final Object[] cellDataArray= (Object[])this.layerCell.getDataValue(0);
+		if (this.layerCell.getDataValue(0, null).getClass().isArray()) {
+			final Object[] cellDataArray= (Object[])this.layerCell.getDataValue(0, null);
 			for (int i= 0; i < cellDataArray.length; i++) {
 				cellDataArray[i]= dataValues[i];
 			}
 		}
-		else if (this.layerCell.getDataValue(0) instanceof Collection) {
+		else if (this.layerCell.getDataValue(0, null) instanceof Collection) {
 			//we don't create new collections, we operate on the existing
 			//this is because we don't know the exact collection implementation
 			//that we would need to create for type safety and performing an
 			//instanceof check for every possible collection implementation
 			//would be to complicated and could never be complete
-			final Collection cellDataCollection= (Collection)this.layerCell.getDataValue(0);
+			final Collection cellDataCollection= (Collection)this.layerCell.getDataValue(0, null);
 			cellDataCollection.clear();
 			cellDataCollection.addAll(Arrays.asList(dataValues));
 		}
-		return this.layerCell.getDataValue(0);
+		return this.layerCell.getDataValue(0, null);
 	}
 	
 	@Override

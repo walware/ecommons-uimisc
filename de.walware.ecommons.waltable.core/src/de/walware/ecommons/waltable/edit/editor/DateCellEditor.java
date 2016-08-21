@@ -98,10 +98,10 @@ public class DateCellEditor extends AbstractCellEditor {
 
 	@Override
 	public Object getCanonicalValue() {
-		if (this.layerCell.getDataValue(0) instanceof Calendar) {
+		if (this.layerCell.getDataValue(0, null) instanceof Calendar) {
 			return getEditorValue();
 		}
-		else if (this.layerCell.getDataValue(0) instanceof Date) {
+		else if (this.layerCell.getDataValue(0, null) instanceof Date) {
 			return ((Calendar)getEditorValue()).getTime();
 		}
 		return null;

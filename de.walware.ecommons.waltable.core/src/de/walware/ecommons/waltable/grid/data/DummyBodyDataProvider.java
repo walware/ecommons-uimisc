@@ -13,6 +13,8 @@ package de.walware.ecommons.waltable.grid.data;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import de.walware.ecommons.waltable.coordinate.LPoint;
 import de.walware.ecommons.waltable.data.IDataProvider;
 
@@ -44,7 +46,7 @@ public class DummyBodyDataProvider implements IDataProvider {
 	}
 	
 	@Override
-	public Object getDataValue(final long columnIndex, final long rowIndex, final int flags) {
+	public Object getDataValue(final long columnIndex, final long rowIndex, final int flags, final IProgressMonitor monitor) {
 		final LPoint lPoint= new LPoint(columnIndex, rowIndex);
 		if (this.values.containsKey(lPoint)) {
 			return this.values.get(lPoint);

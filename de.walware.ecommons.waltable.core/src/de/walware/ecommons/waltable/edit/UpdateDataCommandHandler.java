@@ -53,7 +53,7 @@ public class UpdateDataCommandHandler extends AbstractLayerCommandHandler<Update
 			final long columnPosition= command.getColumnPosition();
 			final long rowPosition= command.getRowPosition();
 			final IDataProvider dataProvider= this.dataLayer.getDataProvider();
-			final Object oldValue= dataProvider.getDataValue(columnPosition, rowPosition, 0);
+			final Object oldValue= dataProvider.getDataValue(columnPosition, rowPosition, 0, null);
 			final Object newValue= command.getNewValue();
 			if ((oldValue != null) ? !oldValue.equals(newValue) : null != newValue)  {
 				dataProvider.setDataValue(columnPosition, rowPosition, newValue);

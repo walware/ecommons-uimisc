@@ -12,6 +12,8 @@ package de.walware.ecommons.waltable.grid.data;
 
 import java.util.Map;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import de.walware.ecommons.waltable.data.IDataProvider;
 
 
@@ -61,7 +63,7 @@ public class DefaultColumnHeaderDataProvider implements IDataProvider {
 	 * This class does not support multiple rows in the column header layer.
 	 */
 	@Override
-	public Object getDataValue(final long columnIndex, final long rowIndex, final int flags) {
+	public Object getDataValue(final long columnIndex, final long rowIndex, final int flags, final IProgressMonitor monitor) {
 		return getColumnHeaderLabel(columnIndex);
 	}
 	

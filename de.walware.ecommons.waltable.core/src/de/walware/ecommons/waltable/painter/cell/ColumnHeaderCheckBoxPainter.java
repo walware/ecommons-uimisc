@@ -89,14 +89,14 @@ public class ColumnHeaderCheckBoxPainter extends ImagePainter {
 	}
 
 	protected Boolean convertDataType(final ILayerCell cell, final IConfigRegistry configRegistry) {
-		if (cell.getDataValue(0) instanceof Boolean) {
-			return (Boolean) cell.getDataValue(0);
+		if (cell.getDataValue(0, null) instanceof Boolean) {
+			return (Boolean) cell.getDataValue(0, null);
 		}
 		final IDisplayConverter displayConverter= configRegistry.getConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, cell.getDisplayMode(), cell.getConfigLabels().getLabels());
 		Boolean convertedValue= null;
 		if (displayConverter != null) {
 			try {
-				convertedValue= (Boolean) displayConverter.canonicalToDisplayValue(cell, configRegistry, cell.getDataValue(0));
+				convertedValue= (Boolean) displayConverter.canonicalToDisplayValue(cell, configRegistry, cell.getDataValue(0, null));
 			} catch (final Exception e) {
 //				log.debug(e);
 			}

@@ -10,6 +10,8 @@
  ******************************************************************************/
 package de.walware.ecommons.waltable.layer.cell;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import de.walware.ecommons.waltable.coordinate.LRectangle;
 import de.walware.ecommons.waltable.coordinate.Orientation;
 import de.walware.ecommons.waltable.layer.ILayer;
@@ -47,6 +49,6 @@ public interface ILayerCell {
 	LabelStack getConfigLabels();
 	
 	
-	Object getDataValue(int flags);
+	Object getDataValue(int flags, IProgressMonitor monitor);
 	
 }

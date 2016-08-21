@@ -72,7 +72,7 @@ public class CellEditDialogFactory {
 					TickUpdateConfigAttributes.UPDATE_HANDLER, 
 					DisplayMode.EDIT, 
 					cell.getConfigLabels().getLabels());
-			if (tickUpdateHandler != null && tickUpdateHandler.isApplicableFor(cell.getDataValue(0))) {
+			if (tickUpdateHandler != null && tickUpdateHandler.isApplicableFor(cell.getDataValue(0, null))) {
 				//if a tick update handler is applicable, return the TickUpdateCellEditDialog
 				result= new TickUpdateCellEditDialog(
 						parentShell, originalCanonicalValue, cell, cellEditor, configRegistry, tickUpdateHandler);

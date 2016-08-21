@@ -43,7 +43,7 @@ public class EditCellCommandHandler extends AbstractLayerCommandHandler<EditCell
 				DisplayMode.EDIT, cell.getConfigLabels().getLabels());
 		
 		if (rule.isEditable(cell, configRegistry)) {
-			EditController.editCell(cell, parent, cell.getDataValue(0), configRegistry);
+			EditController.editCell(cell, parent, cell.getDataValue(0, null), configRegistry);
 		}
 
 		//as commands by default are intended to be consumed by the handler, always
