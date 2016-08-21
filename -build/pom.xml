@@ -13,7 +13,7 @@
 	<modules>
 		<module>targetplatform</module>
 		
-		<module>../de.walware.ecommons.inatable.core</module>
+		<module>../de.walware.ecommons.waltable.core</module>
 	</modules>
 	
 	<prerequisites>
